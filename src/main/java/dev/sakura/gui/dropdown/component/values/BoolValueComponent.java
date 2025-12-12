@@ -32,9 +32,9 @@ public class BoolValueComponent extends Component {
         setHeight(28);
         this.toggleAnimation.setDirection(setting.getValue() ? Direction.FORWARDS : Direction.BACKWARDS);
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(15), 15, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(15), 15, Color.WHITE);
             NanoVGHelper.drawRoundRect(getX() + getWidth() - 46, getY() - 14, 30, 16, 8, setting.get() ? ClickGui.color(0).darker() : new Color(70, 70, 70));
-            NanoVGHelper.drawCircle(getX() + getWidth() - 38 + 14 * (float) toggleAnimation.getOutput().floatValue(), getY() - 6, 7, setting.get() ? new Color(255, 255, 255) : new Color(150, 150, 150));
+            NanoVGHelper.drawCircle(getX() + getWidth() - 38 + 14 * toggleAnimation.getOutput().floatValue(), getY() - 6, 7, setting.get() ? Color.WHITE : new Color(150, 150, 150));
         });
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }

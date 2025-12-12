@@ -35,7 +35,7 @@ public class HudEditorScreen extends Screen {
         float scale = (float) mc.getWindow().getScaleFactor();
         NanoVGRenderer.INSTANCE.draw(canvas -> {
             // 绘制半透明背景
-            NanoVGHelper.drawRect(0, 0, mc.getWindow().getWidth(), mc.getWindow().getHeight(), new Color(18, 18, 18, 100));
+            //NanoVGHelper.drawRect(0, 0, mc.getWindow().getWidth(), mc.getWindow().getHeight(), new Color(18, 18, 18, 100));
 
             // 绘制提示文字
             NanoVGHelper.drawCenteredString(

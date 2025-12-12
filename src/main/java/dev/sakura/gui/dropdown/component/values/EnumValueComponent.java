@@ -16,6 +16,10 @@ import java.awt.*;
  * @Date：2025/11/14 19:42
  */
 public class EnumValueComponent extends Component {
+    private static final Color WHITE = new Color(255, 255, 255, 255);
+    private static final Color GRAY = new Color(150, 150, 150, 255);
+    private static final int FONT_SIZE = 15;
+
     private final EnumValue<?> setting;
 
     public EnumValueComponent(EnumValue<?> setting) {
@@ -27,28 +31,23 @@ public class EnumValueComponent extends Component {
         float offset = 0;
         float heightoff = 0;
 
-        NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(15), 15, new Color(255, 255, 255, 255));
-        });
+        int font = FontLoader.greycliffRegular(FONT_SIZE);
+        float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
+        String currentMode = setting.get().name();
+
+        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, FONT_SIZE, WHITE));
 
         for (String text : setting.getModeNames()) {
-            float off = NanoVGHelper.getTextWidth(text, FontLoader.greycliffRegular(15), 15) + 8;
+            float off = NanoVGHelper.getTextWidth(text, font, FONT_SIZE) + 8;
             if (offset + off >= (getWidth() - 5)) {
                 offset = 0;
                 heightoff += 20;
             }
             float finalOffset = offset;
             float finalHeightoff = heightoff;
-            NanoVGRenderer.INSTANCE.draw(vg -> {
-                if (text.equals(setting.get().name())) {
-                    NanoVGHelper.drawString(text, getX() + finalOffset + 8, getY() + 12 + finalHeightoff + NanoVGHelper.getFontHeight(FontLoader.greycliffRegular(15), 15), FontLoader.greycliffRegular(15), 15, new Color(255, 255, 255, 255));
-                } else {
-                    NanoVGHelper.drawString(text, getX() + finalOffset + 8, getY() + 12 + finalHeightoff + NanoVGHelper.getFontHeight(FontLoader.greycliffRegular(15), 15), FontLoader.greycliffRegular(15), 15, new Color(150, 150, 150, 255));
-                }
-            });
-
+            Color textColor = text.equals(currentMode) ? WHITE : GRAY;
+            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(text, getX() + finalOffset + 8, getY() + 12 + finalHeightoff + fontHeight, font, FONT_SIZE, textColor));
             offset += off;
-
         }
 
         setHeight(54 + heightoff);
@@ -61,13 +60,15 @@ public class EnumValueComponent extends Component {
         float scaledMouseY = (float) (mouseY * Sakura.mc.options.getGuiScale().getValue());
         float offset = 0;
         float heightoff = 0;
+        int font = FontLoader.greycliffRegular(FONT_SIZE);
         for (String text : setting.getModeNames()) {
-            float off = NanoVGHelper.getTextWidth(text, FontLoader.greycliffRegular(15), 15) + 8;
+            float textWidth = NanoVGHelper.getTextWidth(text, font, FONT_SIZE);
+            float off = textWidth + 8;
             if (offset + off >= (getWidth() - 5)) {
                 offset = 0;
                 heightoff += 20;
             }
-            if (RenderUtils.isHovering(getX() + offset + 8, getY() + 12 + heightoff, NanoVGHelper.getTextWidth(text, FontLoader.greycliffRegular(15), 15), NanoVGHelper.getFontHeight(FontLoader.greycliffRegular(15), 15), scaledMouseX, scaledMouseY) && mouseButton == 0) {
+            if (RenderUtils.isHovering(getX() + offset + 8, getY() + 12 + heightoff, textWidth, NanoVGHelper.getFontHeight(font, FONT_SIZE), scaledMouseX, scaledMouseY) && mouseButton == 0) {
                 setting.setMode(text);
             }
             offset += off;

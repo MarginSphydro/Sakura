@@ -53,7 +53,6 @@ public abstract class MixinCamera {
         if (actionCamera != null && actionCamera.shouldModifyCamera() && focusedEntity != null) {
             Vec3d playerPos = focusedEntity.getPos();
             actionCamera.update(playerPos);
-
             Vec3d cameraPos = actionCamera.getCameraPos();
             if (cameraPos != null) {
                 args.set(0, cameraPos.x);

@@ -40,11 +40,11 @@ public class SoundManager {
         REGISTERED_SOUND_FILES.add(soundFile);
     }
 
-    public void playSound(SoundEvent sound) {
+    public static void playSound(SoundEvent sound) {
         playSound(sound, 1.2f, 0.75f);
     }
 
-    public void playSound(SoundEvent sound, float volume, float pitch) {
+    public static void playSound(SoundEvent sound, float volume, float pitch) {
         if (mc.player != null) {
             mc.executeSync(() -> mc.player.playSound(sound, volume, pitch));
         }

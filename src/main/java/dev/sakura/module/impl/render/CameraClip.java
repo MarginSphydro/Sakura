@@ -39,19 +39,6 @@ public class CameraClip extends Module {
     private Perspective lastPerspective = null;
     private float smoothYaw = 0f;
     private float smoothPitch = 0f;
-    private float lastYaw = 0f;
-    private float lastPitch = 0f;
-
-    @Override
-    public void onEnable() {
-        if (mc.player != null) {
-            cameraPos = mc.player.getPos();
-            smoothYaw = mc.player.getYaw();
-            smoothPitch = mc.player.getPitch();
-            lastYaw = smoothYaw;
-            lastPitch = smoothPitch;
-        }
-    }
 
     @Override
     public void onDisable() {
@@ -100,8 +87,6 @@ public class CameraClip extends Module {
     }
 
     public Vec3d getCameraPos() {
-        if (cameraPos == null) cameraPos = mc.player.getPos();
-
         if (firstPerson() && mc.player != null) {
             return new Vec3d(
                     mc.player.getX(),
@@ -114,11 +99,9 @@ public class CameraClip extends Module {
 
     public void update(Vec3d playerPos) {
         if (cameraPos == null) {
-            cameraPos = playerPos;
+            cameraPos = mc.player.getEyePos();
             smoothYaw = mc.player.getYaw();
             smoothPitch = mc.player.getPitch();
-            lastYaw = smoothYaw;
-            lastPitch = smoothPitch;
             return;
         }
 
@@ -135,9 +118,13 @@ public class CameraClip extends Module {
         float offsetMultiplier = rotationOffset.getValue().floatValue();
         double yawRad = Math.toRadians(smoothYaw);
 
-        double rotOffsetX = Math.sin(yawRad) * yawDelta * offsetMultiplier * 0.02;
+        // 使用玩家的右向量计算水平偏移，这样左转时向右偏移，右转时向左偏移
+        double rightX = -Math.cos(yawRad);
+        double rightZ = -Math.sin(yawRad);
+
+        double rotOffsetX = rightX * yawDelta * offsetMultiplier * 0.02;
         double rotOffsetY = pitchDelta * offsetMultiplier * 0.02;
-        double rotOffsetZ = -Math.cos(yawRad) * yawDelta * offsetMultiplier * 0.02;
+        double rotOffsetZ = rightZ * yawDelta * offsetMultiplier * 0.02;
 
         double distance = cameraPos.distanceTo(playerPos);
         float maxDist = maxDistance.getValue().floatValue();
@@ -159,9 +146,6 @@ public class CameraClip extends Module {
                 cameraPos.y + dy * dynamicFactor,
                 cameraPos.z + dz * dynamicFactor
         );
-
-        lastYaw = currentYaw;
-        lastPitch = currentPitch;
     }
 
     public boolean shouldModifyCamera() {

@@ -32,15 +32,9 @@ public class MixinMinecraftClient {
     @Final
     private Window window;
 
-    @Unique
-    private static boolean initialized = false;
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void onInit(RunArgs args, CallbackInfo ci) {
-        if (!initialized) {
-            Sakura.init();
-            initialized = true;
-        }
+    @Inject(method = "run", at = @At("HEAD"))
+    private void onRun(CallbackInfo ci) {
+        Sakura.init();
     }
 
     @Inject(method = "tick", at = @At(value = "HEAD"), cancellable = true)

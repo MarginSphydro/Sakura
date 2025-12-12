@@ -11,7 +11,6 @@ import static org.lwjgl.nanovg.NanoVGGL3.*;
 
 public class NanoVGRenderer {
     public static final NanoVGRenderer INSTANCE = new NanoVGRenderer();
-    private static final MinecraftClient mc = MinecraftClient.getInstance();
 
     private long vg = 0L;
     private boolean initialized = false;
@@ -42,6 +41,8 @@ public class NanoVGRenderer {
         }
 
         States.INSTANCE.push();
+
+        MinecraftClient mc = MinecraftClient.getInstance();
 
         int width = mc.getWindow().getWidth();
         int height = mc.getWindow().getHeight();
