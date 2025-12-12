@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "arcane:core/position",
-  "fragment": "arcane:core/blur",
+  "vertex": "sakura:core/position",
+  "fragment": "sakura:core/blur",
   "attributes": [],
   "samplers": [
     { "name": "InputSampler" }

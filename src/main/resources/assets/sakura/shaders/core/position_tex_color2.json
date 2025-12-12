@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "arcane:core/position_tex_color2",
-  "fragment": "arcane:core/position_tex_color2",
+  "vertex": "sakura:core/position_tex_color2",
+  "fragment": "sakura:core/position_tex_color2",
   "attributes": [
     "Position",
     "UV0",
