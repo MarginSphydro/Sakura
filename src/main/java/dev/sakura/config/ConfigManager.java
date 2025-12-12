@@ -213,8 +213,6 @@ public class ConfigManager {
                     if (hudPanelObject.has("y")) hudPanel.setY(hudPanelObject.get("y").getAsFloat());
                 }
             }
-
-            Sakura.LOGGER.error("ClickGui loaded from: {}", CLICKGUI_FILE);
         } catch (IOException e) {
             Sakura.LOGGER.error("Failed to load clickgui: {}", e.getMessage());
         }

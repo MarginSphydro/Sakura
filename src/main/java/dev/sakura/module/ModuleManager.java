@@ -107,10 +107,10 @@ public class ModuleManager {
                 if (module.getKey() == e.getKey()) {
                     if (module.isDisabled()) {
                         NotificationManager.send(module.hashCode(), "§7" + module.getName() + "§a enabled", 3000L);
-                        Managers.SOUND.playSound(SoundManager.ENABLE);
+                        SoundManager.playSound(SoundManager.ENABLE);
                     } else {
                         NotificationManager.send(module.hashCode(), "§7" + module.getName() + "§c disabled", 3000L);
-                        Managers.SOUND.playSound(SoundManager.DISABLE);
+                        SoundManager.playSound(SoundManager.DISABLE);
                     }
                     module.toggle();
                 }

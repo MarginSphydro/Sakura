@@ -22,7 +22,9 @@ import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ModuleComponent implements IComponent {
-    private float x, y, width, height = 36;
+    private static final int MODULE_HEIGHT = 36;
+
+    private float x, y, width, height = MODULE_HEIGHT;
     private final Module module;
     private boolean opened;
     private final EaseInOutQuad openAnimation = new EaseInOutQuad(250, 1);
@@ -35,12 +37,12 @@ public class ModuleComponent implements IComponent {
         openAnimation.setDirection(Direction.BACKWARDS);
         toggleAnimation.setDirection(Direction.BACKWARDS);
         hoverAnimation.setDirection(Direction.BACKWARDS);
-        for (Value value : module.getValues()) {
+        for (Value<?> value : module.getValues()) {
             if (value instanceof BoolValue boolValue) {
                 settings.add(new BoolValueComponent(boolValue));
             } else if (value instanceof NumberValue<?> numberValue) {
                 settings.add(new NumberValueComponent(numberValue));
-            } else if (value instanceof EnumValue modeComponent) {
+            } else if (value instanceof EnumValue<?> modeComponent) {
                 settings.add(new EnumValueComponent(modeComponent));
             } else if (value instanceof ColorValue colorSetting) {
                 settings.add(new ColorValueComponent(colorSetting));
@@ -79,7 +81,7 @@ public class ModuleComponent implements IComponent {
             if (module.isEnabled()) {
                 NanoVGHelper.drawGradientRRect2(x, y, width, 36, 0, ClickGui.color(0), ClickGui.color2(0));
             }
-            NanoVGHelper.drawRect(x, y, width, 36, ColorUtil.applyOpacity(ClickGui.backgroundColor.get(), (float) 0.4f));
+            NanoVGHelper.drawRect(x, y, width, MODULE_HEIGHT, ColorUtil.applyOpacity(ClickGui.backgroundColor.get(), 0.4f));
 
             if (finalHasVisibleSettings && openAnimation.getOutput() > 0) {
                 float expandedHeight = (float) ((finalYOffset - 36) * openAnimation.getOutput());
@@ -87,7 +89,7 @@ public class ModuleComponent implements IComponent {
                         ColorUtil.applyOpacity(ClickGui.expandedBackgroundColor.get(), (float) (0.3f * openAnimation.getOutput())));
             }
 
-            NanoVGHelper.drawString(module.getName(), x + 8, y + 23, FontLoader.greycliffRegular(15), 15, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(module.getName(), x + 8, y + 23, FontLoader.greycliffRegular(15), 15, Color.WHITE);
         });
 
         float componentYOffset = 36;
@@ -148,7 +150,8 @@ public class ModuleComponent implements IComponent {
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        return RenderUtils.isHovering(x, y, width, 36, mouseX * Sakura.mc.options.getGuiScale().getValue(), mouseY * Sakura.mc.options.getGuiScale().getValue());
+        int scale = Sakura.mc.options.getGuiScale().getValue();
+        return RenderUtils.isHovering(x, y, width, MODULE_HEIGHT, mouseX * scale, mouseY * scale);
     }
 
     // Getter methods

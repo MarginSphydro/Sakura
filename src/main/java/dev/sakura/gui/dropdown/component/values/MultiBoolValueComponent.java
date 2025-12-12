@@ -22,6 +22,10 @@ import java.util.Map;
  * @Date：2025/11/14 19:54
  */
 public class MultiBoolValueComponent extends Component {
+    private static final Color WHITE = new Color(255, 255, 255);
+    private static final Color GRAY = new Color(150, 150, 150);
+    private static final int FONT_SIZE = 15;
+
     private final MultiBoolValue setting;
     private final Map<BoolValue, EaseOutSine> select = new HashMap<>();
 
@@ -33,25 +37,25 @@ public class MultiBoolValueComponent extends Component {
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         float offset = 8;
         float heightoff = 0;
+        int font = FontLoader.greycliffRegular(FONT_SIZE);
+        float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
 
-        NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(15), 15, new Color(255, 255, 255, 255));
-        });
+        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, FONT_SIZE, WHITE));
 
         for (BoolValue boolValue : setting.getValues()) {
-            float off = NanoVGHelper.getTextWidth(boolValue.getName(), FontLoader.greycliffRegular(15), 15) + 8;
+            float off = NanoVGHelper.getTextWidth(boolValue.getName(), font, FONT_SIZE) + 8;
             if (offset + off >= getWidth() - 5) {
                 offset = 8;
                 heightoff += 20;
             }
             select.putIfAbsent(boolValue, new EaseOutSine(250, 1));
-            select.get(boolValue).setDirection(boolValue.get() ? Direction.FORWARDS : Direction.BACKWARDS);
+            EaseOutSine anim = select.get(boolValue);
+            anim.setDirection(boolValue.get() ? Direction.FORWARDS : Direction.BACKWARDS);
 
             float finalOffset = offset;
             float finalHeightoff = heightoff;
-            NanoVGRenderer.INSTANCE.draw(vg -> {
-                NanoVGHelper.drawString(boolValue.getName(), getX() + finalOffset + 8, getY() + 4 + finalHeightoff + NanoVGHelper.getFontHeight(FontLoader.greycliffRegular(15), 15), FontLoader.greycliffRegular(15), 15, new Color(ColorUtil.interpolateColor2(new Color(150, 150, 150), new Color(255, 255, 255), (float) select.get(boolValue).getOutput().floatValue())));
-            });
+            Color textColor = new Color(ColorUtil.interpolateColor2(GRAY, WHITE, anim.getOutput().floatValue()));
+            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(boolValue.getName(), getX() + finalOffset + 8, getY() + 4 + finalHeightoff + fontHeight, font, FONT_SIZE, textColor));
 
             offset += off;
         }
@@ -66,13 +70,17 @@ public class MultiBoolValueComponent extends Component {
         float scaledMouseY = (float) (mouseY * Sakura.mc.options.getGuiScale().getValue());
         float offset = 8;
         float heightoff = 0;
+        int font = FontLoader.greycliffRegular(FONT_SIZE);
+        float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
+
         for (BoolValue boolValue : setting.getValues()) {
-            float off = NanoVGHelper.getTextWidth(boolValue.getName(), FontLoader.greycliffRegular(15), 15) + 8;
+            float textWidth = NanoVGHelper.getTextWidth(boolValue.getName(), font, FONT_SIZE);
+            float off = textWidth + 8;
             if (offset + off >= getWidth() - 5) {
                 offset = 8;
                 heightoff += 20;
             }
-            if (RenderUtils.isHovering(getX() + offset, getY() + 2 + heightoff, NanoVGHelper.getTextWidth(boolValue.getName(), FontLoader.greycliffRegular(15), 15), NanoVGHelper.getFontHeight(FontLoader.greycliffRegular(15), 15), scaledMouseX, scaledMouseY) && mouseButton == 0) {
+            if (RenderUtils.isHovering(getX() + offset, getY() + 2 + heightoff, textWidth, fontHeight, scaledMouseX, scaledMouseY) && mouseButton == 0) {
                 boolValue.set(!boolValue.get());
             }
             offset += off;

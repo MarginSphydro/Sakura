@@ -10,7 +10,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "dev.sakura.Sakura"
+      "dev.sakura.SakuraPreLaunch"
     ]
   },
   "mixins": [
