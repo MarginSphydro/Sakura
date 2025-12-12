@@ -1,0 +1,46 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.sakura.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "client": [
+    "MixinMain",
+    "accessor.IAccessorBundlePacket",
+    "accessor.IChatInputSuggestor",
+    "accessor.IClientPlayerEntity",
+    "accessor.ISuggestionWindow",
+    "client.MixinChatInputSuggestor",
+    "client.MixinGameOptions",
+    "client.MixinMinecraftClient",
+    "entity.MixinClientPlayerEntity",
+    "entity.MixinLimbAnimator",
+    "entity.MixinLivingEntity",
+    "input.MixinKeyboard",
+    "input.MixinKeyboardInput",
+    "input.MixinMouse",
+    "network.MixinClientPlayNetworkHandler",
+    "render.MixinCamera",
+    "render.MixinChatScreen",
+    "render.MixinGameRenderer",
+    "render.MixinInGameHud",
+    "render.MixinLightmapTextureManager",
+    "render.MixinScreen",
+    "render.MixinShaderLoader",
+    "render.MixinSplashTextResourceSupplier",
+    "render.MixinTitleScreen",
+    "render.MixinWindow",
+    "render.MixinWorldRenderer",
+    "render.item.MixinHeldItemRenderer",
+    "shader.MixinShaderProgram"
+  ],
+  "mixins": [
+    "network.MixinClientConnection",
+    "packet.MixinPlayerInteractEntityC2SPacket"
+  ]
+}

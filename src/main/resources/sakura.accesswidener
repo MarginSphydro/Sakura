@@ -1,0 +1,7 @@
+accessWidener v1 named
+
+accessible method net/minecraft/client/texture/NativeImage setColor (III)V
+accessible method net/minecraft/client/network/ClientPlayerEntity hasMovementInput ()Z
+accessible field net/minecraft/network/packet/s2c/play/EntityS2CPacket id I
+accessible class net/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPacket$InteractType
+accessible class net/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPacket$InteractTypeHandler
