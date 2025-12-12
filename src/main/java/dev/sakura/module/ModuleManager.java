@@ -12,6 +12,7 @@ import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.module.impl.client.StringTest;
 import dev.sakura.module.impl.combat.AntiKnockback;
+import dev.sakura.module.impl.combat.Burrow;
 import dev.sakura.module.impl.hud.FPSHud;
 import dev.sakura.module.impl.hud.NotificationHud;
 import dev.sakura.module.impl.hud.WatermarkHud;
@@ -41,6 +42,7 @@ public class ModuleManager {
         Sakura.EVENT_BUS.subscribe(this);
         // Combat
         addModule(new AntiKnockback());
+        addModule(new Burrow());
 
 
         // Movement
