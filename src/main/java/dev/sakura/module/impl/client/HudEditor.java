@@ -1,7 +1,7 @@
 package dev.sakura.module.impl.client;
 
 import dev.sakura.Sakura;
-import dev.sakura.gui.dropdown.DropDownClickGui;
+import dev.sakura.gui.dropdown.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -14,7 +14,7 @@ public class HudEditor extends Module {
 
     @Override
     protected void onEnable() {
-        if (mc.currentScreen instanceof DropDownClickGui) {
+        if (mc.currentScreen instanceof ClickGuiScreen) {
             mc.currentScreen.close();
         }
 

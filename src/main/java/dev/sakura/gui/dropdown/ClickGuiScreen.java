@@ -18,14 +18,14 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DropDownClickGui extends Screen {
+public class ClickGuiScreen extends Screen {
     public static Animation openingAnimation = new EaseOutSine(400, 1);
     private final List<CategoryPanel> panels = new ArrayList<>();
     public int scroll;
     private DrawContext currentGuiGraphics;
 
-    public DropDownClickGui() {
-        super(Text.literal("DropDownClickGui"));
+    public ClickGuiScreen() {
+        super(Text.literal("ClickGui"));
         openingAnimation.setDirection(Direction.BACKWARDS);
         float width = 0;
         for (Category category : Category.values()) {

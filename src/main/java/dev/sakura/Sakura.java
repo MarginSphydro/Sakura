@@ -2,7 +2,7 @@ package dev.sakura;
 
 import dev.sakura.command.CommandManager;
 import dev.sakura.config.ConfigManager;
-import dev.sakura.gui.dropdown.DropDownClickGui;
+import dev.sakura.gui.dropdown.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.Managers;
 import dev.sakura.module.ModuleManager;
@@ -26,7 +26,7 @@ public class Sakura implements ClientModInitializer {
     public static MinecraftClient mc;
 
     public static ModuleManager MODULE;
-    public static DropDownClickGui CLICKGUI;
+    public static ClickGuiScreen CLICKGUI;
     public static HudEditorScreen HUDEDITOR;
     public static ConfigManager CONFIG;
     public static CommandManager COMMAND;
@@ -48,7 +48,7 @@ public class Sakura implements ClientModInitializer {
         MODULE.Init();
 
         // 初始化ClickGui
-        CLICKGUI = new DropDownClickGui();
+        CLICKGUI = new ClickGuiScreen();
 
         // 初始化HudEditor
         HUDEDITOR = new HudEditorScreen();
