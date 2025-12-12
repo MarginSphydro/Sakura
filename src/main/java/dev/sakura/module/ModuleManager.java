@@ -14,6 +14,7 @@ import dev.sakura.module.impl.client.StringTest;
 import dev.sakura.module.impl.combat.AntiKnockback;
 import dev.sakura.module.impl.combat.Burrow;
 import dev.sakura.module.impl.hud.FPSHud;
+import dev.sakura.module.impl.hud.MSHud;
 import dev.sakura.module.impl.hud.NotificationHud;
 import dev.sakura.module.impl.hud.WatermarkHud;
 import dev.sakura.module.impl.movement.AutoSprint;
@@ -62,6 +63,7 @@ public class ModuleManager {
         addModule(new FPSHud());
         addModule(new NotificationHud());
         addModule(new WatermarkHud());
+        addModule(new MSHud());
     }
 
     public void addModule(Module module) {
