@@ -29,7 +29,7 @@ public class BoolValueComponent extends Component {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        setHeight(36);
+        setHeight(28);
         this.toggleAnimation.setDirection(setting.getValue() ? Direction.FORWARDS : Direction.BACKWARDS);
         NanoVGRenderer.INSTANCE.draw(vg -> {
             NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(15), 15, new Color(255, 255, 255, 255));

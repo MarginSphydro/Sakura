@@ -12,11 +12,23 @@ import static dev.sakura.Sakura.mc;
 
 public class SoundManager {
     private static final Set<String> REGISTERED_SOUND_FILES = new HashSet<>();
+    private static boolean initialized = false;
 
-    public static final SoundEvent ENABLE = registerSound("enable");
-    public static final SoundEvent DISABLE = registerSound("disable");
-    public static final SoundEvent JELLO_ENABLE = registerSound("activate");
-    public static final SoundEvent JELLO_DISABLE = registerSound("deactivate");
+    public static SoundEvent ENABLE;
+    public static SoundEvent DISABLE;
+    public static SoundEvent JELLO_ENABLE;
+    public static SoundEvent JELLO_DISABLE;
+
+    public static void init() {
+        if (initialized) return;
+
+        ENABLE = registerSound("enable");
+        DISABLE = registerSound("disable");
+        JELLO_ENABLE = registerSound("activate");
+        JELLO_DISABLE = registerSound("deactivate");
+
+        initialized = true;
+    }
 
     private static SoundEvent registerSound(String name) {
         registerSoundFile(name + ".ogg");

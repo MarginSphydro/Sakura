@@ -1,10 +1,6 @@
 package dev.sakura.nanovg.font;
 
 public class FontLoader {
-    public static int harmony(float size) {
-        return FontManager.font("harmony.ttf", size);
-    }
-
     public static int greycliffRegular(float size) {
         return FontManager.fontWithCJK("regular.otf", size);
     }
@@ -23,18 +19,6 @@ public class FontLoader {
 
     public static int icon(float size) {
         return FontManager.font("solid.ttf", size);
-    }
-
-    public static int minecraftRegular(float size) {
-        return FontManager.font("MinecraftRegular.ttf", size);
-    }
-
-    public static int minecraftItalic(float size) {
-        return FontManager.font("MinecraftItalic.otf", size);
-    }
-
-    public static int minecraftBold(float size) {
-        return FontManager.font("MinecraftBold.otf", size);
     }
 
     public static int icons(float size) {
