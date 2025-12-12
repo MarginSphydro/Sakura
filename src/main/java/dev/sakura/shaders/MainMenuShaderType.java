@@ -10,7 +10,6 @@ public enum MainMenuShaderType {
     //JOURNEY("mainmenu_journey.fsh", "旅程效果"),
     //DRIVE_HOME("mainmenu_drivehome.fsh", "驾车回家"),
     //HEARTFELT("mainmenu_heartfelt.fsh", "爱心雨滴"), TODO:爱心雨滴依赖背景不然很丑
-    //VIDEO("", "视频背景"); 去你妈的鸣潮
 
     private final String fragmentShaderPath;
     private final String displayName;
