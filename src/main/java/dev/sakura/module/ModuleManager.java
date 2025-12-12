@@ -13,10 +13,7 @@ import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.module.impl.client.StringTest;
 import dev.sakura.module.impl.combat.AntiKnockback;
 import dev.sakura.module.impl.combat.Burrow;
-import dev.sakura.module.impl.hud.FPSHud;
-import dev.sakura.module.impl.hud.MSHud;
-import dev.sakura.module.impl.hud.NotificationHud;
-import dev.sakura.module.impl.hud.WatermarkHud;
+import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.AutoSprint;
 import dev.sakura.module.impl.render.CameraClip;
 import dev.sakura.module.impl.render.Fullbright;
@@ -64,6 +61,7 @@ public class ModuleManager {
         addModule(new NotificationHud());
         addModule(new WatermarkHud());
         addModule(new MSHud());
+        addModule(new DynamicIslandHud());
     }
 
     public void addModule(Module module) {
