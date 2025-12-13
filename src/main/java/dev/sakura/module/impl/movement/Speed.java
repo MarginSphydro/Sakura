@@ -103,7 +103,7 @@ public class Speed extends Module {
     @EventHandler
     public void onTick(TickEvent.Pre event) {
         if (mc.player == null || mc.world == null) return;
-        
+
         setSuffix(mode.get().name());
 
         double dx = mc.player.getX() - mc.player.prevX;

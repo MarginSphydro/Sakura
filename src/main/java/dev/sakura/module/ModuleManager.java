@@ -15,6 +15,7 @@ import dev.sakura.module.impl.combat.Burrow;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.AutoSprint;
 import dev.sakura.module.impl.movement.Speed;
+import dev.sakura.module.impl.movement.Step;
 import dev.sakura.module.impl.render.CameraClip;
 import dev.sakura.module.impl.render.Fullbright;
 import dev.sakura.module.impl.render.SwingAnimation;
@@ -47,6 +48,7 @@ public class ModuleManager {
         // Movement
         addModule(new AutoSprint());
         addModule(new Speed());
+        addModule(new Step());
 
         // Render
         addModule(new CameraClip());
