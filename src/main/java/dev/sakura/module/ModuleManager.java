@@ -18,6 +18,7 @@ import dev.sakura.module.impl.movement.AutoSprint;
 import dev.sakura.module.impl.render.CameraClip;
 import dev.sakura.module.impl.render.Fullbright;
 import dev.sakura.module.impl.render.SwingAnimation;
+import dev.sakura.module.impl.render.ViewModel;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
 
@@ -50,6 +51,7 @@ public class ModuleManager {
         addModule(new CameraClip());
         addModule(new Fullbright());
         addModule(new SwingAnimation());
+        addModule(new ViewModel());
 
         // Client
         addModule(new ClickGui());
