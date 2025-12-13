@@ -59,6 +59,10 @@ dependencies {
     // NanoVG渲染库
     implementation include (group: 'org.lwjgl', name: 'lwjgl-nanovg', version: '3.3.3')
     implementation include ("org.lwjgl:lwjgl-nanovg::natives-windows")
+    
+    // ByteBuddy依赖用于抓取Mixin
+    implementation include("net.bytebuddy:byte-buddy:1.14.18")
+    implementation include("net.bytebuddy:byte-buddy-agent:1.14.18")
 }
 
 processResources {

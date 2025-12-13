@@ -264,7 +264,8 @@ public class Burrow extends Module {
                 BlockPos bestPos = null;
                 for (BlockPos pos : list) {
                     if (!canMove(pos)) continue;
-                    if (MathHelper.sqrt((float) mc.player.squaredDistanceTo(pos.toCenterPos().add(0, -0.5, 0))) < smartDistance.get()) continue;
+                    if (MathHelper.sqrt((float) mc.player.squaredDistanceTo(pos.toCenterPos().add(0, -0.5, 0))) < smartDistance.get())
+                        continue;
                     if (bestPos == null || mc.player.squaredDistanceTo(pos.toCenterPos()) < distance) {
                         bestPos = pos;
                         distance = mc.player.squaredDistanceTo(pos.toCenterPos());
@@ -291,7 +292,8 @@ public class Burrow extends Module {
                 sendPositionPacket(mc.player.getX(), mc.player.getY() + 1.0802, mc.player.getZ(), false);
                 sendPositionPacket(mc.player.getX(), mc.player.getY() + 1.1027, mc.player.getZ(), false);
             }
-            case TrollHack -> sendPositionPacket(mc.player.getX(), mc.player.getY() + 2.3400880035762786, mc.player.getZ(), false);
+            case TrollHack ->
+                    sendPositionPacket(mc.player.getX(), mc.player.getY() + 2.3400880035762786, mc.player.getZ(), false);
             case Normal -> sendPositionPacket(mc.player.getX(), mc.player.getY() + 1.9, mc.player.getZ(), false);
             case ToVoid -> sendPositionPacket(mc.player.getX(), -70, mc.player.getZ(), false);
             case ToVoid2 -> sendPositionPacket(mc.player.getX(), -7, mc.player.getZ(), false);
@@ -309,14 +311,16 @@ public class Burrow extends Module {
             if (BlockUtil.airPlace()) {
                 progress++;
                 BlockUtil.placedPos.add(pos);
-                if (sound.get()) mc.world.playSound(mc.player, pos, SoundEvents.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 1.0F, 0.8F);
+                if (sound.get())
+                    mc.world.playSound(mc.player, pos, SoundEvents.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 1.0F, 0.8F);
                 BlockUtil.clickBlock(pos, Direction.DOWN, rotate, packetPlace.get());
             }
             Direction side;
             if ((side = BlockUtil.getPlaceSide(pos)) == null) return;
             progress++;
             BlockUtil.placedPos.add(pos);
-            if (sound.get()) mc.world.playSound(mc.player, pos, SoundEvents.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 1.0F, 0.8F);
+            if (sound.get())
+                mc.world.playSound(mc.player, pos, SoundEvents.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 1.0F, 0.8F);
             BlockUtil.clickBlock(pos.offset(side), side.getOpposite(), rotate, packetPlace.get());
         }
     }

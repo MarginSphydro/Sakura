@@ -132,5 +132,6 @@ public class DynamicIslandHud extends HudModule {
         return a + (b - a) * t;
     }
 
-    private record ToggleInfo(String name, boolean enabled) {}
+    private record ToggleInfo(String name, boolean enabled) {
+    }
 }

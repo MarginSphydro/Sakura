@@ -2,7 +2,6 @@ package dev.sakura.utils.player;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 public class RotationUtil {
     private static final MinecraftClient mc = MinecraftClient.getInstance();
