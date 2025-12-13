@@ -6,6 +6,7 @@ import dev.sakura.gui.IComponent;
 import dev.sakura.gui.dropdown.component.values.*;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;
+import dev.sakura.module.impl.hud.DynamicIslandHud;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -111,7 +112,10 @@ public class ModuleComponent implements IComponent {
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (isHovered((int) mouseX, (int) mouseY)) {
             switch (mouseButton) {
-                case 0 -> module.toggle();
+                case 0 -> {
+                    DynamicIslandHud.onModuleToggle(module, module.isDisabled());
+                    module.toggle();
+                }
                 case 1 -> opened = !opened;
             }
         }

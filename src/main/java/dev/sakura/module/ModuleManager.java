@@ -12,9 +12,8 @@ import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.module.impl.client.StringTest;
 import dev.sakura.module.impl.combat.AntiKnockback;
-import dev.sakura.module.impl.hud.FPSHud;
-import dev.sakura.module.impl.hud.NotificationHud;
-import dev.sakura.module.impl.hud.WatermarkHud;
+import dev.sakura.module.impl.combat.Burrow;
+import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.AutoSprint;
 import dev.sakura.module.impl.render.CameraClip;
 import dev.sakura.module.impl.render.Fullbright;
@@ -41,6 +40,7 @@ public class ModuleManager {
         Sakura.EVENT_BUS.subscribe(this);
         // Combat
         addModule(new AntiKnockback());
+        addModule(new Burrow());
 
 
         // Movement
@@ -60,6 +60,8 @@ public class ModuleManager {
         addModule(new FPSHud());
         addModule(new NotificationHud());
         addModule(new WatermarkHud());
+        addModule(new MSHud());
+        addModule(new DynamicIslandHud());
     }
 
     public void addModule(Module module) {
