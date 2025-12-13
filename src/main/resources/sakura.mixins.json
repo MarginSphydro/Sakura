@@ -20,6 +20,7 @@
     "client.MixinGameOptions",
     "client.MixinMinecraftClient",
     "entity.MixinClientPlayerEntity",
+    "entity.MixinEntity",
     "entity.MixinLimbAnimator",
     "entity.MixinLivingEntity",
     "input.MixinKeyboard",
