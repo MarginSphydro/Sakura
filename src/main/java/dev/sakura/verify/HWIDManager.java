@@ -1,9 +1,15 @@
 package dev.sakura.verify;
 
+import dev.undefinedteam.obfuscator.annotations.AutoNative;
+import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
+import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+@AutoNative
 public class HWIDManager {
+    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
     private static String getHWID() {
         return System.getenv("PROCESSOR_IDENTIFIER") +
                 System.getenv("COMPUTERNAME") +
@@ -22,6 +28,7 @@ public class HWIDManager {
         }
     }
 
+    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
     public static String getEncryptedHWID() {
         byte[] hash = encryptBySHA256(getHWID());
         StringBuilder hexString = new StringBuilder();

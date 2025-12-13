@@ -1,5 +1,9 @@
 package dev.sakura.verify;
 
+import dev.undefinedteam.obfuscator.annotations.AutoNative;
+import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
+import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,6 +13,7 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+@AutoNative
 public class VerificationConnection {
     private static final String SERVER_HOST = "127.0.0.1";
     private static final int SERVER_PORT = 54188;
@@ -32,7 +37,6 @@ public class VerificationConnection {
             performHandshake();
             return true;
         } catch (Exception e) {
-            System.err.println("[Verify] Connection failed: " + e.getMessage());
             return false;
         }
     }
@@ -50,14 +54,15 @@ public class VerificationConnection {
 
     // 存储挑战响应，用于后续解密
     private String challengeResponse = null;
-    
+
+    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public String login(String username, String password) {
         try {
             // 先执行安全检查
             if (!SecurityGuard.performSecurityCheck()) {
-                return "[ERROR]Security check failed";
+                return "[ERROR] Security check failed";
             }
-            
+
             String hwid = HWIDManager.getEncryptedHWID();
             String message = "[LOGIN]" + username + "@" + password + "@" + hwid;
             sendMessage(message);
@@ -68,60 +73,60 @@ public class VerificationConnection {
             if (response.startsWith("[CHALLENGE]")) {
                 String challengeBase64 = response.substring(11);
                 byte[] challenge = Base64.getDecoder().decode(challengeBase64);
-                
+
                 // 计算挑战响应
                 String envFingerprint = SecurityGuard.getEnvironmentFingerprint();
                 challengeResponse = dhHelper.computeChallengeResponse(challenge, hwid, envFingerprint);
-                
+
                 // 发送响应
                 sendMessage("[RESPONSE]" + challengeResponse + "|" + envFingerprint);
-                
+
                 // 等待服务器验证
                 response = receiveMessage();
             }
-            
+
             // 处理登录结果
             if (response.startsWith("[PASS]")) {
                 // 解析会话令牌和时间戳: [PASS]<token>|<timestamp>
                 String tokenData = response.substring(6);
                 String[] parts = tokenData.split("\\|");
                 if (parts.length != 2) {
-                    return "[ERROR]别想破解(TO)";
+                    return "[ERROR] 别想破解(TO)";
                 }
-                
+
                 byte[] sessionToken = Base64.getDecoder().decode(parts[0]);
                 long timestamp = Long.parseLong(parts[1]);
-                
+
                 // 验证时间戳（5分钟内有效，防止重放攻击）
                 long currentTime = System.currentTimeMillis();
                 if (Math.abs(currentTime - timestamp) > 5 * 60 * 1000) {
-                    return "[ERROR]别想破解(TI)";
+                    return "[ERROR] 别想破解(TI)";
                 }
-                
+
                 // 再次安全检查
                 if (!SecurityGuard.quickCheck()) {
-                    return "[ERROR]别想破解(SC)";
+                    return "[ERROR] 别想破解(SC)";
                 }
-                
+
                 System.out.println("[Verify] Challenge verified, receiving encrypted JAR...");
                 byte[] encryptedJar = receiveJarBytes();
-                
+
                 if (encryptedJar != null && encryptedJar.length > 0) {
                     // 使用三重密钥解密 JAR（需要正确的挑战响应）
                     try {
                         if (challengeResponse == null) {
-                            return "[ERROR]别想破解(CR)";
+                            return "[ERROR] 别想破解(CR)";
                         }
                         byte[] jarBytes = dhHelper.decryptWithChallenge(encryptedJar, sessionToken, timestamp, challengeResponse);
                         VerificationManager.getInstance().setReceivedJarBytes(jarBytes);
                     } catch (SecurityException e) {
                         System.err.println("[Verify] JAR decryption failed: " + e.getMessage());
-                        return "[ERROR]别想破解(DE)";
+                        return "[ERROR] 别想破解(DE)";
                     }
                 } else {
                     System.err.println("[Verify] No JAR bytes received");
                 }
-                
+
                 return "[PASS]";
             }
 

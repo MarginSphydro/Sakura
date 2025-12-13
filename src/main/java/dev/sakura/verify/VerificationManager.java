@@ -1,5 +1,10 @@
 package dev.sakura.verify;
 
+import dev.undefinedteam.obfuscator.annotations.AutoNative;
+import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
+import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
+
+@AutoNative
 public class VerificationManager {
     private static VerificationManager INSTANCE;
 
@@ -15,6 +20,7 @@ public class VerificationManager {
         return INSTANCE;
     }
 
+    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
     public boolean verify(String username, String password) {
         VerificationConnection connection = new VerificationConnection();
 
@@ -88,23 +94,24 @@ public class VerificationManager {
     public void setReceivedJarBytes(byte[] bytes) {
         this.receivedJarBytes = bytes;
     }
-    
+
     /**
      * 检查是否有有效的 JAR 数据
      * 这是验证成功的唯一可靠标志
      */
+    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public boolean hasValidJarData() {
         // 必须有数据
         if (receivedJarBytes == null || receivedJarBytes.length < 100) {
             return false;
         }
-        
+
         // 检查 JAR/ZIP 魔数 (PK\x03\x04)
         if (receivedJarBytes[0] != 0x50 || receivedJarBytes[1] != 0x4B ||
-            receivedJarBytes[2] != 0x03 || receivedJarBytes[3] != 0x04) {
+                receivedJarBytes[2] != 0x03 || receivedJarBytes[3] != 0x04) {
             return false;
         }
-        
+
         return true;
     }
 

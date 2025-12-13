@@ -1,5 +1,9 @@
 package dev.sakura.verify;
 
+import dev.undefinedteam.obfuscator.annotations.AutoNative;
+import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
+import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 import javax.crypto.Mac;
@@ -9,6 +13,7 @@ import java.security.*;
 import java.util.Arrays;
 import java.util.Base64;
 
+@AutoNative
 public class DHEncryptionHelper {
     private static final String ENCRYPTION_ALGORITHM = "AES";
 
@@ -76,6 +81,7 @@ public class DHEncryptionHelper {
      * 使用会话令牌解密数据 (AES-GCM)
      * 输入格式: IV(12) + 加密数据 + HMAC(32)
      */
+    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public byte[] decryptWithSession(byte[] encryptedData, byte[] sessionToken, long timestamp) {
         try {
             if (encryptedData.length < 12 + 32) {
@@ -83,23 +89,23 @@ public class DHEncryptionHelper {
             }
 
             byte[] sessionKey = deriveSessionKey(sessionToken, timestamp);
-            
+
             // 提取 IV, 加密数据, HMAC
             byte[] iv = Arrays.copyOfRange(encryptedData, 0, 12);
             byte[] encrypted = Arrays.copyOfRange(encryptedData, 12, encryptedData.length - 32);
             byte[] receivedHmac = Arrays.copyOfRange(encryptedData, encryptedData.length - 32, encryptedData.length);
-            
+
             // 验证 HMAC
             byte[] expectedHmac = computeHmac(sessionKey, Arrays.copyOfRange(encryptedData, 0, encryptedData.length - 32));
             if (!MessageDigest.isEqual(receivedHmac, expectedHmac)) {
                 throw new SecurityException("HMAC 验证失败，数据可能被篡改");
             }
-            
+
             // 解密
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             GCMParameterSpec spec = new GCMParameterSpec(128, iv);
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(sessionKey, "AES"), spec);
-            
+
             return cipher.doFinal(encrypted);
         } catch (SecurityException e) {
             throw e;
@@ -111,6 +117,7 @@ public class DHEncryptionHelper {
     /**
      * 生成会话密钥: SHA256(sharedKey + sessionToken + timestamp)
      */
+    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
     private byte[] deriveSessionKey(byte[] sessionToken, long timestamp) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(sharedKey);
@@ -128,10 +135,11 @@ public class DHEncryptionHelper {
         mac.init(new SecretKeySpec(key, "HmacSHA256"));
         return mac.doFinal(data);
     }
-    
+
     /**
      * 计算挑战响应
      */
+    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public String computeChallengeResponse(byte[] challenge, String hwid, String envFingerprint) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -145,41 +153,42 @@ public class DHEncryptionHelper {
             throw new RuntimeException("Failed to compute challenge response", e);
         }
     }
-    
+
     /**
      * 使用三重密钥解密（DH密钥 + 会话令牌 + 挑战响应）
      */
+    @NativeVirtualization(VirtualMachine.EAGLE_BLACK)
     public byte[] decryptWithChallenge(byte[] encryptedData, byte[] sessionToken, long timestamp, String challengeResponse) {
         try {
             if (encryptedData.length < 12 + 32) {
                 throw new SecurityException("数据格式无效");
             }
-            
+
             // 派生会话密钥
             byte[] sessionKey = deriveSessionKey(sessionToken, timestamp);
-            
+
             // 派生最终密钥：SHA256(sessionKey + challengeResponse)
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(sessionKey);
             md.update(challengeResponse.getBytes());
             byte[] finalKey = Arrays.copyOf(md.digest(), 16);
-            
+
             // 提取 IV, 加密数据, HMAC
             byte[] iv = Arrays.copyOfRange(encryptedData, 0, 12);
             byte[] encrypted = Arrays.copyOfRange(encryptedData, 12, encryptedData.length - 32);
             byte[] receivedHmac = Arrays.copyOfRange(encryptedData, encryptedData.length - 32, encryptedData.length);
-            
+
             // 验证 HMAC
             byte[] expectedHmac = computeHmac(finalKey, Arrays.copyOfRange(encryptedData, 0, encryptedData.length - 32));
             if (!MessageDigest.isEqual(receivedHmac, expectedHmac)) {
                 throw new SecurityException("HMAC 验证失败");
             }
-            
+
             // 解密
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             GCMParameterSpec spec = new GCMParameterSpec(128, iv);
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(finalKey, "AES"), spec);
-            
+
             return cipher.doFinal(encrypted);
         } catch (SecurityException e) {
             throw e;
@@ -187,7 +196,7 @@ public class DHEncryptionHelper {
             throw new SecurityException("三重解密失败: " + e.getMessage(), e);
         }
     }
-    
+
     /**
      * 获取共享密钥（用于安全检查）
      */

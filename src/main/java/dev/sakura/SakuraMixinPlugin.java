@@ -3,6 +3,9 @@ package dev.sakura;
 import dev.sakura.verify.LoginWindow;
 import dev.sakura.verify.SecurityGuard;
 import dev.sakura.verify.VerificationManager;
+import dev.undefinedteam.obfuscator.annotations.AutoNative;
+import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
+import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -10,6 +13,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
+@AutoNative
 public class SakuraMixinPlugin implements IMixinConfigPlugin {
     // 使用混淆的状态值代替简单的 boolean
     private static volatile int loadState = 0;
@@ -29,7 +33,7 @@ public class SakuraMixinPlugin implements IMixinConfigPlugin {
             }
 
             LoginWindow loginWindow = new LoginWindow();
-            
+
             // 不使用简单的 boolean 返回值
             // LoginWindow.show() 内部会设置 VerificationManager 的状态
             loginWindow.show();
@@ -45,9 +49,9 @@ public class SakuraMixinPlugin implements IMixinConfigPlugin {
                 triggerFailure("CHK");
                 return;
             }
-            
+
             loadState = STATE_VERIFIED;
-            
+
             // 加载类（需要正确的解密密钥）
             try {
                 VerificationManager.getInstance().loadClasses();
@@ -57,19 +61,22 @@ public class SakuraMixinPlugin implements IMixinConfigPlugin {
             }
         }
     }
-    
+
+    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
     private void triggerFailure(String code) {
         System.err.println("[Sakura] Verification failed: " + code);
         new Thread(() -> {
             try {
-                Thread.sleep(1000 + (long)(Math.random() * 2000));
-            } catch (InterruptedException ignored) {}
+                Thread.sleep(1000 + (long) (Math.random() * 2000));
+            } catch (InterruptedException ignored) {
+            }
             System.exit(1);
         }).start();
 
         try {
             Thread.sleep(Long.MAX_VALUE);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
     }
 
     @Override
