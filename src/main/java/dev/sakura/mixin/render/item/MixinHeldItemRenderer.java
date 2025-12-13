@@ -2,14 +2,18 @@ package dev.sakura.mixin.render.item;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.render.item.EatTransformationEvent;
+import dev.sakura.events.render.item.HeldItemRendererEvent;
 import dev.sakura.events.render.item.RenderSwingAnimationEvent;
 import dev.sakura.events.render.item.UpdateHeldItemsEvent;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Final;
@@ -91,5 +95,11 @@ public class MixinHeldItemRenderer {
             mainHand = itemStack;
             offHand = itemStack2;
         }
+    }
+
+    @Inject(method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", shift = At.Shift.AFTER))
+    private void hookRenderFirstPersonItem(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        HeldItemRendererEvent event = new HeldItemRendererEvent(matrices, hand);
+        Sakura.EVENT_BUS.post(event);
     }
 }
