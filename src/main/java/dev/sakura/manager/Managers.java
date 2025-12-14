@@ -8,6 +8,7 @@ public class Managers {
     public static void init() {
         if (initialized) return;
 
+        RotationManager.INSTANCE.toString();
 
         initialized = true;
     }
