@@ -6,7 +6,6 @@ import dev.sakura.events.player.LookAtEvent;
 import dev.sakura.events.player.MotionEvent;
 import dev.sakura.events.player.RotateEvent;
 import dev.sakura.events.type.EventType;
-import dev.sakura.utils.entity.EntityUtil;
 import dev.sakura.utils.math.MathUtils;
 import dev.sakura.utils.time.TimerUtil;
 import meteordevelopment.orbit.EventHandler;
@@ -20,7 +19,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
- import java.util.Set;
+import java.util.Set;
 
 public class RotationManager {
 
@@ -50,7 +49,7 @@ public class RotationManager {
     private boolean look = true;
     private float rotateTime = 1f;
     private boolean forceSync = false;
-    
+
     // MoveFix settings
     private boolean moveFixOn = false;
     public static float fixRotation = 0f;
@@ -138,7 +137,7 @@ public class RotationManager {
             // Equivalent to UpdateWalkingPlayerEvent (Post)
             // Also onUpdateWalkingPost logic
             setRenderRotation(lastYaw, lastPitch, false);
-            
+
             if (moveFixOn) {
                 updateNext();
             }
@@ -274,14 +273,14 @@ public class RotationManager {
 
     private static Set<?> readPacketFlags(PlayerPositionLookS2CPacket packet) {
         Object flags = invokeFirst(packet,
-            "getFlags",
-            "flags",
-            "getRelative",
-            "relative",
-            "getPositionFlags",
-            "positionFlags",
-            "getRelativeArguments",
-            "relativeArguments"
+                "getFlags",
+                "flags",
+                "getRelative",
+                "relative",
+                "getPositionFlags",
+                "positionFlags",
+                "getRelativeArguments",
+                "relativeArguments"
         );
         if (flags instanceof Set<?> set) return set;
         return null;
@@ -390,7 +389,7 @@ public class RotationManager {
 
         return result;
     }
-    
+
     // Kept from previous version to maintain compatibility if used elsewhere
     public float getServerYaw() {
         if (mc.player == null) return 0.0f;

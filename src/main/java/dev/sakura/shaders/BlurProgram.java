@@ -1,6 +1,7 @@
 package dev.sakura.shaders;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.sakura.Sakura;
 import dev.sakura.shaders.satin.api.ManagedCoreShader;
 import dev.sakura.shaders.satin.api.ShaderEffectManager;
 import dev.sakura.shaders.satin.api.uniform.SamplerUniform;
@@ -19,6 +20,8 @@ import java.awt.*;
 import static dev.sakura.Sakura.mc;
 
 public class BlurProgram {
+    private static long lastReloadAttempt = 0;
+
     private Uniform2f uSize;
     private Uniform2f uLocation;
     private Uniform1f radius;
@@ -71,7 +74,18 @@ public class BlurProgram {
         if (BLUR.getProgram() != null) {
             RenderSystem.setShader(BLUR.getProgram());
         } else {
-            System.err.println("[BlurProgram] Shader not loaded!");
+            long now = System.currentTimeMillis();
+            if (now - lastReloadAttempt > 1000) {
+                lastReloadAttempt = now;
+                try {
+                    dev.sakura.shaders.satin.impl.ReloadableShaderEffectManager.INSTANCE.reload(mc.getResourceManager());
+                    if (BLUR.getProgram() != null) {
+                        RenderSystem.setShader(BLUR.getProgram());
+                    }
+                } catch (Exception e) {
+                    Sakura.LOGGER.error("Failed to reload shader: {}", e.getMessage());
+                }
+            }
         }
     }
 

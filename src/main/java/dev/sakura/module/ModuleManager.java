@@ -7,22 +7,28 @@ import dev.sakura.events.misc.KeyEvent;
 import dev.sakura.events.render.Render2DEvent;
 import dev.sakura.manager.NotificationManager;
 import dev.sakura.manager.SoundManager;
-import dev.sakura.module.impl.client.*;
-import dev.sakura.module.impl.render.*;
-import dev.sakura.module.impl.combat.*;
+import dev.sakura.module.impl.client.ClickGui;
+import dev.sakura.module.impl.client.HudEditor;
+import dev.sakura.module.impl.client.StringTest;
+import dev.sakura.module.impl.combat.Burrow;
+import dev.sakura.module.impl.combat.Velocity;
 import dev.sakura.module.impl.hud.*;
-import dev.sakura.module.impl.movement.*;
+import dev.sakura.module.impl.movement.AutoSprint;
+import dev.sakura.module.impl.movement.NoSlow;
+import dev.sakura.module.impl.movement.Speed;
+import dev.sakura.module.impl.movement.Step;
+import dev.sakura.module.impl.render.*;
+import dev.sakura.gui.dropdown.ClickGuiScreen;
+import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.client.gui.screen.Screen;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * @Author：Gu-Yuemang
- * @Date：2025/11/14 01:21
- */
 public class ModuleManager {
     private final Map<Class<? extends Module>, Module> modules;
 
@@ -32,8 +38,8 @@ public class ModuleManager {
 
     public void Init() {
         Sakura.EVENT_BUS.subscribe(this);
+
         // Combat
-        addModule(new AntiKnockback());
         addModule(new Burrow());
         addModule(new Velocity());
 
@@ -47,6 +53,7 @@ public class ModuleManager {
         // Render
         addModule(new CameraClip());
         addModule(new Fullbright());
+        addModule(new NoRender());
         addModule(new SwingAnimation());
         addModule(new ViewModel());
 
@@ -100,20 +107,67 @@ public class ModuleManager {
     }
 
     @EventHandler
-    public void onKey(KeyEvent e) {
-        if (e.getAction() == KeyAction.Press) {
-            for (Module module : modules.values()) {
-                if (module.getKey() == e.getKey()) {
-                    if (module.isDisabled()) {
-                        NotificationManager.send(module.hashCode(), "§7" + module.getName() + "§a enabled", 3000L);
-                        SoundManager.playSound(SoundManager.ENABLE);
-                    } else {
-                        NotificationManager.send(module.hashCode(), "§7" + module.getName() + "§c disabled", 3000L);
-                        SoundManager.playSound(SoundManager.DISABLE);
-                    }
-                    module.toggle();
+    public void onKey(KeyEvent event) {
+        Screen currentScreen = Sakura.mc.currentScreen;
+        if (currentScreen instanceof ClickGuiScreen || currentScreen instanceof HudEditorScreen) {
+            return;
+        }
+
+        boolean isPress = event.getAction() == KeyAction.Press;
+        boolean isRelease = event.getAction() == KeyAction.Release;
+
+        List<Module> affectedModules = new ArrayList<>();
+        boolean hasEnabling = false;
+
+        for (Module module : modules.values()) {
+            if (module.getKey() != event.getKey()) continue;
+
+            if (module.getBindMode() == Module.BindMode.Toggle && isPress) {
+                if (module.isDisabled()) hasEnabling = true;
+                affectedModules.add(module);
+            } else if (module.getBindMode() == Module.BindMode.Hold) {
+                if (isPress && module.isDisabled()) {
+                    hasEnabling = true;
+                    affectedModules.add(module);
+                } else if (isRelease && module.isEnabled()) {
+                    affectedModules.add(module);
                 }
             }
+        }
+
+        for (Module module : affectedModules) {
+            if (module.getBindMode() == Module.BindMode.Toggle) {
+                boolean enabling = module.isDisabled();
+                sendToggleNotification(module, enabling, "", false);
+                module.toggle();
+            } else if (module.getBindMode() == Module.BindMode.Hold) {
+                if (isPress && module.isDisabled()) {
+                    sendToggleNotification(module, true, " §8(Hold)", false);
+                    module.setState(true);
+                } else if (isRelease && module.isEnabled()) {
+                    sendToggleNotification(module, false, "", false);
+                    module.setState(false);
+                }
+            }
+        }
+
+        if (!affectedModules.isEmpty()) {
+            if (hasEnabling) {
+                SoundManager.playSound(SoundManager.ENABLE);
+            } else {
+                SoundManager.playSound(SoundManager.DISABLE);
+            }
+        }
+    }
+
+    private void sendToggleNotification(Module module, boolean enabling) {
+        sendToggleNotification(module, enabling, "", true);
+    }
+
+    private void sendToggleNotification(Module module, boolean enabling, String suffix, boolean playSound) {
+        NotificationManager.send(module.hashCode(), "§7" + module.getName() + (enabling ? "§a enabled" : "§c disabled") + suffix, 3000L);
+        if (playSound) {
+            SoundManager.playSound(enabling ? SoundManager.ENABLE : SoundManager.DISABLE);
         }
     }
 

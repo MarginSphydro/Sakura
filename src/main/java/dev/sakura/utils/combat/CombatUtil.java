@@ -44,7 +44,8 @@ public class CombatUtil {
                 closest = player;
                 continue;
             }
-            if (!(mc.player.squaredDistanceTo(player.getPos()) < mc.player.squaredDistanceTo(closest.getPos()))) continue;
+            if (!(mc.player.squaredDistanceTo(player.getPos()) < mc.player.squaredDistanceTo(closest.getPos())))
+                continue;
             closest = player;
         }
         return closest;

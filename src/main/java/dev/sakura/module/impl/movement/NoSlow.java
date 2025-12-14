@@ -1,12 +1,12 @@
 package dev.sakura.module.impl.movement;
 
 import dev.sakura.Sakura;
-import dev.sakura.manager.RotationManager;
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.player.SlowdownEvent;
 import dev.sakura.events.type.EventType;
 import dev.sakura.gui.dropdown.ClickGuiScreen;
+import dev.sakura.manager.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.player.MovementUtil;
@@ -125,9 +125,9 @@ public class NoSlow extends Module {
             switch (mode.get()) {
                 case Strict:
                     if (items.get() && packet instanceof PlayerMoveC2SPacket movePacket) {
-                         if (mc.player.isUsingItem() && movePacket.changesPosition()) {
-                             mc.getNetworkHandler().sendPacket(new UpdateSelectedSlotC2SPacket(mc.player.getInventory().selectedSlot));
-                         }
+                        if (mc.player.isUsingItem() && movePacket.changesPosition()) {
+                            mc.getNetworkHandler().sendPacket(new UpdateSelectedSlotC2SPacket(mc.player.getInventory().selectedSlot));
+                        }
                     } else if (guiMove.get() && packet instanceof ClickSlotC2SPacket && MovementUtil.isMoving()) {
                         doStrictPre();
                     }
@@ -136,7 +136,7 @@ public class NoSlow extends Module {
                     break;
             }
         } else if (event.getType() == EventType.SENT) { // Post
-             switch (mode.get()) {
+            switch (mode.get()) {
                 case Strict:
                     if (guiMove.get() && packet instanceof ClickSlotC2SPacket && MovementUtil.isMoving()) {
                         doStrictPost();
@@ -198,13 +198,13 @@ public class NoSlow extends Module {
     public boolean canInvMove() {
         if (mc.currentScreen instanceof HandledScreen<?>)
             return true;
-        
+
         if (mc.currentScreen instanceof ClickGuiScreen)
             return true;
-        
+
         return false;
     }
-    
+
     public enum Mode {
         Vanilla,
         Grim,

@@ -14,7 +14,6 @@ import static dev.sakura.Sakura.mc;
 
 @Mixin(Entity.class)
 public class MixinEntity {
-
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     private void onMove(MovementType type, Vec3d movement, CallbackInfo ci) {
         if ((Object) this == mc.player && type == MovementType.SELF) {

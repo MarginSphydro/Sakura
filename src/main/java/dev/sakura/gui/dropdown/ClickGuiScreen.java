@@ -18,6 +18,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dev.sakura.Sakura.mc;
+
 public class ClickGuiScreen extends Screen {
     public static Animation openingAnimation = new EaseOutSine(400, 1);
     private final List<CategoryPanel> panels = new ArrayList<>();
@@ -65,16 +67,14 @@ public class ClickGuiScreen extends Screen {
             Shader2DUtils.drawQuadBlur(
                     guiGraphics.getMatrices(),
                     0, 0,
-                    Sakura.mc.getWindow().getWidth(), Sakura.mc.getWindow().getHeight(),
+                    mc.getWindow().getWidth(), mc.getWindow().getHeight(),
                     blurStrength,
                     1.0f
             );
         }
 
         // NanoVG绘制半透明背景遮罩
-        NanoVGRenderer.INSTANCE.draw(canvas -> {
-            NanoVGHelper.drawRect(0, 0, Sakura.mc.getWindow().getWidth(), Sakura.mc.getWindow().getHeight(), new Color(18, 18, 18, 50));
-        });
+        NanoVGRenderer.INSTANCE.draw(canvas -> NanoVGHelper.drawRect(0, 0, mc.getWindow().getWidth(), mc.getWindow().getHeight(), new Color(18, 18, 18, 50)));
 
         panels.forEach(panel -> panel.render(guiGraphics, mouseX, finalMouseY, partialTicks));
     }
@@ -154,7 +154,7 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        accumulatedScroll += (float) scrollY * Sakura.mc.options.getGuiScale().getValue();
+        accumulatedScroll += (float) scrollY * mc.options.getGuiScale().getValue();
         return true;
     }
 

@@ -3,7 +3,6 @@ package dev.sakura.mixin.client;
 import dev.sakura.Sakura;
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.input.HandleInputEvent;
-import dev.sakura.module.impl.combat.AntiKnockback;
 import dev.sakura.shaders.WindowResizeCallback;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -17,10 +16,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * @Author：Gu-Yuemang
- * @Date：12/7/2025 1:54 PM
- */
 @Mixin(MinecraftClient.class)
 public class MixinMinecraftClient {
     @Shadow
@@ -35,15 +30,9 @@ public class MixinMinecraftClient {
         Sakura.init();
     }
 
-    @Inject(method = "tick", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "tick", at = @At("HEAD"))
     private void onPreTick(CallbackInfo info) {
         Sakura.EVENT_BUS.post(new TickEvent.Pre());
-
-        AntiKnockback velocity = Sakura.MODULE.getModule(AntiKnockback.class);
-        if (velocity.skipTicks > 0 && player != null) {
-            --velocity.skipTicks;
-            info.cancel();
-        }
     }
 
     @Inject(method = "tick", at = @At("TAIL"))

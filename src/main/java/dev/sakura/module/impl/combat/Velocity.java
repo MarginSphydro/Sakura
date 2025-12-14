@@ -157,7 +157,7 @@ public class Velocity extends Module {
     @EventHandler
     public void onTick(TickEvent.Pre event) {
         if (mc.player != null && mc.getNetworkHandler() != null && mc.interactionManager != null) {
-            
+
             // Execute one skip task per tick if available
             if (!skipTasks.isEmpty()) {
                 skipTasks.remove(0).run();
@@ -238,7 +238,7 @@ public class Velocity extends Module {
         if (event.getType() != EventType.RECEIVE) return;
 
         if (mc.player != null && mc.getNetworkHandler() != null && mc.interactionManager != null && !mc.player.isUsingItem()) {
-            
+
             if (mc.player.age < 20) {
                 reset();
             } else if (!mc.player.isDead()
@@ -267,7 +267,8 @@ public class Velocity extends Module {
                             // Unchecked cast warning suppression
                             try {
                                 inBound.add((Packet<ClientPlayPacketListener>) packet);
-                            } catch (ClassCastException ignored) {}
+                            } catch (ClassCastException ignored) {
+                            }
                             return;
                         }
                     }
@@ -303,15 +304,15 @@ public class Velocity extends Module {
         }
 
         Vec3d eyePos = mc.player.getEyePos();
-        
-        float f = pitch * ((float)Math.PI / 180F);
-        float g = -yaw * ((float)Math.PI / 180F);
-        float h = (float)Math.cos(g);
-        float i = (float)Math.sin(g);
-        float j = (float)Math.cos(f);
-        float k = (float)Math.sin(f);
-        Vec3d rotationVec = new Vec3d((double)(i * j), (double)(-k), (double)(h * j));
-        
+
+        float f = pitch * ((float) Math.PI / 180F);
+        float g = -yaw * ((float) Math.PI / 180F);
+        float h = (float) Math.cos(g);
+        float i = (float) Math.sin(g);
+        float j = (float) Math.cos(f);
+        float k = (float) Math.sin(f);
+        Vec3d rotationVec = new Vec3d((double) (i * j), (double) (-k), (double) (h * j));
+
         Vec3d endPos = eyePos.add(rotationVec.multiply(distance));
 
         return mc.world.raycast(new net.minecraft.world.RaycastContext(

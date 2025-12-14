@@ -2,33 +2,24 @@ package dev.sakura.mixin.entity;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.player.MotionEvent;
-import dev.sakura.events.player.UpdateEvent;
 import dev.sakura.events.type.EventType;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * @Author：Gu-Yuemang
- * @Date：12/7/2025 2:11 PM
- */
 @Mixin(ClientPlayerEntity.class)
 public class MixinClientPlayerEntity {
+    @Unique
     private MotionEvent motionEvent;
-
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void onUpdate(CallbackInfo ci) {
-        Sakura.EVENT_BUS.post(new UpdateEvent());
-    }
 
     @Inject(method = "sendMovementPackets", at = @At("HEAD"), cancellable = true)
     private void sendMovementPacketsHeadInject(CallbackInfo ci) {
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
-        motionEvent = new MotionEvent(EventType.PRE, player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(), player.isOnGround());
-        Sakura.EVENT_BUS.post(motionEvent);
+        Sakura.EVENT_BUS.post(motionEvent = new MotionEvent(EventType.PRE, player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(), player.isOnGround()));
         if (motionEvent.isCancelled()) ci.cancel();
     }
 

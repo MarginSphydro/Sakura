@@ -3,13 +3,12 @@ package dev.sakura.mixin.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.sakura.Sakura;
 import dev.sakura.events.render.Render3DEvent;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.render.WorldRenderer;
+import dev.sakura.module.impl.render.NoRender;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.ObjectAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,5 +27,11 @@ public class MixinWorldRenderer {
         Sakura.EVENT_BUS.post(new Render3DEvent(matrixStack, tickCounter.getTickDelta(true)));
 
         RenderSystem.getModelViewStack().popMatrix();
+    }
+
+    @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
+    private void onRenderWeather(FrameGraphBuilder frameGraphBuilder, Vec3d pos, float tickDelta, Fog fog, CallbackInfo ci) {
+        NoRender noRender = Sakura.MODULE.getModule(NoRender.class);
+        if (noRender.noWeather()) ci.cancel();
     }
 }

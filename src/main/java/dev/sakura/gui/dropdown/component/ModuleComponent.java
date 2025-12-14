@@ -29,6 +29,7 @@ public class ModuleComponent implements IComponent {
     private float x, y, width, height = MODULE_HEIGHT;
     private final Module module;
     private boolean opened;
+    private boolean listening = false;
     private final EaseInOutQuad openAnimation = new EaseInOutQuad(250, 1);
     private final EaseOutSine toggleAnimation = new EaseOutSine(300, 1);
     private final EaseOutSine hoverAnimation = new EaseOutSine(200, 1);
@@ -93,29 +94,43 @@ public class ModuleComponent implements IComponent {
 
             NanoVGHelper.drawString(module.getName(), x + 8, y + 23, FontLoader.greycliffRegular(15), 15, Color.WHITE);
 
+            float boxWidth = 36;
+            float boxHeight = 16;
+            float boxX = x + width - boxWidth - 8;
+            float boxY = y + (MODULE_HEIGHT - boxHeight) / 2;
+
             int keyCode = module.getKey();
-            if (keyCode != 0 && keyCode != GLFW.GLFW_KEY_UNKNOWN) {
-                String keyName = getKeyName(keyCode);
-                String modeIndicator = module.getBindMode() == Module.BindMode.Hold ? "H" : "";
-                String displayText = modeIndicator.isEmpty() ? keyName : keyName + " " + modeIndicator;
+            boolean hasKey = keyCode != 0 && keyCode != GLFW.GLFW_KEY_UNKNOWN;
+            boolean isHold = module.getBindMode() == Module.BindMode.Hold;
 
-                float fontSize = 10;
-                int font = FontLoader.greycliffRegular(fontSize);
-                float boxWidth = 36;
-                float boxHeight = 16;
-                float boxX = x + width - boxWidth - 8;
-                float boxY = y + (MODULE_HEIGHT - boxHeight) / 2;
+            Color themeColor = ClickGui.color(0);
+            Color bgColor;
+            Color borderColor;
 
-                Color themeColor = ClickGui.color(0);
-                Color bgColor = ColorUtil.applyOpacity(themeColor, 0.6f);
-                Color borderColor = ColorUtil.applyOpacity(themeColor, 0.9f);
+            if (listening) {
+                bgColor = new Color(255, 100, 100, 180);
+                borderColor = new Color(255, 150, 150, 220);
+            } else {
+                bgColor = ColorUtil.applyOpacity(themeColor, hasKey ? 0.6f : 0.3f);
+                borderColor = ColorUtil.applyOpacity(themeColor, hasKey ? 0.9f : 0.5f);
+            }
 
-                NanoVGHelper.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 4, bgColor);
-                NanoVGHelper.drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 4, 1f, borderColor);
+            NanoVGHelper.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 4, bgColor);
+            NanoVGHelper.drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 4, 1f, borderColor);
 
-                float textWidth = NanoVGHelper.getTextWidth(displayText, font, fontSize);
-                float textX = boxX + (boxWidth - textWidth) / 2;
-                NanoVGHelper.drawString(displayText, textX, boxY + boxHeight - 4, font, fontSize, Color.WHITE);
+            float fontSize = 10;
+            int font = FontLoader.greycliffRegular(fontSize);
+            String displayText = listening ? "..." : (hasKey ? getKeyName(keyCode) : "");
+            float textWidth = NanoVGHelper.getTextWidth(displayText, font, fontSize);
+            float textX = boxX + (boxWidth - textWidth) / 2;
+            float textY = boxY + boxHeight - 4;
+            if (!displayText.isEmpty()) NanoVGHelper.drawString(displayText, textX, textY, font, fontSize, Color.WHITE);
+
+            if (isHold && !listening) {
+                float lineWidth = hasKey ? textWidth + 4 : 16;
+                float lineX = hasKey ? textX - 2 : boxX + (boxWidth - lineWidth) / 2;
+                float lineY = boxY + boxHeight - 3;
+                NanoVGHelper.drawRect(lineX, lineY, lineWidth, 1.5f, Color.WHITE);
             }
         });
 
@@ -136,7 +151,19 @@ public class ModuleComponent implements IComponent {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (isHovered((int) mouseX, (int) mouseY)) {
+        if (isBindBoxHovered((int) mouseX, (int) mouseY)) {
+            if (mouseButton == 0) {
+                listening = !listening;
+                return true;
+            } else if (mouseButton == 2) {
+                module.setBindMode(module.getBindMode() == Module.BindMode.Toggle ? Module.BindMode.Hold : Module.BindMode.Toggle);
+                return true;
+            }
+        } else if (listening) {
+            listening = false;
+        }
+
+        if (isHovered((int) mouseX, (int) mouseY) && !isBindBoxHovered((int) mouseX, (int) mouseY)) {
             switch (mouseButton) {
                 case 0 -> module.toggle();
                 case 1 -> opened = !opened;
@@ -158,6 +185,15 @@ public class ModuleComponent implements IComponent {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (listening) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                module.setKey(0);
+            } else if (keyCode != GLFW.GLFW_KEY_UNKNOWN) {
+                module.setKey(keyCode);
+            }
+            listening = false;
+            return true;
+        }
         if (opened) {
             settings.forEach(setting -> setting.keyPressed(keyCode, scanCode, modifiers));
         }
@@ -181,7 +217,23 @@ public class ModuleComponent implements IComponent {
         return RenderUtils.isHovering(x, y, width, MODULE_HEIGHT, mouseX * scale, mouseY * scale);
     }
 
-    // Getter methods
+    public boolean isBindBoxHovered(int mouseX, int mouseY) {
+        int scale = Sakura.mc.options.getGuiScale().getValue();
+        float boxWidth = 36;
+        float boxHeight = 16;
+        float boxX = x + width - boxWidth - 8;
+        float boxY = y + (MODULE_HEIGHT - boxHeight) / 2;
+        return RenderUtils.isHovering(boxX, boxY, boxWidth, boxHeight, mouseX * scale, mouseY * scale);
+    }
+
+    public boolean isListening() {
+        return listening;
+    }
+
+    public void setListening(boolean listening) {
+        this.listening = listening;
+    }
+
     public float getX() {
         return x;
     }
@@ -222,7 +274,6 @@ public class ModuleComponent implements IComponent {
         return settings;
     }
 
-    // Setter methods
     public void setX(float x) {
         this.x = x;
     }
