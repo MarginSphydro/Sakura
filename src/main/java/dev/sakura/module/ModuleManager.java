@@ -11,6 +11,7 @@ import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.module.impl.client.StringTest;
 import dev.sakura.module.impl.combat.AntiKnockback;
+import dev.sakura.module.impl.combat.AutoPot;
 import dev.sakura.module.impl.combat.Burrow;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.AutoSprint;
@@ -43,6 +44,7 @@ public class ModuleManager {
         // Combat
         addModule(new AntiKnockback());
         addModule(new Burrow());
+        addModule(new AutoPot());
 
 
         // Movement
