@@ -67,7 +67,7 @@ public class ClickGuiScreen extends Screen {
             Shader2DUtils.drawQuadBlur(
                     guiGraphics.getMatrices(),
                     0, 0,
-                    mc.getWindow().getWidth(), mc.getWindow().getHeight(),
+                    mc.getWindow().getScaledWidth(), mc.getWindow().getScaledHeight(),
                     blurStrength,
                     1.0f
             );

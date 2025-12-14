@@ -1,7 +1,6 @@
 package dev.sakura.shaders;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.sakura.Sakura;
 import dev.sakura.gui.dropdown.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -31,37 +30,21 @@ public class Shader2DUtils {
     }
 
     public static void drawQuadBlur(MatrixStack matrices, float x, float y, float width, float height, float blurStrength, float blurOpacity) {
-        if (shouldSkipBlur() || BLUR_PROGRAM == null) return;
-        try {
-            if (BlurProgram.BLUR.getProgram() == null) {
-                BLUR_PROGRAM.use();
-                if (BlurProgram.BLUR.getProgram() == null) return;
-            }
-            BufferBuilder bb = preShaderDraw(matrices, x - 10, y - 10, width + 20, height + 20);
-            BLUR_PROGRAM.setParameters(x, y, width, height, 0f, blurStrength, blurOpacity);
-            BLUR_PROGRAM.use();
-            BufferRenderer.drawWithGlobalProgram(bb.end());
-            endRender();
-        } catch (Exception e) {
-            Sakura.LOGGER.error("Error drawing blur: {}", e.getMessage());
-        }
+        if (shouldSkipBlur()) return;
+        BufferBuilder bb = preShaderDraw(matrices, x - 10, y - 10, width + 20, height + 20);
+        BLUR_PROGRAM.setParameters(x, y, width, height, 0f, blurStrength, blurOpacity);
+        BLUR_PROGRAM.use();
+        BufferRenderer.drawWithGlobalProgram(bb.end());
+        endRender();
     }
 
     public static void drawRoundedBlur(MatrixStack matrices, float x, float y, float width, float height, float radius, Color c1, float blurStrenth, float blurOpacity) {
-        if (shouldSkipBlur() || BLUR_PROGRAM == null) return;
-        try {
-            if (BlurProgram.BLUR.getProgram() == null) {
-                BLUR_PROGRAM.use();
-                if (BlurProgram.BLUR.getProgram() == null) return;
-            }
-            BufferBuilder bb = preShaderDraw(matrices, x - 10, y - 10, width + 20, height + 20);
-            BLUR_PROGRAM.setParameters(x, y, width, height, radius, c1, blurStrenth, blurOpacity);
-            BLUR_PROGRAM.use();
-            BufferRenderer.drawWithGlobalProgram(bb.end());
-            endRender();
-        } catch (Exception e) {
-            Sakura.LOGGER.error("Error drawing rounded blur: {}", e.getMessage());
-        }
+        if (shouldSkipBlur()) return;
+        BufferBuilder bb = preShaderDraw(matrices, x - 10, y - 10, width + 20, height + 20);
+        BLUR_PROGRAM.setParameters(x, y, width, height, radius, c1, blurStrenth, blurOpacity);
+        BLUR_PROGRAM.use();
+        BufferRenderer.drawWithGlobalProgram(bb.end());
+        endRender();
     }
 
     public static BufferBuilder preShaderDraw(MatrixStack matrices, float x, float y, float width, float height) {

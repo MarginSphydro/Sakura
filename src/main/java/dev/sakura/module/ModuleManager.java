@@ -5,6 +5,8 @@ import dev.sakura.events.input.MouseButtonEvent;
 import dev.sakura.events.misc.KeyAction;
 import dev.sakura.events.misc.KeyEvent;
 import dev.sakura.events.render.Render2DEvent;
+import dev.sakura.gui.dropdown.ClickGuiScreen;
+import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.NotificationManager;
 import dev.sakura.manager.SoundManager;
 import dev.sakura.module.impl.client.ClickGui;
@@ -18,14 +20,11 @@ import dev.sakura.module.impl.movement.NoSlow;
 import dev.sakura.module.impl.movement.Speed;
 import dev.sakura.module.impl.movement.Step;
 import dev.sakura.module.impl.render.*;
-import dev.sakura.gui.dropdown.ClickGuiScreen;
-import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.gui.screen.Screen;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.*;
 import java.util.stream.Collectors;
 

@@ -36,7 +36,6 @@ public class NoRender extends Module {
         super("NoRender", Category.Render);
     }
 
-    // Overlay getters
     public boolean noPortalOverlay() {
         return isEnabled() && noPortalOverlay.get();
     }
@@ -77,7 +76,6 @@ public class NoRender extends Module {
         return isEnabled() && noTotemAnimation.get();
     }
 
-    // HUD getters
     public boolean noBossBar() {
         return isEnabled() && noBossBar.get();
     }
@@ -102,7 +100,6 @@ public class NoRender extends Module {
         return isEnabled() && noPotionIcons.get();
     }
 
-    // World getters
     public boolean noWeather() {
         return isEnabled() && noWeather.get();
     }
