@@ -15,11 +15,16 @@ import java.util.List;
  * @Date：2025/11/14 01:18
  */
 public class Module {
+    public enum BindMode {
+        Toggle, Hold
+    }
+
     private final String name;
     private boolean state;
     private final Category category;
     private String suffix = "";
     private int key;
+    private BindMode bindMode = BindMode.Toggle;
     public final List<Value<?>> values = new ArrayList<>();
     private final Animation animations = new DecelerateAnimation(250, 1).setDirection(Direction.BACKWARDS);
 
@@ -131,5 +136,13 @@ public class Module {
 
     public void setKey(int key) {
         this.key = key;
+    }
+
+    public BindMode getBindMode() {
+        return bindMode;
+    }
+
+    public void setBindMode(BindMode bindMode) {
+        this.bindMode = bindMode;
     }
 }

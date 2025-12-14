@@ -66,6 +66,7 @@ public class ConfigManager {
 
             moduleObject.addProperty("enabled", module.isEnabled());
             moduleObject.addProperty("keybind", module.getKey());
+            moduleObject.addProperty("bindMode", module.getBindMode().name());
             moduleObject.addProperty("suffix", module.getSuffix());
 
             if (module instanceof HudModule hudModule) {
@@ -116,6 +117,12 @@ public class ConfigManager {
             }
             if (moduleObject.has("keybind")) {
                 module.setKey(moduleObject.get("keybind").getAsInt());
+            }
+            if (moduleObject.has("bindMode")) {
+                try {
+                    module.setBindMode(Module.BindMode.valueOf(moduleObject.get("bindMode").getAsString()));
+                } catch (IllegalArgumentException ignored) {
+                }
             }
             if (moduleObject.has("suffix")) {
                 module.setSuffix(moduleObject.get("suffix").getAsString());

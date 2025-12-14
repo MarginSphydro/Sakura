@@ -6,7 +6,6 @@ import dev.sakura.gui.IComponent;
 import dev.sakura.gui.dropdown.component.values.*;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;
-import dev.sakura.module.impl.hud.DynamicIslandHud;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -18,6 +17,8 @@ import dev.sakura.utils.render.RenderUtils;
 import dev.sakura.values.Value;
 import dev.sakura.values.impl.*;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.InputUtil;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -91,6 +92,31 @@ public class ModuleComponent implements IComponent {
             }
 
             NanoVGHelper.drawString(module.getName(), x + 8, y + 23, FontLoader.greycliffRegular(15), 15, Color.WHITE);
+
+            int keyCode = module.getKey();
+            if (keyCode != 0 && keyCode != GLFW.GLFW_KEY_UNKNOWN) {
+                String keyName = getKeyName(keyCode);
+                String modeIndicator = module.getBindMode() == Module.BindMode.Hold ? "H" : "";
+                String displayText = modeIndicator.isEmpty() ? keyName : keyName + " " + modeIndicator;
+
+                float fontSize = 10;
+                int font = FontLoader.greycliffRegular(fontSize);
+                float boxWidth = 36;
+                float boxHeight = 16;
+                float boxX = x + width - boxWidth - 8;
+                float boxY = y + (MODULE_HEIGHT - boxHeight) / 2;
+
+                Color themeColor = ClickGui.color(0);
+                Color bgColor = ColorUtil.applyOpacity(themeColor, 0.6f);
+                Color borderColor = ColorUtil.applyOpacity(themeColor, 0.9f);
+
+                NanoVGHelper.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 4, bgColor);
+                NanoVGHelper.drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 4, 1f, borderColor);
+
+                float textWidth = NanoVGHelper.getTextWidth(displayText, font, fontSize);
+                float textX = boxX + (boxWidth - textWidth) / 2;
+                NanoVGHelper.drawString(displayText, textX, boxY + boxHeight - 4, font, fontSize, Color.WHITE);
+            }
         });
 
         float componentYOffset = 36;
@@ -112,10 +138,7 @@ public class ModuleComponent implements IComponent {
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (isHovered((int) mouseX, (int) mouseY)) {
             switch (mouseButton) {
-                case 0 -> {
-                    DynamicIslandHud.onModuleToggle(module, module.isDisabled());
-                    module.toggle();
-                }
+                case 0 -> module.toggle();
                 case 1 -> opened = !opened;
             }
         }
@@ -218,5 +241,21 @@ public class ModuleComponent implements IComponent {
 
     public void setOpened(boolean opened) {
         this.opened = opened;
+    }
+
+    private String getKeyName(int keyCode) {
+        if (keyCode < 0) {
+            return "M" + (-keyCode);
+        }
+        try {
+            InputUtil.Key key = InputUtil.Type.KEYSYM.createFromCode(keyCode);
+            String name = key.getLocalizedText().getString();
+            if (name.length() > 6) {
+                name = name.substring(0, 5) + ".";
+            }
+            return name.toUpperCase();
+        } catch (Exception e) {
+            return "?";
+        }
     }
 }

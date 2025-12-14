@@ -2,7 +2,6 @@ package dev.sakura.utils.player;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.math.MathHelper;
 
 public class MovementUtil {
     private static final MinecraftClient mc = MinecraftClient.getInstance();

@@ -31,7 +31,7 @@ public class MixinSplashTextResourceSupplier {
     @Unique
     private static List<String> getMeteorSplashes() {
         return List.of(
-                "孤月茫掉太大了",
+                "爸爸妈妈我出来了",
                 "Pig god oh yes oh yes",
                 "你怎么这么松啊你",
                 "Oh dream im happy oh yes"

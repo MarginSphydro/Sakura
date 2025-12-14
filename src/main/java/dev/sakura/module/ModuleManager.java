@@ -106,21 +106,35 @@ public class ModuleManager {
     }
 
     @EventHandler
-    public void onKey(KeyEvent e) {
-        if (e.getAction() == KeyAction.Press) {
-            for (Module module : modules.values()) {
-                if (module.getKey() == e.getKey()) {
-                    if (module.isDisabled()) {
-                        NotificationManager.send(module.hashCode(), "§7" + module.getName() + "§a enabled", 3000L);
-                        SoundManager.playSound(SoundManager.ENABLE);
-                    } else {
-                        NotificationManager.send(module.hashCode(), "§7" + module.getName() + "§c disabled", 3000L);
-                        SoundManager.playSound(SoundManager.DISABLE);
-                    }
-                    module.toggle();
+    public void onKey(KeyEvent event) {
+        for (Module module : modules.values()) {
+            if (module.getKey() != event.getKey()) continue;
+
+            boolean isPress = event.getAction() == KeyAction.Press;
+            boolean isRelease = event.getAction() == KeyAction.Release;
+
+            if (module.getBindMode() == Module.BindMode.Toggle && isPress) {
+                sendToggleNotification(module, module.isDisabled());
+                module.toggle();
+            } else if (module.getBindMode() == Module.BindMode.Hold) {
+                if (isPress && module.isDisabled()) {
+                    sendToggleNotification(module, true, " §8(Hold)");
+                    module.setState(true);
+                } else if (isRelease && module.isEnabled()) {
+                    sendToggleNotification(module, false);
+                    module.setState(false);
                 }
             }
         }
+    }
+
+    private void sendToggleNotification(Module module, boolean enabling) {
+        sendToggleNotification(module, enabling, "");
+    }
+
+    private void sendToggleNotification(Module module, boolean enabling, String suffix) {
+        NotificationManager.send(module.hashCode(), "§7" + module.getName() + (enabling ? "§a enabled" : "§c disabled") + suffix, 3000L);
+        SoundManager.playSound(enabling ? SoundManager.ENABLE : SoundManager.DISABLE);
     }
 
     @EventHandler

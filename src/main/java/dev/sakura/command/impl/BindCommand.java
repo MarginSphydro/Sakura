@@ -21,6 +21,37 @@ public class BindCommand extends Command {
     public void buildCommand(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(argument("module", ModuleArgumentType.module())
                         .then(argument("key", StringArgumentType.string())
+                                .then(argument("mode", StringArgumentType.string())
+                                        .executes(c -> {
+                                            Module module = ModuleArgumentType.getModule(c, "module");
+                                            String keyName = StringArgumentType.getString(c, "key");
+                                            String modeName = StringArgumentType.getString(c, "mode");
+
+                                            if (keyName.equalsIgnoreCase("none")) {
+                                                module.setKey(InputUtil.UNKNOWN_KEY.getCode());
+                                                ChatUtils.addChatMessage("Unbound " + module.getName() + ".");
+                                                Sakura.CONFIG.saveDefaultConfig();
+                                                return 1;
+                                            }
+
+                                            InputUtil.Key key = KeyUtils.getKeyFromName(keyName);
+                                            if (key == InputUtil.UNKNOWN_KEY || key.getCode() == GLFW.GLFW_KEY_UNKNOWN) {
+                                                ChatUtils.addChatMessage("Invalid key: " + keyName);
+                                                return 0;
+                                            }
+
+                                            Module.BindMode bindMode = parseBindMode(modeName);
+                                            if (bindMode == null) {
+                                                ChatUtils.addChatMessage("Invalid mode: " + modeName + ". Use 'toggle' or 'hold'.");
+                                                return 0;
+                                            }
+
+                                            module.setKey(key.getCode());
+                                            module.setBindMode(bindMode);
+                                            ChatUtils.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + bindMode.name() + ").");
+                                            Sakura.CONFIG.saveDefaultConfig();
+                                            return 1;
+                                        }))
                                 .executes(c -> {
                                     Module module = ModuleArgumentType.getModule(c, "module");
                                     String keyName = StringArgumentType.getString(c, "key");
@@ -39,17 +70,26 @@ public class BindCommand extends Command {
                                     }
 
                                     module.setKey(key.getCode());
-                                    ChatUtils.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + ".");
+                                    ChatUtils.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + module.getBindMode().name() + ").");
                                     Sakura.CONFIG.saveDefaultConfig();
                                     return 1;
                                 }))
                         .executes(c -> {
-                            ChatUtils.addChatMessage("Usage: .bind <module> <key>");
+                            ChatUtils.addChatMessage("Usage: .bind <module> <key> [toggle/hold]");
                             return 1;
                         }))
                 .executes(c -> {
-                    ChatUtils.addChatMessage("Usage: .bind <module> <key>");
+                    ChatUtils.addChatMessage("Usage: .bind <module> <key> [toggle/hold]");
                     return 1;
                 });
+    }
+
+    private Module.BindMode parseBindMode(String mode) {
+        if (mode.equalsIgnoreCase("toggle") || mode.equalsIgnoreCase("t")) {
+            return Module.BindMode.Toggle;
+        } else if (mode.equalsIgnoreCase("hold") || mode.equalsIgnoreCase("h")) {
+            return Module.BindMode.Hold;
+        }
+        return null;
     }
 }

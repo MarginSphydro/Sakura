@@ -53,7 +53,7 @@ public class Step extends Module {
         if (mc.player == null || mc.world == null) return;
 
         setSuffix(mode.get().name());
-        
+
         if (sneakingPause.get() && mc.player.isSneaking() ||
                 mc.player.isInLava() ||
                 mc.player.isTouchingWater() ||
