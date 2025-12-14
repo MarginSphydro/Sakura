@@ -15,7 +15,7 @@ import java.util.Base64;
 
 @AutoNative
 public class VerificationConnection {
-    private static final String SERVER_HOST = "127.0.0.1";
+    private static final String SERVER_HOST = "116.204.133.141";
     private static final int SERVER_PORT = 54188;
 
     private Socket socket;
