@@ -15,10 +15,7 @@ import dev.sakura.module.impl.client.StringTest;
 import dev.sakura.module.impl.combat.Burrow;
 import dev.sakura.module.impl.combat.Velocity;
 import dev.sakura.module.impl.hud.*;
-import dev.sakura.module.impl.movement.AutoSprint;
-import dev.sakura.module.impl.movement.NoSlow;
-import dev.sakura.module.impl.movement.Speed;
-import dev.sakura.module.impl.movement.Step;
+import dev.sakura.module.impl.movement.*;
 import dev.sakura.module.impl.render.*;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
@@ -48,6 +45,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new Speed());
             manager.tryLoad(() -> new Step());
             manager.tryLoad(() -> new NoSlow());
+            manager.tryLoad(() -> new HoleSnap());
 
             // Render
             manager.tryLoad(() -> new CameraClip());

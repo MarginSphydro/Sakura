@@ -7,9 +7,7 @@ import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.Shader2DUtils;
-import dev.sakura.utils.animations.Animation;
-import dev.sakura.utils.animations.Direction;
-import dev.sakura.utils.animations.impl.DecelerateAnimation;
+import dev.sakura.utils.animations.Easing;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 
@@ -23,16 +21,20 @@ public class DynamicIslandHud extends HudModule {
 
     private static ToggleInfo currentToggle;
     private static ToggleInfo pendingToggle;
-    private final Animation expandAnim = new DecelerateAnimation(300, 1, Direction.BACKWARDS);
-    private long toggleStartTime;
+    private long toggleStartTime = -1L;
 
     private static final float BASE_WIDTH = 130;
     private static final float BASE_HEIGHT = 38;
-    private static final float EXPANDED_WIDTH = 180;
+    private static final float MIN_EXPANDED_WIDTH = 180;
     private static final float EXPANDED_HEIGHT = 50;
     private static final float RADIUS = 20;
-    private static final long DISPLAY_DURATION = 1000;
+    private static final long EXPAND_DURATION = 200L;
+    private static final long DISPLAY_DURATION = 1000L;
+    private static final long COLLAPSE_STAGE1_DURATION = 200L;
+    private static final long COLLAPSE_STAGE2_DURATION = 300L;
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
+
+    private float targetExpandedWidth = MIN_EXPANDED_WIDTH;
 
     public DynamicIslandHud() {
         super("DynamicIsland", 0, 6);
@@ -45,13 +47,39 @@ public class DynamicIslandHud extends HudModule {
     @Override
     public void onRenderContent() {
         processToggle();
-        float progress = expandAnim.getOutput().floatValue();
 
+        if (currentToggle == null && toggleStartTime == -1L) {
+            renderIdle();
+            return;
+        }
+
+        long delta = System.currentTimeMillis() - toggleStartTime;
+        long collapseStart = EXPAND_DURATION + DISPLAY_DURATION;
+        long totalDuration = collapseStart + COLLAPSE_STAGE1_DURATION + COLLAPSE_STAGE2_DURATION;
+
+        if (delta < EXPAND_DURATION) {
+            float progress = (float) Easing.CUBIC_OUT.ease(delta / (float) EXPAND_DURATION);
+            renderExpanding(progress);
+        } else if (delta < collapseStart) {
+            float timeProgress = (delta - EXPAND_DURATION) / (float) DISPLAY_DURATION;
+            renderDisplay(timeProgress);
+        } else if (delta < collapseStart + COLLAPSE_STAGE1_DURATION) {
+            float progress = (float) Easing.CUBIC_OUT.ease((delta - collapseStart) / (float) COLLAPSE_STAGE1_DURATION);
+            renderCollapseStage1(progress);
+        } else if (delta < totalDuration) {
+            float progress = (float) Easing.CUBIC_OUT.ease((delta - collapseStart - COLLAPSE_STAGE1_DURATION) / (float) COLLAPSE_STAGE2_DURATION);
+            renderCollapseStage2(progress);
+        } else {
+            renderIdle();
+        }
+    }
+
+    private void renderIdle() {
         int sw = mc.getWindow().getScaledWidth();
         float s = getScale();
 
-        float w = lerp(BASE_WIDTH, EXPANDED_WIDTH, progress) * s;
-        float h = lerp(BASE_HEIGHT, EXPANDED_HEIGHT, progress) * s;
+        float w = BASE_WIDTH * s;
+        float h = BASE_HEIGHT * s;
         float ix = (sw - w) / 2f;
         float iy = y;
 
@@ -68,32 +96,142 @@ public class DynamicIslandHud extends HudModule {
 
         NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, new Color(0, 0, 0, 90));
 
-        float sideOffset = (w - BASE_WIDTH * s) / 2f + 14 * s;
-        String time = LocalTime.now().format(TIME_FMT);
-        String player = mc.getSession().getUsername();
-        int sideFont = FontLoader.greycliffMedium(16 * s);
-        float sideFontSize = 16 * s;
-        Color sideColor = new Color(200, 200, 200, (int) (255 * (1 - progress * 0.3f)));
+        renderSideInfo(ix, iy, w, h, s, 0f);
 
-        float timeW = NanoVGHelper.getTextWidth(time, sideFont, sideFontSize);
-        NanoVGHelper.drawString(time, ix - sideOffset - timeW, iy + h / 2f + 6 * s, sideFont, sideFontSize, sideColor);
-        NanoVGHelper.drawString(player, ix + w + sideOffset, iy + h / 2f + 6 * s, sideFont, sideFontSize, sideColor);
-
-        if (progress < 0.05f) {
-            renderCollapsed(ix, iy, w, h, s);
-        } else {
-            renderExpanded(ix, iy, w, h, s, progress);
-        }
-    }
-
-    private void renderCollapsed(float ix, float iy, float w, float h, float s) {
         int font = FontLoader.greycliffBold(22 * s);
         float fontSize = 22 * s;
         float tw = NanoVGHelper.getTextWidth(Sakura.MOD_NAME, font, fontSize);
         NanoVGHelper.drawString(Sakura.MOD_NAME, ix + (w - tw) / 2f, iy + h / 2f + 8 * s, font, fontSize, Color.WHITE);
     }
 
-    private void renderExpanded(float ix, float iy, float w, float h, float s, float progress) {
+    private void renderExpanding(float progress) {
+        int sw = mc.getWindow().getScaledWidth();
+        float s = getScale();
+
+        float w = lerp(BASE_WIDTH, targetExpandedWidth, progress) * s;
+        float h = lerp(BASE_HEIGHT, EXPANDED_HEIGHT, progress) * s;
+        float ix = (sw - w) / 2f;
+        float iy = y;
+
+        this.width = w;
+        this.height = h;
+        this.x = ix;
+
+        if (blur.get()) {
+            withRawCoords(() -> Shader2DUtils.drawRoundedBlur(
+                    getMatrix(), ix, iy, w, h, RADIUS * s,
+                    new Color(0, 0, 0, 0), blurStrength.get().floatValue(), progress
+            ));
+        }
+
+        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, new Color(0, 0, 0, 90));
+
+        renderSideInfo(ix, iy, w, h, s, progress);
+
+        if (currentToggle != null) {
+            int textAlpha = (int) (255 * progress);
+            renderContent(ix, iy, w, h, s, textAlpha, 0f);
+        }
+    }
+
+    private void renderDisplay(float timeProgress) {
+        int sw = mc.getWindow().getScaledWidth();
+        float s = getScale();
+
+        float w = targetExpandedWidth * s;
+        float h = EXPANDED_HEIGHT * s;
+        float ix = (sw - w) / 2f;
+        float iy = y;
+
+        this.width = w;
+        this.height = h;
+        this.x = ix;
+
+        if (blur.get()) {
+            withRawCoords(() -> Shader2DUtils.drawRoundedBlur(
+                    getMatrix(), ix, iy, w, h, RADIUS * s,
+                    new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f
+            ));
+        }
+
+        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, new Color(0, 0, 0, 90));
+
+        renderSideInfo(ix, iy, w, h, s, 1f);
+
+        if (currentToggle != null) {
+            renderContent(ix, iy, w, h, s, 255, timeProgress);
+        }
+    }
+
+    private void renderCollapseStage1(float progress) {
+        int sw = mc.getWindow().getScaledWidth();
+        float s = getScale();
+
+        float w = targetExpandedWidth * s;
+        float h = EXPANDED_HEIGHT * s;
+        float ix = (sw - w) / 2f;
+        float iy = y;
+
+        this.width = w;
+        this.height = h;
+        this.x = ix;
+
+        if (blur.get()) {
+            withRawCoords(() -> Shader2DUtils.drawRoundedBlur(
+                    getMatrix(), ix, iy, w, h, RADIUS * s,
+                    new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1f - progress
+            ));
+        }
+
+        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, new Color(0, 0, 0, 90));
+
+        Color themeColor = ClickGui.color(0);
+        float barWidth = w * progress;
+        if (barWidth > 0) {
+            NanoVGHelper.drawRoundRect(ix, iy, barWidth, h, RADIUS * s, themeColor);
+        }
+
+        renderSideInfo(ix, iy, w, h, s, 1f);
+
+        if (currentToggle != null) {
+            int textAlpha = (int) (255 * (1f - progress));
+            renderContent(ix, iy, w, h, s, textAlpha, 1f);
+        }
+    }
+
+    private void renderCollapseStage2(float progress) {
+        int sw = mc.getWindow().getScaledWidth();
+        float s = getScale();
+
+        float w = lerp(targetExpandedWidth, BASE_WIDTH, progress) * s;
+        float h = lerp(EXPANDED_HEIGHT, BASE_HEIGHT, progress) * s;
+        float ix = (sw - w) / 2f;
+        float iy = y;
+
+        this.width = w;
+        this.height = h;
+        this.x = ix;
+
+        Color themeColor = ClickGui.color(0);
+        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, themeColor);
+
+        renderSideInfo(ix, iy, w, h, s, 1f - progress);
+    }
+
+    private void renderSideInfo(float ix, float iy, float w, float h, float s, float expandProgress) {
+        float sideOffset = (w - BASE_WIDTH * s) / 2f + 14 * s;
+        String time = LocalTime.now().format(TIME_FMT);
+        String player = mc.getSession().getUsername();
+        int sideFont = FontLoader.greycliffMedium(16 * s);
+        float sideFontSize = 16 * s;
+        Color sideColor = new Color(200, 200, 200, (int) (255 * (1 - expandProgress * 0.3f)));
+
+        float timeW = NanoVGHelper.getTextWidth(time, sideFont, sideFontSize);
+        NanoVGHelper.drawString(time, ix - sideOffset - timeW, iy + h / 2f + 6 * s, sideFont, sideFontSize, sideColor);
+        NanoVGHelper.drawString(player, ix + w + sideOffset, iy + h / 2f + 6 * s, sideFont, sideFontSize, sideColor);
+    }
+
+    private void renderContent(float ix, float iy, float w, float h, float s, int alpha, float timeProgress) {
         if (currentToggle == null) return;
 
         float padding = 12 * s;
@@ -105,28 +243,24 @@ public class DynamicIslandHud extends HudModule {
         Color iconColor = currentToggle.enabled ? ClickGui.color(0) : new Color(255, 80, 80);
         float iconW = NanoVGHelper.getTextWidth(icon, iconFont, iconSize);
         NanoVGHelper.drawString(icon, ix + padding, contentY + iconSize * 0.35f, iconFont, iconSize,
-                new Color(iconColor.getRed(), iconColor.getGreen(), iconColor.getBlue(), (int) (255 * progress)));
+                new Color(iconColor.getRed(), iconColor.getGreen(), iconColor.getBlue(), alpha));
 
         int textFont = FontLoader.greycliffMedium(14 * s);
         float textSize = 14 * s;
         String status = currentToggle.name + (currentToggle.enabled ? " 已开启" : " 已关闭");
         float textX = ix + padding + iconW + 8 * s;
         NanoVGHelper.drawString(status, textX, contentY + textSize * 0.35f, textFont, textSize,
-                new Color(255, 255, 255, (int) (255 * progress)));
+                new Color(255, 255, 255, alpha));
 
         float barPadding = 16 * s;
         float barHeight = 3 * s;
         float barY = iy + h - barHeight - 6 * s;
         float barMaxWidth = w - barPadding * 2;
-
-        long elapsed = System.currentTimeMillis() - toggleStartTime;
-        float timeProgress = Math.min(1.0f, elapsed / (float) DISPLAY_DURATION);
-
         float barWidth = barMaxWidth * (1.0f - timeProgress);
 
-        NanoVGHelper.drawRoundRect(ix + barPadding, barY, barMaxWidth, barHeight, barHeight / 2, new Color(255, 255, 255, (int) (50 * progress)));
+        NanoVGHelper.drawRoundRect(ix + barPadding, barY, barMaxWidth, barHeight, barHeight / 2, new Color(255, 255, 255, (int) (50 * alpha / 255f)));
         if (barWidth > 0) {
-            NanoVGHelper.drawRoundRect(ix + barPadding, barY, barWidth, barHeight, barHeight / 2, new Color(255, 255, 255, (int) (220 * progress)));
+            NanoVGHelper.drawRoundRect(ix + barPadding, barY, barWidth, barHeight, barHeight / 2, new Color(255, 255, 255, (int) (220 * alpha / 255f)));
         }
     }
 
@@ -135,16 +269,45 @@ public class DynamicIslandHud extends HudModule {
             currentToggle = pendingToggle;
             pendingToggle = null;
             toggleStartTime = System.currentTimeMillis();
-            expandAnim.setDirection(Direction.FORWARDS);
+            calculateExpandedWidth();
             return;
         }
 
-        if (currentToggle != null && System.currentTimeMillis() - toggleStartTime > DISPLAY_DURATION) {
-            expandAnim.setDirection(Direction.BACKWARDS);
-            if (expandAnim.finished(Direction.BACKWARDS)) {
+        if (currentToggle != null && toggleStartTime != -1L) {
+            long delta = System.currentTimeMillis() - toggleStartTime;
+            long totalDuration = EXPAND_DURATION + DISPLAY_DURATION + COLLAPSE_STAGE1_DURATION + COLLAPSE_STAGE2_DURATION;
+
+            if (delta >= totalDuration) {
                 currentToggle = null;
+                toggleStartTime = -1L;
             }
         }
+    }
+
+    private void calculateExpandedWidth() {
+        if (currentToggle == null) {
+            targetExpandedWidth = MIN_EXPANDED_WIDTH;
+            return;
+        }
+
+        float s = getScale();
+        float padding = 12;
+        float iconSize = 24;
+        float textSize = 14;
+        float barPadding = 16;
+
+        int iconFont = FontLoader.icon(iconSize * s);
+        String icon = currentToggle.enabled ? "\uf00c" : "\uf00d";
+        float iconW = NanoVGHelper.getTextWidth(icon, iconFont, iconSize * s) / s;
+
+        int textFont = FontLoader.greycliffMedium(textSize * s);
+        String status = currentToggle.name + (currentToggle.enabled ? " 已开启" : " 已关闭");
+        float textW = NanoVGHelper.getTextWidth(status, textFont, textSize * s) / s;
+
+        float neededWidth = padding + iconW + 8 + textW + padding;
+        neededWidth = Math.max(neededWidth, barPadding * 2 + 50);
+
+        targetExpandedWidth = Math.max(MIN_EXPANDED_WIDTH, neededWidth);
     }
 
     private float lerp(float a, float b, float t) {
