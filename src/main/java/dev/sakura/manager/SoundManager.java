@@ -45,9 +45,8 @@ public class SoundManager {
     }
 
     public static void playSound(SoundEvent sound, float volume, float pitch) {
-        if (mc.player != null) {
-            mc.executeSync(() -> mc.player.playSound(sound, volume, pitch));
-        }
+        if (sound == null || mc.player == null) return;
+        mc.executeSync(() -> mc.player.playSound(sound, volume, pitch));
     }
 
     public static Set<String> getRegisteredSoundFiles() {
