@@ -16,38 +16,35 @@ import dev.sakura.values.impl.NumberValue;
 import java.awt.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class DynamicIslandHud extends HudModule {
     private final BoolValue blur = new BoolValue("Blur", true);
     private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 10.0, 1.0, 20.0, 0.5, blur::get);
 
-    private static final Queue<ToggleInfo> toggleQueue = new LinkedList<>();
-    private ToggleInfo currentToggle;
+    private static ToggleInfo currentToggle;
+    private static ToggleInfo pendingToggle;
     private final Animation expandAnim = new DecelerateAnimation(300, 1, Direction.BACKWARDS);
     private long toggleStartTime;
 
     private static final float BASE_WIDTH = 130;
     private static final float BASE_HEIGHT = 38;
-    private static final float EXPANDED_WIDTH = 200;
-    private static final float EXPANDED_HEIGHT = 80;
+    private static final float EXPANDED_WIDTH = 180;
+    private static final float EXPANDED_HEIGHT = 50;
     private static final float RADIUS = 20;
-    private static final long DISPLAY_DURATION = 1800;
+    private static final long DISPLAY_DURATION = 1000;
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
 
     public DynamicIslandHud() {
         super("DynamicIsland", 0, 6);
     }
 
-    // TODO:还没加
     public static void onModuleToggle(Module module, boolean enabled) {
-        toggleQueue.offer(new ToggleInfo(module.getName(), enabled));
+        pendingToggle = new ToggleInfo(module.getName(), enabled);
     }
 
     @Override
     public void onRenderContent() {
-        processQueue();
+        processToggle();
         float progress = expandAnim.getOutput().floatValue();
 
         int sw = mc.getWindow().getScaledWidth();
@@ -99,33 +96,54 @@ public class DynamicIslandHud extends HudModule {
     private void renderExpanded(float ix, float iy, float w, float h, float s, float progress) {
         if (currentToggle == null) return;
 
-        int iconFont = FontLoader.icon(36 * s);
+        float padding = 12 * s;
+        float iconSize = 24 * s;
+        float contentY = iy + (h - 6 * s) / 2f;
+
+        int iconFont = FontLoader.icon(iconSize);
         String icon = currentToggle.enabled ? "\uf00c" : "\uf00d";
         Color iconColor = currentToggle.enabled ? ClickGui.color(0) : new Color(255, 80, 80);
-        float iconW = NanoVGHelper.getTextWidth(icon, iconFont, 36 * s);
-        NanoVGHelper.drawString(icon, ix + (w - iconW) / 2f, iy + h * 0.45f, iconFont, 36 * s,
+        float iconW = NanoVGHelper.getTextWidth(icon, iconFont, iconSize);
+        NanoVGHelper.drawString(icon, ix + padding, contentY + iconSize * 0.35f, iconFont, iconSize,
                 new Color(iconColor.getRed(), iconColor.getGreen(), iconColor.getBlue(), (int) (255 * progress)));
 
         int textFont = FontLoader.greycliffMedium(14 * s);
         float textSize = 14 * s;
         String status = currentToggle.name + (currentToggle.enabled ? " 已开启" : " 已关闭");
-        float textW = NanoVGHelper.getTextWidth(status, textFont, textSize);
-        NanoVGHelper.drawString(status, ix + (w - textW) / 2f, iy + h * 0.85f, textFont, textSize,
-                new Color(200, 200, 200, (int) (255 * progress)));
+        float textX = ix + padding + iconW + 8 * s;
+        NanoVGHelper.drawString(status, textX, contentY + textSize * 0.35f, textFont, textSize,
+                new Color(255, 255, 255, (int) (255 * progress)));
+
+        float barPadding = 16 * s;
+        float barHeight = 3 * s;
+        float barY = iy + h - barHeight - 6 * s;
+        float barMaxWidth = w - barPadding * 2;
+
+        long elapsed = System.currentTimeMillis() - toggleStartTime;
+        float timeProgress = Math.min(1.0f, elapsed / (float) DISPLAY_DURATION);
+
+        float barWidth = barMaxWidth * (1.0f - timeProgress);
+
+        NanoVGHelper.drawRoundRect(ix + barPadding, barY, barMaxWidth, barHeight, barHeight / 2, new Color(255, 255, 255, (int) (50 * progress)));
+        if (barWidth > 0) {
+            NanoVGHelper.drawRoundRect(ix + barPadding, barY, barWidth, barHeight, barHeight / 2, new Color(255, 255, 255, (int) (220 * progress)));
+        }
     }
 
-    private void processQueue() {
+    private void processToggle() {
+        if (pendingToggle != null) {
+            currentToggle = pendingToggle;
+            pendingToggle = null;
+            toggleStartTime = System.currentTimeMillis();
+            expandAnim.setDirection(Direction.FORWARDS);
+            return;
+        }
+
         if (currentToggle != null && System.currentTimeMillis() - toggleStartTime > DISPLAY_DURATION) {
             expandAnim.setDirection(Direction.BACKWARDS);
             if (expandAnim.finished(Direction.BACKWARDS)) {
                 currentToggle = null;
             }
-        }
-
-        if (currentToggle == null && !toggleQueue.isEmpty()) {
-            currentToggle = toggleQueue.poll();
-            toggleStartTime = System.currentTimeMillis();
-            expandAnim.setDirection(Direction.FORWARDS);
         }
     }
 
