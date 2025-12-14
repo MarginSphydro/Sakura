@@ -108,7 +108,7 @@ public class Sakura {
 
         // 初始化Modules
         MODULE = new ModuleManager();
-        MODULE.Init();
+        MODULE.initModules();
 
         // 初始化ClickGui
         CLICKGUI = new ClickGuiScreen();

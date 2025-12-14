@@ -19,6 +19,7 @@ import java.util.zip.ZipInputStream;
 public class NekoLoader {
     private static NekoLoader INSTANCE;
     private static final Map<String, byte[]> cloudClasses = new HashMap<>();
+    private static final Map<String, String> moduleSuperClasses = new HashMap<>();
     private static boolean injected = false;
 
     public static NekoLoader getInstance() {
@@ -28,18 +29,35 @@ public class NekoLoader {
         return INSTANCE;
     }
 
+    public static Map<String, byte[]> getCloudClasses() {
+        return cloudClasses;
+    }
+
     public void loadFromJar(byte[] jarBytes) {
         try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(jarBytes))) {
             ZipEntry entry;
+            int loadedCount = 0;
+            int skippedCount = 0;
 
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.getName().endsWith(".class")) {
                     byte[] bytes = zis.readAllBytes();
                     String className = new ClassReader(bytes).getClassName().replace("/", ".");
+
+                    // 根据用户组检查是否可以加载该类
+                    if (!UserGroup.canLoadClass(className)) {
+                        skippedCount++;
+                        zis.closeEntry();
+                        continue;
+                    }
+
                     cloudClasses.put(className, bytes);
+                    loadedCount++;
                 }
                 zis.closeEntry();
             }
+
+            System.out.println("[NekoLoader] Loaded " + loadedCount + " classes, skipped " + skippedCount + " (group restricted)");
         } catch (Exception e) {
             System.err.println("[NekoLoader] Failed to read JAR: " + e.getMessage());
             e.printStackTrace();

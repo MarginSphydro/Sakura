@@ -87,6 +87,22 @@ public class VerificationManager {
         return failReason;
     }
 
+    public int getUserGroup() {
+        return UserGroup.getGroup();
+    }
+
+    public String getUserGroupName() {
+        return UserGroup.getCurrentGroupName();
+    }
+
+    public boolean isVIP() {
+        return UserGroup.isVIP();
+    }
+
+    public boolean isAdmin() {
+        return UserGroup.isAdmin();
+    }
+
     public void setVerified(boolean verified) {
         this.verified = verified;
     }

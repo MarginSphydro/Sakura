@@ -26,6 +26,7 @@ import net.minecraft.client.gui.screen.Screen;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ModuleManager {
@@ -35,41 +36,57 @@ public class ModuleManager {
         modules = new LinkedHashMap<>();
     }
 
-    public void Init() {
-        Sakura.EVENT_BUS.subscribe(this);
+    @SuppressWarnings("Convert2MethodRef")
+    private static class ManualLoader {
+        static void load(ModuleManager manager) {
+            // Combat
+            manager.tryLoad(() -> new Burrow());
+            manager.tryLoad(() -> new Velocity());
 
-        // Combat
-        addModule(new Burrow());
-        addModule(new Velocity());
+            // Movement
+            manager.tryLoad(() -> new AutoSprint());
+            manager.tryLoad(() -> new Speed());
+            manager.tryLoad(() -> new Step());
+            manager.tryLoad(() -> new NoSlow());
 
+            // Render
+            manager.tryLoad(() -> new CameraClip());
+            manager.tryLoad(() -> new Fullbright());
+            manager.tryLoad(() -> new NoRender());
+            manager.tryLoad(() -> new SwingAnimation());
+            manager.tryLoad(() -> new ViewModel());
 
-        // Movement
-        addModule(new AutoSprint());
-        addModule(new Speed());
-        addModule(new Step());
-        addModule(new NoSlow());
+            // Client
+            manager.tryLoad(() -> new ClickGui());
+            manager.tryLoad(() -> new HudEditor());
+            manager.tryLoad(() -> new StringTest());
 
-        // Render
-        addModule(new CameraClip());
-        addModule(new Fullbright());
-        addModule(new NoRender());
-        addModule(new SwingAnimation());
-        addModule(new ViewModel());
-
-        // Client
-        addModule(new ClickGui());
-        addModule(new HudEditor());
-        addModule(new StringTest());
-
-        // HUD
-        addModule(new FPSHud());
-        addModule(new NotificationHud());
-        addModule(new WatermarkHud());
-        addModule(new MSHud());
-        addModule(new DynamicIslandHud());
+            // HUD
+            manager.tryLoad(() -> new FPSHud());
+            manager.tryLoad(() -> new NotificationHud());
+            manager.tryLoad(() -> new WatermarkHud());
+            manager.tryLoad(() -> new MSHud());
+            manager.tryLoad(() -> new DynamicIslandHud());
+        }
     }
 
-    public void addModule(Module module) {
+    public void initModules() {
+        Sakura.EVENT_BUS.subscribe(this);
+
+        try {
+            ManualLoader.load(this);
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private void tryLoad(Supplier<Module> supplier) {
+        try {
+            addModule(supplier.get());
+        } catch (NoClassDefFoundError | Exception ignored) {
+        }
+    }
+
+    private void addModule(Module module) {
         for (final Field field : module.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
@@ -102,6 +119,7 @@ public class ModuleManager {
     public List<Module> getModsByCategory(Category m) {
         return modules.values().stream()
                 .filter(module -> module.getCategory() == m)
+                .sorted(Comparator.comparing(Module::getName))
                 .collect(Collectors.toList());
     }
 

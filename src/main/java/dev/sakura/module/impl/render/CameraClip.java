@@ -50,7 +50,14 @@ public class CameraClip extends Module {
         Perspective currentPerspective = mc.options.getPerspective();
 
         if (lastPerspective != null && lastPerspective != currentPerspective) {
-            animation = (currentPerspective == Perspective.FIRST_PERSON) ? 1f : 0f;
+            if (currentPerspective == Perspective.FIRST_PERSON) {
+                animation = 0f;
+                cameraPos = null;
+                smoothYaw = 0f;
+                smoothPitch = 0f;
+            } else {
+                animation = 0f;
+            }
         }
 
         lastPerspective = currentPerspective;
@@ -82,22 +89,23 @@ public class CameraClip extends Module {
         return isEnabled() && mode.is(Mode.ACTION);
     }
 
-    private boolean firstPerson() {
-        return mc.options != null && mc.options.getPerspective() == Perspective.FIRST_PERSON;
+    private boolean isFirstPerson() {
+        return mc.options.getPerspective() == Perspective.FIRST_PERSON;
     }
 
     public Vec3d getCameraPos() {
-        if (firstPerson() && mc.player != null) {
-            return new Vec3d(
-                    mc.player.getX(),
-                    mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()),
-                    mc.player.getZ()
-            );
+        if (isFirstPerson()) {
+            return new Vec3d(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ());
         }
         return cameraPos;
     }
 
     public void update(Vec3d playerPos) {
+        if (isFirstPerson()) {
+            cameraPos = null;
+            return;
+        }
+
         if (cameraPos == null) {
             cameraPos = mc.player.getEyePos();
             smoothYaw = mc.player.getYaw();
@@ -149,7 +157,7 @@ public class CameraClip extends Module {
     }
 
     public boolean shouldModifyCamera() {
-        return isEnabled() && mode.is(Mode.ACTION) && (!disableFirstPers.getValue() || !firstPerson());
+        return isEnabled() && mode.is(Mode.ACTION) && !isFirstPerson();
     }
 
     public int getKey() {

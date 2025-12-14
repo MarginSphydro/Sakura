@@ -87,15 +87,26 @@ public class VerificationConnection {
 
             // 处理登录结果
             if (response.startsWith("[PASS]")) {
-                // 解析会话令牌和时间戳: [PASS]<token>|<timestamp>
                 String tokenData = response.substring(6);
                 String[] parts = tokenData.split("\\|");
-                if (parts.length != 2) {
+                if (parts.length < 2) {
                     return "[ERROR] 别想破解(TO)";
                 }
 
                 byte[] sessionToken = Base64.getDecoder().decode(parts[0]);
                 long timestamp = Long.parseLong(parts[1]);
+
+                // 解析用户组和签名
+                if (parts.length < 6) {
+                    return "[ERROR] 别想破解(SG)";
+                }
+                int userGroup = Integer.parseInt(parts[2]);
+                String groupSignature = parts[3];
+                String restrictedClasses = parts[4];
+                String restrictionsSignature = parts[5];
+
+                UserGroup.setGroup(userGroup, groupSignature);
+                UserGroup.setRestrictedClasses(restrictedClasses, restrictionsSignature, userGroup);
 
                 // 验证时间戳（5分钟内有效，防止重放攻击）
                 long currentTime = System.currentTimeMillis();
