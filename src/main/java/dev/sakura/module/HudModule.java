@@ -13,9 +13,6 @@ import org.lwjgl.nanovg.NanoVG;
 
 import java.awt.*;
 
-/**
- * 子类在onRender中直接使用x, y, width, height进行绘制
- */
 public abstract class HudModule extends Module {
     @Expose
     @SerializedName("hudX")
@@ -42,8 +39,13 @@ public abstract class HudModule extends Module {
 
     protected final MinecraftClient mc;
 
+    private final float defaultX;
+    private final float defaultY;
+
     public HudModule(String name, float defaultX, float defaultY) {
         super(name, Category.HUD);
+        this.defaultX = defaultX;
+        this.defaultY = defaultY;
         this.x = defaultX;
         this.y = defaultY;
         this.relativeX = 0;
@@ -80,7 +82,6 @@ public abstract class HudModule extends Module {
 
         onRender(context);
 
-        // 绘制编辑器中的背景框
         float scale = (float) mc.getWindow().getScaleFactor();
         NanoVGRenderer.INSTANCE.draw(canvas -> {
             Color boxColor = dragging ? new Color(100, 100, 255, 80) : new Color(0, 0, 0, 50);
@@ -88,9 +89,6 @@ public abstract class HudModule extends Module {
         });
     }
 
-    /**
-     * 正常游戏中渲染
-     */
     public void renderInGame(DrawContext context) {
         HudEditor hudEditor = Sakura.MODULE.getModule(HudEditor.class);
         if (hudEditor != null && hudEditor.isEnabled()) {
@@ -134,15 +132,21 @@ public abstract class HudModule extends Module {
         return currentContext.getMatrices();
     }
 
-    /**
-     * 在分辨率变化时调整位置
-     */
     public void onResolutionChanged() {
         int gameWidth = mc.getWindow().getScaledWidth();
         int gameHeight = mc.getWindow().getScaledHeight();
 
         x = Math.max(0, Math.min(gameWidth * relativeX, gameWidth - width));
         y = Math.max(0, Math.min(gameHeight * relativeY, gameHeight - height));
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        this.x = defaultX;
+        this.y = defaultY;
+        this.relativeX = 0;
+        this.relativeY = 0;
     }
 
     public boolean mouseClicked(float mouseX, float mouseY, int button) {

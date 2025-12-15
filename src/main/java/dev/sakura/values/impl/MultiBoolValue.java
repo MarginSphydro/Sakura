@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * @Author：Guyuemang
- * @Date：2025/6/1 00:47
- */
 public class MultiBoolValue extends Value {
     public List<BoolValue> options;
     public int index;
@@ -59,5 +55,12 @@ public class MultiBoolValue extends Value {
 
     public List<BoolValue> getValues() {
         return this.options;
+    }
+
+    @Override
+    public void reset() {
+        for (BoolValue option : options) {
+            option.reset();
+        }
     }
 }

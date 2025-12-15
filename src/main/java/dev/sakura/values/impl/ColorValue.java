@@ -13,10 +13,12 @@ public class ColorValue extends Value<Color> {
     private boolean allowAlpha = false;
     private boolean rainbow = false;
     public boolean expand;
+    private final Color defaultColor;
 
     public ColorValue(String name, Color defaultValue, boolean allowAlpha, Dependency dependency) {
         super(name, dependency);
         this.allowAlpha = allowAlpha;
+        this.defaultColor = defaultValue;
         set(defaultValue);
     }
 
@@ -90,5 +92,13 @@ public class ColorValue extends Value<Color> {
 
     public void setExpand(boolean expand) {
         this.expand = expand;
+    }
+
+    @Override
+    public void reset() {
+        if (defaultColor != null) {
+            set(defaultColor);
+            rainbow = false;
+        }
     }
 }
