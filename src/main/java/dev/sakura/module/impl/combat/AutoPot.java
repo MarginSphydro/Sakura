@@ -46,7 +46,7 @@ public class AutoPot extends Module {
             () -> page.is(Page.General));
 
     private final BoolValue speed = new BoolValue("Speed", true, () -> page.is(Page.Effects));
-    private final BoolValue resistance = new BoolValue("Resistance", true, () -> page.is(Page.Effects));
+    private final BoolValue resistance = new BoolValue("Turtlemaster", true, () -> page.is(Page.Effects));
     private final BoolValue slowFalling = new BoolValue("SlowFalling", true, () -> page.is(Page.Effects));
     private final BoolValue strength = new BoolValue("Strength", true, () -> page.is(Page.Effects));
     private final BoolValue fireResistance = new BoolValue("FireResistance", false, () -> page.is(Page.Effects));

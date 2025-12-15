@@ -12,6 +12,7 @@ import dev.sakura.manager.SoundManager;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.module.impl.client.StringTest;
+import dev.sakura.module.impl.combat.AutoPot;
 import dev.sakura.module.impl.combat.Burrow;
 import dev.sakura.module.impl.combat.Velocity;
 import dev.sakura.module.impl.hud.*;
@@ -39,6 +40,8 @@ public class ModuleManager {
             // Combat
             manager.tryLoad(() -> new Burrow());
             manager.tryLoad(() -> new Velocity());
+            manager.tryLoad(() -> new AutoPot());
+
 
             // Movement
             manager.tryLoad(() -> new AutoSprint());
