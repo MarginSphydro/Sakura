@@ -1,9 +1,5 @@
 package dev.sakura.verify;
 
-import dev.undefinedteam.obfuscator.annotations.AutoNative;
-import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
-import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +13,7 @@ import java.util.Set;
  * 等级: 1=普通, 2=高级, 3=VIP, 4=管理员
  */
 
-@AutoNative
+//@AutoNative
 public class UserGroup {
     private static int currentGroup = 1;
     private static int groupMirror = 1;           // 镜像值
@@ -31,7 +27,7 @@ public class UserGroup {
     // 服务端发送的限制类列表
     private static final Set<String> RESTRICTED_CLASSES = new HashSet<>();
 
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public static void setGroup(int group, String signature) {
         if (!verifySignature(group, signature)) {
             triggerSecurityViolation();
@@ -46,7 +42,7 @@ public class UserGroup {
     /**
      * 获取用户组
      */
-    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
+    //@NativeVirtualization(VirtualMachine.TIGER_BLACK)
     public static int getGroup() {
         if (!checkIntegrity()) {
             triggerSecurityViolation();
@@ -58,7 +54,7 @@ public class UserGroup {
     /**
      * 验证服务端签名
      */
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     private static boolean verifySignature(int group, String signature) {
         if (signature == null || signature.isEmpty()) {
             return false;
@@ -87,7 +83,7 @@ public class UserGroup {
         }
     }
 
-    @NativeVirtualization(VirtualMachine.TIGER_RED)
+    //@NativeVirtualization(VirtualMachine.TIGER_RED)
     private static boolean checkIntegrity() {
         if (currentGroup != groupMirror) {
             return false;
@@ -125,7 +121,7 @@ public class UserGroup {
         return getGroupName(currentGroup);
     }
 
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public static void setRestrictedClasses(String classNames, String signature, int group) {
         if (!verifyRestrictionsSignature(group, classNames, signature)) {
             triggerSecurityViolation();
@@ -162,7 +158,7 @@ public class UserGroup {
      * @param className 类名
      * @return true=可以加载, false=权限不足
      */
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public static boolean canLoadClass(String className) {
         return !RESTRICTED_CLASSES.contains(className);
     }

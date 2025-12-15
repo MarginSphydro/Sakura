@@ -1,9 +1,5 @@
 package dev.sakura.verify;
 
-import dev.undefinedteam.obfuscator.annotations.AutoNative;
-import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
-import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 import javax.crypto.Mac;
@@ -13,7 +9,7 @@ import java.security.*;
 import java.util.Arrays;
 import java.util.Base64;
 
-@AutoNative
+//@AutoNative
 public class DHEncryptionHelper {
     private static final String ENCRYPTION_ALGORITHM = "AES";
 
@@ -81,7 +77,7 @@ public class DHEncryptionHelper {
      * 使用会话令牌解密数据 (AES-GCM)
      * 输入格式: IV(12) + 加密数据 + HMAC(32)
      */
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public byte[] decryptWithSession(byte[] encryptedData, byte[] sessionToken, long timestamp) {
         try {
             if (encryptedData.length < 12 + 32) {
@@ -117,7 +113,7 @@ public class DHEncryptionHelper {
     /**
      * 生成会话密钥: SHA256(sharedKey + sessionToken + timestamp)
      */
-    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
+    //@NativeVirtualization(VirtualMachine.TIGER_BLACK)
     private byte[] deriveSessionKey(byte[] sessionToken, long timestamp) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(sharedKey);
@@ -139,7 +135,7 @@ public class DHEncryptionHelper {
     /**
      * 计算挑战响应
      */
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public String computeChallengeResponse(byte[] challenge, String hwid, String envFingerprint) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -157,7 +153,7 @@ public class DHEncryptionHelper {
     /**
      * 使用三重密钥解密（DH密钥 + 会话令牌 + 挑战响应）
      */
-    @NativeVirtualization(VirtualMachine.EAGLE_BLACK)
+    //@NativeVirtualization(VirtualMachine.EAGLE_BLACK)
     public byte[] decryptWithChallenge(byte[] encryptedData, byte[] sessionToken, long timestamp, String challengeResponse) {
         try {
             if (encryptedData.length < 12 + 32) {

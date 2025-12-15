@@ -1,8 +1,5 @@
 package dev.sakura.verify;
 
-import dev.undefinedteam.obfuscator.annotations.AutoNative;
-import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
-import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.nanovg.NVGColor;
@@ -495,8 +492,8 @@ public class LoginWindow {
         }
     }
 
-    @AutoNative
-    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
+    //@AutoNative
+    //@NativeVirtualization(VirtualMachine.TIGER_BLACK)
     private String encrypt(String data) throws Exception {
         SecretKeySpec key = new SecretKeySpec(ENCRYPTION_KEY, "AES");
         Cipher cipher = Cipher.getInstance("AES");
@@ -505,8 +502,8 @@ public class LoginWindow {
         return Base64.getEncoder().encodeToString(encrypted);
     }
 
-    @AutoNative
-    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
+    //@AutoNative
+    //@NativeVirtualization(VirtualMachine.TIGER_BLACK)
     private String decrypt(String encryptedData) throws Exception {
         SecretKeySpec key = new SecretKeySpec(ENCRYPTION_KEY, "AES");
         Cipher cipher = Cipher.getInstance("AES");

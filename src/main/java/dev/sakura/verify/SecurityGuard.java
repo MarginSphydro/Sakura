@@ -1,9 +1,5 @@
 package dev.sakura.verify;
 
-import dev.undefinedteam.obfuscator.annotations.AutoNative;
-import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
-import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.security.MessageDigest;
@@ -14,7 +10,7 @@ import java.util.List;
  * 安全守卫：这个类经过我跟Claude的精密打造最终成功产出
  */
 
-@AutoNative
+//@AutoNative
 public class SecurityGuard {
     private static volatile boolean securityCheckPassed = false;
     private static volatile long lastCheckTime = 0;
@@ -26,7 +22,7 @@ public class SecurityGuard {
     /**
      * 执行全面安全检查
      */
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public static boolean performSecurityCheck() {
         try {
             // 检测调试器
@@ -77,7 +73,7 @@ public class SecurityGuard {
     /**
      * 检测调试器
      */
-    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
+    //@NativeVirtualization(VirtualMachine.TIGER_BLACK)
     private static boolean isDebuggerAttached() {
         // 方法1：检查 JVM 参数
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
@@ -187,7 +183,7 @@ public class SecurityGuard {
     /**
      * 计算挑战响应（用于服务器验证）
      */
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public static String computeChallengeResponse(byte[] challenge, String hwid, byte[] sharedSecret) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -206,7 +202,7 @@ public class SecurityGuard {
     /**
      * 获取环境指纹（用于绑定到特定环境）
      */
-    @NativeVirtualization(VirtualMachine.TIGER_RED)
+    //@NativeVirtualization(VirtualMachine.TIGER_RED)
     public static String getEnvironmentFingerprint() {
         StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("os.name", ""));

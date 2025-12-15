@@ -16,10 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * @Author：Gu-Yuemang
- * @Date：12/7/2025 2:17 PM
- */
 @Mixin(ClientConnection.class)
 public class MixinClientConnection {
     @Shadow

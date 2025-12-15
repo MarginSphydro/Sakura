@@ -3,7 +3,6 @@ package dev.sakura;
 import dev.sakura.verify.LoginWindow;
 import dev.sakura.verify.SecurityGuard;
 import dev.sakura.verify.VerificationManager;
-import dev.undefinedteam.obfuscator.annotations.AutoNative;
 import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
 import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
 import org.objectweb.asm.tree.ClassNode;
@@ -13,7 +12,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
-@AutoNative
+//@AutoNative
 public class SakuraMixinPlugin implements IMixinConfigPlugin {
     // 使用混淆的状态值代替简单的 boolean
     private static volatile int loadState = 0;

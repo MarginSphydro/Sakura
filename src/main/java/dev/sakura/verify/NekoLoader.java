@@ -19,7 +19,6 @@ import java.util.zip.ZipInputStream;
 public class NekoLoader {
     private static NekoLoader INSTANCE;
     private static final Map<String, byte[]> cloudClasses = new HashMap<>();
-    private static final Map<String, String> moduleSuperClasses = new HashMap<>();
     private static boolean injected = false;
 
     public static NekoLoader getInstance() {
@@ -36,8 +35,6 @@ public class NekoLoader {
     public void loadFromJar(byte[] jarBytes) {
         try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(jarBytes))) {
             ZipEntry entry;
-            int loadedCount = 0;
-            int skippedCount = 0;
 
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.getName().endsWith(".class")) {
@@ -46,21 +43,16 @@ public class NekoLoader {
 
                     // 根据用户组检查是否可以加载该类
                     if (!UserGroup.canLoadClass(className)) {
-                        skippedCount++;
                         zis.closeEntry();
                         continue;
                     }
 
                     cloudClasses.put(className, bytes);
-                    loadedCount++;
                 }
                 zis.closeEntry();
             }
-
-            System.out.println("[NekoLoader] Loaded " + loadedCount + " classes, skipped " + skippedCount + " (group restricted)");
         } catch (Exception e) {
             System.err.println("[NekoLoader] Failed to read JAR: " + e.getMessage());
-            e.printStackTrace();
             return;
         }
 
@@ -71,7 +63,6 @@ public class NekoLoader {
         }
     }
 
-    @SuppressWarnings("all")
     private void injectIntoKnot() {
         try {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -161,11 +152,7 @@ public class NekoLoader {
 
                 pending = failed;
             }
-
-
-        } catch (Exception e) {
-            System.err.println("[NekoLoader] Failed to inject: " + e.getMessage());
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -183,9 +170,7 @@ public class NekoLoader {
                 AgentLoader.registerCloudClass(entry.getKey(), entry.getValue());
             }
             AgentLoader.loadAgent();
-        } catch (Exception e) {
-            System.err.println("[NekoLoader] Failed to load agent: " + e.getMessage());
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 

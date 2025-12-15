@@ -1,10 +1,6 @@
 package dev.sakura.verify;
 
-import dev.undefinedteam.obfuscator.annotations.AutoNative;
-import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
-import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
-
-@AutoNative
+//@AutoNative
 public class VerificationManager {
     private static VerificationManager INSTANCE;
 
@@ -20,7 +16,7 @@ public class VerificationManager {
         return INSTANCE;
     }
 
-    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
+    //@NativeVirtualization(VirtualMachine.TIGER_BLACK)
     public boolean verify(String username, String password) {
         VerificationConnection connection = new VerificationConnection();
 
@@ -115,7 +111,7 @@ public class VerificationManager {
      * 检查是否有有效的 JAR 数据
      * 这是验证成功的唯一可靠标志
      */
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public boolean hasValidJarData() {
         // 必须有数据
         if (receivedJarBytes == null || receivedJarBytes.length < 100) {

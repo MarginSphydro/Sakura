@@ -1,9 +1,5 @@
 package dev.sakura.verify;
 
-import dev.undefinedteam.obfuscator.annotations.AutoNative;
-import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
-import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,9 +9,9 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-@AutoNative
+//@AutoNative
 public class VerificationConnection {
-    private static final String SERVER_HOST = "116.204.133.141";
+    private static final String SERVER_HOST = "127.0.0.1"/*"116.204.133.141"*/;
     private static final int SERVER_PORT = 54188;
 
     private Socket socket;
@@ -37,6 +33,7 @@ public class VerificationConnection {
             performHandshake();
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -55,7 +52,7 @@ public class VerificationConnection {
     // 存储挑战响应，用于后续解密
     private String challengeResponse = null;
 
-    @NativeVirtualization(VirtualMachine.SHARK_BLACK)
+    //@NativeVirtualization(VirtualMachine.SHARK_BLACK)
     public String login(String username, String password) {
         try {
             // 先执行安全检查
@@ -90,7 +87,7 @@ public class VerificationConnection {
                 String tokenData = response.substring(6);
                 String[] parts = tokenData.split("\\|");
                 if (parts.length < 2) {
-                    return "[ERROR] 别想破解(TO)";
+                    return "[ERROR] 你太牛逼了(TO)";
                 }
 
                 byte[] sessionToken = Base64.getDecoder().decode(parts[0]);
@@ -98,7 +95,7 @@ public class VerificationConnection {
 
                 // 解析用户组和签名
                 if (parts.length < 6) {
-                    return "[ERROR] 别想破解(SG)";
+                    return "[ERROR] 你太牛逼了(SG)";
                 }
                 int userGroup = Integer.parseInt(parts[2]);
                 String groupSignature = parts[3];
@@ -111,12 +108,12 @@ public class VerificationConnection {
                 // 验证时间戳（5分钟内有效，防止重放攻击）
                 long currentTime = System.currentTimeMillis();
                 if (Math.abs(currentTime - timestamp) > 5 * 60 * 1000) {
-                    return "[ERROR] 别想破解(TI)";
+                    return "[ERROR] 你太牛逼了(TI)";
                 }
 
                 // 再次安全检查
                 if (!SecurityGuard.quickCheck()) {
-                    return "[ERROR] 别想破解(SC)";
+                    return "[ERROR] 你太牛逼了(SC)";
                 }
 
                 System.out.println("[Verify] Challenge verified, receiving encrypted JAR...");
@@ -126,16 +123,13 @@ public class VerificationConnection {
                     // 使用三重密钥解密 JAR（需要正确的挑战响应）
                     try {
                         if (challengeResponse == null) {
-                            return "[ERROR] 别想破解(CR)";
+                            return "[ERROR] 你太牛逼了(CR)";
                         }
                         byte[] jarBytes = dhHelper.decryptWithChallenge(encryptedJar, sessionToken, timestamp, challengeResponse);
                         VerificationManager.getInstance().setReceivedJarBytes(jarBytes);
                     } catch (SecurityException e) {
-                        System.err.println("[Verify] JAR decryption failed: " + e.getMessage());
-                        return "[ERROR] 别想破解(DE)";
+                        return "[ERROR] 你太牛逼了(DE)";
                     }
-                } else {
-                    System.err.println("[Verify] No JAR bytes received");
                 }
 
                 return "[PASS]";
@@ -149,11 +143,9 @@ public class VerificationConnection {
 
     private byte[] receiveJarBytes() {
         try {
-            // Receive encrypted JAR data
             byte[] encrypted = receiveRaw();
             return handshakeComplete ? dhHelper.decrypt(encrypted) : encrypted;
         } catch (Exception e) {
-            System.err.println("[Verify] Failed to receive JAR: " + e.getMessage());
             return null;
         }
     }
