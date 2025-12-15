@@ -5,11 +5,11 @@ import dev.sakura.values.Value;
 public class EnumValue<E extends Enum<E>> extends Value<E> {
     private final E[] modes;
     private final Class<E> enumClass;
-    public boolean expand;
 
     public EnumValue(String name, E defaultValue, Class<E> enumClass, Dependency dependency) {
         super(name, dependency);
         this.value = defaultValue;
+        this.defaultValue = defaultValue;
         this.enumClass = enumClass;
         this.modes = enumClass.getEnumConstants();
     }

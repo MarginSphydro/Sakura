@@ -286,10 +286,8 @@ public class ConfigManager {
                 if (colorObject.has("alpha")) colorValue.setAlpha(colorObject.get("alpha").getAsFloat());
                 if (colorObject.has("rainbow")) colorValue.setRainbow(colorObject.get("rainbow").getAsBoolean());
                 if (colorObject.has("expand")) colorValue.setExpand(colorObject.get("expand").getAsBoolean());
-            } else if (value instanceof MultiBoolValue && valueElement.isJsonObject()) {
+            } else if (value instanceof MultiBoolValue multiBoolValue && valueElement.isJsonObject()) {
                 JsonObject multiObject = valueElement.getAsJsonObject();
-                MultiBoolValue multiBoolValue = (MultiBoolValue) value;
-
                 for (String optionName : multiObject.keySet()) {
                     multiBoolValue.set(optionName, multiObject.get(optionName).getAsBoolean());
                 }

@@ -138,10 +138,10 @@ public class ModuleManager {
             if (module.getKey() != event.getKey()) continue;
 
             if (module.getBindMode() == Module.BindMode.Toggle && isPress) {
-                if (module.isDisabled()) hasEnabling = true;
+                if (!module.isEnabled()) hasEnabling = true;
                 affectedModules.add(module);
             } else if (module.getBindMode() == Module.BindMode.Hold) {
-                if (isPress && module.isDisabled()) {
+                if (isPress && !module.isEnabled()) {
                     hasEnabling = true;
                     affectedModules.add(module);
                 } else if (isRelease && module.isEnabled()) {
@@ -152,11 +152,11 @@ public class ModuleManager {
 
         for (Module module : affectedModules) {
             if (module.getBindMode() == Module.BindMode.Toggle) {
-                boolean enabling = module.isDisabled();
+                boolean enabling = !module.isEnabled();
                 sendToggleNotification(module, enabling, "", false);
                 module.toggle();
             } else if (module.getBindMode() == Module.BindMode.Hold) {
-                if (isPress && module.isDisabled()) {
+                if (isPress && !module.isEnabled()) {
                     sendToggleNotification(module, true, " §8(Hold)", false);
                     module.setState(true);
                 } else if (isRelease && module.isEnabled()) {

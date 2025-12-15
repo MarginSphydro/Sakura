@@ -8,24 +8,28 @@ public class StringValue extends Value<String> {
     public StringValue(String name, String defaultValue, Dependency dependency) {
         super(name, dependency);
         this.value = defaultValue;
+        this.defaultValue = defaultValue;
         this.onlyNumber = false;
     }
 
     public StringValue(String name, String defaultValue) {
         super(name, () -> true);
         this.value = defaultValue;
+        this.defaultValue = defaultValue;
         this.onlyNumber = false;
     }
 
     public StringValue(String name, String defaultValue, boolean onlyNumber, Dependency dependency) {
         super(name, dependency);
         this.value = defaultValue;
+        this.defaultValue = defaultValue;
         this.onlyNumber = onlyNumber;
     }
 
     public StringValue(String name, String defaultValue, boolean onlyNumber) {
         super(name, () -> true);
         this.value = defaultValue;
+        this.defaultValue = defaultValue;
         this.onlyNumber = onlyNumber;
     }
 

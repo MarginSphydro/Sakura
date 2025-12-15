@@ -11,10 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @Author：Gu-Yuemang
- * @Date：2025/11/14 01:18
- */
 public class Module {
     public enum BindMode {
         Toggle, Hold
@@ -56,34 +52,8 @@ public class Module {
         return mod != null && mod.isEnabled();
     }
 
-    public <M extends Module> boolean isDisabled(Class<M> module) {
-        Module mod = Sakura.MODULE.getModule(module);
-        return mod.isDisabled();
-    }
-
     public void setSuffix(String tag) {
         if (tag != null && !tag.isEmpty()) {
-            //ModuleList arrayListModule = Alisa.moduleManager.getModule(ModuleList.class);
-
-//            if (arrayListModule != null) {
-//                String tagStyle = arrayListModule.tags.get().toLowerCase();
-//                switch (tagStyle) {
-//                    case "simple":
-//                        this.suffix = " " + tag + "";
-//                        break;
-//                    case "dash":
-//                        this.suffix = " - " + tag + "";
-//                        break;
-//                    case "bracket":
-//                        this.suffix = " [" + tag + "]" + "";
-//                        break;
-//                    default:
-//                        this.suffix = "";
-//                }
-//            } else {
-//                this.suffix = " " + tag;
-//            }
-
             this.suffix = " " + tag;
         } else {
             this.suffix = "";
@@ -105,6 +75,17 @@ public class Module {
                 Sakura.EVENT_BUS.unsubscribe(this);
                 onDisable();
             }
+        }
+    }
+
+    public void reset() {
+        setState(false);
+        if (!name.equalsIgnoreCase("ClickGui")) {
+            setKey(-1);
+        }
+        setBindMode(BindMode.Toggle);
+        for (Value<?> value : values) {
+            value.reset();
         }
     }
 
