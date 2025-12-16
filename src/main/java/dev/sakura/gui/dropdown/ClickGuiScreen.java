@@ -37,7 +37,7 @@ public class ClickGuiScreen extends Screen {
             panel.setX(50 + width);
             panel.setY(20);
             panels.add(panel);
-            width += panel.getWidth() + 5;
+            width += panel.getWidth() + 10;
         }
     }
 

@@ -22,7 +22,7 @@ import java.util.List;
 
 public class ConfigManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_DIR = Paths.get(Sakura.MOD_NAME);
+    private static final Path CONFIG_DIR = Paths.get("sakura-config");
     private static final Path MODULES_DIR = CONFIG_DIR.resolve("modules");
     private static final Path CLICKGUI_FILE = CONFIG_DIR.resolve("clickgui.json");
 
