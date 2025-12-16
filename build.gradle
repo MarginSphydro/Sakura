@@ -101,3 +101,10 @@ tasks.register('buildClientOnly') {
     }
     finalizedBy 'build'
 }
+
+//这行gradle任务可以导出编译时所有用到的jar出来
+/*
+tasks.register('extractRuntimeClasspath', Copy) {
+    from configurations.runtimeClasspath
+    into "$buildDir/runtimeClasspath"
+}*/
