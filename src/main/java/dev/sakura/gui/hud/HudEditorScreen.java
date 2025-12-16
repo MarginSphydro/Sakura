@@ -32,21 +32,14 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        float scale = (float) mc.getWindow().getScaleFactor();
-        NanoVGRenderer.INSTANCE.draw(canvas -> {
-            // 绘制半透明背景
-            //NanoVGHelper.drawRect(0, 0, mc.getWindow().getWidth(), mc.getWindow().getHeight(), new Color(18, 18, 18, 100));
-
-            // 绘制提示文字
-            NanoVGHelper.drawCenteredString(
-                    "拖拽HUD模块来调整位置 | 按ESC退出",
-                    mc.getWindow().getScaledWidth() / 2f * scale,
-                    20 * scale,
-                    FontLoader.greycliffRegular(14),
-                    14 * scale,
-                    new Color(255, 255, 255, 200)
-            );
-        });
+        NanoVGRenderer.INSTANCE.draw(canvas -> NanoVGHelper.drawCenteredString(
+                "拖拽HUD模块来调整位置 | 按ESC退出",
+                mc.getWindow().getScaledWidth() / 2f,
+                20,
+                FontLoader.greycliffRegular(14),
+                14,
+                new Color(255, 255, 255, 200)
+        ));
 
         hudPanel.render(context, mouseX, mouseY, delta);
 

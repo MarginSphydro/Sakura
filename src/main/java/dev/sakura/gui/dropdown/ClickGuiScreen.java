@@ -37,7 +37,7 @@ public class ClickGuiScreen extends Screen {
             panel.setX(50 + width);
             panel.setY(20);
             panels.add(panel);
-            width += panel.getWidth() + 20;
+            width += panel.getWidth() + 5;
         }
     }
 
@@ -59,8 +59,6 @@ public class ClickGuiScreen extends Screen {
             }
         }
 
-        int finalMouseY = mouseY;
-
         // 应用背景模糊在NanoVG绘制之外
         if (ClickGui.backgroundBlur.get()) {
             float blurStrength = ClickGui.blurStrength.getValue().floatValue();
@@ -73,10 +71,9 @@ public class ClickGuiScreen extends Screen {
             );
         }
 
-        // NanoVG绘制半透明背景遮罩
-        NanoVGRenderer.INSTANCE.draw(canvas -> NanoVGHelper.drawRect(0, 0, mc.getWindow().getWidth(), mc.getWindow().getHeight(), new Color(18, 18, 18, 50)));
+        NanoVGRenderer.INSTANCE.draw(canvas -> NanoVGHelper.drawRect(0, 0, mc.getWindow().getScaledWidth(), mc.getWindow().getScaledHeight(), new Color(18, 18, 18, 50)));
 
-        panels.forEach(panel -> panel.render(guiGraphics, mouseX, finalMouseY, partialTicks));
+        panels.forEach(panel -> panel.render(guiGraphics, mouseX, mouseY, partialTicks));
     }
 
     @Override
@@ -154,7 +151,7 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        accumulatedScroll += (float) scrollY * mc.options.getGuiScale().getValue();
+        accumulatedScroll += (float) scrollY;
         return true;
     }
 

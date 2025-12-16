@@ -1,6 +1,5 @@
 package dev.sakura.gui.dropdown.component.values;
 
-import dev.sakura.Sakura;
 import dev.sakura.gui.Component;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
@@ -29,21 +28,19 @@ public class BoolValueComponent extends Component {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        setHeight(28);
+        setHeight(14);
         this.toggleAnimation.setDirection(setting.getValue() ? Direction.FORWARDS : Direction.BACKWARDS);
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(15), 15, Color.WHITE);
-            NanoVGHelper.drawRoundRect(getX() + getWidth() - 46, getY() - 14, 30, 16, 8, setting.get() ? ClickGui.color(0).darker() : new Color(70, 70, 70));
-            NanoVGHelper.drawCircle(getX() + getWidth() - 38 + 14 * toggleAnimation.getOutput().floatValue(), getY() - 6, 7, setting.get() ? Color.WHITE : new Color(150, 150, 150));
+            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(7.5f), 7.5f, Color.WHITE);
+            NanoVGHelper.drawRoundRect(getX() + getWidth() - 15, getY() - 7, 15, 8, 4, setting.get() ? ClickGui.color(0).darker() : new Color(70, 70, 70));
+            NanoVGHelper.drawCircle(getX() + getWidth() - 11 + 7 * toggleAnimation.getOutput().floatValue(), getY() - 3, 3, setting.get() ? Color.WHITE : new Color(150, 150, 150));
         });
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        float scaledMouseX = (float) (mouseX * Sakura.mc.options.getGuiScale().getValue());
-        float scaledMouseY = (float) (mouseY * Sakura.mc.options.getGuiScale().getValue());
-        if (RenderUtils.isHovering(getX() + getWidth() - 46, getY() - 14, 30, 16, scaledMouseX, scaledMouseY) && mouseButton == 0) {
+        if (RenderUtils.isHovering(getX() + getWidth() - 15, getY() - 7, 15, 8, (float) mouseX, (float) mouseY) && mouseButton == 0) {
             this.setting.set(!this.setting.get());
         }
         return super.mouseClicked(mouseX, mouseY, mouseButton);

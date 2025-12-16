@@ -1,6 +1,5 @@
 package dev.sakura.gui.hud.component;
 
-import dev.sakura.Sakura;
 import dev.sakura.gui.Component;
 import dev.sakura.gui.IComponent;
 import dev.sakura.gui.dropdown.component.values.*;
@@ -21,7 +20,7 @@ import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class HudModuleComponent implements IComponent {
-    private float x, y, width, height = 36;
+    private float x, y, width, height = 18;
     private final HudModule hudModule;
     private boolean opened;
     private final EaseInOutQuad openAnimation = new EaseInOutQuad(250, 1);
@@ -54,7 +53,7 @@ public class HudModuleComponent implements IComponent {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        float yOffset = 36;
+        float yOffset = 18;
         openAnimation.setDirection(opened ? Direction.FORWARDS : Direction.BACKWARDS);
         toggleAnimation.setDirection(hudModule.isEnabled() ? Direction.FORWARDS : Direction.BACKWARDS);
         hoverAnimation.setDirection(isHovered(mouseX, mouseY) ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -67,7 +66,7 @@ public class HudModuleComponent implements IComponent {
         }
 
         if (hasVisibleSettings && openAnimation.getOutput() > 0) {
-            yOffset += (float) (8 * openAnimation.getOutput());
+            yOffset += (float) (2 * openAnimation.getOutput());
         }
 
         this.height = yOffset;
@@ -77,25 +76,25 @@ public class HudModuleComponent implements IComponent {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             if (hudModule.isEnabled()) {
-                NanoVGHelper.drawGradientRRect2(x, y, width, 36, 0, ClickGui.color(0), ClickGui.color2(0));
+                NanoVGHelper.drawGradientRRect2(x, y, width, 18, 0, ClickGui.color(0), ClickGui.color2(0));
             }
 
-            NanoVGHelper.drawRect(x, y, width, 36, new Color(30, 30, 30, 100));
+            NanoVGHelper.drawRect(x, y, width, 18, new Color(30, 30, 30, 100));
 
             if (finalHasVisibleSettings && openAnimation.getOutput() > 0) {
-                float expandedHeight = (float) ((finalYOffset - 36) * openAnimation.getOutput());
-                NanoVGHelper.drawRect(x, y + 36, width, expandedHeight,
+                float expandedHeight = (float) ((finalYOffset - 18) * openAnimation.getOutput());
+                NanoVGHelper.drawRect(x, y + 18, width, expandedHeight,
                         new Color(20, 20, 20, (int) (80 * openAnimation.getOutput())));
             }
 
-            NanoVGHelper.drawString(hudModule.getName(), x + 8, y + 23, FontLoader.greycliffRegular(15), 15, Color.WHITE);
+            NanoVGHelper.drawString(hudModule.getName(), x + 4, y + 11, FontLoader.greycliffRegular(7.5f), 7.5f, Color.WHITE);
         });
 
-        float componentYOffset = 36;
+        float componentYOffset = 18;
         for (Component component : settings) {
             if (!component.isVisible()) continue;
-            component.setX(x + 8);
-            component.setY((float) (y + 22 + componentYOffset * openAnimation.getOutput()));
+            component.setX(x + 4);
+            component.setY((float) (y + 10 + componentYOffset * openAnimation.getOutput()));
             component.setWidth(width);
             if (openAnimation.getOutput() > .7f) {
                 component.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -149,7 +148,7 @@ public class HudModuleComponent implements IComponent {
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        return RenderUtils.isHovering(x, y, width, 36, mouseX * Sakura.mc.options.getGuiScale().getValue(), mouseY * Sakura.mc.options.getGuiScale().getValue());
+        return RenderUtils.isHovering(x, y, width, 18, mouseX, mouseY);
     }
 
     public float getX() {

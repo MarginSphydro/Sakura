@@ -21,7 +21,7 @@ public class WatermarkHud extends HudModule {
     private final Value<Double> hudScale = new NumberValue<>("Scale", 1.0, 0.5, 2.0, 0.1);
     private final Value<Color> backgroundColor = new ColorValue("Background Color", new Color(0, 0, 0, 50));
     private final Value<Boolean> backgroundBlur = new BoolValue("Background Blur", false);
-    private final Value<Double> blurStrength = new NumberValue<>("Blur Strength", 8.0, 1.0, 20.0, 0.5, () -> backgroundBlur.get());
+    private final Value<Double> blurStrength = new NumberValue<>("Blur Strength", 8.0, 1.0, 20.0, 0.5, backgroundBlur::get);
 
     public WatermarkHud() {
         super("Watermark", 10, 10);
@@ -29,7 +29,7 @@ public class WatermarkHud extends HudModule {
 
     @Override
     public void onRenderContent() {
-        float s = hudScale.getValue().floatValue() * getScale();
+        float s = hudScale.getValue().floatValue();
 
         String text = Sakura.MOD_NAME + " " + Sakura.MOD_VER;
         float fontSize = 30 * s;
@@ -40,14 +40,16 @@ public class WatermarkHud extends HudModule {
         this.height = fontH + 10 * s;
 
         if (backgroundBlur.get()) {
-            withRawCoords(() -> Shader2DUtils.drawRoundedBlur(
-                    getMatrix(),
-                    x, y, width, height,
-                    4f * s,
-                    new Color(0, 0, 0, 0),
-                    blurStrength.getValue().floatValue(),
-                    1.0f
-            ));
+            float radius = 4f * s;
+            withPixelCoords(x, y, width, height, (px, py, pw, ph) ->
+                    Shader2DUtils.drawRoundedBlur(
+                            getMatrix(),
+                            px, py, pw, ph,
+                            (float) (radius * mc.getWindow().getScaleFactor()),
+                            new Color(0, 0, 0, 0),
+                            blurStrength.getValue().floatValue(),
+                            1.0f
+                    ));
         }
 
         NanoVGHelper.drawRoundRectBloom(x, y, width, height, 4 * s, backgroundColor.get());

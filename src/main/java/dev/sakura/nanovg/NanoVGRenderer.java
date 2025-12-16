@@ -5,15 +5,24 @@ import net.minecraft.client.MinecraftClient;
 
 import java.util.function.Consumer;
 
-import static org.lwjgl.nanovg.NanoVG.nvgBeginFrame;
-import static org.lwjgl.nanovg.NanoVG.nvgEndFrame;
+import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.nanovg.NanoVGGL3.*;
+
+/**
+ * Sakura NanoVG渲染器
+ * <p>
+ * 坐标系说明：
+ * - draw(): 使用MC逻辑坐标（自动缩放），与鼠标坐标、Screen尺寸一致
+ * - drawRaw(): 使用像素坐标，用于需要精确像素控制的场景
+ */
 
 public class NanoVGRenderer {
     public static final NanoVGRenderer INSTANCE = new NanoVGRenderer();
 
     private long vg = 0L;
     private boolean initialized = false;
+    private boolean inFrame = false;
+    private boolean scaled = false;
 
     private NanoVGRenderer() {
     }
@@ -35,7 +44,27 @@ public class NanoVGRenderer {
         return vg;
     }
 
+    private float getScaleFactor() {
+        return (float) MinecraftClient.getInstance().getWindow().getScaleFactor();
+    }
+
+    public int getScaledWidth() {
+        return MinecraftClient.getInstance().getWindow().getScaledWidth();
+    }
+
+    public int getScaledHeight() {
+        return MinecraftClient.getInstance().getWindow().getScaledHeight();
+    }
+
+    /**
+     * 使用MC逻辑坐标绘制（自动缩放）
+     * 坐标系与mouseX, mouseY, scaledWidth, scaledHeight一致
+     */
     public void draw(Consumer<Long> drawingLogic) {
+        draw(drawingLogic, true);
+    }
+
+    public void draw(Consumer<Long> drawingLogic, boolean applyScale) {
         if (!initialized) {
             initNanoVG();
         }
@@ -43,19 +72,88 @@ public class NanoVGRenderer {
         States.INSTANCE.push();
 
         MinecraftClient mc = MinecraftClient.getInstance();
-
         int width = mc.getWindow().getWidth();
         int height = mc.getWindow().getHeight();
 
-        // 开始NanoVG帧
         nvgBeginFrame(vg, width, height, 1.0f);
+        inFrame = true;
 
-        drawingLogic.accept(vg);
+        if (applyScale) {
+            float scale = getScaleFactor();
+            nvgSave(vg);
+            nvgScale(vg, scale, scale);
+            scaled = true;
+        } else {
+            scaled = false;
+        }
 
-        // 结束NanoVG帧
+        try {
+            drawingLogic.accept(vg);
+        } finally {
+            if (applyScale) {
+                nvgRestore(vg);
+                scaled = false;
+            }
+            nvgEndFrame(vg);
+            inFrame = false;
+            States.INSTANCE.pop();
+        }
+    }
+
+    /**
+     * 使用像素坐标绘制（无缩放）
+     * 用于需要精确像素控制的场景
+     */
+    @Deprecated
+    public void drawRaw(Consumer<Long> drawingLogic) {
+        if (!initialized) {
+            initNanoVG();
+        }
+
+        States.INSTANCE.push();
+
+        MinecraftClient mc = MinecraftClient.getInstance();
+        int width = mc.getWindow().getWidth();
+        int height = mc.getWindow().getHeight();
+
+        nvgBeginFrame(vg, width, height, 1.0f);
+        inFrame = true;
+        scaled = false;
+
+        try {
+            drawingLogic.accept(vg);
+        } finally {
+            nvgEndFrame(vg);
+            inFrame = false;
+            States.INSTANCE.pop();
+        }
+    }
+
+    /**
+     * 在已开始的帧中临时暂停NanoVG（用于其他渲染器如Shader）
+     */
+    public void withRawCoordsAndPause(Runnable drawer) {
+        if (!inFrame) {
+            throw new IllegalStateException("必须在draw()回调内使用");
+        }
+
+        MinecraftClient mc = MinecraftClient.getInstance();
+        int width = mc.getWindow().getWidth();
+        int height = mc.getWindow().getHeight();
+
         nvgEndFrame(vg);
 
-        States.INSTANCE.pop();
+        drawer.run();
+
+        nvgBeginFrame(vg, width, height, 1.0f);
+    }
+
+    public boolean isInFrame() {
+        return inFrame;
+    }
+
+    public boolean isScaled() {
+        return scaled;
     }
 
     /**

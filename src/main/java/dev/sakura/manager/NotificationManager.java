@@ -67,32 +67,32 @@ public class NotificationManager {
     }
 
     public static float[] renderPreview(MatrixStack matrices, float x, float y, boolean leftAligned, Color primaryColor, Color backgroundColor, float maxWidth, boolean blur, float blurStrength) {
-        float scale = (float) MinecraftClient.getInstance().getWindow().getScaleFactor();
         String previewMessage = "Preview Notification";
-        float padding = 4.0f * scale;
+        float padding = 4.0f;
         int font = FontLoader.greycliffMedium(12);
-        float fontSize = 12 * scale;
+        float fontSize = 12;
         float textHeight = NanoVGHelper.getFontHeight(font, fontSize);
-        float height = textHeight * 2.5f / scale;
-        float minWidth = 150.0f * scale;
+        float height = textHeight * 2.5f;
+        float minWidth = 150.0f;
         float textWidth = padding * 3 + NanoVGHelper.getTextWidth(previewMessage, font, fontSize);
-        float width = Math.min(Math.max(minWidth, textWidth), maxWidth * scale) / scale;
+        float width = Math.min(Math.max(minWidth, textWidth), maxWidth);
 
         if (blur) {
-            Shader2DUtils.drawRoundedBlur(matrices, x, y, width, height, 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
+            float scale = (float) MinecraftClient.getInstance().getWindow().getScaleFactor();
+            Shader2DUtils.drawRoundedBlur(matrices, x * scale, y * scale, width * scale, height * scale, 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
         }
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawRect(x * scale, y * scale, width * scale, height * scale, backgroundColor);
+            NanoVGHelper.drawRect(x, y, width, height, backgroundColor);
             if (leftAligned) {
-                NanoVGHelper.drawRect((x + width) * scale - padding, y * scale, padding, height * scale, primaryColor);
+                NanoVGHelper.drawRect(x + width - padding, y, padding, height, primaryColor);
             } else {
-                NanoVGHelper.drawRect(x * scale, y * scale, padding, height * scale, primaryColor);
+                NanoVGHelper.drawRect(x, y, padding, height, primaryColor);
             }
-            float stringPosX = leftAligned ? x * scale + padding * 1.5f : x * scale + padding * 2.5f;
-            float stringPosY = y * scale + height * scale * 0.5f + textHeight * 0.3f;
+            float stringPosX = leftAligned ? x + padding * 1.5f : x + padding * 2.5f;
+            float stringPosY = y + height * 0.5f + textHeight * 0.3f;
             NanoVGHelper.drawString(previewMessage, stringPosX, stringPosY, font, fontSize, Color.WHITE);
-        });
+        }, true);
 
         return new float[]{width, height};
     }
@@ -104,9 +104,9 @@ public class NotificationManager {
             float offsetY = 0;
             for (int i = notifications.size() - 1; i >= 0; i--) {
                 Notification notification = notifications.get(i);
-                float[] bounds = notification.getBounds(x, y + offsetY, maxWidth, scale);
+                float[] bounds = notification.getBounds(x, y + offsetY, maxWidth);
                 if (bounds != null) {
-                    Shader2DUtils.drawRoundedBlur(matrices, bounds[0], bounds[1], bounds[2], bounds[3], 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
+                    Shader2DUtils.drawRoundedBlur(matrices, bounds[0] * scale, bounds[1] * scale, bounds[2] * scale, bounds[3] * scale, 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
                     offsetY += bounds[3] + 4.0f;
                 }
             }
@@ -117,7 +117,7 @@ public class NotificationManager {
 
             for (int i = notifications.size() - 1; i >= 0; i--) {
                 Notification notification = notifications.get(i);
-                float height = notification.render(x * scale, (y + offsetY) * scale, leftAligned, primaryColor, backgroundColor, maxWidth * scale, scale);
+                float height = notification.render(x, y + offsetY, leftAligned, primaryColor, backgroundColor, maxWidth);
 
                 if (height == -1.0f) {
                     synchronized (notificationMap) {
@@ -127,10 +127,10 @@ public class NotificationManager {
                     }
                     notifications.remove(i);
                 } else {
-                    offsetY += height / scale;
+                    offsetY += height;
                 }
             }
-        });
+        }, true);
     }
 
     public static class Notification {
@@ -157,26 +157,26 @@ public class NotificationManager {
             this.cachedWidth = -1f;
         }
 
-        private float getWidth(float padding, float minWidth, float scale) {
+        private float getWidth(float padding, float minWidth) {
             if (cachedWidth == -1f) {
                 int font = FontLoader.greycliffMedium(12);
-                float fontSize = 12 * scale;
+                float fontSize = 12;
                 String plainText = message.replaceAll("§.", "");
                 cachedWidth = Math.max(minWidth, padding * 3 + NanoVGHelper.getTextWidth(plainText, font, fontSize));
             }
             return cachedWidth;
         }
 
-        public float[] getBounds(float x, float y, float maxWidth, float scale) {
+        public float[] getBounds(float x, float y, float maxWidth) {
             if (startTime == -1L) return null;
 
-            float padding = 4.0f * scale;
+            float padding = 4.0f;
             int font = FontLoader.greycliffMedium(12);
-            float fontSize = 12 * scale;
+            float fontSize = 12;
             float textHeight = NanoVGHelper.getFontHeight(font, fontSize);
-            float height = textHeight * 2.5f / scale;
-            float minWidth = 150.0f * scale;
-            float width = Math.min(getWidth(padding, minWidth, scale), maxWidth * scale) / scale;
+            float height = textHeight * 2.5f;
+            float minWidth = 150.0f;
+            float width = Math.min(getWidth(padding, minWidth), maxWidth);
 
             long deltaTotal = System.currentTimeMillis() - startTime;
             if (deltaTotal >= length + 500L) return null;
@@ -184,19 +184,19 @@ public class NotificationManager {
             return new float[]{x, y, width, height};
         }
 
-        public float render(float x, float y, boolean leftAligned, Color primaryColor, Color backgroundColor, float maxWidth, float scale) {
+        public float render(float x, float y, boolean leftAligned, Color primaryColor, Color backgroundColor, float maxWidth) {
             if (startTime == -1L) {
                 startTime = System.currentTimeMillis();
             }
 
-            float padding = 4.0f * scale;
+            float padding = 4.0f;
             int font = FontLoader.greycliffMedium(12);
-            float fontSize = 12 * scale;
+            float fontSize = 12;
             float textHeight = NanoVGHelper.getFontHeight(font, fontSize);
             float height = textHeight * 2.5f;
-            float space = 4.0f * scale;
-            float minWidth = 150.0f * scale;
-            float width = Math.min(getWidth(padding, minWidth, scale), maxWidth);
+            float space = 4.0f;
+            float minWidth = 150.0f;
+            float width = Math.min(getWidth(padding, minWidth), maxWidth);
 
             long deltaTotal = System.currentTimeMillis() - startTime;
 

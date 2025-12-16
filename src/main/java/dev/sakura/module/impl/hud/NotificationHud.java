@@ -4,6 +4,7 @@ import dev.sakura.Sakura;
 import dev.sakura.manager.NotificationManager;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.impl.client.HudEditor;
+import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.values.Value;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
@@ -28,8 +29,8 @@ public class NotificationHud extends HudModule {
 
     @Override
     public void onRenderContent() {
-        if (Sakura.MODULE.getModule(HudEditor.class).isEnabled()) {
-            withRawCoords(() -> {
+        NanoVGRenderer.INSTANCE.withRawCoordsAndPause(() -> {
+            if (Sakura.MODULE.getModule(HudEditor.class).isEnabled()) {
                 float[] size = NotificationManager.renderPreview(
                         getMatrix(),
                         x, y,
@@ -42,18 +43,18 @@ public class NotificationHud extends HudModule {
                 );
                 width = size[0];
                 height = size[1];
-            });
-        } else {
-            withRawCoords(() -> NotificationManager.render(
-                    getMatrix(),
-                    x, y,
-                    aligned.is(AlignedEnum.LEFT),
-                    primaryColorConfig.get(),
-                    backgroundColorConfig.get(),
-                    maxWidthConfig.getValue().floatValue(),
-                    backgroundBlur.get(),
-                    blurStrength.getValue().floatValue()
-            ));
-        }
+            } else {
+                NotificationManager.render(
+                        getMatrix(),
+                        x, y,
+                        aligned.is(AlignedEnum.LEFT),
+                        primaryColorConfig.get(),
+                        backgroundColorConfig.get(),
+                        maxWidthConfig.getValue().floatValue(),
+                        backgroundBlur.get(),
+                        blurStrength.getValue().floatValue()
+                );
+            }
+        });
     }
 }

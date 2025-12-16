@@ -9,7 +9,6 @@ import dev.sakura.nanovg.util.NanoVGHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
-import org.lwjgl.nanovg.NanoVG;
 
 import java.awt.*;
 
@@ -54,19 +53,16 @@ public abstract class HudModule extends Module {
     }
 
     /**
-     * 子类实现此方法进行绘制，已自动处理NanoVG缩放
-     * 直接使用x, y, width, height等逻辑坐标
+     * 子类实现此方法进行绘制
+     * 坐标系已自动缩放，直接使用MC逻辑坐标（与mouseX/mouseY一致）
      */
     public abstract void onRenderContent();
 
     private void onRender(DrawContext context) {
         this.currentContext = context;
-        NanoVGRenderer.INSTANCE.draw(vg -> {
-            applyScale();
-            onRenderContent();
-            resetScale();
-        });
+        NanoVGRenderer.INSTANCE.draw(vg -> onRenderContent());
     }
+
 
     public void renderInEditor(DrawContext context, float mouseX, float mouseY) {
         if (dragging) {
@@ -82,11 +78,13 @@ public abstract class HudModule extends Module {
 
         onRender(context);
 
-        float scale = (float) mc.getWindow().getScaleFactor();
-        NanoVGRenderer.INSTANCE.draw(canvas -> {
-            Color boxColor = dragging ? new Color(100, 100, 255, 80) : new Color(0, 0, 0, 50);
-            NanoVGHelper.drawRect(x * scale, y * scale, width * scale, height * scale, boxColor);
-        });
+        NanoVGRenderer.INSTANCE.draw(canvas -> NanoVGHelper.drawRect(
+                x,
+                y,
+                width,
+                height,
+                dragging ? new Color(100, 100, 255, 80) : new Color(0, 0, 0, 50)
+        ));
     }
 
     public void renderInGame(DrawContext context) {
@@ -97,31 +95,18 @@ public abstract class HudModule extends Module {
         onRender(context);
     }
 
-    protected float getMCScale() {
-        return (float) mc.getWindow().getScaleFactor();
-    }
-
     /**
-     * 补偿applyScale的影响
-     * 子类可以用此值乘以自定义缩放值
+     * 在draw()回调内临时切换到像素坐标（暂停NanoVG）
+     * 用于使用着色器等需要像素坐标的渲染器
      */
-    protected float getScale() {
-        return 1.0f / getMCScale();
+    protected void withPixelCoords(float logicX, float logicY, float logicW, float logicH, PixelDrawer drawer) {
+        float scale = (float) mc.getWindow().getScaleFactor();
+        NanoVGRenderer.INSTANCE.withRawCoordsAndPause(() -> drawer.draw(logicX * scale, logicY * scale, logicW * scale, logicH * scale));
     }
 
-    protected void applyScale() {
-        NanoVG.nvgSave(NanoVGRenderer.INSTANCE.getContext());
-        NanoVG.nvgScale(NanoVGRenderer.INSTANCE.getContext(), getMCScale(), getMCScale());
-    }
-
-    protected void resetScale() {
-        NanoVG.nvgRestore(NanoVGRenderer.INSTANCE.getContext());
-    }
-
-    protected void withRawCoords(Runnable drawer) {
-        resetScale();
-        drawer.run();
-        applyScale();
+    @FunctionalInterface
+    protected interface PixelDrawer {
+        void draw(float pixelX, float pixelY, float pixelW, float pixelH);
     }
 
     protected DrawContext getContext() {
@@ -130,6 +115,10 @@ public abstract class HudModule extends Module {
 
     protected MatrixStack getMatrix() {
         return currentContext.getMatrices();
+    }
+
+    protected float getScaleFactor() {
+        return (float) mc.getWindow().getScaleFactor();
     }
 
     public void onResolutionChanged() {

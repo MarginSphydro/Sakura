@@ -44,7 +44,7 @@ public class FPSHud extends HudModule {
 
     @Override
     public void onRenderContent() {
-        float s = hudScale.getValue().floatValue() * getScale();
+        float s = hudScale.getValue().floatValue();
 
         if (timer.hasReached(delay.getValue() * 1000)) {
             cachedFps = FrameRateCounter.INSTANCE.getFps();

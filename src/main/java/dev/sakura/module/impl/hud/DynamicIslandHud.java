@@ -76,10 +76,9 @@ public class DynamicIslandHud extends HudModule {
 
     private void renderIdle() {
         int sw = mc.getWindow().getScaledWidth();
-        float s = getScale();
 
-        float w = BASE_WIDTH * s;
-        float h = BASE_HEIGHT * s;
+        float w = BASE_WIDTH;
+        float h = BASE_HEIGHT;
         float ix = (sw - w) / 2f;
         float iy = y;
 
@@ -88,28 +87,26 @@ public class DynamicIslandHud extends HudModule {
         this.x = ix;
 
         if (blur.get()) {
-            withRawCoords(() -> Shader2DUtils.drawRoundedBlur(
-                    getMatrix(), ix, iy, w, h, RADIUS * s,
-                    new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f
-            ));
+            withPixelCoords(ix, iy, w, h, (px, py, pw, ph) ->
+                    Shader2DUtils.drawRoundedBlur(getMatrix(), px, py, pw, ph, RADIUS * getScaleFactor(),
+                            new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f));
         }
 
-        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, new Color(0, 0, 0, 90));
+        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS, new Color(0, 0, 0, 90));
 
-        renderSideInfo(ix, iy, w, h, s, 0f);
+        renderSideInfo(ix, iy, w, h, 0f);
 
-        int font = FontLoader.greycliffBold(22 * s);
-        float fontSize = 22 * s;
+        int font = FontLoader.greycliffBold(22);
+        float fontSize = 22;
         float tw = NanoVGHelper.getTextWidth(Sakura.MOD_NAME, font, fontSize);
-        NanoVGHelper.drawString(Sakura.MOD_NAME, ix + (w - tw) / 2f, iy + h / 2f + 8 * s, font, fontSize, Color.WHITE);
+        NanoVGHelper.drawString(Sakura.MOD_NAME, ix + (w - tw) / 2f, iy + h / 2f + 8, font, fontSize, Color.WHITE);
     }
 
     private void renderExpanding(float progress) {
         int sw = mc.getWindow().getScaledWidth();
-        float s = getScale();
 
-        float w = lerp(BASE_WIDTH, targetExpandedWidth, progress) * s;
-        float h = lerp(BASE_HEIGHT, EXPANDED_HEIGHT, progress) * s;
+        float w = lerp(BASE_WIDTH, targetExpandedWidth, progress);
+        float h = lerp(BASE_HEIGHT, EXPANDED_HEIGHT, progress);
         float ix = (sw - w) / 2f;
         float iy = y;
 
@@ -118,28 +115,26 @@ public class DynamicIslandHud extends HudModule {
         this.x = ix;
 
         if (blur.get()) {
-            withRawCoords(() -> Shader2DUtils.drawRoundedBlur(
-                    getMatrix(), ix, iy, w, h, RADIUS * s,
-                    new Color(0, 0, 0, 0), blurStrength.get().floatValue(), progress
-            ));
+            withPixelCoords(ix, iy, w, h, (px, py, pw, ph) ->
+                    Shader2DUtils.drawRoundedBlur(getMatrix(), px, py, pw, ph, RADIUS * getScaleFactor(),
+                            new Color(0, 0, 0, 0), blurStrength.get().floatValue(), progress));
         }
 
-        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, new Color(0, 0, 0, 90));
+        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS, new Color(0, 0, 0, 90));
 
-        renderSideInfo(ix, iy, w, h, s, progress);
+        renderSideInfo(ix, iy, w, h, progress);
 
         if (currentToggle != null) {
             int textAlpha = (int) (255 * progress);
-            renderContent(ix, iy, w, h, s, textAlpha, 0f);
+            renderContent(ix, iy, w, h, textAlpha, 0f);
         }
     }
 
     private void renderDisplay(float timeProgress) {
         int sw = mc.getWindow().getScaledWidth();
-        float s = getScale();
 
-        float w = targetExpandedWidth * s;
-        float h = EXPANDED_HEIGHT * s;
+        float w = targetExpandedWidth;
+        float h = EXPANDED_HEIGHT;
         float ix = (sw - w) / 2f;
         float iy = y;
 
@@ -148,27 +143,25 @@ public class DynamicIslandHud extends HudModule {
         this.x = ix;
 
         if (blur.get()) {
-            withRawCoords(() -> Shader2DUtils.drawRoundedBlur(
-                    getMatrix(), ix, iy, w, h, RADIUS * s,
-                    new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f
-            ));
+            withPixelCoords(ix, iy, w, h, (px, py, pw, ph) ->
+                    Shader2DUtils.drawRoundedBlur(getMatrix(), px, py, pw, ph, RADIUS * getScaleFactor(),
+                            new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f));
         }
 
-        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, new Color(0, 0, 0, 90));
+        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS, new Color(0, 0, 0, 90));
 
-        renderSideInfo(ix, iy, w, h, s, 1f);
+        renderSideInfo(ix, iy, w, h, 1f);
 
         if (currentToggle != null) {
-            renderContent(ix, iy, w, h, s, 255, timeProgress);
+            renderContent(ix, iy, w, h, 255, timeProgress);
         }
     }
 
     private void renderCollapseStage1(float progress) {
         int sw = mc.getWindow().getScaledWidth();
-        float s = getScale();
 
-        float w = targetExpandedWidth * s;
-        float h = EXPANDED_HEIGHT * s;
+        float w = targetExpandedWidth;
+        float h = EXPANDED_HEIGHT;
         float ix = (sw - w) / 2f;
         float iy = y;
 
@@ -177,34 +170,32 @@ public class DynamicIslandHud extends HudModule {
         this.x = ix;
 
         if (blur.get()) {
-            withRawCoords(() -> Shader2DUtils.drawRoundedBlur(
-                    getMatrix(), ix, iy, w, h, RADIUS * s,
-                    new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1f - progress
-            ));
+            withPixelCoords(ix, iy, w, h, (px, py, pw, ph) ->
+                    Shader2DUtils.drawRoundedBlur(getMatrix(), px, py, pw, ph, RADIUS * getScaleFactor(),
+                            new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1f - progress));
         }
 
-        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, new Color(0, 0, 0, 90));
+        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS, new Color(0, 0, 0, 90));
 
         Color themeColor = ClickGui.color(0);
         float barWidth = w * progress;
         if (barWidth > 0) {
-            NanoVGHelper.drawRoundRect(ix, iy, barWidth, h, RADIUS * s, themeColor);
+            NanoVGHelper.drawRoundRect(ix, iy, barWidth, h, RADIUS, themeColor);
         }
 
-        renderSideInfo(ix, iy, w, h, s, 1f);
+        renderSideInfo(ix, iy, w, h, 1f);
 
         if (currentToggle != null) {
             int textAlpha = (int) (255 * (1f - progress));
-            renderContent(ix, iy, w, h, s, textAlpha, 1f);
+            renderContent(ix, iy, w, h, textAlpha, 1f);
         }
     }
 
     private void renderCollapseStage2(float progress) {
         int sw = mc.getWindow().getScaledWidth();
-        float s = getScale();
 
-        float w = lerp(targetExpandedWidth, BASE_WIDTH, progress) * s;
-        float h = lerp(EXPANDED_HEIGHT, BASE_HEIGHT, progress) * s;
+        float w = lerp(targetExpandedWidth, BASE_WIDTH, progress);
+        float h = lerp(EXPANDED_HEIGHT, BASE_HEIGHT, progress);
         float ix = (sw - w) / 2f;
         float iy = y;
 
@@ -213,30 +204,30 @@ public class DynamicIslandHud extends HudModule {
         this.x = ix;
 
         Color themeColor = ClickGui.color(0);
-        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS * s, themeColor);
+        NanoVGHelper.drawRoundRect(ix, iy, w, h, RADIUS, themeColor);
 
-        renderSideInfo(ix, iy, w, h, s, 1f - progress);
+        renderSideInfo(ix, iy, w, h, 1f - progress);
     }
 
-    private void renderSideInfo(float ix, float iy, float w, float h, float s, float expandProgress) {
-        float sideOffset = (w - BASE_WIDTH * s) / 2f + 14 * s;
+    private void renderSideInfo(float ix, float iy, float w, float h, float expandProgress) {
+        float sideOffset = (w - BASE_WIDTH) / 2f + 14;
         String time = LocalTime.now().format(TIME_FMT);
         String player = mc.getSession().getUsername();
-        int sideFont = FontLoader.greycliffMedium(16 * s);
-        float sideFontSize = 16 * s;
+        int sideFont = FontLoader.greycliffMedium(16);
+        float sideFontSize = 16;
         Color sideColor = new Color(200, 200, 200, (int) (255 * (1 - expandProgress * 0.3f)));
 
         float timeW = NanoVGHelper.getTextWidth(time, sideFont, sideFontSize);
-        NanoVGHelper.drawString(time, ix - sideOffset - timeW, iy + h / 2f + 6 * s, sideFont, sideFontSize, sideColor);
-        NanoVGHelper.drawString(player, ix + w + sideOffset, iy + h / 2f + 6 * s, sideFont, sideFontSize, sideColor);
+        NanoVGHelper.drawString(time, ix - sideOffset - timeW, iy + h / 2f + 6, sideFont, sideFontSize, sideColor);
+        NanoVGHelper.drawString(player, ix + w + sideOffset, iy + h / 2f + 6, sideFont, sideFontSize, sideColor);
     }
 
-    private void renderContent(float ix, float iy, float w, float h, float s, int alpha, float timeProgress) {
+    private void renderContent(float ix, float iy, float w, float h, int alpha, float timeProgress) {
         if (currentToggle == null) return;
 
-        float padding = 12 * s;
-        float iconSize = 24 * s;
-        float contentY = iy + (h - 6 * s) / 2f;
+        float padding = 12;
+        float iconSize = 24;
+        float contentY = iy + (h - 6) / 2f;
 
         int iconFont = FontLoader.icon(iconSize);
         String icon = currentToggle.enabled ? "\uf00c" : "\uf00d";
@@ -245,16 +236,16 @@ public class DynamicIslandHud extends HudModule {
         NanoVGHelper.drawString(icon, ix + padding, contentY + iconSize * 0.35f, iconFont, iconSize,
                 new Color(iconColor.getRed(), iconColor.getGreen(), iconColor.getBlue(), alpha));
 
-        int textFont = FontLoader.greycliffMedium(14 * s);
-        float textSize = 14 * s;
+        int textFont = FontLoader.greycliffMedium(14);
+        float textSize = 14;
         String status = currentToggle.name + (currentToggle.enabled ? " 已开启" : " 已关闭");
-        float textX = ix + padding + iconW + 8 * s;
+        float textX = ix + padding + iconW + 8;
         NanoVGHelper.drawString(status, textX, contentY + textSize * 0.35f, textFont, textSize,
                 new Color(255, 255, 255, alpha));
 
-        float barPadding = 16 * s;
-        float barHeight = 3 * s;
-        float barY = iy + h - barHeight - 6 * s;
+        float barPadding = 16;
+        float barHeight = 3;
+        float barY = iy + h - barHeight - 6;
         float barMaxWidth = w - barPadding * 2;
         float barWidth = barMaxWidth * (1.0f - timeProgress);
 
@@ -290,19 +281,18 @@ public class DynamicIslandHud extends HudModule {
             return;
         }
 
-        float s = getScale();
         float padding = 12;
         float iconSize = 24;
         float textSize = 14;
         float barPadding = 16;
 
-        int iconFont = FontLoader.icon(iconSize * s);
+        int iconFont = FontLoader.icon(iconSize);
         String icon = currentToggle.enabled ? "\uf00c" : "\uf00d";
-        float iconW = NanoVGHelper.getTextWidth(icon, iconFont, iconSize * s) / s;
+        float iconW = NanoVGHelper.getTextWidth(icon, iconFont, iconSize);
 
-        int textFont = FontLoader.greycliffMedium(textSize * s);
+        int textFont = FontLoader.greycliffMedium(textSize);
         String status = currentToggle.name + (currentToggle.enabled ? " 已开启" : " 已关闭");
-        float textW = NanoVGHelper.getTextWidth(status, textFont, textSize * s) / s;
+        float textW = NanoVGHelper.getTextWidth(status, textFont, textSize);
 
         float neededWidth = padding + iconW + 8 + textW + padding;
         neededWidth = Math.max(neededWidth, barPadding * 2 + 50);

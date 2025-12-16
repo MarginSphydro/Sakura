@@ -1,6 +1,5 @@
 package dev.sakura.gui.dropdown.component.values;
 
-import dev.sakura.Sakura;
 import dev.sakura.gui.Component;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
@@ -24,7 +23,7 @@ import java.util.Map;
 public class MultiBoolValueComponent extends Component {
     private static final Color WHITE = new Color(255, 255, 255);
     private static final Color GRAY = new Color(150, 150, 150);
-    private static final int FONT_SIZE = 15;
+    private static final float FONT_SIZE = 7.5f;
 
     private final MultiBoolValue setting;
     private final Map<BoolValue, EaseOutSine> select = new HashMap<>();
@@ -35,7 +34,7 @@ public class MultiBoolValueComponent extends Component {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        float offset = 8;
+        float offset = 4;
         float heightoff = 0;
         int font = FontLoader.greycliffRegular(FONT_SIZE);
         float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
@@ -43,10 +42,10 @@ public class MultiBoolValueComponent extends Component {
         NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, FONT_SIZE, WHITE));
 
         for (BoolValue boolValue : setting.getValues()) {
-            float off = NanoVGHelper.getTextWidth(boolValue.getName(), font, FONT_SIZE) + 8;
-            if (offset + off >= getWidth() - 5) {
-                offset = 8;
-                heightoff += 20;
+            float off = NanoVGHelper.getTextWidth(boolValue.getName(), font, FONT_SIZE) + 4;
+            if (offset + off >= getWidth() - 4) {
+                offset = 4;
+                heightoff += 10;
             }
             select.putIfAbsent(boolValue, new EaseOutSine(250, 1));
             EaseOutSine anim = select.get(boolValue);
@@ -55,32 +54,30 @@ public class MultiBoolValueComponent extends Component {
             float finalOffset = offset;
             float finalHeightoff = heightoff;
             Color textColor = new Color(ColorUtil.interpolateColor2(GRAY, WHITE, anim.getOutput().floatValue()));
-            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(boolValue.getName(), getX() + finalOffset + 8, getY() + 4 + finalHeightoff + fontHeight, font, FONT_SIZE, textColor));
+            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(boolValue.getName(), getX() + finalOffset + 4, getY() + 2 + finalHeightoff + fontHeight, font, FONT_SIZE, textColor));
 
             offset += off;
         }
 
-        setHeight(46 + heightoff);
+        setHeight(23 + heightoff);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        float scaledMouseX = (float) (mouseX * Sakura.mc.options.getGuiScale().getValue());
-        float scaledMouseY = (float) (mouseY * Sakura.mc.options.getGuiScale().getValue());
-        float offset = 8;
+        float offset = 4;
         float heightoff = 0;
         int font = FontLoader.greycliffRegular(FONT_SIZE);
         float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
 
         for (BoolValue boolValue : setting.getValues()) {
             float textWidth = NanoVGHelper.getTextWidth(boolValue.getName(), font, FONT_SIZE);
-            float off = textWidth + 8;
-            if (offset + off >= getWidth() - 5) {
-                offset = 8;
-                heightoff += 20;
+            float off = textWidth + 4;
+            if (offset + off >= getWidth() - 3) {
+                offset = 4;
+                heightoff += 10;
             }
-            if (RenderUtils.isHovering(getX() + offset, getY() + 2 + heightoff, textWidth, fontHeight, scaledMouseX, scaledMouseY) && mouseButton == 0) {
+            if (RenderUtils.isHovering(getX() + offset, getY() + 1 + heightoff, textWidth, fontHeight, (float) mouseX, (float) mouseY) && mouseButton == 0) {
                 boolValue.set(!boolValue.get());
             }
             offset += off;

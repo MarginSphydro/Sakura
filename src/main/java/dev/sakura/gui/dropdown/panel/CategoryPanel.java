@@ -19,7 +19,7 @@ import java.awt.*;
 
 public class CategoryPanel implements IComponent {
     private float x, y, dragX, dragY;
-    private float width = 220, height;
+    private float width = 110, height;
     private final Category category;
     private boolean dragging, opened;
     private final ObjectArrayList<ModuleComponent> moduleComponents = new ObjectArrayList<>();
@@ -42,12 +42,12 @@ public class CategoryPanel implements IComponent {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             Color bgColor = ClickGui.backgroundColor.get();
-            NanoVGHelper.drawRoundRectBloom(x, y - 2, width, (float) (36 + ((height - 36))), 14, new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 100));
-            NanoVGHelper.drawString(category.name(), x + 8, y + 23.5f, FontLoader.greycliffBold(20), 20, new Color(255, 255, 255, 255));
-            NanoVGHelper.drawString(category.icon, x + 8 + width - NanoVGHelper.getTextWidth(category.icon, FontLoader.icons(30), 30) - (category == Category.Render ? 14 : 6), y + 26.5f, FontLoader.icons(30), 30, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawRoundRectBloom(x, y - 1, width, (float) (18 + ((height - 18))), 7, new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 100));
+            NanoVGHelper.drawString(category.name(), x + 4, y + 12f, FontLoader.greycliffBold(10), 10, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(category.icon, x + 4 + width - NanoVGHelper.getTextWidth(category.icon, FontLoader.icons(15), 15) - (category == Category.Render ? 7 : 3), y + 13f, FontLoader.icons(15), 15, new Color(255, 255, 255, 255));
         });
 
-        float componentOffsetY = 36;
+        float componentOffsetY = 18;
 
         for (ModuleComponent component : moduleComponents) {
             component.setX(x);
@@ -59,7 +59,7 @@ public class CategoryPanel implements IComponent {
             componentOffsetY += (float) (component.getHeight() * openAnimation.getOutput());
         }
 
-        height = componentOffsetY + 18;
+        height = componentOffsetY + 9;
 
         IComponent.super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
@@ -70,8 +70,8 @@ public class CategoryPanel implements IComponent {
             switch (mouseButton) {
                 case 0 -> {
                     dragging = true;
-                    dragX = (float) (x - mouseX * Sakura.mc.options.getGuiScale().getValue());
-                    dragY = (float) (y - mouseY * Sakura.mc.options.getGuiScale().getValue());
+                    dragX = (float) (x - mouseX);
+                    dragY = (float) (y - mouseY);
                 }
                 case 1 -> opened = !opened;
             }
@@ -127,13 +127,13 @@ public class CategoryPanel implements IComponent {
     public void update(int mouseX, int mouseY) {
         this.openAnimation.setDirection(opened ? Direction.FORWARDS : Direction.BACKWARDS);
         if (dragging) {
-            x = (mouseX * Sakura.mc.options.getGuiScale().getValue() + dragX);
-            y = (mouseY * Sakura.mc.options.getGuiScale().getValue() + dragY);
+            x = mouseX + dragX;
+            y = mouseY + dragY;
         }
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        return RenderUtils.isHovering(x, y, width, 36, mouseX * Sakura.mc.options.getGuiScale().getValue(), mouseY * Sakura.mc.options.getGuiScale().getValue());
+        return RenderUtils.isHovering(x, y, width, 18, mouseX, mouseY);
     }
 
     // Getter methods

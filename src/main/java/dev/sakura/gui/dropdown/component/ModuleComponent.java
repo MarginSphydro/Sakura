@@ -1,6 +1,5 @@
 package dev.sakura.gui.dropdown.component;
 
-import dev.sakura.Sakura;
 import dev.sakura.gui.Component;
 import dev.sakura.gui.IComponent;
 import dev.sakura.gui.dropdown.component.values.*;
@@ -24,7 +23,7 @@ import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ModuleComponent implements IComponent {
-    private static final int MODULE_HEIGHT = 36;
+    private static final int MODULE_HEIGHT = 18;
 
     private float x, y, width, height = MODULE_HEIGHT;
     private final Module module;
@@ -59,7 +58,7 @@ public class ModuleComponent implements IComponent {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        float yOffset = 36;
+        float yOffset = 18;
         openAnimation.setDirection(opened ? Direction.FORWARDS : Direction.BACKWARDS);
         toggleAnimation.setDirection(module.isEnabled() ? Direction.FORWARDS : Direction.BACKWARDS);
         hoverAnimation.setDirection(isHovered(mouseX, mouseY) ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -72,7 +71,7 @@ public class ModuleComponent implements IComponent {
         }
 
         if (hasVisibleSettings && openAnimation.getOutput() > 0) {
-            yOffset += (float) (8 * openAnimation.getOutput());
+            yOffset += (float) (4 * openAnimation.getOutput());
         }
 
         this.height = yOffset;
@@ -82,21 +81,21 @@ public class ModuleComponent implements IComponent {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             if (module.isEnabled()) {
-                NanoVGHelper.drawGradientRRect2(x, y, width, 36, 0, ClickGui.color(0), ClickGui.color2(0));
+                NanoVGHelper.drawGradientRRect2(x, y, width, 18, 0, ClickGui.color(0), ClickGui.color2(0));
             }
             NanoVGHelper.drawRect(x, y, width, MODULE_HEIGHT, ColorUtil.applyOpacity(ClickGui.backgroundColor.get(), 0.4f));
 
             if (finalHasVisibleSettings && openAnimation.getOutput() > 0) {
-                float expandedHeight = (float) ((finalYOffset - 36) * openAnimation.getOutput());
-                NanoVGHelper.drawRect(x, y + 36, width, expandedHeight,
+                float expandedHeight = (float) ((finalYOffset - 18) * openAnimation.getOutput());
+                NanoVGHelper.drawRect(x, y + 18, width, expandedHeight,
                         ColorUtil.applyOpacity(ClickGui.expandedBackgroundColor.get(), (float) (0.3f * openAnimation.getOutput())));
             }
 
-            NanoVGHelper.drawString(module.getName(), x + 8, y + 23, FontLoader.greycliffRegular(15), 15, Color.WHITE);
+            NanoVGHelper.drawString(module.getName(), x + 4, y + 11, FontLoader.greycliffRegular(7.5f), 7.5f, Color.WHITE);
 
-            float boxWidth = 36;
-            float boxHeight = 16;
-            float boxX = x + width - boxWidth - 8;
+            float boxWidth = 18;
+            float boxHeight = 8;
+            float boxX = x + width - boxWidth - 4;
             float boxY = y + (MODULE_HEIGHT - boxHeight) / 2;
 
             int keyCode = module.getKey();
@@ -115,31 +114,31 @@ public class ModuleComponent implements IComponent {
                 borderColor = ColorUtil.applyOpacity(themeColor, hasKey ? 0.9f : 0.5f);
             }
 
-            NanoVGHelper.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 4, bgColor);
-            NanoVGHelper.drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 4, 1f, borderColor);
+            NanoVGHelper.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 2, bgColor);
+            NanoVGHelper.drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 2, 0.5f, borderColor);
 
-            float fontSize = 10;
+            float fontSize = 5;
             int font = FontLoader.greycliffRegular(fontSize);
             String displayText = listening ? "..." : (hasKey ? getKeyName(keyCode) : "");
             float textWidth = NanoVGHelper.getTextWidth(displayText, font, fontSize);
             float textX = boxX + (boxWidth - textWidth) / 2;
-            float textY = boxY + boxHeight - 4;
+            float textY = boxY + boxHeight - 2;
             if (!displayText.isEmpty()) NanoVGHelper.drawString(displayText, textX, textY, font, fontSize, Color.WHITE);
 
             if (isHold && !listening) {
-                float lineWidth = hasKey ? textWidth + 4 : 16;
-                float lineX = hasKey ? textX - 2 : boxX + (boxWidth - lineWidth) / 2;
-                float lineY = boxY + boxHeight - 3;
-                NanoVGHelper.drawRect(lineX, lineY, lineWidth, 1.5f, Color.WHITE);
+                float lineWidth = hasKey ? textWidth + 1 : 6;
+                float lineX = hasKey ? textX - 0.5f : boxX + (boxWidth - lineWidth) / 2;
+                float lineY = boxY + boxHeight - 1;
+                NanoVGHelper.drawRect(lineX, lineY, lineWidth, 0.5f, Color.WHITE);
             }
         });
 
-        float componentYOffset = 36;
+        float componentYOffset = 18;
         for (Component component : settings) {
             if (!component.isVisible()) continue;
-            component.setX(x + 8);
-            component.setY((float) (y + 22 + componentYOffset * openAnimation.getOutput()));
-            component.setWidth(width);
+            component.setX(x + 4);
+            component.setY((float) (y + 10 + componentYOffset * openAnimation.getOutput()));
+            component.setWidth(width - 8);
             if (openAnimation.getOutput() > .7f) {
                 component.render(guiGraphics, mouseX, mouseY, partialTicks);
             }
@@ -213,17 +212,15 @@ public class ModuleComponent implements IComponent {
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        int scale = Sakura.mc.options.getGuiScale().getValue();
-        return RenderUtils.isHovering(x, y, width, MODULE_HEIGHT, mouseX * scale, mouseY * scale);
+        return RenderUtils.isHovering(x, y, width, MODULE_HEIGHT, mouseX, mouseY);
     }
 
     public boolean isBindBoxHovered(int mouseX, int mouseY) {
-        int scale = Sakura.mc.options.getGuiScale().getValue();
-        float boxWidth = 36;
-        float boxHeight = 16;
-        float boxX = x + width - boxWidth - 8;
+        float boxWidth = 18;
+        float boxHeight = 8;
+        float boxX = x + width - boxWidth - 4;
         float boxY = y + (MODULE_HEIGHT - boxHeight) / 2;
-        return RenderUtils.isHovering(boxX, boxY, boxWidth, boxHeight, mouseX * scale, mouseY * scale);
+        return RenderUtils.isHovering(boxX, boxY, boxWidth, boxHeight, mouseX, mouseY);
     }
 
     public boolean isListening() {

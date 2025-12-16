@@ -1,6 +1,5 @@
 package dev.sakura.gui.dropdown.component.values;
 
-import dev.sakura.Sakura;
 import dev.sakura.gui.Component;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
@@ -18,7 +17,7 @@ import java.awt.*;
 public class EnumValueComponent extends Component {
     private static final Color WHITE = new Color(255, 255, 255, 255);
     private static final Color GRAY = new Color(150, 150, 150, 255);
-    private static final int FONT_SIZE = 15;
+    private static final float FONT_SIZE = 7.5f;
 
     private final EnumValue<?> setting;
 
@@ -38,37 +37,35 @@ public class EnumValueComponent extends Component {
         NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, FONT_SIZE, WHITE));
 
         for (String text : setting.getModeNames()) {
-            float off = NanoVGHelper.getTextWidth(text, font, FONT_SIZE) + 8;
-            if (offset + off >= (getWidth() - 5)) {
+            float off = NanoVGHelper.getTextWidth(text, font, FONT_SIZE) + 4;
+            if (offset + off >= (getWidth() - 4)) {
                 offset = 0;
-                heightoff += 20;
+                heightoff += 10;
             }
             float finalOffset = offset;
             float finalHeightoff = heightoff;
             Color textColor = text.equals(currentMode) ? WHITE : GRAY;
-            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(text, getX() + finalOffset + 8, getY() + 12 + finalHeightoff + fontHeight, font, FONT_SIZE, textColor));
+            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(text, getX() + finalOffset + 4, getY() + 6 + finalHeightoff + fontHeight, font, FONT_SIZE, textColor));
             offset += off;
         }
 
-        setHeight(54 + heightoff);
+        setHeight(27 + heightoff);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        float scaledMouseX = (float) (mouseX * Sakura.mc.options.getGuiScale().getValue());
-        float scaledMouseY = (float) (mouseY * Sakura.mc.options.getGuiScale().getValue());
         float offset = 0;
         float heightoff = 0;
         int font = FontLoader.greycliffRegular(FONT_SIZE);
         for (String text : setting.getModeNames()) {
             float textWidth = NanoVGHelper.getTextWidth(text, font, FONT_SIZE);
-            float off = textWidth + 8;
-            if (offset + off >= (getWidth() - 5)) {
+            float off = textWidth + 4;
+            if (offset + off >= (getWidth() - 4)) {
                 offset = 0;
-                heightoff += 20;
+                heightoff += 10;
             }
-            if (RenderUtils.isHovering(getX() + offset + 8, getY() + 12 + heightoff, textWidth, NanoVGHelper.getFontHeight(font, FONT_SIZE), scaledMouseX, scaledMouseY) && mouseButton == 0) {
+            if (RenderUtils.isHovering(getX() + offset + 4, getY() + 6 + heightoff, textWidth, NanoVGHelper.getFontHeight(font, FONT_SIZE), (float) mouseX, (float) mouseY) && mouseButton == 0) {
                 setting.setMode(text);
             }
             offset += off;

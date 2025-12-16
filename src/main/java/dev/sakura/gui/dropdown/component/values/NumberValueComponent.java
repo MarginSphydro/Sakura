@@ -1,6 +1,5 @@
 package dev.sakura.gui.dropdown.component.values;
 
-import dev.sakura.Sakura;
 import dev.sakura.gui.Component;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
@@ -41,8 +40,8 @@ public class NumberValueComponent extends Component {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        setHeight(60);
-        int w = 200;
+        setHeight(30);
+        float w = getWidth();
         double min = setting.getMin().doubleValue();
         double max = setting.getMax().doubleValue();
         double current = setting.getValue().doubleValue();
@@ -58,31 +57,31 @@ public class NumberValueComponent extends Component {
         }
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(15), 15, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(7.5f), 7.5f, new Color(255, 255, 255, 255));
 
             if (editing) {
                 float inputWidth = w;
                 float inputX = getX();
-                float inputY = getY() + 8;
-                float inputHeight = 24;
+                float inputY = getY() + 7;
+                float inputHeight = 12;
 
-                NanoVGHelper.drawRoundRect(inputX, inputY, inputWidth, inputHeight, 4, new Color(60, 60, 80));
-                NanoVGHelper.drawRoundRectOutline(inputX, inputY, inputWidth, inputHeight, 4, 1.5f, new Color(100, 100, 150));
+                NanoVGHelper.drawRoundRect(inputX, inputY, inputWidth, inputHeight, 2, new Color(60, 60, 80));
+                NanoVGHelper.drawRoundRectOutline(inputX, inputY, inputWidth, inputHeight, 2, 0.75f, new Color(100, 100, 150));
 
                 String displayText = tempText;
-                NanoVGHelper.drawString(displayText, inputX + 6, inputY + 17, FontLoader.greycliffRegular(13), 13, new Color(255, 255, 255));
+                NanoVGHelper.drawString(displayText, inputX + 3, inputY + 9, FontLoader.greycliffRegular(6), 6, new Color(255, 255, 255));
 
                 if (cursorVisible) {
                     String beforeCursor = tempText.substring(0, Math.min(cursorPos, tempText.length()));
-                    float cursorX = inputX + 6 + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.greycliffRegular(13), 13);
-                    if (cursorX < inputX + inputWidth - 6) {
-                        NanoVGHelper.drawRect(cursorX, inputY + 4, 1, inputHeight - 8, new Color(255, 255, 255));
+                    float cursorX = inputX + 3 + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.greycliffRegular(6), 6);
+                    if (cursorX < inputX + inputWidth - 3) {
+                        NanoVGHelper.drawRect(cursorX, inputY + 2, 0.5f, inputHeight - 4, new Color(255, 255, 255));
                     }
                 }
 
-                String hint = "Enter to confirm";
-                float hintWidth = NanoVGHelper.getTextWidth(hint, FontLoader.greycliffRegular(10), 10);
-                NanoVGHelper.drawString(hint, inputX + inputWidth - hintWidth - 6, inputY + inputHeight / 2 + 4, FontLoader.greycliffRegular(10), 10, new Color(150, 150, 150));
+                String hint = "Enter";
+                float hintWidth = NanoVGHelper.getTextWidth(hint, FontLoader.greycliffRegular(5), 5);
+                NanoVGHelper.drawString(hint, inputX + inputWidth - hintWidth - 2, inputY + inputHeight / 2 + 2, FontLoader.greycliffRegular(5), 5, new Color(150, 150, 150));
             } else {
                 String minStr = isInteger ? String.valueOf(setting.getMin().intValue()) : String.valueOf(setting.getMin());
                 String maxStr = isInteger ? String.valueOf(setting.getMax().intValue()) : String.valueOf(setting.getMax());
@@ -94,20 +93,19 @@ public class NumberValueComponent extends Component {
                     currentStr = df.format(current);
                 }
 
-                NanoVGHelper.drawString(minStr, getX(), getY() + 36, FontLoader.greycliffRegular(12), 12, new Color(255, 255, 255, 255));
-                NanoVGHelper.drawCenteredString(currentStr, getX() + getWidth() / 2, getY() + 36 + NanoVGHelper.getFontHeight(FontLoader.greycliffRegular(12), 12) / 2, FontLoader.greycliffRegular(12), 12, new Color(255, 255, 255, 255));
-                NanoVGHelper.drawString(maxStr, getX() + getWidth() - NanoVGHelper.getTextWidth(maxStr, FontLoader.greycliffRegular(12), 12) - 20, getY() + 36, FontLoader.greycliffRegular(12), 12, new Color(255, 255, 255, 255));
+                NanoVGHelper.drawString(minStr, getX(), getY() + 18, FontLoader.greycliffRegular(5), 5, new Color(255, 255, 255, 255));
+                NanoVGHelper.drawCenteredString(currentStr, getX() + getWidth() / 2, getY() + 18 + NanoVGHelper.getFontHeight(FontLoader.greycliffRegular(5), 5) / 2, FontLoader.greycliffRegular(5), 5, new Color(255, 255, 255, 255));
+                NanoVGHelper.drawString(maxStr, getX() + getWidth() - NanoVGHelper.getTextWidth(maxStr, FontLoader.greycliffRegular(5), 5), getY() + 18, FontLoader.greycliffRegular(5), 5, new Color(255, 255, 255, 255));
 
-                NanoVGHelper.drawRoundRect(getX(), getY() + 8, w, 8, 4, new Color(200, 200, 200, 255));
-                NanoVGHelper.drawGradientRRect2(getX(), getY() + 8, sliderWidth, 8, 2, ClickGui.color(0), ClickGui.color2(0));
-                NanoVGHelper.drawCircle(getX() + 2 + sliderWidth, getY() + 12, 7, new Color(255, 255, 255));
+                NanoVGHelper.drawRoundRect(getX(), getY() + 7, w, 4, 2, new Color(200, 200, 200, 255));
+                NanoVGHelper.drawGradientRRect2(getX(), getY() + 7, sliderWidth, 4, 2, ClickGui.color(0), ClickGui.color2(0));
+                NanoVGHelper.drawCircle(getX() + sliderWidth, getY() + 9, 3.5f, new Color(255, 255, 255));
             }
         });
 
         if (dragging && !editing) {
-            float scaledMouseX = (float) (mouseX * Sakura.mc.options.getGuiScale().getValue());
             final double difference = max - min;
-            final double value = min + MathUtils.clamp_double((scaledMouseX - getX()) / w, 0, 1) * difference;
+            final double value = min + MathUtils.clamp_double((mouseX - getX()) / w, 0, 1) * difference;
             setValueFromDouble(MathUtils.incValue(value, setting.getStep().doubleValue()));
         }
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -124,11 +122,9 @@ public class NumberValueComponent extends Component {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        int w = 200;
-        float scaledMouseX = (float) (mouseX * Sakura.mc.options.getGuiScale().getValue());
-        float scaledMouseY = (float) (mouseY * Sakura.mc.options.getGuiScale().getValue());
+        float w = getWidth();
 
-        if (RenderUtils.isHovering(getX(), getY(), w, 24, scaledMouseX, scaledMouseY)) {
+        if (RenderUtils.isHovering(getX(), getY() + 7, w, 4, (float) mouseX, (float) mouseY)) {
             if (mouseButton == 0 && !editing) {
                 dragging = true;
             } else if (mouseButton == 1 && !editing) {
