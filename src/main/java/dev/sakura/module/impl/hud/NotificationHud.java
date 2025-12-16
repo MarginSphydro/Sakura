@@ -1,7 +1,7 @@
 package dev.sakura.module.impl.hud;
 
 import dev.sakura.Sakura;
-import dev.sakura.manager.NotificationManager;
+import dev.sakura.manager.impl.NotificationManager;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;

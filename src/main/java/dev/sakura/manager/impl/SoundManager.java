@@ -1,4 +1,4 @@
-package dev.sakura.manager;
+package dev.sakura.manager.impl;
 
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;

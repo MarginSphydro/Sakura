@@ -1,7 +1,9 @@
 package dev.sakura.mixin.render;
 
 import dev.sakura.shaders.MainMenuShader;
+import dev.sakura.shaders.SplashShader;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.AccessibilityOnboardingButtons;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.SplashTextRenderer;
@@ -10,6 +12,7 @@ import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextIconButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
 import net.minecraft.text.Text;
@@ -28,10 +31,16 @@ import static dev.sakura.Sakura.mc;
 @Mixin(TitleScreen.class)
 public abstract class MixinTitleScreen extends Screen {
     @Unique
-    private static MainMenuShader mainMenuShader;
+    private ButtonWidget shaderButton;
 
     @Unique
-    private ButtonWidget shaderButton;
+    private long sakura$initTime = 0L;
+
+    @Unique
+    private boolean sakura$transitionWasActive = false;
+
+    @Unique
+    private static final long BUTTON_FADE_DURATION = 800L; // 按钮淡入时间
 
     @Shadow
     @Nullable
@@ -57,14 +66,14 @@ public abstract class MixinTitleScreen extends Screen {
     @Shadow
     protected abstract boolean isRealmsNotificationsGuiDisplayed();
 
-/*    @Shadow
-    private long backgroundFadeStart;
-
-    @Shadow
-    private boolean doBackgroundFade;*/
-
     public MixinTitleScreen(Text title) {
         super(title);
+    }
+
+    @Inject(method = "onDisplayed", at = @At("TAIL"))
+    private void onDisplayedHook(CallbackInfo ci) {
+        sakura$transitionWasActive = false;
+        sakura$initTime = 0L;
     }
 
 /*    @Inject(method = "render", at = @At("TAIL"))
@@ -83,14 +92,102 @@ public abstract class MixinTitleScreen extends Screen {
     @Inject(method = "renderPanoramaBackground", at = @At("HEAD"), cancellable = true)
     public void renderPanoramaBackgroundHook(DrawContext context, float delta, CallbackInfo ci) {
         if (mc.world == null) {
-            if (mainMenuShader == null) {
-                mainMenuShader = new MainMenuShader(MainMenuShader.MainMenuShaderType.SAKURA2);
+            float transition = 1.0f;
+            try {
+                SplashShader splash = SplashShader.getInstance();
+                if (splash != null && splash.isTransitionStarted() && !splash.isTransitionComplete()) {
+                    transition = splash.getTransitionProgress();
+                }
+            } catch (Exception ignored) {
             }
-            mainMenuShader.render(this.width, this.height);
+
+            MainMenuShader.getSharedInstance().render(this.width, this.height, transition);
             ci.cancel();
-        } else if (mainMenuShader != null) {
-            mainMenuShader.cleanup();
-            mainMenuShader = null;
+        } else {
+            MainMenuShader.cleanupSharedInstance();
+        }
+    }
+
+    @Inject(method = "render", at = @At("HEAD"))
+    private void onRenderHead(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        boolean inTransition = false;
+        try {
+            SplashShader splash = SplashShader.getInstance();
+            inTransition = splash.isTransitionStarted() && !splash.isTransitionComplete();
+        } catch (Exception ignored) {
+        }
+
+        if (inTransition) {
+            sakura$transitionWasActive = true;
+            return;
+        }
+
+        if (sakura$transitionWasActive && sakura$initTime == 0L) {
+            sakura$initTime = System.currentTimeMillis();
+            sakura$transitionWasActive = false;
+        }
+
+        if (!sakura$transitionWasActive && sakura$initTime == 0L) {
+            sakura$initTime = System.currentTimeMillis();
+        }
+
+        float buttonAlpha = 1.0f;
+        if (sakura$initTime > 0) {
+            long elapsed = System.currentTimeMillis() - sakura$initTime;
+            buttonAlpha = Math.min(1.0f, (float) elapsed / BUTTON_FADE_DURATION);
+            buttonAlpha = 1.0f - (1.0f - buttonAlpha) * (1.0f - buttonAlpha);
+        }
+
+        for (Element element : this.children()) {
+            if (element instanceof ClickableWidget widget) {
+                widget.setAlpha(buttonAlpha);
+            }
+        }
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;render(Lnet/minecraft/client/gui/DrawContext;IIF)V"))
+    private void onRenderSuperPre(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        float transitionProgress = 1.0f;
+        boolean inTransition = false;
+        try {
+            SplashShader splash = SplashShader.getInstance();
+            if (splash != null && splash.isTransitionStarted() && !splash.isTransitionComplete()) {
+                transitionProgress = splash.getTransitionProgress();
+                inTransition = true;
+            }
+        } catch (Exception ignored) {
+        }
+
+        if (inTransition) {
+            float easeT = 1.0f - (float) Math.pow(1.0f - transitionProgress, 3.0);
+            float scale = 0.5f + easeT * 0.5f;
+
+            for (Element element : this.children()) {
+                if (element instanceof ClickableWidget widget) {
+                    widget.setAlpha(transitionProgress);
+                }
+            }
+
+            context.getMatrices().push();
+            context.getMatrices().translate(width / 2f, height / 2f, 0);
+            context.getMatrices().scale(scale, scale, 1f);
+            context.getMatrices().translate(-width / 2f, -height / 2f, 0);
+        }
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", shift = At.Shift.AFTER))
+    private void onRenderSuperPost(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        boolean inTransition = false;
+        try {
+            SplashShader splash = SplashShader.getInstance();
+            if (splash != null && splash.isTransitionStarted() && !splash.isTransitionComplete()) {
+                inTransition = true;
+            }
+        } catch (Exception ignored) {
+        }
+
+        if (inTransition) {
+            context.getMatrices().pop();
         }
     }
 
@@ -128,12 +225,10 @@ public abstract class MixinTitleScreen extends Screen {
         // 着色器切换按钮（左键下一个，右键上一个）
         this.shaderButton = this.addDrawableChild(
                 ButtonWidget.builder(
-                        Text.literal("背景: " + (mainMenuShader != null ? mainMenuShader.getCurrentShaderType().getDisplayName() : MainMenuShader.MainMenuShaderType.SAKURA2.getDisplayName())),
+                        Text.literal("背景: " + MainMenuShader.getSharedInstance().getCurrentShaderType().getDisplayName()),
                         button -> {
-                            if (mainMenuShader != null) {
-                                mainMenuShader.nextShader();
-                                button.setMessage(Text.literal("背景: " + mainMenuShader.getCurrentShaderType().getDisplayName()));
-                            }
+                            MainMenuShader.getSharedInstance().nextShader();
+                            button.setMessage(Text.literal("背景: " + MainMenuShader.getSharedInstance().getCurrentShaderType().getDisplayName()));
                         }
                 ).dimensions(this.width / 2 - 100, this.height - 30, 200, 20).build()
         );
@@ -163,9 +258,9 @@ public abstract class MixinTitleScreen extends Screen {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (this.shaderButton != null && this.shaderButton.isMouseOver(mouseX, mouseY)) {
-            if (button == 1 && mainMenuShader != null) { // 右键
-                mainMenuShader.previousShader();
-                this.shaderButton.setMessage(Text.literal("背景: " + mainMenuShader.getCurrentShaderType().getDisplayName()));
+            if (button == 1) { // 右键
+                MainMenuShader.getSharedInstance().previousShader();
+                this.shaderButton.setMessage(Text.literal("背景: " + MainMenuShader.getSharedInstance().getCurrentShaderType().getDisplayName()));
                 this.shaderButton.playDownSound(this.client.getSoundManager());
                 cir.setReturnValue(true);
             }

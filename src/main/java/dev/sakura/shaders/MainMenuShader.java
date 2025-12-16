@@ -19,10 +19,29 @@ import java.util.stream.Collectors;
 import static dev.sakura.Sakura.mc;
 
 public class MainMenuShader {
+    // 共享的SAKURA着色器实例（用于 SplashOverlay和TitleScreen之间的过渡）
+    private static MainMenuShader sharedInstance;
+
+    public static MainMenuShader getSharedInstance() {
+        if (sharedInstance == null) {
+            sharedInstance = new MainMenuShader(MainMenuShaderType.SAKURA);
+        }
+        return sharedInstance;
+    }
+
+    public static void cleanupSharedInstance() {
+        if (sharedInstance != null) {
+            sharedInstance.cleanup();
+            sharedInstance = null;
+        }
+    }
+
     private int programId;
     private int timeUniform;
     private int resolutionUniform;
+    private int transitionUniform;
     private float accumulatedTime;
+    private float transitionValue = 1.0f; // 1.0 = 正常显示
     private VertexBuffer vertexBuffer;
     private MainMenuShaderType currentShaderType;
     private boolean useAlternativeUniforms;
@@ -91,10 +110,12 @@ public class MainMenuShader {
         if (shaderType == MainMenuShaderType.MAIN_MENU) {
             this.timeUniform = GL20.glGetUniformLocation(program, "Time");
             this.resolutionUniform = GL20.glGetUniformLocation(program, "uSize");
+            this.transitionUniform = -1; // 不支持
             this.useAlternativeUniforms = true;
         } else {
             this.timeUniform = GL20.glGetUniformLocation(program, "time");
             this.resolutionUniform = GL20.glGetUniformLocation(program, "resolution");
+            this.transitionUniform = GL20.glGetUniformLocation(program, "transition");
             this.useAlternativeUniforms = false;
         }
         GL20.glUseProgram(0);
@@ -123,13 +144,10 @@ public class MainMenuShader {
     }
 
     public void render(int width, int height) {
-        /*if (currentShaderType == MainMenuShaderType.VIDEO) {
-            if (videoRenderer != null) {
-                videoRenderer.render(width, height);
-            }
-            return;
-        }*/
+        render(width, height, this.transitionValue);
+    }
 
+    public void render(int width, int height, float transition) {
         if (this.programId == 0 || this.vertexBuffer == null) return;
 
         RenderSystem.disableCull();
@@ -149,6 +167,11 @@ public class MainMenuShader {
             GL20.glUniform1f(this.timeUniform, accumulatedTime);
         }
 
+        // 设置过渡参数
+        if (this.transitionUniform >= 0) {
+            GL20.glUniform1f(this.transitionUniform, transition);
+        }
+
         this.vertexBuffer.bind();
         this.vertexBuffer.draw();
         VertexBuffer.unbind();
@@ -156,6 +179,14 @@ public class MainMenuShader {
         GL20.glUseProgram(0);
         RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
+    }
+
+    public void setTransition(float transition) {
+        this.transitionValue = transition;
+    }
+
+    public float getTransition() {
+        return this.transitionValue;
     }
 
     public void switchShaderType(MainMenuShaderType newType) {
@@ -241,7 +272,7 @@ public class MainMenuShader {
     public enum MainMenuShaderType {
         MAIN_MENU("mainmenu.fsh", "主菜单"),
         //SAKURA1("mainmenu_sakura1.fsh", "樱花效果 1"),
-        SAKURA2("mainmenu_sakura2.fsh", "樱花效果 2"),
+        SAKURA("mainmenu_sakura2.fsh", "樱花效果"),
         //SAKURA3("mainmenu_sakura3.fsh", "樱花效果 3"),
         SEA("mainmenu_sea.fsh", "海洋效果"),
         TOKYO("mainmenu_tokyo.fsh", "东京夜景"),

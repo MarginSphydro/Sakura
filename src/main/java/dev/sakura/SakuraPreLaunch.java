@@ -1,6 +1,6 @@
 package dev.sakura;
 
-import dev.sakura.manager.SoundManager;
+import dev.sakura.manager.impl.SoundManager;
 import net.fabricmc.api.ClientModInitializer;
 
 public class SakuraPreLaunch implements ClientModInitializer {

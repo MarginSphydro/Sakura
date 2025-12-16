@@ -36,7 +36,7 @@ public class DynamicIslandHud extends HudModule {
         static final long TOTAL = EXPAND + DISPLAY + COLLAPSE_1 + COLLAPSE_2;
     }
 
-    private enum Phase { IDLE, EXPANDING, DISPLAY, COLLAPSE_1, COLLAPSE_2 }
+    private enum Phase {IDLE, EXPANDING, DISPLAY, COLLAPSE_1, COLLAPSE_2}
 
     private final BoolValue blur = new BoolValue("Blur", true);
     private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 10.0, 1.0, 20.0, 0.5, blur::get);
@@ -82,7 +82,8 @@ public class DynamicIslandHud extends HudModule {
     }
 
     @Override
-    public void onRenderContent() {}
+    public void onRenderContent() {
+    }
 
     private boolean isHudEditorOpen() {
         HudEditor editor = Sakura.MODULE.getModule(HudEditor.class);
@@ -317,5 +318,6 @@ public class DynamicIslandHud extends HudModule {
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
     }
 
-    private record ToggleInfo(String name, boolean enabled) {}
+    private record ToggleInfo(String name, boolean enabled) {
+    }
 }

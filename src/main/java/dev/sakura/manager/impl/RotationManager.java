@@ -1,4 +1,4 @@
-package dev.sakura.manager;
+package dev.sakura.manager.impl;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.packet.PacketEvent;
@@ -21,6 +21,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.Set;
 
+//TODO:这个polaruser重写吧。。
 public class RotationManager {
 
     public static final RotationManager INSTANCE = new RotationManager();

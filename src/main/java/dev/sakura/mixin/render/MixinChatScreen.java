@@ -30,22 +30,19 @@ public class MixinChatScreen {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void onRenderPost(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (chatField == null || Sakura.COMMAND == null) return;
-        if (!chatField.getText().startsWith(Sakura.COMMAND.getPrefix())) return;
-
-        var window = chatInputSuggestor != null ? ((IChatInputSuggestor) chatInputSuggestor).getWindow() : null;
+        if (chatField == null || !chatField.getText().startsWith(Sakura.COMMAND.getPrefix())) return;
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             final float PAD = 0.5F;
             final Color SAKURA = new Color(255, 183, 197);
 
-            NanoVGHelper.drawRectOutline(2 - PAD, mc.getWindow().getScaledHeight() - 14 - PAD,
-                    mc.getWindow().getScaledWidth() - 4 + PAD * 2, 12 + PAD * 2, 2f, SAKURA);
+            NanoVGHelper.drawRectOutline(2 - PAD, mc.getWindow().getScaledHeight() - 14 - PAD, mc.getWindow().getScaledWidth() - 4 + PAD * 2, 12 + PAD * 2, 0.7f, SAKURA);
 
+            var window = ((IChatInputSuggestor) chatInputSuggestor).getWindow();
             if (window != null) {
                 Rect2i a = ((ISuggestionWindow) window).getArea();
                 NanoVGHelper.drawRectOutline(a.getX() - PAD, a.getY() - PAD,
-                        a.getWidth() + PAD * 2, a.getHeight() + PAD * 2, 2f, SAKURA);
+                        a.getWidth() + PAD * 2, a.getHeight() + PAD * 2, 0.7f, SAKURA);
             }
         });
     }

@@ -1,4 +1,4 @@
-package dev.sakura.manager;
+package dev.sakura.manager.impl;
 
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;

@@ -1,4 +1,4 @@
-package dev.sakura.mixin.render.item;
+package dev.sakura.mixin.render;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.render.item.EatTransformationEvent;

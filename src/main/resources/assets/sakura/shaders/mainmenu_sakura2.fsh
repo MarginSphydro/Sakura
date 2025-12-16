@@ -2,6 +2,7 @@
 
 uniform vec2 resolution;
 uniform float time;
+uniform float transition;
 
 out vec4 fragColor;
 
@@ -14,8 +15,7 @@ vec4 N14(float t) {
 }
 
 
-vec4 sakura(vec2 uv, vec2 id, float blur)
-{
+vec4 sakura(vec2 uv, vec2 id, float blur) {
     float t = time + 45.0; 
 
     vec4 rnd = N14(mod(id.x, 500.0) * 5.4 + mod(id.y, 500.0) * 13.67); 
@@ -111,21 +111,34 @@ vec4 layer(vec2 uv, float blur)
 
 
 
-void main()
-{
+void main() {
     vec2 fragCoord = gl_FragCoord.xy;
     vec2 nominalUV = fragCoord/resolution.xy;
 
     vec2 uv = nominalUV - 0.5;
     uv.x *= resolution.x / resolution.y;
 
+    float t = clamp(transition, 0.0, 1.0);
+
+    float easeT = 1.0 - pow(1.0 - t, 3.0);
+
+    float centerDist = length(uv);
+
+    float expandRadius = easeT * 3.5;
+    float expandMask = smoothstep(expandRadius - 1.5, expandRadius, centerDist);
+    expandMask = 1.0 - expandMask;
+
+    float alpha = smoothstep(0.0, 0.1, t);
+
     uv.y += time * 0.1;
     uv.x -= time * 0.03 + sin(time) * 0.1;
 
-    uv *= 4.3;
+    float scaleTransition = mix(0.2, 1.0, easeT);
+    uv *= 4.3 * scaleTransition;
 
     float screenY = nominalUV.y;
-    vec3 col = mix(vec3(1.0, 0.7529, 0.8235), vec3(1.0, 0.7529, 0.8235), screenY);
+    vec3 bgColor = vec3(1.0, 0.7529, 0.8235) - 0.15;
+    vec3 col = bgColor;
 
     float blur = abs(nominalUV.y - 0.5) * 1.4;
     blur *= blur * 0.15;
@@ -136,12 +149,14 @@ void main()
     vec4 layer3 = layer(uv * 2.3 + vec2(463.5, -987.30), 0.08 + blur);
     layer3.rgb *= mix(0.55, 0.85, screenY);
 
-	col = premulMix(layer3, col);
-    col = premulMix(layer2, col);
-	col = premulMix(layer1, col);
+    vec3 sakuraCol = bgColor;
+	sakuraCol = premulMix(layer3, sakuraCol);
+    sakuraCol = premulMix(layer2, sakuraCol);
+	sakuraCol = premulMix(layer1, sakuraCol);
+    sakuraCol += -0.15;
 
-    col += -0.15;
+    float finalMask = expandMask * alpha;
+    col = mix(bgColor, sakuraCol, finalMask);
 
-
-    fragColor = vec4(col,1.0);
+    fragColor = vec4(col, 1.0);
 }
