@@ -208,7 +208,7 @@ public class MainMenuShader {
     public void nextShader() {
         MainMenuShaderType next = currentShaderType.next();
 
-        while (next == MainMenuShaderType.MAIN_MENU) {
+        while (next == MainMenuShaderType.MAIN_MENU || next == MainMenuShaderType.BSW) {
             next = next.next();
         }
         switchShaderType(next);
@@ -217,7 +217,7 @@ public class MainMenuShader {
     public void previousShader() {
         MainMenuShaderType prev = currentShaderType.previous();
 
-        while (prev == MainMenuShaderType.MAIN_MENU) {
+        while (prev == MainMenuShaderType.MAIN_MENU || prev == MainMenuShaderType.BSW) {
             prev = prev.previous();
         }
         switchShaderType(prev);
@@ -235,6 +235,59 @@ public class MainMenuShader {
         if (this.videoRenderer != null) {
             this.videoRenderer.cleanup();
             this.videoRenderer = null;
+        }
+    }
+
+    public enum MainMenuShaderType {
+        MAIN_MENU("mainmenu.fsh", "主菜单"),
+        //SAKURA1("mainmenu_sakura1.fsh", "樱花效果 1"),
+        SAKURA2("mainmenu_sakura2.fsh", "樱花效果 2"),
+        //SAKURA3("mainmenu_sakura3.fsh", "樱花效果 3"),
+        SEA("mainmenu_sea.fsh", "海洋效果"),
+        TOKYO("mainmenu_tokyo.fsh", "东京夜景"),
+        BSW("mainmenubsw.fsh", "流光波纹"),
+        MOON("mainmenu_moon.fsh", "月球漫步");
+        //JOURNEY("mainmenu_journey.fsh", "旅程效果"),
+        //DRIVE_HOME("mainmenu_drivehome.fsh", "驾车回家"),
+        //HEARTFELT("mainmenu_heartfelt.fsh", "爱心雨滴"), TODO:爱心雨滴依赖背景不然很丑
+
+        private final String fragmentShaderPath;
+        private final String displayName;
+
+        MainMenuShaderType(String fragmentShader, String displayName) {
+            this.fragmentShaderPath = "/assets/sakura/shaders/" + fragmentShader;
+            this.displayName = displayName;
+        }
+
+        public String getFragmentShaderPath() {
+            return fragmentShaderPath;
+        }
+
+        public String getVertexShaderPath() {
+            return "/assets/sakura/shaders/mainmenu_passthrough.vsh";
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public MainMenuShaderType next() {
+            MainMenuShaderType[] values = values();
+            return values[(this.ordinal() + 1) % values.length];
+        }
+
+        public MainMenuShaderType previous() {
+            MainMenuShaderType[] values = values();
+            return values[(this.ordinal() - 1 + values.length) % values.length];
+        }
+
+        public static MainMenuShaderType fromName(String name) {
+            for (MainMenuShaderType type : values()) {
+                if (type.name().equalsIgnoreCase(name)) {
+                    return type;
+                }
+            }
+            return null;
         }
     }
 }

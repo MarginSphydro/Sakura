@@ -1,7 +1,6 @@
 package dev.sakura.mixin.render;
 
 import dev.sakura.shaders.MainMenuShader;
-import dev.sakura.shaders.MainMenuShaderType;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.AccessibilityOnboardingButtons;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,7 +27,6 @@ import static dev.sakura.Sakura.mc;
 
 @Mixin(TitleScreen.class)
 public abstract class MixinTitleScreen extends Screen {
-
     @Unique
     private static MainMenuShader mainMenuShader;
 
@@ -86,7 +84,7 @@ public abstract class MixinTitleScreen extends Screen {
     public void renderPanoramaBackgroundHook(DrawContext context, float delta, CallbackInfo ci) {
         if (mc.world == null) {
             if (mainMenuShader == null) {
-                mainMenuShader = new MainMenuShader(MainMenuShaderType.SAKURA2);
+                mainMenuShader = new MainMenuShader(MainMenuShader.MainMenuShaderType.SAKURA2);
             }
             mainMenuShader.render(this.width, this.height);
             ci.cancel();
@@ -130,7 +128,7 @@ public abstract class MixinTitleScreen extends Screen {
         // 着色器切换按钮（左键下一个，右键上一个）
         this.shaderButton = this.addDrawableChild(
                 ButtonWidget.builder(
-                        Text.literal("背景: " + (mainMenuShader != null ? mainMenuShader.getCurrentShaderType().getDisplayName() : MainMenuShaderType.SAKURA2.getDisplayName())),
+                        Text.literal("背景: " + (mainMenuShader != null ? mainMenuShader.getCurrentShaderType().getDisplayName() : MainMenuShader.MainMenuShaderType.SAKURA2.getDisplayName())),
                         button -> {
                             if (mainMenuShader != null) {
                                 mainMenuShader.nextShader();

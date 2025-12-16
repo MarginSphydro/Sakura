@@ -1,7 +1,6 @@
 package dev.sakura.mixin.render;
 
 import dev.sakura.shaders.MainMenuShader;
-import dev.sakura.shaders.MainMenuShaderType;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +27,7 @@ public class MixinScreen {
     public void renderPanoramaBackgroundHook(DrawContext context, float delta, CallbackInfo ci) {
         if (mc.world == null) {
             if (mainMenuShader == null) {
-                mainMenuShader = new MainMenuShader(MainMenuShaderType.MAIN_MENU);
+                mainMenuShader = new MainMenuShader(MainMenuShader.MainMenuShaderType.BSW);
             }
             mainMenuShader.render(this.width, this.height);
             ci.cancel();
