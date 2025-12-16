@@ -246,7 +246,7 @@ public class MainMenuShader {
         SEA("mainmenu_sea.fsh", "海洋效果"),
         TOKYO("mainmenu_tokyo.fsh", "东京夜景"),
         BSW("mainmenubsw.fsh", "流光波纹"),
-        MOON("mainmenu_moon.fsh", "月球漫步");
+        MOON("mainmenu_moon.fsh", "月球飞行");
         //JOURNEY("mainmenu_journey.fsh", "旅程效果"),
         //DRIVE_HOME("mainmenu_drivehome.fsh", "驾车回家"),
         //HEARTFELT("mainmenu_heartfelt.fsh", "爱心雨滴"), TODO:爱心雨滴依赖背景不然很丑
