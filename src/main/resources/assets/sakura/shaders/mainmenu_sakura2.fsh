@@ -116,13 +116,16 @@ void main() {
     vec2 nominalUV = fragCoord/resolution.xy;
 
     vec2 uv = nominalUV - 0.5;
-    uv.x *= resolution.x / resolution.y;
+    float aspectRatio = resolution.x / resolution.y;
+    uv.x *= aspectRatio;
+
+    vec2 originalUV = uv;
 
     float t = clamp(transition, 0.0, 1.0);
 
-    float easeT = 1.0 - pow(1.0 - t, 3.0);
+    float easeT = t < 0.5 ? 2.0 * t * t : 1.0 - pow(-2.0 * t + 2.0, 2.0) / 2.0;
 
-    float centerDist = length(uv);
+    float centerDist = length(originalUV);
 
     float expandRadius = easeT * 3.5;
     float expandMask = smoothstep(expandRadius - 0.5, expandRadius + 0.5, centerDist);
@@ -133,11 +136,9 @@ void main() {
     uv.y += time * 0.1;
     uv.x -= time * 0.03 + sin(time) * 0.1;
 
-    float scaleTransition = mix(0.02, 1.0, easeT);
+    float scaleT = easeT;
+    float scaleTransition = mix(0.1, 1.0, scaleT);
 
-    vec2 burstOffset = normalize(uv + 0.001) * (1.0 - easeT) * 0.5;
-    uv += burstOffset;
-    
     uv *= 4.3 * scaleTransition;
 
     float screenY = nominalUV.y;
