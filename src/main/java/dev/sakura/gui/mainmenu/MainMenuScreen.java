@@ -189,14 +189,14 @@ public class MainMenuScreen extends Screen {
 
         MainMenuShader.getSharedInstance().render(this.width, this.height, finalTransitionProgress);
 
-        /*renderButtonBlurs(context, finalTransitionProgress);
+        renderButtonBlurs(context, finalTransitionProgress);
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             renderIcon(vg, finalTransitionProgress);
             renderButtons(vg, mouseX, mouseY, finalTransitionProgress);
             renderVersionText(vg, finalTransitionProgress);
             renderCopyright(vg, finalTransitionProgress);
-        });*/
+        });
     }
 
     private void renderButtonBlurs(DrawContext context, float transitionProgress) {
