@@ -57,6 +57,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new NoRender());
             manager.tryLoad(() -> new SwingAnimation());
             manager.tryLoad(() -> new ViewModel());
+            manager.tryLoad(() -> new Hat());
 
             // Client
             manager.tryLoad(() -> new ClickGui());
