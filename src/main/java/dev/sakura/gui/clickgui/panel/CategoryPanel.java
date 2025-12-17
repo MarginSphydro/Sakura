@@ -1,8 +1,8 @@
-package dev.sakura.gui.dropdown.panel;
+package dev.sakura.gui.clickgui.panel;
 
 import dev.sakura.Sakura;
 import dev.sakura.gui.IComponent;
-import dev.sakura.gui.dropdown.component.ModuleComponent;
+import dev.sakura.gui.clickgui.component.ModuleComponent;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;

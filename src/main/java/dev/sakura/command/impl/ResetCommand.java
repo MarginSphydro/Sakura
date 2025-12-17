@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.sakura.Sakura;
 import dev.sakura.command.Command;
 import dev.sakura.command.ModuleArgumentType;
-import dev.sakura.gui.dropdown.panel.CategoryPanel;
+import dev.sakura.gui.clickgui.panel.CategoryPanel;
 import dev.sakura.module.Module;
 import dev.sakura.utils.client.ChatUtils;
 import net.minecraft.command.CommandSource;

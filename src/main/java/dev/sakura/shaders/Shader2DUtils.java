@@ -1,8 +1,9 @@
 package dev.sakura.shaders;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.sakura.gui.dropdown.ClickGuiScreen;
+import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
+import dev.sakura.gui.mainmenu.MainMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,8 +20,7 @@ public class Shader2DUtils {
 
     private static boolean shouldSkipBlur() {
         Screen screen = mc.currentScreen;
-        if (screen == null) return false;
-        return !(screen instanceof ClickGuiScreen || screen instanceof HudEditorScreen);
+        return !(screen instanceof ClickGuiScreen || screen instanceof HudEditorScreen || screen instanceof MainMenuScreen);
     }
 
     public static void init() {

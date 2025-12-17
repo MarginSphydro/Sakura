@@ -5,7 +5,6 @@ import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.utils.animations.Easing;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 
 import java.awt.*;
@@ -78,8 +77,7 @@ public class NotificationManager {
         float width = Math.min(Math.max(minWidth, textWidth), maxWidth);
 
         if (blur) {
-            float scale = (float) MinecraftClient.getInstance().getWindow().getScaleFactor();
-            Shader2DUtils.drawRoundedBlur(matrices, x * scale, y * scale, width * scale, height * scale, 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
+            Shader2DUtils.drawRoundedBlur(matrices, x, y, width, height, 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
         }
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
@@ -98,15 +96,13 @@ public class NotificationManager {
     }
 
     public static void render(MatrixStack matrices, float x, float y, boolean leftAligned, Color primaryColor, Color backgroundColor, float maxWidth, boolean blur, float blurStrength) {
-        float scale = (float) MinecraftClient.getInstance().getWindow().getScaleFactor();
-
         if (blur) {
             float offsetY = 0;
             for (int i = notifications.size() - 1; i >= 0; i--) {
                 Notification notification = notifications.get(i);
                 float[] bounds = notification.getBounds(x, y + offsetY, maxWidth);
                 if (bounds != null) {
-                    Shader2DUtils.drawRoundedBlur(matrices, bounds[0] * scale, bounds[1] * scale, bounds[2] * scale, bounds[3] * scale, 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
+                    Shader2DUtils.drawRoundedBlur(matrices, bounds[0], bounds[1], bounds[2], bounds[3], 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
                     offsetY += bounds[3] + 4.0f;
                 }
             }

@@ -2,7 +2,7 @@ package dev.sakura;
 
 import dev.sakura.command.CommandManager;
 import dev.sakura.config.ConfigManager;
-import dev.sakura.gui.dropdown.ClickGuiScreen;
+import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.Managers;
 import dev.sakura.module.ModuleManager;

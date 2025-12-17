@@ -1,8 +1,8 @@
-package dev.sakura.gui.dropdown.component;
+package dev.sakura.gui.clickgui.component;
 
 import dev.sakura.gui.Component;
 import dev.sakura.gui.IComponent;
-import dev.sakura.gui.dropdown.component.values.*;
+import dev.sakura.gui.clickgui.component.values.*;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;

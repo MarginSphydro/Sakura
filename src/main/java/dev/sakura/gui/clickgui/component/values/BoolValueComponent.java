@@ -1,4 +1,4 @@
-package dev.sakura.gui.dropdown.component.values;
+package dev.sakura.gui.clickgui.component.values;
 
 import dev.sakura.gui.Component;
 import dev.sakura.module.impl.client.ClickGui;

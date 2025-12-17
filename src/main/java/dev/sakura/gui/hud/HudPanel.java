@@ -5,6 +5,7 @@ import dev.sakura.gui.IComponent;
 import dev.sakura.gui.hud.component.HudModuleComponent;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
+import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -18,7 +19,8 @@ import java.awt.*;
 
 public class HudPanel implements IComponent {
     private float x, y, dragX, dragY;
-    private float width = 110, height;
+    private final float width = 110;
+    private float height;
     private boolean dragging, opened;
     private final ObjectArrayList<HudModuleComponent> hudComponents = new ObjectArrayList<>();
     private final EaseInOutQuad openAnimation = new EaseInOutQuad(250, 1);
@@ -39,10 +41,10 @@ public class HudPanel implements IComponent {
         update(mouseX, mouseY);
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawRoundRectBloom(x, y - 1, width, (float) (18 + ((height - 18))), 7, new Color(30, 30, 30, 180));
-
+            Color bgColor = ClickGui.backgroundColor.get();
+            NanoVGHelper.drawRoundRectBloom(x, y - 1, width, 18 + ((height - 18)), 7, new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 100));
             NanoVGHelper.drawString("HUD", x + 4, y + 12f, FontLoader.greycliffBold(10), 10, new Color(255, 255, 255, 255));
-            NanoVGHelper.drawString("H", x + 4 + width - NanoVGHelper.getTextWidth("H", FontLoader.icons(15), 15) - 3, y + 13f, FontLoader.icons(15), 15, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString("H", x + width - NanoVGHelper.getTextWidth("H", FontLoader.icons(15), 15) - 3, y + 13f, FontLoader.icons(15), 15, new Color(255, 255, 255, 255));
         });
 
         float componentOffsetY = 18;
@@ -98,6 +100,28 @@ public class HudPanel implements IComponent {
         }
 
         return handled || IComponent.super.mouseReleased(mouseX, mouseY, state);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        boolean handled = false;
+        for (HudModuleComponent component : hudComponents) {
+            if (component.keyPressed(keyCode, scanCode, modifiers)) {
+                handled = true;
+            }
+        }
+        return handled || IComponent.super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        boolean handled = false;
+        for (HudModuleComponent component : hudComponents) {
+            if (component.charTyped(chr, modifiers)) {
+                handled = true;
+            }
+        }
+        return handled || IComponent.super.charTyped(chr, modifiers);
     }
 
     public void update(int mouseX, int mouseY) {

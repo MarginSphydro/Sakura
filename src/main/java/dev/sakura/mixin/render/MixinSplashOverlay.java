@@ -1,5 +1,6 @@
 package dev.sakura.mixin.render;
 
+import dev.sakura.gui.mainmenu.MainMenuScreen;
 import dev.sakura.shaders.SplashShader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -55,10 +56,13 @@ public class MixinSplashOverlay {
     private long sakura$startTime = -1L;
 
     @Unique
-    private static final float PROGRESS_SMOOTH_SPEED = 0.3f; // 进度平滑速度
+    private MainMenuScreen sakura$mainMenuScreen = null;
 
     @Unique
-    private static final long MIN_DISPLAY_TIME = 5700L; // 最小显示时间
+    private static final float PROGRESS_SMOOTH_SPEED = 0.3f;
+
+    @Unique
+    private static final long MIN_DISPLAY_TIME = 5700L;
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void onRenderHead(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
@@ -98,19 +102,18 @@ public class MixinSplashOverlay {
 
         float zoom = 1.0f;
         float fadeOut = 0f;
-        float transitionProgress;
 
         if (SplashShader.getInstance().isTransitionStarted()) {
-            transitionProgress = SplashShader.getInstance().getTransitionProgress();
+            float transitionProgress = SplashShader.getInstance().getTransitionProgress();
             zoom = 1.0f + transitionProgress * transitionProgress * 25.0f;
             if (transitionProgress > 0.3f) {
                 fadeOut = (transitionProgress - 0.3f) / 0.7f;
                 fadeOut = fadeOut * fadeOut;
             }
-        }
 
-        if (SplashShader.getInstance().isTransitionStarted() && this.client.currentScreen != null) {
-            this.client.currentScreen.render(context, 0, 0, delta);
+            if (sakura$mainMenuScreen != null) {
+                sakura$mainMenuScreen.render(context, 0, 0, delta);
+            }
         }
 
         if (fadeOut < 0.99f) {
@@ -119,6 +122,10 @@ public class MixinSplashOverlay {
 
         if (fadeOutProgress >= 2.0F || SplashShader.getInstance().isTransitionComplete()) {
             this.client.setOverlay(null);
+            if (sakura$mainMenuScreen != null) {
+                this.client.setScreen(sakura$mainMenuScreen);
+                sakura$mainMenuScreen = null;
+            }
             SplashShader.getInstance().cleanup();
             sakura$shaderInitialized = false;
         }
@@ -136,9 +143,8 @@ public class MixinSplashOverlay {
             this.reloadCompleteTime = Util.getMeasuringTimeMs();
             SplashShader.getInstance().startTransition();
 
-            if (this.client.currentScreen != null) {
-                this.client.currentScreen.init(this.client, width, height);
-            }
+            sakura$mainMenuScreen = new MainMenuScreen();
+            sakura$mainMenuScreen.init(this.client, width, height);
         }
 
         ci.cancel();

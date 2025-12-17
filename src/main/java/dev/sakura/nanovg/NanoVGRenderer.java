@@ -141,11 +141,19 @@ public class NanoVGRenderer {
         int width = mc.getWindow().getWidth();
         int height = mc.getWindow().getHeight();
 
+        boolean wasScaled = scaled;
+
         nvgEndFrame(vg);
 
         drawer.run();
 
         nvgBeginFrame(vg, width, height, 1.0f);
+
+        if (wasScaled) {
+            float scale = getScaleFactor();
+            nvgSave(vg);
+            nvgScale(vg, scale, scale);
+        }
     }
 
     public boolean isInFrame() {

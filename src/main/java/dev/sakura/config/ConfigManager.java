@@ -2,7 +2,7 @@ package dev.sakura.config;
 
 import com.google.gson.*;
 import dev.sakura.Sakura;
-import dev.sakura.gui.dropdown.panel.CategoryPanel;
+import dev.sakura.gui.clickgui.panel.CategoryPanel;
 import dev.sakura.gui.hud.HudPanel;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;

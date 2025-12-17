@@ -1,7 +1,7 @@
-package dev.sakura.gui.dropdown;
+package dev.sakura.gui.clickgui;
 
 import dev.sakura.Sakura;
-import dev.sakura.gui.dropdown.panel.CategoryPanel;
+import dev.sakura.gui.clickgui.panel.CategoryPanel;
 import dev.sakura.module.Category;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;

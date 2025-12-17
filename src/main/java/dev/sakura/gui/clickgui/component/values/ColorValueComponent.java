@@ -1,4 +1,4 @@
-package dev.sakura.gui.dropdown.component.values;
+package dev.sakura.gui.clickgui.component.values;
 
 import dev.sakura.gui.Component;
 import dev.sakura.nanovg.NanoVGRenderer;
@@ -61,7 +61,7 @@ public class ColorValueComponent extends Component {
         NanoVGRenderer.INSTANCE.draw(canvas -> {
             NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(7.5f), 7.5f, new Color(255, 255, 255, 255));
 
-            NanoVGHelper.drawCircle(getX() + getWidth() - 9, getY() - 3, 4, setting.get());
+            NanoVGHelper.drawCircle(getX() + getWidth() - 5, getY() - 3, 4, setting.get());
 
             if (open.getOutput() > 0.01) {
                 float sliderX = getX();
@@ -215,7 +215,7 @@ public class ColorValueComponent extends Component {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (isHovering(getX() + getWidth() - 17, getY() - 7, 8, 8, mouseX, mouseY)) {
+        if (isHovering(getX() + getWidth() - 9, getY() - 7, 8, 8, mouseX, mouseY)) {
             opened = !opened;
             if (!opened) {
                 editField = EditField.NONE;
@@ -227,7 +227,7 @@ public class ColorValueComponent extends Component {
             float gradientY = getY() + fontHeight + 2;
             float gradientHeight = (float) (50 * open.getOutput());
             float sliderX = getX();
-            float sliderWidth = getWidth() - 8;
+            float sliderWidth = getWidth();
 
             if (isHovering(getX(), gradientY, sliderWidth, gradientHeight, mouseX, mouseY) && mouseButton == 0) {
                 pickingOthers = true;

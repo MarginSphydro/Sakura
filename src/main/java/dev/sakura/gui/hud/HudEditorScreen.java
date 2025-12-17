@@ -17,6 +17,7 @@ import static dev.sakura.Sakura.mc;
 
 public class HudEditorScreen extends Screen {
     private final HudPanel hudPanel;
+    private float accumulatedScroll = 0;
 
     public HudEditorScreen() {
         super(Text.literal("HUD Editor"));
@@ -76,6 +77,31 @@ public class HudEditorScreen extends Screen {
             }
         }
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (hudPanel.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        if (hudPanel.charTyped(chr, modifiers)) {
+            return true;
+        }
+        return super.charTyped(chr, modifiers);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        accumulatedScroll += (float) scrollY;
+        if (!hudPanel.isDragging()) {
+            hudPanel.setY(hudPanel.getY() + (scrollY > 0 ? 15 : -15));
+        }
+        return true;
     }
 
     @Override

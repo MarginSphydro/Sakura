@@ -5,7 +5,7 @@ import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.player.SlowdownEvent;
 import dev.sakura.events.type.EventType;
-import dev.sakura.gui.dropdown.ClickGuiScreen;
+import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;

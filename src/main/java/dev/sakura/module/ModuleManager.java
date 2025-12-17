@@ -5,7 +5,7 @@ import dev.sakura.events.input.MouseButtonEvent;
 import dev.sakura.events.misc.KeyAction;
 import dev.sakura.events.misc.KeyEvent;
 import dev.sakura.events.render.Render2DEvent;
-import dev.sakura.gui.dropdown.ClickGuiScreen;
+import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.impl.NotificationManager;
 import dev.sakura.manager.impl.SoundManager;

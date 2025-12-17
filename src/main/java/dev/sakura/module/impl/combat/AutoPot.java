@@ -1,7 +1,7 @@
 package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
-import dev.sakura.gui.dropdown.ClickGuiScreen;
+import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.combat.CombatUtil;

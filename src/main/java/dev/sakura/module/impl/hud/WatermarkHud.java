@@ -13,10 +13,6 @@ import dev.sakura.values.impl.NumberValue;
 
 import java.awt.*;
 
-/**
- * @Author renjun
- * @Date 2025/12/8 9:42
- */
 public class WatermarkHud extends HudModule {
     private final Value<Double> hudScale = new NumberValue<>("Scale", 1.0, 0.5, 2.0, 0.1);
     private final Value<Color> backgroundColor = new ColorValue("Background Color", new Color(0, 0, 0, 50));
