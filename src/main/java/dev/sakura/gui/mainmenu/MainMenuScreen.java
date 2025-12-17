@@ -2,7 +2,7 @@ package dev.sakura.gui.mainmenu;
 
 import com.mojang.authlib.minecraft.BanDetails;
 import dev.sakura.nanovg.NanoVGRenderer;
-import dev.sakura.nanovg.font.FontManager;
+import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.MainMenuShader;
 import dev.sakura.shaders.Shader2DUtils;
@@ -18,24 +18,16 @@ import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
-import org.lwjgl.nanovg.NVGPaint;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
 
 import java.awt.*;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import static dev.sakura.Sakura.mc;
-import static org.lwjgl.nanovg.NanoVG.*;
 
 public class MainMenuScreen extends Screen {
     private final List<MenuButton> buttons = new ArrayList<>();
     private int iconImage = -1;
-    private boolean iconLoaded = false;
     private int iconWidth, iconHeight;
 
     private long initTime = 0;
@@ -120,37 +112,12 @@ public class MainMenuScreen extends Screen {
     }
 
     private void loadIcon() {
-        if (iconLoaded) return;
+        if (iconImage != -1) return;
 
-        try {
-            InputStream is = MainMenuScreen.class.getResourceAsStream("/assets/sakura/icons/icon.png");
-
-            byte[] bytes = is.readAllBytes();
-            is.close();
-
-            ByteBuffer imageBuffer = ByteBuffer.allocateDirect(bytes.length);
-            imageBuffer.put(bytes);
-            imageBuffer.flip();
-
-            try (MemoryStack stack = MemoryStack.stackPush()) {
-                IntBuffer w = stack.mallocInt(1);
-                IntBuffer h = stack.mallocInt(1);
-                IntBuffer comp = stack.mallocInt(1);
-
-                ByteBuffer decoded = STBImage.stbi_load_from_memory(imageBuffer, w, h, comp, 4);
-                if (decoded != null) {
-                    iconWidth = w.get(0);
-                    iconHeight = h.get(0);
-
-                    long vg = NanoVGRenderer.INSTANCE.getContext();
-                    iconImage = nvgCreateImageRGBA(vg, iconWidth, iconHeight, 0, decoded);
-                    iconLoaded = iconImage != -1;
-
-                    STBImage.stbi_image_free(decoded);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        iconImage = NanoVGHelper.loadTexture("/assets/sakura/icons/icon.png");
+        if (iconImage != -1) {
+            iconWidth = 2334;
+            iconHeight = 860;
         }
     }
 
@@ -192,7 +159,7 @@ public class MainMenuScreen extends Screen {
         renderButtonBlurs(context, finalTransitionProgress);
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            renderIcon(vg, finalTransitionProgress);
+            renderIcon(finalTransitionProgress);
             renderButtons(vg, mouseX, mouseY, finalTransitionProgress);
             renderVersionText(vg, finalTransitionProgress);
             renderCopyright(vg, finalTransitionProgress);
@@ -241,8 +208,8 @@ public class MainMenuScreen extends Screen {
         }
     }
 
-    private void renderIcon(long vg, float transitionProgress) {
-        if (!iconLoaded || iconImage == -1) return;
+    private void renderIcon(float transitionProgress) {
+        if (iconImage == -1) return;
 
         float scale = 0.15f;
         float displayWidth = iconWidth * scale;
@@ -253,22 +220,18 @@ public class MainMenuScreen extends Screen {
 
         float easeT = 1.0f - (float) Math.pow(1.0f - transitionProgress, 3.0);
         float iconScale = 0.5f + easeT * 0.5f;
-        int alpha = (int) (255 * transitionProgress);
 
-        nvgSave(vg);
-        nvgTranslate(vg, x + displayWidth / 2f, y + displayHeight / 2f);
-        nvgScale(vg, iconScale, iconScale);
-        nvgTranslate(vg, -displayWidth / 2f, -displayHeight / 2f);
-
-        NVGPaint paint = NVGPaint.create();
-        nvgImagePattern(vg, 0, 0, displayWidth, displayHeight, 0, iconImage, alpha / 255f, paint);
-
-        nvgBeginPath(vg);
-        nvgRect(vg, 0, 0, displayWidth, displayHeight);
-        nvgFillPaint(vg, paint);
-        nvgFill(vg);
-
-        nvgRestore(vg);
+        NanoVGHelper.drawTexture(
+                iconImage,
+                x,
+                y,
+                displayWidth,
+                displayHeight,
+                transitionProgress,
+                iconScale,
+                iconScale,
+                0
+        );
     }
 
     private void renderButtons(long vg, int mouseX, int mouseY, float transitionProgress) {
@@ -312,7 +275,7 @@ public class MainMenuScreen extends Screen {
             version += I18n.translate("menu.modded");
         }
 
-        int font = FontManager.fontWithCJK("regular.otf", 12);
+        int font = FontLoader.greycliffRegular(12);
         int alpha = (int) (255 * transitionProgress);
         Color color = new Color(255, 255, 255, alpha);
 
@@ -321,7 +284,7 @@ public class MainMenuScreen extends Screen {
 
     private void renderCopyright(long vg, float transitionProgress) {
         String copyright = I18n.translate("title.credits");
-        int font = FontManager.fontWithCJK("regular.otf", 12);
+        int font = FontLoader.greycliffRegular(12);
         float textWidth = NanoVGHelper.getTextWidth(copyright, font, 12);
 
         int alpha = (int) (255 * transitionProgress);
@@ -354,6 +317,10 @@ public class MainMenuScreen extends Screen {
     @Override
     public void removed() {
         super.removed();
+        if (iconImage != -1) {
+            NanoVGHelper.deleteTexture(iconImage);
+            iconImage = -1;
+        }
     }
 
     private static class MenuButton {
@@ -394,29 +361,17 @@ public class MainMenuScreen extends Screen {
             float targetHover = hovered && enabled ? 1.0f : 0.0f;
             hoverProgress += (targetHover - hoverProgress) * 0.2f;
 
-            float centerX = x + width / 2f;
-            float centerY = y + height / 2f;
-
-            nvgSave(vg);
-            nvgTranslate(vg, centerX, centerY);
-            nvgScale(vg, scale, scale);
-            nvgTranslate(vg, -centerX, -centerY);
-
             int baseAlpha = (int) (alpha * 255);
             int bgAlpha = enabled ? (int) (baseAlpha * (0.4f + hoverProgress * 0.2f)) : (int) (baseAlpha * 0.2f);
 
-            Color bgColor = enabled
-                    ? new Color(255, 200, 220, bgAlpha)
-                    : new Color(128, 128, 128, bgAlpha);
-            NanoVGHelper.drawRoundRect(x, y, width, height, 4, bgColor);
+            Color bgColor = enabled ? new Color(255, 200, 220, bgAlpha) : new Color(128, 128, 128, bgAlpha);
+            NanoVGHelper.drawRoundRectScaled(x, y, width, height, 4, bgColor, scale);
 
             int borderAlpha = (int) (baseAlpha * (0.5f + hoverProgress * 0.3f));
-            Color borderColor = enabled
-                    ? new Color(255, 150, 180, borderAlpha)
-                    : new Color(100, 100, 100, borderAlpha);
-            NanoVGHelper.drawRoundRectOutline(x, y, width, height, 4, 1, borderColor);
+            Color borderColor = enabled ? new Color(255, 150, 180, borderAlpha) : new Color(100, 100, 100, borderAlpha);
+            NanoVGHelper.drawRoundRectOutlineScaled(x, y, width, height, 4, 1, borderColor, scale);
 
-            int font = FontManager.fontWithCJK("regular.otf", 14);
+            int font = FontLoader.greycliffRegular(14);
             float textWidth = NanoVGHelper.getTextWidth(text, font, 14);
             float textX = x + (width - textWidth) / 2f;
             float textY = y + height / 2f + 5;
@@ -424,8 +379,6 @@ public class MainMenuScreen extends Screen {
             int textAlpha = enabled ? baseAlpha : (int) (baseAlpha * 0.6f);
             Color textColor = new Color(255, 255, 255, textAlpha);
             NanoVGHelper.drawString(text, textX, textY, font, 14, textColor);
-
-            nvgRestore(vg);
         }
     }
 

@@ -94,13 +94,15 @@ void main() {
 
     float currentZoom = max(1.0, zoom);
 
-    float rotation = time * 0.5 + (currentZoom - 1.0) * 3.5;
+    float zoomProgress = smoothstep(1.0, 8.0, currentZoom);
+    float rotationSpeed = mix(0.5, 4.0, zoomProgress);
+    float rotation = time * rotationSpeed + (currentZoom - 1.0) * 3.5;
 
     float scale = 2.5 / currentZoom;
     
     vec4 sakuraResult = sakura(uv * scale, 0.02 / currentZoom, rotation);
 
-    float fadeAlpha = 1.0 - smoothstep(1.0, 8.0, currentZoom);
+    float fadeAlpha = 1.0 - smoothstep(1.0, 6.0, currentZoom);
     fadeAlpha *= (1.0 - fadeOut);
 
     sakuraResult.a *= fadeAlpha;
@@ -108,7 +110,7 @@ void main() {
     float bgAlpha = fadeAlpha;
     vec3 col = mix(bgColor, sakuraResult.rgb, sakuraResult.a);
 
-    float overallAlpha = 1.0 - smoothstep(1.0, 12.0, currentZoom);
+    float overallAlpha = 1.0 - smoothstep(1.0, 8.0, currentZoom);
     overallAlpha *= (1.0 - fadeOut);
 
     float ringRadius = 0.28;

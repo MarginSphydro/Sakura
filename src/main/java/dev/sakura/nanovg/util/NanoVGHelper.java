@@ -1,13 +1,11 @@
 package dev.sakura.nanovg.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.shaders.Shader2DUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NVGPaint;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -178,6 +176,30 @@ public class NanoVGHelper {
     }
 
     /**
+     * 绘制带缩放的圆角矩形
+     */
+    public static void drawRoundRectScaled(float x, float y, float w, float h, float radius, Color color, float scale) {
+        long vg = getContext();
+
+        float centerX = x + w / 2f;
+        float centerY = y + h / 2f;
+
+        nvgSave(vg);
+        nvgTranslate(vg, centerX, centerY);
+        nvgScale(vg, scale, scale);
+        nvgTranslate(vg, -centerX, -centerY);
+
+        nvgBeginPath(vg);
+        nvgRoundedRect(vg, x, y, w, h, radius);
+
+        NVGColor nvgColor = nvgColor(color);
+        nvgFillColor(vg, nvgColor);
+        nvgFill(vg);
+
+        nvgRestore(vg);
+    }
+
+    /**
      * 绘制带发光效果的圆角矩形
      */
     public static void drawRoundRectBloom(float x, float y, float w, float h, float radius, Color color) {
@@ -227,6 +249,31 @@ public class NanoVGHelper {
         nvgStrokeWidth(vg, strokeWidth);
         nvgStrokeColor(vg, nvgColor);
         nvgStroke(vg);
+    }
+
+    /**
+     * 绘制带缩放的圆角矩形轮廓线
+     */
+    public static void drawRoundRectOutlineScaled(float x, float y, float w, float h, float radius, float strokeWidth, Color color, float scale) {
+        long vg = getContext();
+
+        float centerX = x + w / 2f;
+        float centerY = y + h / 2f;
+
+        nvgSave(vg);
+        nvgTranslate(vg, centerX, centerY);
+        nvgScale(vg, scale, scale);
+        nvgTranslate(vg, -centerX, -centerY);
+
+        nvgBeginPath(vg);
+        nvgRoundedRect(vg, x, y, w, h, radius);
+
+        NVGColor nvgColor = nvgColor(color);
+        nvgStrokeWidth(vg, strokeWidth);
+        nvgStrokeColor(vg, nvgColor);
+        nvgStroke(vg);
+
+        nvgRestore(vg);
     }
 
     /**
@@ -398,62 +445,6 @@ public class NanoVGHelper {
     }
 
     /**
-     * 绘制圆角模糊矩形（使用着色器实现背景模糊）
-     */
-    public static void drawRRectBlur(float x, float y, float w, float h, float radius, float blurRadius) {
-        long vg = getContext();
-
-        // 结束当前的 NanoVG 绘制
-        nvgEndFrame(vg);
-
-        RenderSystem.enableDepthTest();
-        GL11.glEnable(GL11.GL_STENCIL_TEST);
-        GL11.glClearStencil(0);
-        GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-
-        int width = mc.getWindow().getWidth();
-        int height = mc.getWindow().getHeight();
-        nvgBeginFrame(vg, width, height, 1.0f);
-
-        GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
-        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
-        GL11.glStencilMask(0xFF);
-        GL11.glColorMask(false, false, false, false);
-
-        nvgBeginPath(vg);
-        nvgRoundedRect(vg, x, y, w, h, radius);
-        nvgFillColor(vg, nvgColor(Color.WHITE));
-        nvgFill(vg);
-
-        GL11.glColorMask(true, true, true, true);
-        nvgEndFrame(vg);
-
-        GL11.glStencilFunc(GL11.GL_EQUAL, 1, 0xFF);
-        GL11.glStencilMask(0x00);
-
-        MatrixStack matrices = new MatrixStack();
-        Shader2DUtils.drawRoundedBlur(matrices, x, y, w, h, radius, new Color(255, 255, 255, 50), blurRadius, 0.8f);
-
-        GL11.glDisable(GL11.GL_STENCIL_TEST);
-        RenderSystem.disableDepthTest();
-
-        // 重新开始 NanoVG 帧
-        nvgBeginFrame(vg, width, height, 1.0f);
-    }
-
-    /**
-     * 绘制带背景模糊和颜色叠加的圆角矩形
-     */
-    public static void drawRRectWithBlur(float x, float y, float w, float h, float radius, float blurRadius, int color) {
-        // 先绘制背景模糊
-        drawRRectBlur(x, y, w, h, radius, blurRadius);
-
-        // 叠加颜色
-        Color c = new Color(color, true);
-        drawRoundRect(x, y, w, h, radius, c);
-    }
-
-    /**
      * 获取字体高度
      */
     public static float getFontHeight(int font, float size) {
@@ -470,16 +461,102 @@ public class NanoVGHelper {
     }
 
     /**
-     * 创建 NVGColor 对象（兼容方法，类似 Skija 的 paintColor）
+     * 加载图片为NanoV 纹理
+     *
+     * @param path 图片路径（以/开头）
+     * @return NanoVG 图片ID，失败返回 -1
      */
-    public static NVGColor paintColor(Color color) {
-        return nvgColor(color);
+    public static int loadTexture(String path) {
+        try {
+            java.io.InputStream is = NanoVGHelper.class.getResourceAsStream(path);
+            if (is == null) return -1;
+
+            byte[] bytes = is.readAllBytes();
+            is.close();
+
+            java.nio.ByteBuffer imageBuffer = java.nio.ByteBuffer.allocateDirect(bytes.length);
+            imageBuffer.put(bytes);
+            imageBuffer.flip();
+
+            try (org.lwjgl.system.MemoryStack stack = org.lwjgl.system.MemoryStack.stackPush()) {
+                java.nio.IntBuffer w = stack.mallocInt(1);
+                java.nio.IntBuffer h = stack.mallocInt(1);
+                java.nio.IntBuffer comp = stack.mallocInt(1);
+
+                java.nio.ByteBuffer decoded = org.lwjgl.stb.STBImage.stbi_load_from_memory(imageBuffer, w, h, comp, 4);
+                if (decoded != null) {
+                    int width = w.get(0);
+                    int height = h.get(0);
+
+                    long vg = getContext();
+                    int image = nvgCreateImageRGBA(vg, width, height, 0, decoded);
+
+                    org.lwjgl.stb.STBImage.stbi_image_free(decoded);
+                    return image;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     /**
-     * 清理资源
+     * 绘制图片
+     *
+     * @param imageId NanoVG 图片 ID
+     * @param x       X 坐标
+     * @param y       Y 坐标
+     * @param width   宽度
+     * @param height  高度
+     * @param alpha   透明度 (0-1)
      */
-    public static void cleanup() {
-        // BlurProgram由Satin管理，无需手动清理
+    public static void drawTexture(int imageId, float x, float y, float width, float height, float alpha) {
+        if (imageId == -1) return;
+
+        long vg = getContext();
+
+        NVGPaint paint = NVGPaint.create();
+        nvgImagePattern(vg, 0, 0, width, height, 0, imageId, alpha, paint);
+
+        nvgBeginPath(vg);
+        nvgRect(vg, x, y, width, height);
+        nvgFillPaint(vg, paint);
+        nvgFill(vg);
+    }
+
+    public static void drawTexture(int imageId, float x, float y, float width, float height, float alpha,
+                                   float scaleX, float scaleY, float rotation) {
+        if (imageId == -1) return;
+
+        long vg = getContext();
+
+        nvgSave(vg);
+
+        // 移动到中心点
+        nvgTranslate(vg, x + width / 2f, y + height / 2f);
+        // 应用旋转
+        nvgRotate(vg, rotation);
+        // 应用缩放
+        nvgScale(vg, scaleX, scaleY);
+        // 移回原点
+        nvgTranslate(vg, -width / 2f, -height / 2f);
+
+        NVGPaint paint = NVGPaint.create();
+        nvgImagePattern(vg, 0, 0, width, height, 0, imageId, alpha, paint);
+
+        nvgBeginPath(vg);
+        nvgRect(vg, 0, 0, width, height);
+        nvgFillPaint(vg, paint);
+        nvgFill(vg);
+
+        nvgRestore(vg);
+    }
+
+    public static void deleteTexture(int imageId) {
+        if (imageId != -1) {
+            long vg = getContext();
+            nvgDeleteImage(vg, imageId);
+        }
     }
 }

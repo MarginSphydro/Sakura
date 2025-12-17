@@ -48,7 +48,7 @@ public class MainMenuShader {
     private VideoBackgroundRenderer videoRenderer;
 
     public MainMenuShader(MainMenuShaderType shaderType) {
-        this.accumulatedTime = (shaderType == MainMenuShaderType.MAIN_MENU) ? 10000f : 0f;
+        this.accumulatedTime = 0f;
         this.currentShaderType = shaderType;
 
 /*        if (shaderType == MainMenuShaderType.VIDEO) {
@@ -222,7 +222,7 @@ public class MainMenuShader {
             }
         }*/
         try {
-            this.accumulatedTime = (newType == MainMenuShaderType.MAIN_MENU) ? 10000f : 0f;
+            this.accumulatedTime = 0f;
             this.programId = createShaderProgram(newType);
             if (this.vertexBuffer == null) {
                 this.setupVertexBuffer();
