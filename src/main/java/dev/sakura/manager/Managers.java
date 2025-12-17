@@ -12,7 +12,6 @@ public class Managers {
         if (initialized) return;
 
         ACCOUNT = new AccountManager();
-        RotationManager.INSTANCE.toString();
 
         initialized = true;
     }

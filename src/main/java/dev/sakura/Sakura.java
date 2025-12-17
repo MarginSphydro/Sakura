@@ -5,6 +5,7 @@ import dev.sakura.config.ConfigManager;
 import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.Managers;
+import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.ModuleManager;
 import dev.sakura.shaders.Shader2DUtils;
 import meteordevelopment.orbit.EventBus;
@@ -131,6 +132,9 @@ public class Sakura {
 
         // 初始化Shaders
         Shader2DUtils.init();
+
+        // 注册陀螺经理
+        Sakura.EVENT_BUS.subscribe(new RotationManager());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOGGER.info("正在保存配置并且关闭游戏!");

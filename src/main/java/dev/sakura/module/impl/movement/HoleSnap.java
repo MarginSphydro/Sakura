@@ -9,7 +9,7 @@ import dev.sakura.events.type.EventType;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.color.ColorUtil;
-import dev.sakura.utils.player.MovementUtil;
+import dev.sakura.utils.player.MovementUtils;
 import dev.sakura.utils.world.HoleUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
@@ -69,8 +69,8 @@ public class HoleSnap extends Module {
         stuckTicks = 0;
         enabledTicks = 0;
         if (mc.player != null && resetMove) {
-            MovementUtil.setMotionX(0);
-            MovementUtil.setMotionZ(0);
+            MovementUtils.setMotionX(0);
+            MovementUtils.setMotionZ(0);
         }
     }
 

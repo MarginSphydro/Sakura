@@ -22,3 +22,8 @@ run
 # Rust
 target/
 *.lock
+/.trae
+/.vscode
+src.zip
+/.vscode
+.vscode/settings.json

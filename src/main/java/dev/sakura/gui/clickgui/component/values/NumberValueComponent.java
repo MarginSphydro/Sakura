@@ -105,7 +105,7 @@ public class NumberValueComponent extends Component {
 
         if (dragging && !editing) {
             final double difference = max - min;
-            final double value = min + MathUtils.clamp_double((mouseX - getX()) / w, 0, 1) * difference;
+            final double value = min + MathUtils.clamp((mouseX - getX()) / w, 0, 1) * difference;
             setValueFromDouble(MathUtils.incValue(value, setting.getStep().doubleValue()));
         }
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
