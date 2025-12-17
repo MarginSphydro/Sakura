@@ -30,8 +30,8 @@ public class Hat extends Module {
 
     private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Sexy);
     private final NumberValue<Integer> points = new NumberValue<>("Points", 30, 3, 180, 1);
-    private final NumberValue<Float> size = new NumberValue<>("Size", 0.5f, 0.1f, 3.0f, 0.1f);
-    private final NumberValue<Float> offsetValue = new NumberValue<>("Offset", 2000.0f, 0.0f, 5000.0f, 100.0f);
+    private final NumberValue<Double> size = new NumberValue<>("Size", 0.5, 0.1, 3.0, 0.1);
+    private final NumberValue<Double> offsetValue = new NumberValue<>("Offset", 2000.0, 0.0, 5000.0, 100.0);
     private final ColorValue colorValue = new ColorValue("Color", new Color(255, 255, 255), () -> mode.is(Mode.Fade) || mode.is(Mode.Dynamic));
     private final ColorValue secondColorValue = new ColorValue("Second Color", new Color(0, 0, 0), () -> mode.is(Mode.Fade));
     private final BoolValue onlyThirdPerson = new BoolValue("Only Third Person", true);
@@ -63,7 +63,7 @@ public class Hat extends Module {
             this.computeChineseHatPoints(this.lastPoints, this.lastSize);
         }
 
-        drawHat(event.matrices(), event.tickDelta(), mc.player);
+        drawHat(event.getMatrices(), event.getTickDelta(), mc.player);
     }
 
     public void drawHat(MatrixStack matrices, float tickDelta, PlayerEntity player) {
