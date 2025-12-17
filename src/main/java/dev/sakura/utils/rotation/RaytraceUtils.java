@@ -148,26 +148,32 @@ public class RaytraceUtils {
         return distance <= rangeSquared && canSeePointFrom(cameraVec, entityHitResult.getPos()) || distance <= wallsRangeSquared;
     }
 
-    /**
-     * Allows you to check if a point is behind a wall
-     */
-    public static boolean facingBlock(Vec3d eyes, Vec3d vec3, BlockPos blockPos, Direction expectedSide, Double expectedMaxRange) {
-        if (mc.world == null || mc.player == null) return false;
+    public static boolean overBlock(final Vector2f rotation, final Direction direction, final BlockPos pos, final boolean strict) {
+        if (mc.player == null || mc.world == null) return false;
 
-        BlockHitResult searchedPos = mc.world.raycast(
-                new RaycastContext(
-                        eyes, vec3, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, mc.player
-                )
-        );
+        float yaw = rotation.x;
+        float pitch = rotation.y;
 
-        if (searchedPos == null || searchedPos.getType() != HitResult.Type.BLOCK || (expectedSide != null && searchedPos.getSide() != expectedSide)) {
+        Vec3d cameraPos = mc.player.getCameraPosVec(1.0F);
+        Vec3d rotationVec = Vec3d.fromPolar(pitch, yaw);
+        Vec3d reachVec = cameraPos.add(rotationVec.multiply(4.5));
+
+        BlockHitResult hitResult = mc.world.raycast(new RaycastContext(
+                cameraPos,
+                reachVec,
+                RaycastContext.ShapeType.OUTLINE,
+                RaycastContext.FluidHandling.NONE,
+                mc.player
+        ));
+
+        // 3. 验证结果
+        if (hitResult.getType() != HitResult.Type.BLOCK) {
             return false;
         }
 
-        if (expectedMaxRange != null && searchedPos.getPos().squaredDistanceTo(eyes) > expectedMaxRange * expectedMaxRange) {
-            return false;
-        }
+        boolean samePos = hitResult.getBlockPos().equals(pos);
+        boolean sameSide = !strict || hitResult.getSide() == direction;
 
-        return searchedPos.getBlockPos().equals(blockPos);
+        return samePos && sameSide;
     }
 }

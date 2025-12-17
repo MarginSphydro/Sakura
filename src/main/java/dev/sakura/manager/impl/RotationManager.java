@@ -42,7 +42,7 @@ public class RotationManager {
      */
     public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, final Function<Vector2f, Boolean> raycast) {
         RotationManager.targetRotations = rotations;
-        RotationManager.rotationSpeed = rotationSpeed * 36;
+        RotationManager.rotationSpeed = rotationSpeed * 18;
         RotationManager.correctMovement = correctMovement;
         RotationManager.raycast = raycast;
         active = true;
@@ -127,6 +127,11 @@ public class RotationManager {
     public static float getPitch() {
         if (active) return rotations.y;
         else return mc.player.getPitch();
+    }
+
+    public static Vector2f getRotation() {
+        if (active) return rotations;
+        else return new Vector2f(mc.player.getYaw(), mc.player.getPitch());
     }
 
     @EventHandler

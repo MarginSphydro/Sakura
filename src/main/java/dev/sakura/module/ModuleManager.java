@@ -49,6 +49,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new Step());
             manager.tryLoad(() -> new NoSlow());
             manager.tryLoad(() -> new HoleSnap());
+            manager.tryLoad(() -> new Scaffold());
 
             // Render
             manager.tryLoad(() -> new CameraClip());
