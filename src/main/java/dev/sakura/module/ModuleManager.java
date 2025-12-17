@@ -71,6 +71,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new WatermarkHud());
             manager.tryLoad(() -> new MSHud());
             manager.tryLoad(() -> new DynamicIslandHud());
+            manager.tryLoad(() -> new KeyStrokesHud());
         }
     }
 
