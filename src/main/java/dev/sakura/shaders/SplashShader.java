@@ -1,7 +1,6 @@
 package dev.sakura.shaders;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.sakura.utils.animations.AnimationUtil;
 import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
@@ -33,8 +32,10 @@ public class SplashShader {
     private boolean initialized = false;
 
     private boolean transitionStarted = false;
-    private long transitionStartTime = 0L;
-    private static final long TRANSITION_DURATION = 2000L; // 2秒过渡
+    private float accumulatedTransitionTime = 0f;
+    private static final float TRANSITION_DURATION = 2.0f; // 2秒过渡
+
+    private long lastFrameTime = System.nanoTime();
 
     public static SplashShader getInstance() {
         if (INSTANCE == null) {
@@ -141,6 +142,17 @@ public class SplashShader {
         }
         if (this.programId == 0 || this.vertexBuffer == null) return;
 
+        long currentTime = System.nanoTime();
+        float deltaTime = (currentTime - lastFrameTime) / 1_000_000_000f;
+        lastFrameTime = currentTime;
+
+        if (transitionStarted && accumulatedTransitionTime < TRANSITION_DURATION) {
+            accumulatedTransitionTime += deltaTime;
+            if (accumulatedTransitionTime > TRANSITION_DURATION) {
+                accumulatedTransitionTime = TRANSITION_DURATION;
+            }
+        }
+
         this.currentProgress = progress;
 
         RenderSystem.disableCull();
@@ -158,7 +170,7 @@ public class SplashShader {
         float scaleFactor = (float) mc.getWindow().getScaleFactor();
         GL20.glUniform2f(this.resolutionUniform, width * scaleFactor, height * scaleFactor);
 
-        accumulatedTime += (float) (1.0 * AnimationUtil.deltaTime());
+        accumulatedTime += deltaTime;
         GL20.glUniform1f(this.timeUniform, accumulatedTime);
         GL20.glUniform1f(this.progressUniform, progress);
         GL20.glUniform1f(this.fadeOutUniform, fadeOut);
@@ -176,7 +188,7 @@ public class SplashShader {
 
     public void startTransition() {
         this.transitionStarted = true;
-        this.transitionStartTime = System.currentTimeMillis();
+        this.accumulatedTransitionTime = 0f;
     }
 
     public boolean isTransitionStarted() {
@@ -185,12 +197,11 @@ public class SplashShader {
 
     public float getTransitionProgress() {
         if (!transitionStarted) return 0f;
-        long elapsed = System.currentTimeMillis() - transitionStartTime;
-        return Math.min(1f, (float) elapsed / TRANSITION_DURATION);
+        return Math.min(1f, accumulatedTransitionTime / TRANSITION_DURATION);
     }
 
     public boolean isTransitionComplete() {
-        return transitionStarted && getTransitionProgress() >= 1f;
+        return transitionStarted && accumulatedTransitionTime >= TRANSITION_DURATION;
     }
 
     public float getAccumulatedTime() {
@@ -200,6 +211,7 @@ public class SplashShader {
     public void reset() {
         this.transitionStarted = false;
         this.accumulatedTime = 0f;
+        this.accumulatedTransitionTime = 0f;
     }
 
     public void cleanup() {
