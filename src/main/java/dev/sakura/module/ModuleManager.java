@@ -52,6 +52,7 @@ public class ModuleManager {
 
             // Render
             manager.tryLoad(() -> new CameraClip());
+            manager.tryLoad(() -> new EnvParticles());
             manager.tryLoad(() -> new Fullbright());
             manager.tryLoad(() -> new NoRender());
             manager.tryLoad(() -> new SwingAnimation());

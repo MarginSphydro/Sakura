@@ -22,7 +22,7 @@ import java.util.List;
 
 public class ConfigManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_DIR = Paths.get("sakura-config");
+    public static final Path CONFIG_DIR = Paths.get("sakura-config");
     private static final Path MODULES_DIR = CONFIG_DIR.resolve("modules");
     private static final Path CLICKGUI_FILE = CONFIG_DIR.resolve("clickgui.json");
 
@@ -231,10 +231,10 @@ public class ConfigManager {
         if (value instanceof BoolValue) {
             return new JsonPrimitive((Boolean) val);
         } else if (value instanceof NumberValue<?> numberValue) {
-            if (numberValue.getValue() instanceof Integer) {
-                return new JsonPrimitive(numberValue.getValue().intValue());
+            if (numberValue.get() instanceof Integer) {
+                return new JsonPrimitive(numberValue.get().intValue());
             } else {
-                return new JsonPrimitive(numberValue.getValue().doubleValue());
+                return new JsonPrimitive(numberValue.get().doubleValue());
             }
         } else if (value instanceof StringValue) {
             return new JsonPrimitive(((StringValue) value).get());
@@ -267,10 +267,10 @@ public class ConfigManager {
             if (value instanceof BoolValue && valueElement.isJsonPrimitive()) {
                 ((Value<Boolean>) value).set(valueElement.getAsBoolean());
             } else if (value instanceof NumberValue<?> numberValue && valueElement.isJsonPrimitive()) {
-                if (numberValue.getValue() instanceof Integer) {
-                    ((NumberValue<Integer>) numberValue).setValue(valueElement.getAsInt());
+                if (numberValue.get() instanceof Integer) {
+                    ((NumberValue<Integer>) numberValue).set(valueElement.getAsInt());
                 } else {
-                    ((NumberValue<Double>) numberValue).setValue(valueElement.getAsDouble());
+                    ((NumberValue<Double>) numberValue).set(valueElement.getAsDouble());
                 }
             } else if (value instanceof StringValue && valueElement.isJsonPrimitive()) {
                 ((StringValue) value).setText(valueElement.getAsString());

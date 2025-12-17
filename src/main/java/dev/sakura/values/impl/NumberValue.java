@@ -21,13 +21,13 @@ public class NumberValue<T extends Number> extends Value<T> {
     }
 
     @Override
-    public void setValue(T value) {
+    public void set(T value) {
         if (value.doubleValue() < min.doubleValue()) {
-            super.setValue(min);
+            super.set(min);
         } else if (value.doubleValue() > max.doubleValue()) {
-            super.setValue(max);
+            super.set(max);
         } else {
-            super.setValue(value);
+            super.set(value);
         }
     }
 

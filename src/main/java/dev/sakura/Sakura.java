@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 //                            _ooOoo_
@@ -87,6 +89,8 @@ public class Sakura {
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
     public static final IEventBus EVENT_BUS = new EventBus();
 
+    public static Executor EXECUTOR;
+
     public static MinecraftClient mc;
 
     public static ModuleManager MODULE;
@@ -102,6 +106,8 @@ public class Sakura {
 
         // 事件巴士(doge 初始化
         EVENT_BUS.registerLambdaFactory(Sakura.class.getPackageName(), (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
+
+        EXECUTOR = Executors.newFixedThreadPool(1);
 
         // 初始化Managers
         Managers.init();

@@ -34,7 +34,7 @@ public class NumberValueComponent extends Component {
 
     public NumberValueComponent(NumberValue<? extends Number> setting) {
         this.setting = setting;
-        this.isInteger = setting.getValue() instanceof Integer;
+        this.isInteger = setting.get() instanceof Integer;
         drag.setDirection(Direction.BACKWARDS);
     }
 
@@ -44,7 +44,7 @@ public class NumberValueComponent extends Component {
         float w = getWidth();
         double min = setting.getMin().doubleValue();
         double max = setting.getMax().doubleValue();
-        double current = setting.getValue().doubleValue();
+        double current = setting.get().doubleValue();
 
         anim = RenderUtils.animate(anim, (float) (w * (current - min) / (max - min)), 50);
         float sliderWidth = anim;
@@ -87,7 +87,7 @@ public class NumberValueComponent extends Component {
                 String maxStr = isInteger ? String.valueOf(setting.getMax().intValue()) : String.valueOf(setting.getMax());
                 String currentStr;
                 if (isInteger) {
-                    currentStr = String.valueOf(setting.getValue().intValue());
+                    currentStr = String.valueOf(setting.get().intValue());
                 } else {
                     DecimalFormat df = new DecimalFormat("#0.00");
                     currentStr = df.format(current);
@@ -114,9 +114,9 @@ public class NumberValueComponent extends Component {
     @SuppressWarnings("unchecked")
     private void setValueFromDouble(double value) {
         if (isInteger) {
-            ((NumberValue<Integer>) setting).setValue((int) value);
+            ((NumberValue<Integer>) setting).set((int) value);
         } else {
-            ((NumberValue<Double>) setting).setValue(value);
+            ((NumberValue<Double>) setting).set(value);
         }
     }
 
@@ -134,9 +134,9 @@ public class NumberValueComponent extends Component {
                 currentEditing = this;
                 editing = true;
                 if (isInteger) {
-                    tempText = String.valueOf(setting.getValue().intValue());
+                    tempText = String.valueOf(setting.get().intValue());
                 } else {
-                    tempText = String.valueOf(setting.getValue().doubleValue());
+                    tempText = String.valueOf(setting.get().doubleValue());
                 }
                 cursorPos = tempText.length();
                 lastBlinkTime = System.currentTimeMillis();

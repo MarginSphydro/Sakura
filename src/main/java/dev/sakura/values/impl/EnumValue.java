@@ -49,7 +49,7 @@ public class EnumValue<E extends Enum<E>> extends Value<E> {
     public void setMode(E mode) {
         for (E e : modes) {
             if (e == mode) {
-                this.setValue(mode);
+                this.set(mode);
                 return;
             }
         }
@@ -58,7 +58,7 @@ public class EnumValue<E extends Enum<E>> extends Value<E> {
     public void setMode(String modeName) {
         for (E e : modes) {
             if (e.name().equalsIgnoreCase(modeName)) {
-                this.setValue(e);
+                this.set(e);
                 return;
             }
         }
@@ -67,7 +67,7 @@ public class EnumValue<E extends Enum<E>> extends Value<E> {
     public void cycle() {
         int currentIndex = value.ordinal();
         int nextIndex = (currentIndex + 1) % modes.length;
-        this.setValue(modes[nextIndex]);
+        this.set(modes[nextIndex]);
     }
 
     public Class<E> getEnumClass() {

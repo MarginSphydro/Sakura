@@ -169,10 +169,10 @@ public class HoleSnap extends Module {
         if (fade.get()) {
             double temp = 0.01;
             for (double i = 0; i < circleSize.get(); i += temp) {
-                drawCircle(event.matrices(), ColorUtil.applyOpacity(c, (int) Math.min(c.getAlpha() * 2 / (circleSize.get() / temp), 255)), i, pos, segments.get());
+                drawCircle(event.getMatrices(), ColorUtil.applyOpacity(c, (int) Math.min(c.getAlpha() * 2 / (circleSize.get() / temp), 255)), i, pos, segments.get());
             }
         } else {
-            drawCircle(event.matrices(), c, circleSize.get(), pos, segments.get());
+            drawCircle(event.getMatrices(), c, circleSize.get(), pos, segments.get());
         }
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
