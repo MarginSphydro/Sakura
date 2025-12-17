@@ -144,8 +144,14 @@ public class SplashShader {
         this.currentProgress = progress;
 
         RenderSystem.disableCull();
-        RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
+
+        if (zoom > 1.0f) {
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+        } else {
+            RenderSystem.disableBlend();
+        }
 
         GL20.glUseProgram(this.programId);
 
@@ -165,6 +171,7 @@ public class SplashShader {
         GL20.glUseProgram(0);
         RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
+        RenderSystem.disableBlend();
     }
 
     public void startTransition() {

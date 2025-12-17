@@ -94,18 +94,22 @@ void main() {
 
     float currentZoom = max(1.0, zoom);
 
-    float rotation = time * 0.5 + (currentZoom - 1.0) * 2.0; 
+    float rotation = time * 0.5 + (currentZoom - 1.0) * 3.5;
 
-    float scale = 2.5 * currentZoom; 
+    float scale = 2.5 / currentZoom;
     
-    vec4 sakuraResult = sakura(uv * scale, 0.02, rotation);
+    vec4 sakuraResult = sakura(uv * scale, 0.02 / currentZoom, rotation);
 
-    float fadeAlpha = 1.0 - smoothstep(1.0, 15.0, currentZoom);
+    float fadeAlpha = 1.0 - smoothstep(1.0, 8.0, currentZoom);
     fadeAlpha *= (1.0 - fadeOut);
 
     sakuraResult.a *= fadeAlpha;
 
+    float bgAlpha = fadeAlpha;
     vec3 col = mix(bgColor, sakuraResult.rgb, sakuraResult.a);
+
+    float overallAlpha = 1.0 - smoothstep(1.0, 12.0, currentZoom);
+    overallAlpha *= (1.0 - fadeOut);
 
     float ringRadius = 0.28;
     float ringThickness = 0.012;
@@ -146,5 +150,6 @@ void main() {
         }
     }
     
-    fragColor = vec4(col, 1.0);
+    // 使用 overallAlpha 让整个画面变透明，让底层 TitleScreen 爆开效果显现
+    fragColor = vec4(col, overallAlpha);
 }

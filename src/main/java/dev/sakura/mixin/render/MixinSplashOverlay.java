@@ -98,22 +98,23 @@ public class MixinSplashOverlay {
 
         float zoom = 1.0f;
         float fadeOut = 0f;
+        float transitionProgress;
 
         if (SplashShader.getInstance().isTransitionStarted()) {
-            float t = SplashShader.getInstance().getTransitionProgress();
-            zoom = 1.0f + t * t * t * 20.0f;
-
-            if (t > 0.6f) {
-                fadeOut = (t - 0.6f) / 0.4f;
+            transitionProgress = SplashShader.getInstance().getTransitionProgress();
+            zoom = 1.0f + transitionProgress * transitionProgress * 25.0f;
+            if (transitionProgress > 0.3f) {
+                fadeOut = (transitionProgress - 0.3f) / 0.7f;
+                fadeOut = fadeOut * fadeOut;
             }
-        }
-
-        if (fadeOut < 0.99f) {
-            SplashShader.getInstance().render(width, height, sakura$displayProgress, fadeOut, zoom);
         }
 
         if (SplashShader.getInstance().isTransitionStarted() && this.client.currentScreen != null) {
             this.client.currentScreen.render(context, 0, 0, delta);
+        }
+
+        if (fadeOut < 0.99f) {
+            SplashShader.getInstance().render(width, height, sakura$displayProgress, fadeOut, zoom);
         }
 
         if (fadeOutProgress >= 2.0F || SplashShader.getInstance().isTransitionComplete()) {

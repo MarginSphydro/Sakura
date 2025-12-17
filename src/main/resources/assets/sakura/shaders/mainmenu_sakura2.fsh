@@ -120,20 +120,24 @@ void main() {
 
     float t = clamp(transition, 0.0, 1.0);
 
-    float easeT = 1.0 - pow(1.0 - t, 3.0);
+    float easeT = 1.0 - pow(1.0 - t, 4.0);
 
     float centerDist = length(uv);
 
-    float expandRadius = easeT * 3.5;
-    float expandMask = smoothstep(expandRadius - 1.5, expandRadius, centerDist);
+    float expandRadius = easeT * 4.0;
+    float expandMask = smoothstep(expandRadius - 1.0, expandRadius + 0.5, centerDist);
     expandMask = 1.0 - expandMask;
 
-    float alpha = smoothstep(0.0, 0.1, t);
+    float alpha = smoothstep(0.0, 0.15, t);
 
     uv.y += time * 0.1;
     uv.x -= time * 0.03 + sin(time) * 0.1;
 
-    float scaleTransition = mix(0.2, 1.0, easeT);
+    float scaleTransition = mix(0.05, 1.0, easeT);
+
+    vec2 burstOffset = normalize(uv + 0.001) * (1.0 - easeT) * 0.3;
+    uv += burstOffset;
+    
     uv *= 4.3 * scaleTransition;
 
     float screenY = nominalUV.y;
