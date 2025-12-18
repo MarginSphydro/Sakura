@@ -1,8 +1,8 @@
 package dev.sakura.gui.hud;
 
-import dev.sakura.Sakura;
 import dev.sakura.gui.IComponent;
 import dev.sakura.gui.hud.component.HudModuleComponent;
+import dev.sakura.manager.Managers;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;
@@ -29,7 +29,7 @@ public class HudPanel implements IComponent {
         this.opened = true;
         this.openAnimation.setDirection(Direction.BACKWARDS);
 
-        for (Module module : Sakura.MODULE.getAllModules()) {
+        for (Module module : Managers.MODULE.getAllModules()) {
             if (module instanceof HudModule) {
                 hudComponents.add(new HudModuleComponent((HudModule) module));
             }

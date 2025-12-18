@@ -1,8 +1,8 @@
 package dev.sakura.command.impl;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.sakura.Sakura;
 import dev.sakura.command.Command;
+import dev.sakura.manager.Managers;
 import dev.sakura.utils.client.ChatUtils;
 import net.minecraft.command.CommandSource;
 
@@ -14,7 +14,7 @@ public class SaveCommand extends Command {
     @Override
     public void buildCommand(LiteralArgumentBuilder<CommandSource> builder) {
         builder.executes(c -> {
-            Sakura.CONFIG.saveDefaultConfig();
+            Managers.CONFIG.saveDefaultConfig();
             ChatUtils.addChatMessage("All configurations saved.");
             return 1;
         });

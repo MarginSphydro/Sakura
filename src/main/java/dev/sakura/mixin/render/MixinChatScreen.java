@@ -2,6 +2,7 @@ package dev.sakura.mixin.render;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.client.ChatMessageEvent;
+import dev.sakura.manager.Managers;
 import dev.sakura.mixin.accessor.IChatInputSuggestor;
 import dev.sakura.mixin.accessor.ISuggestionWindow;
 import dev.sakura.nanovg.NanoVGRenderer;
@@ -30,7 +31,7 @@ public class MixinChatScreen {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void onRenderPost(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (chatField == null || !chatField.getText().startsWith(Sakura.COMMAND.getPrefix())) return;
+        if (chatField == null || !chatField.getText().startsWith(Managers.COMMAND.getPrefix())) return;
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             final float PAD = 0.5F;

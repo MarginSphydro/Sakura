@@ -1,6 +1,7 @@
 package dev.sakura.module;
 
 import dev.sakura.Sakura;
+import dev.sakura.manager.Managers;
 import dev.sakura.module.impl.hud.DynamicIslandHud;
 import dev.sakura.utils.animations.Animation;
 import dev.sakura.utils.animations.Direction;
@@ -48,7 +49,7 @@ public class Module {
     }
 
     public <M extends Module> boolean isEnabled(Class<M> module) {
-        Module mod = Sakura.MODULE.getModule(module);
+        Module mod = Managers.MODULE.getModule(module);
         return mod != null && mod.isEnabled();
     }
 

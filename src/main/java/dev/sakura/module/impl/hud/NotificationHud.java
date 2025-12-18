@@ -1,6 +1,6 @@
 package dev.sakura.module.impl.hud;
 
-import dev.sakura.Sakura;
+import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.NotificationManager;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.impl.client.HudEditor;
@@ -30,7 +30,7 @@ public class NotificationHud extends HudModule {
     @Override
     public void onRenderContent() {
         NanoVGRenderer.INSTANCE.withRawCoordsAndPause(() -> {
-            if (Sakura.MODULE.getModule(HudEditor.class).isEnabled()) {
+            if (Managers.MODULE.getModule(HudEditor.class).isEnabled()) {
                 float[] size = NotificationManager.renderPreview(
                         getMatrix(),
                         x, y,

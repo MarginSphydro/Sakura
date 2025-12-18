@@ -13,6 +13,7 @@ import dev.sakura.utils.rotation.RaytraceUtils;
 import dev.sakura.utils.rotation.RotationUtils;
 import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.values.impl.BoolValue;
+import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.AirBlock;
@@ -24,17 +25,22 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
+import java.awt.*;
+
 public class Scaffold extends Module {
     public Scaffold() {
         super("Scaffold", Category.Movement);
     }
 
     private final BoolValue telly = new BoolValue("Telly", false);
-    private final NumberValue<Integer> tellyTick = new NumberValue<>("TellyTick", 1, 0, 8, 1, () -> telly.get());
-    private final BoolValue keepY = new BoolValue("KeepY", true, () -> telly.get());
-    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("RotationSpeed", 10, 0, 10, 1);
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("RotationBackSpeed", 10, 0, 10, 1);
-    private final BoolValue moveFix = new BoolValue("MovementFix", true);
+    private final NumberValue<Integer> tellyTick = new NumberValue<>("Telly Tick", 1, 0, 8, 1, telly::get);
+    private final BoolValue keepY = new BoolValue("Keep Y", true, telly::get);
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", 10, 0, 10, 1);
+    private final BoolValue moveFix = new BoolValue("Movement Fix", true);
+    private final BoolValue render = new BoolValue("Render", true);
+    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 183, 197, 100), render::get);
+    private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 105, 180), render::get);
 
     private int yLevel;
     private BlockCache blockCache;
@@ -43,7 +49,9 @@ public class Scaffold extends Module {
     @EventHandler
     public void onTick(TickEvent.Pre event) {
         if (mc.player == null || mc.world == null) return;
+
         getBlockInfo();
+
         if (telly.get()) {
             if (mc.player.isOnGround()) {
                 yLevel = (int) (mc.player.getY() - 1);
@@ -76,7 +84,7 @@ public class Scaffold extends Module {
 
     @EventHandler
     public void onRender3D(Render3DEvent event) {
-        //TODO:
+        //TODO:Render3DUtils.drawFullBox();
     }
 
     public int getYLevel() {
@@ -119,11 +127,8 @@ public class Scaffold extends Module {
                     int y = d - x - z;
                     for (int rev1 = 0; rev1 <= 1; rev1++) {
                         for (int rev2 = 0; rev2 <= 1; rev2++) {
-                            if (checkBlock(baseVec, new BlockPos(
-                                    baseX + (rev1 == 0 ? x : -x),
-                                    getYLevel() - y,
-                                    baseZ + (rev2 == 0 ? z : -z)
-                            ))) return;
+                            if (checkBlock(baseVec, new BlockPos(baseX + (rev1 == 0 ? x : -x), getYLevel() - y, baseZ + (rev2 == 0 ? z : -z))))
+                                return;
                         }
                     }
                 }
@@ -133,20 +138,21 @@ public class Scaffold extends Module {
 
     private boolean checkBlock(Vec3d baseVec, BlockPos pos) {
         if (!(mc.world.getBlockState(pos).getBlock() instanceof AirBlock)) return false;
+
         Vec3d center = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
-        for (Direction 脸 : Direction.values()) {
-            Vec3d hit = center.add(new Vec3d(脸.getVector()).multiply(0.5));
-            Vec3i baseBlock = pos.add(脸.getVector());
+        for (Direction dir : Direction.values()) {
+            Vec3d hit = center.add(new Vec3d(dir.getVector()).multiply(0.5));
+            Vec3i baseBlock = pos.add(dir.getVector());
             BlockPos baseBlockPos = new BlockPos(baseBlock.getX(), baseBlock.getY(), baseBlock.getZ());
-            if (!mc.world.getBlockState(baseBlockPos).hasSolidTopSurface(mc.world, baseBlockPos, mc.player))
-                continue;
+
+            if (!mc.world.getBlockState(baseBlockPos).hasSolidTopSurface(mc.world, baseBlockPos, mc.player)) continue;
+
             Vec3d relevant = hit.subtract(baseVec);
-            if (relevant.lengthSquared() <= 4.5 * 4.5 && relevant.dotProduct(
-                    new Vec3d(脸.getVector())
-            ) >= 0) {
-                if (脸.getOpposite() == Direction.UP && !telly.get() && MovementUtils.isMoving() && !mc.options.jumpKey.isPressed())
+            if (relevant.lengthSquared() <= 4.5 * 4.5 && relevant.dotProduct(new Vec3d(dir.getVector())) >= 0) {
+                if (dir.getOpposite() == Direction.UP && !telly.get() && MovementUtils.isMoving() && !mc.options.jumpKey.isPressed())
                     continue;
-                blockCache = new BlockCache(new BlockPos(baseBlock), 脸.getOpposite());
+
+                blockCache = new BlockCache(new BlockPos(baseBlock), dir.getOpposite());
                 return true;
             }
         }
@@ -172,13 +178,6 @@ public class Scaffold extends Module {
         return new Vec3d(x, y, z);
     }
 
-    public static class BlockCache {
-        private final BlockPos position;
-        private final Direction facing;
-
-        public BlockCache(final BlockPos position, final Direction facing) {
-            this.position = position;
-            this.facing = facing;
-        }
+    private record BlockCache(BlockPos position, Direction facing) {
     }
 }

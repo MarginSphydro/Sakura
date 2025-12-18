@@ -2,9 +2,9 @@ package dev.sakura.command.impl;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.sakura.Sakura;
 import dev.sakura.command.Command;
 import dev.sakura.command.ModuleArgumentType;
+import dev.sakura.manager.Managers;
 import dev.sakura.module.Module;
 import dev.sakura.utils.client.ChatUtils;
 import dev.sakura.utils.client.KeyUtils;
@@ -30,7 +30,7 @@ public class BindCommand extends Command {
                                             if (keyName.equalsIgnoreCase("none")) {
                                                 module.setKey(InputUtil.UNKNOWN_KEY.getCode());
                                                 ChatUtils.addChatMessage("Unbound " + module.getName() + ".");
-                                                Sakura.CONFIG.saveDefaultConfig();
+                                                Managers.CONFIG.saveDefaultConfig();
                                                 return 1;
                                             }
 
@@ -49,7 +49,7 @@ public class BindCommand extends Command {
                                             module.setKey(key.getCode());
                                             module.setBindMode(bindMode);
                                             ChatUtils.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + bindMode.name() + ").");
-                                            Sakura.CONFIG.saveDefaultConfig();
+                                            Managers.CONFIG.saveDefaultConfig();
                                             return 1;
                                         }))
                                 .executes(c -> {
@@ -59,7 +59,7 @@ public class BindCommand extends Command {
                                     if (keyName.equalsIgnoreCase("none")) {
                                         module.setKey(InputUtil.UNKNOWN_KEY.getCode());
                                         ChatUtils.addChatMessage("Unbound " + module.getName() + ".");
-                                        Sakura.CONFIG.saveDefaultConfig();
+                                        Managers.CONFIG.saveDefaultConfig();
                                         return 1;
                                     }
 
@@ -71,7 +71,7 @@ public class BindCommand extends Command {
 
                                     module.setKey(key.getCode());
                                     ChatUtils.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + module.getBindMode().name() + ").");
-                                    Sakura.CONFIG.saveDefaultConfig();
+                                    Managers.CONFIG.saveDefaultConfig();
                                     return 1;
                                 }))
                         .executes(c -> {

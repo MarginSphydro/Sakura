@@ -32,6 +32,12 @@ public class ModuleManager {
 
     public ModuleManager() {
         modules = new LinkedHashMap<>();
+        Sakura.EVENT_BUS.subscribe(this);
+
+        try {
+            ManualLoader.load(this);
+        } catch (Throwable ignored) {
+        }
     }
 
     @SuppressWarnings("Convert2MethodRef")
@@ -41,7 +47,6 @@ public class ModuleManager {
             manager.tryLoad(() -> new Burrow());
             manager.tryLoad(() -> new Velocity());
             manager.tryLoad(() -> new AutoPot());
-
 
             // Movement
             manager.tryLoad(() -> new AutoSprint());
@@ -53,7 +58,7 @@ public class ModuleManager {
 
             // Render
             manager.tryLoad(() -> new CameraClip());
-            manager.tryLoad(() -> new EnvParticles());
+            //TODO: manager.tryLoad(() -> new EnvParticles());
             manager.tryLoad(() -> new Fullbright());
             manager.tryLoad(() -> new NoRender());
             manager.tryLoad(() -> new SwingAnimation());
@@ -73,15 +78,6 @@ public class ModuleManager {
             manager.tryLoad(() -> new MSHud());
             manager.tryLoad(() -> new DynamicIslandHud());
             manager.tryLoad(() -> new KeyStrokesHud());
-        }
-    }
-
-    public void initModules() {
-        Sakura.EVENT_BUS.subscribe(this);
-
-        try {
-            ManualLoader.load(this);
-        } catch (Throwable ignored) {
         }
     }
 
