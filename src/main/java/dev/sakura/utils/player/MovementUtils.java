@@ -7,16 +7,14 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.PlayerInput;
 import net.minecraft.util.math.MathHelper;
 
-public class MovementUtils {
-    private static final MinecraftClient mc = MinecraftClient.getInstance();
+import static dev.sakura.Sakura.mc;
 
+public class MovementUtils {
     public static boolean isMoving() {
-        if (mc.player == null) return false;
         return mc.player.input.movementForward != 0 || mc.player.input.movementSideways != 0;
     }
 
     public static double getSpeed() {
-        if (mc.player == null) return 0;
         return Math.sqrt(mc.player.getVelocity().x * mc.player.getVelocity().x +
                 mc.player.getVelocity().z * mc.player.getVelocity().z);
     }
@@ -113,6 +111,7 @@ public class MovementUtils {
 
         return Math.toRadians(yaw);
     }
+
     public static double getDirection(float rotationYaw, final double moveForward, final double moveStrafing) {
         if (moveForward < 0F) rotationYaw += 180F;
 

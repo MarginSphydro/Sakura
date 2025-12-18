@@ -27,13 +27,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
 public class Scaffold extends Module {
-
-    private BoolValue telly = new BoolValue("Telly", false);
-    private NumberValue<Integer> tellyTick = new NumberValue<>("TellyTick", 1, 0, 8, 1, () -> telly.get());
-    private BoolValue keepY = new BoolValue("KeepY", true, () -> telly.get());
-    private NumberValue<Integer> rotationSpeed = new NumberValue<>("RotationSpeed", 10, 0, 10, 1);
-    private NumberValue<Integer> rotationBackSpeed = new NumberValue<>("RotationBackSpeed", 10, 0, 10, 1);
-    private BoolValue moveFix = new BoolValue("MovementFix", true);
+    private final BoolValue telly = new BoolValue("Telly", false);
+    private final NumberValue<Integer> tellyTick = new NumberValue<>("TellyTick", 1, 0, 8, 1, () -> telly.get());
+    private final BoolValue keepY = new BoolValue("KeepY", true, () -> telly.get());
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("RotationSpeed", 10, 0, 10, 1);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("RotationBackSpeed", 10, 0, 10, 1);
+    private final BoolValue moveFix = new BoolValue("MovementFix", true);
 
     private int yLevel;
     private BlockCache blockCache;
@@ -97,7 +96,7 @@ public class Scaffold extends Module {
     public void getBlockInfo() {
         Vec3d baseVec = mc.player.getEyePos();
 //        BlockPos base = new BlockPos(baseVec.x, baseY + 0.1f, baseVec.z);
-        BlockPos base = new BlockPos((int) baseVec.x, getYLevel() , (int) baseVec.z);
+        BlockPos base = BlockPos.ofFloored(baseVec.x, getYLevel() , baseVec.z);
         int baseX = base.getX();
         int baseZ = base.getZ();
         if (mc.world.getBlockState(base).hasSolidTopSurface(mc.world, base, mc.player)) return;

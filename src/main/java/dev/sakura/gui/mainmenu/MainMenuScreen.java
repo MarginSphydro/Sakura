@@ -145,13 +145,14 @@ public class MainMenuScreen extends Screen {
         deltaTime = Math.min(deltaTime, 0.05f);
 
         accumulatedTime += deltaTime;
+
         float transitionProgress = 1.0f;
         boolean inTransition = false;
 
         try {
             SplashShader splash = SplashShader.getInstance();
             if (splash != null && splash.isTransitionStarted() && !splash.isTransitionComplete()) {
-                transitionProgress = splash.getTransitionProgress();
+                transitionProgress = Math.min(1.0f, accumulatedTime / 2.0f);
                 inTransition = true;
             }
         } catch (Exception ignored) {
@@ -179,14 +180,14 @@ public class MainMenuScreen extends Screen {
         });
     }
 
-    private float easeInOutQuad(float t) {
-        return t < 0.5f ? 2.0f * t * t : 1.0f - (float) Math.pow(-2.0f * t + 2.0f, 2.0) / 2.0f;
+    private float easeInOutCubic(float t) {
+        return t < 0.5f ? 4.0f * t * t * t : 1.0f - (float) Math.pow(-2.0f * t + 2.0f, 3.0) / 2.0f;
     }
 
     private void renderButtonBlurs(DrawContext context, float transitionProgress) {
         long elapsed = (long) (accumulatedTime * 1000);
 
-        float spreadProgress = easeInOutQuad(transitionProgress);
+        float spreadProgress = easeInOutCubic(transitionProgress);
         float centerX = width / 2f;
         float centerY = height / 2f;
 
@@ -243,7 +244,7 @@ public class MainMenuScreen extends Screen {
         float displayWidth = iconWidth * scale;
         float displayHeight = iconHeight * scale;
 
-        float spreadProgress = easeInOutQuad(transitionProgress);
+        float spreadProgress = easeInOutCubic(transitionProgress);
         float centerX = width / 2f;
         float centerY = height / 2f;
 
@@ -268,7 +269,7 @@ public class MainMenuScreen extends Screen {
     private void renderButtons(long vg, int mouseX, int mouseY, float transitionProgress, float deltaTime) {
         long elapsed = (long) (accumulatedTime * 1000);
 
-        float spreadProgress = easeInOutQuad(transitionProgress);
+        float spreadProgress = easeInOutCubic(transitionProgress);
         float centerX = width / 2f;
         float centerY = height / 2f;
 
