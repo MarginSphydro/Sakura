@@ -2,9 +2,7 @@ package dev.sakura.utils.player;
 
 import dev.sakura.events.input.MoveInputEvent;
 import dev.sakura.utils.math.MathUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.PlayerInput;
 import net.minecraft.util.math.MathHelper;
 
 import static dev.sakura.Sakura.mc;

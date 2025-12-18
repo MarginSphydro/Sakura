@@ -2,7 +2,7 @@
 //
 //import net.minecraft.entity.Entity;
 //
-///**
+/// **
 // * @Author：jiuxian_baka
 // * @Date：2025/12/18 00:40
 // * @Filename：RotationAnimationEvent

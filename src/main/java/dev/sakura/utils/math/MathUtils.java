@@ -6,7 +6,6 @@ import net.minecraft.util.math.MathHelper;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.security.SecureRandom;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MathUtils {

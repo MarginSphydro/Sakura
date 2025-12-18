@@ -1,18 +1,19 @@
 package dev.sakura.utils.rotation;
 
 import dev.sakura.manager.impl.RotationManager;
+import dev.sakura.mixin.accessor.IEntity;
 import dev.sakura.utils.math.MathUtils;
-import dev.sakura.utils.vector.*;
+import dev.sakura.utils.vector.Vector2f;
+import dev.sakura.utils.vector.Vector3d;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import dev.sakura.mixin.accessor.IEntity;
 
 public class RotationUtils {
-    
+
     private static MinecraftClient mc = MinecraftClient.getInstance();
 
     public static Vector2f calculate(final Vector3d from, final Vector3d to) {

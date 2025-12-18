@@ -1,7 +1,6 @@
 package dev.sakura.events.player;
 
 import dev.sakura.events.Cancellable;
-import net.bytebuddy.agent.builder.AgentBuilder;
 
 /**
  * @Author：jiuxian_baka
@@ -9,5 +8,4 @@ import net.bytebuddy.agent.builder.AgentBuilder;
  * @Filename：PlayerTickEvent
  */
 public class PlayerTickEvent extends Cancellable {
-    public boolean cancelled;
 }

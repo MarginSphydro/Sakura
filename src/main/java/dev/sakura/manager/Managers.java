@@ -1,7 +1,6 @@
 package dev.sakura.manager;
 
 import dev.sakura.manager.impl.AccountManager;
-import dev.sakura.manager.impl.RotationManager;
 
 public class Managers {
     private static boolean initialized;

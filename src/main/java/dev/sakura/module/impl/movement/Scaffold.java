@@ -1,7 +1,6 @@
 package dev.sakura.module.impl.movement;
 
 import dev.sakura.events.client.TickEvent;
-import dev.sakura.events.player.PlayerTickEvent;
 import dev.sakura.events.player.StrafeEvent;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
@@ -12,7 +11,6 @@ import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.rotation.RaytraceUtils;
 import dev.sakura.utils.rotation.RotationUtils;
 import dev.sakura.utils.vector.Vector2f;
-import dev.sakura.utils.vector.Vector3d;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
@@ -20,7 +18,6 @@ import net.minecraft.block.AirBlock;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -96,7 +93,7 @@ public class Scaffold extends Module {
     public void getBlockInfo() {
         Vec3d baseVec = mc.player.getEyePos();
 //        BlockPos base = new BlockPos(baseVec.x, baseY + 0.1f, baseVec.z);
-        BlockPos base = BlockPos.ofFloored(baseVec.x, getYLevel() , baseVec.z);
+        BlockPos base = BlockPos.ofFloored(baseVec.x, getYLevel(), baseVec.z);
         int baseX = base.getX();
         int baseZ = base.getZ();
         if (mc.world.getBlockState(base).hasSolidTopSurface(mc.world, base, mc.player)) return;
@@ -141,7 +138,8 @@ public class Scaffold extends Module {
             if (relevant.lengthSquared() <= 4.5 * 4.5 && relevant.dotProduct(
                     new Vec3d(脸.getVector())
             ) >= 0) {
-                if (脸.getOpposite() == Direction.UP && !telly.get() && MovementUtils.isMoving() && !mc.options.jumpKey.isPressed()) continue;
+                if (脸.getOpposite() == Direction.UP && !telly.get() && MovementUtils.isMoving() && !mc.options.jumpKey.isPressed())
+                    continue;
                 blockCache = new BlockCache(new BlockPos(baseBlock), 脸.getOpposite());
                 return true;
             }

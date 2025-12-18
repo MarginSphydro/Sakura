@@ -2,16 +2,13 @@ package dev.sakura.mixin.render;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.sakura.manager.impl.RotationManager;
-import dev.sakura.utils.vector.Vector2f;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Pair;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 /**
