@@ -14,7 +14,6 @@ import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgramKeys;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -29,8 +28,6 @@ import org.joml.Matrix4f;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.Math.random;
 
 public class EnvParticles extends Module {
     public EnvParticles() {
@@ -128,7 +125,6 @@ public class EnvParticles extends Module {
 
     @EventHandler
     public void onTick(TickEvent.Pre event) {
-
         //TODO: SNOW RENDER
         //if (mode.is(Mode.VANILLA)) ++ticks;
         if (mc.player == null || mc.world == null) {
