@@ -1,12 +1,12 @@
 package dev.sakura.gui.mainmenu;
 
+import dev.sakura.Sakura;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.MainMenuShader;
 import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.shaders.SplashShader;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -312,7 +312,7 @@ public class MainMenuScreen extends Screen {
     }
 
     private void renderVersionText(long vg, float transitionProgress) {
-        String version = "Minecraft " + SharedConstants.getGameVersion().getName();
+        String version = "桜 " + Sakura.MOD_VER;
         if (mc.isDemo()) {
             version += " Demo";
         } else {

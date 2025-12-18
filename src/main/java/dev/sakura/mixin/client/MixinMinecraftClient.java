@@ -4,7 +4,6 @@ import dev.sakura.Sakura;
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.input.HandleInputEvent;
 import dev.sakura.shaders.WindowResizeCallback;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.Window;
@@ -47,7 +46,7 @@ public class MixinMinecraftClient {
 
     @ModifyArg(method = "updateWindowTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/Window;setTitle(Ljava/lang/String;)V"))
     private String setTitle(String original) {
-        return "Minecraft " + SharedConstants.getGameVersion().getName() + " - " + Sakura.MOD_NAME + " " + Sakura.MOD_VER;
+        return "桜";
     }
 
     @Inject(method = "onResolutionChanged", at = @At("TAIL"))

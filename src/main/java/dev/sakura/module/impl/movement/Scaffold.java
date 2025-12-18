@@ -2,6 +2,7 @@ package dev.sakura.module.impl.movement;
 
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.player.StrafeEvent;
+import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -24,6 +25,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
 public class Scaffold extends Module {
+    public Scaffold() {
+        super("Scaffold", Category.Movement);
+    }
+
     private final BoolValue telly = new BoolValue("Telly", false);
     private final NumberValue<Integer> tellyTick = new NumberValue<>("TellyTick", 1, 0, 8, 1, () -> telly.get());
     private final BoolValue keepY = new BoolValue("KeepY", true, () -> telly.get());
@@ -34,18 +39,6 @@ public class Scaffold extends Module {
     private int yLevel;
     private BlockCache blockCache;
     private int airTicks;
-
-    public Scaffold() {
-        super("Scaffold", Category.Movement);
-    }
-
-    public int getYLevel() {
-        if (keepY.get() && !mc.options.jumpKey.isPressed() && MovementUtils.isMoving() && telly.get()) {
-            return yLevel;
-        } else {
-            return (int) (mc.player.getY() - 1);
-        }
-    }
 
     @EventHandler
     public void onTick(TickEvent.Pre event) {
@@ -79,6 +72,19 @@ public class Scaffold extends Module {
     public void onStrafe(StrafeEvent event) {
         if (mc.player == null || mc.world == null) return;
         if (mc.player.isOnGround() && MovementUtils.isMoving() && telly.get()) mc.player.jump();
+    }
+
+    @EventHandler
+    public void onRender3D(Render3DEvent event) {
+        //TODO:
+    }
+
+    public int getYLevel() {
+        if (keepY.get() && !mc.options.jumpKey.isPressed() && MovementUtils.isMoving() && telly.get()) {
+            return yLevel;
+        } else {
+            return (int) (mc.player.getY() - 1);
+        }
     }
 
     public void place() {
@@ -166,9 +172,7 @@ public class Scaffold extends Module {
         return new Vec3d(x, y, z);
     }
 
-
     public static class BlockCache {
-
         private final BlockPos position;
         private final Direction facing;
 
@@ -176,14 +180,5 @@ public class Scaffold extends Module {
             this.position = position;
             this.facing = facing;
         }
-
-        public BlockPos getPosition() {
-            return this.position;
-        }
-
-        public Direction getFacing() {
-            return this.facing;
-        }
     }
-
 }
