@@ -4,6 +4,7 @@ import com.google.gson.*;
 import dev.sakura.Sakura;
 import dev.sakura.gui.clickgui.panel.CategoryPanel;
 import dev.sakura.gui.hud.HudPanel;
+import dev.sakura.manager.Managers;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
 import dev.sakura.values.Value;
@@ -28,6 +29,9 @@ public class ConfigManager {
 
     public ConfigManager() {
         createConfigDir();
+
+        loadModules();
+        loadClickGui();
     }
 
     private void createConfigDir() {
@@ -48,13 +52,8 @@ public class ConfigManager {
         saveClickGui();
     }
 
-    public void loadDefaultConfig() {
-        loadModules();
-        loadClickGui();
-    }
-
     private void saveModules() {
-        for (Module module : Sakura.MODULE.getAllModules()) {
+        for (Module module : Managers.MODULE.getAllModules()) {
             saveModule(module);
         }
     }
@@ -98,7 +97,7 @@ public class ConfigManager {
                     .forEach(path -> {
                         String moduleName = path.getFileName().toString();
                         moduleName = moduleName.substring(0, moduleName.length() - 5);
-                        Module module = Sakura.MODULE.getModule(moduleName);
+                        Module module = Managers.MODULE.getModule(moduleName);
                         if (module != null) {
                             loadModule(module, path);
                         }

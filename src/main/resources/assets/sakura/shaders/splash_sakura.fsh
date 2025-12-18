@@ -95,8 +95,8 @@ void main() {
     float currentZoom = max(1.0, zoom);
 
     float zoomProgress = smoothstep(1.0, 8.0, currentZoom);
-    float rotationSpeed = mix(0.5, 4.0, zoomProgress);
-    float rotation = time * rotationSpeed + (currentZoom - 1.0) * 3.5;
+    float rotationSpeed = mix(0.5, 1.0, zoomProgress);
+    float rotation = time * rotationSpeed;
 
     float scale = 2.5 / currentZoom;
     

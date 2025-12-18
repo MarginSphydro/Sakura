@@ -1,8 +1,8 @@
 package dev.sakura.gui.clickgui.panel;
 
-import dev.sakura.Sakura;
 import dev.sakura.gui.IComponent;
 import dev.sakura.gui.clickgui.component.ModuleComponent;
+import dev.sakura.manager.Managers;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;
@@ -30,8 +30,8 @@ public class CategoryPanel implements IComponent {
         this.category = category;
         this.opened = true;
         this.openAnimation.setDirection(Direction.BACKWARDS);
-        for (i = 0; i < (Sakura.MODULE.getModsByCategory(category).size()); ++i) {
-            Module module = Sakura.MODULE.getModsByCategory(category).get(i);
+        for (i = 0; i < (Managers.MODULE.getModsByCategory(category).size()); ++i) {
+            Module module = Managers.MODULE.getModsByCategory(category).get(i);
             moduleComponents.add(new ModuleComponent(module));
         }
     }

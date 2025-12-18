@@ -1,12 +1,9 @@
 package dev.sakura;
 
-import dev.sakura.command.CommandManager;
-import dev.sakura.config.ConfigManager;
 import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.RotationManager;
-import dev.sakura.module.ModuleManager;
 import dev.sakura.shaders.Shader2DUtils;
 import meteordevelopment.orbit.EventBus;
 import meteordevelopment.orbit.IEventBus;
@@ -94,11 +91,8 @@ public class Sakura {
 
     public static MinecraftClient mc;
 
-    public static ModuleManager MODULE;
     public static ClickGuiScreen CLICKGUI;
     public static HudEditorScreen HUDEDITOR;
-    public static ConfigManager CONFIG;
-    public static CommandManager COMMAND;
 
     public static void init() {
         LOGGER.info("正在开始初始化!");
@@ -113,22 +107,11 @@ public class Sakura {
         // 初始化Managers
         Managers.init();
 
-        // 初始化Modules
-        MODULE = new ModuleManager();
-        MODULE.initModules();
-
         // 初始化ClickGui
         CLICKGUI = new ClickGuiScreen();
 
         // 初始化HudEditor
         HUDEDITOR = new HudEditorScreen();
-
-        // 初始化Config
-        CONFIG = new ConfigManager();
-        CONFIG.loadDefaultConfig();
-
-        // 初始化Command
-        COMMAND = new CommandManager();
 
         // 初始化Shaders
         Shader2DUtils.init();
@@ -138,7 +121,7 @@ public class Sakura {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOGGER.info("正在保存配置并且关闭游戏!");
-            CONFIG.saveDefaultConfig();
+            Managers.CONFIG.saveDefaultConfig();
         }));
 
         LOGGER.info("初始化完成!");

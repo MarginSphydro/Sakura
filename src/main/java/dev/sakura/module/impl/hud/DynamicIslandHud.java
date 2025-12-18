@@ -1,6 +1,7 @@
 package dev.sakura.module.impl.hud;
 
 import dev.sakura.Sakura;
+import dev.sakura.manager.Managers;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;
@@ -86,7 +87,7 @@ public class DynamicIslandHud extends HudModule {
     }
 
     private boolean isHudEditorOpen() {
-        HudEditor editor = Sakura.MODULE.getModule(HudEditor.class);
+        HudEditor editor = Managers.MODULE.getModule(HudEditor.class);
         return editor != null && editor.isEnabled();
     }
 

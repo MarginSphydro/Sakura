@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import dev.sakura.Sakura;
+import dev.sakura.manager.Managers;
 import dev.sakura.module.Module;
 import net.minecraft.command.CommandSource;
 
@@ -26,7 +26,7 @@ public class ModuleArgumentType implements ArgumentType<Module> {
     @Override
     public Module parse(StringReader reader) throws CommandSyntaxException {
         String string = reader.readString();
-        Module module = Sakura.MODULE.getModule(string);
+        Module module = Managers.MODULE.getModule(string);
         if (module == null) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().createWithContext(reader, null);
         }
@@ -37,14 +37,14 @@ public class ModuleArgumentType implements ArgumentType<Module> {
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context,
                                                               final SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                Sakura.MODULE.getAllModules().stream().map(Module::getName),
+                Managers.MODULE.getAllModules().stream().map(Module::getName),
                 builder
         );
     }
 
     @Override
     public Collection<String> getExamples() {
-        return Sakura.MODULE.getAllModules().stream()
+        return Managers.MODULE.getAllModules().stream()
                 .map(Module::getName)
                 .limit(10)
                 .toList();

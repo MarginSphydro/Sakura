@@ -5,6 +5,7 @@ import dev.sakura.Sakura;
 import dev.sakura.command.Command;
 import dev.sakura.command.ModuleArgumentType;
 import dev.sakura.gui.clickgui.panel.CategoryPanel;
+import dev.sakura.manager.Managers;
 import dev.sakura.module.Module;
 import dev.sakura.utils.client.ChatUtils;
 import net.minecraft.command.CommandSource;
@@ -32,14 +33,14 @@ public class ResetCommand extends Command {
                                 })))
                 .executes(c -> {
                     ChatUtils.addChatMessage("§e用法:");
-                    ChatUtils.addChatMessage("  §7" + Sakura.COMMAND.getPrefix() + "reset all §f- 重置所有配置");
-                    ChatUtils.addChatMessage("  §7" + Sakura.COMMAND.getPrefix() + "reset module <名称> §f- 重置指定模块");
+                    ChatUtils.addChatMessage("  §7" + Managers.COMMAND.getPrefix() + "reset all §f- 重置所有配置");
+                    ChatUtils.addChatMessage("  §7" + Managers.COMMAND.getPrefix() + "reset module <名称> §f- 重置指定模块");
                     return 1;
                 });
     }
 
     private void resetAll() {
-        for (Module module : Sakura.MODULE.getAllModules()) {
+        for (Module module : Managers.MODULE.getAllModules()) {
             module.reset();
         }
         resetClickGuiPanels();

@@ -62,8 +62,6 @@ public class MixinClientPlayerEntity {
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tickHeadHook(CallbackInfo ci) {
-        PlayerTickEvent playerTickEvent = new PlayerTickEvent();
-        Sakura.EVENT_BUS.post(playerTickEvent);
-        if (playerTickEvent.isCancelled()) ci.cancel();
+        if (Sakura.EVENT_BUS.post(new PlayerTickEvent()).isCancelled()) ci.cancel();
     }
 }

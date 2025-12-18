@@ -2,8 +2,8 @@ package dev.sakura.command.impl;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.sakura.Sakura;
 import dev.sakura.command.Command;
+import dev.sakura.manager.Managers;
 import dev.sakura.utils.client.ChatUtils;
 import net.minecraft.command.CommandSource;
 import org.lwjgl.glfw.GLFW;
@@ -24,14 +24,14 @@ public class PrefixCommand extends Command {
                             }
 
                             int prefixKey = getPrefixKey(newPrefix);
-                            Sakura.COMMAND.setPrefix(newPrefix, prefixKey);
-                            Sakura.CONFIG.savePrefix(newPrefix);
+                            Managers.COMMAND.setPrefix(newPrefix, prefixKey);
+                            Managers.CONFIG.savePrefix(newPrefix);
                             ChatUtils.addChatMessage("Command prefix set to: §a" + newPrefix);
                             return 1;
                         }))
                 .executes(c -> {
-                    ChatUtils.addChatMessage("Current prefix: §a" + Sakura.COMMAND.getPrefix());
-                    ChatUtils.addChatMessage("Usage: " + Sakura.COMMAND.getPrefix() + "prefix <new prefix>");
+                    ChatUtils.addChatMessage("Current prefix: §a" + Managers.COMMAND.getPrefix());
+                    ChatUtils.addChatMessage("Usage: " + Managers.COMMAND.getPrefix() + "prefix <new prefix>");
                     return 1;
                 });
     }
