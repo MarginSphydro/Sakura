@@ -270,13 +270,33 @@ public class Notify extends HudModule {
     private Color getIconBgColor(NotifyType type, float alpha) {
         int r, g, b;
         switch (type) {
-            case SELF_POP -> { r = 130; g = 70; b = 180; }
-            case ENEMY_POP -> { r = 90; g = 70; b = 200; }
-            case PACKET_WARNING -> { r = 150; g = 90; b = 190; }
-            case DEATH -> { r = 180; g = 50; b = 80; }
-            default -> { r = 90; g = 70; b = 200; }
+            case SELF_POP -> {
+                r = 130;
+                g = 70;
+                b = 180;
+            }
+            case ENEMY_POP -> {
+                r = 90;
+                g = 70;
+                b = 200;
+            }
+            case PACKET_WARNING -> {
+                r = 150;
+                g = 90;
+                b = 190;
+            }
+            case DEATH -> {
+                r = 180;
+                g = 50;
+                b = 80;
+            }
+            default -> {
+                r = 90;
+                g = 70;
+                b = 200;
+            }
         }
-        return new Color((int)(r * alpha), (int)(g * alpha), (int)(b * alpha));
+        return new Color((int) (r * alpha), (int) (g * alpha), (int) (b * alpha));
     }
 
     private Color getProgressColor(NotifyType type, int alpha) {
