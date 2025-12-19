@@ -3,6 +3,7 @@ package dev.sakura.mixin.render;
 import dev.sakura.Sakura;
 import dev.sakura.events.render.Render2DEvent;
 import dev.sakura.manager.Managers;
+import dev.sakura.module.impl.hud.HotbarHud;
 import dev.sakura.module.impl.render.NoRender;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -21,6 +22,14 @@ public class MixinInGameHud {
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         Sakura.EVENT_BUS.post(new Render2DEvent(context));
+    }
+
+    @Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
+    private void onRenderHotbar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        HotbarHud hotbarHud = Managers.MODULE.getModule(HotbarHud.class);
+        if (hotbarHud != null && hotbarHud.isEnabled()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)

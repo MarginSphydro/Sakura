@@ -1,6 +1,8 @@
 package dev.sakura.module.impl.hud;
 
+import dev.sakura.manager.Managers;
 import dev.sakura.module.HudModule;
+import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -11,6 +13,7 @@ import dev.sakura.utils.animations.impl.DecelerateAnimation;
 import dev.sakura.utils.color.ColorUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.option.KeyBinding;
 
 import java.awt.*;
@@ -33,12 +36,49 @@ public class KeyStrokesHud extends HudModule {
     private Button keyBindRight;
     private Button keyBindJump;
 
+    private float offset, size, increment, radius;
+
     public KeyStrokesHud() {
         super("KeyStrokes", 10, 100);
     }
 
     @Override
+    public void renderInGame(DrawContext context) {
+        HudEditor editor = Managers.MODULE.getModule(HudEditor.class);
+        if (editor != null && editor.isEnabled()) return;
+
+        this.currentContext = context;
+        calculateLayout();
+        renderBlur(context);
+        NanoVGRenderer.INSTANCE.draw(vg -> renderContent());
+    }
+
+    @Override
+    public void renderInEditor(DrawContext context, float mouseX, float mouseY) {
+        if (dragging) {
+            int gameWidth = mc.getWindow().getScaledWidth();
+            int gameHeight = mc.getWindow().getScaledHeight();
+            x = Math.max(0, Math.min(mouseX - dragX, gameWidth - width));
+            y = Math.max(0, Math.min(mouseY - dragY, gameHeight - height));
+            relativeX = x / gameWidth;
+            relativeY = y / gameHeight;
+        }
+
+        this.currentContext = context;
+        calculateLayout();
+        renderBlur(context);
+        NanoVGRenderer.INSTANCE.draw(vg -> {
+            renderContent();
+            NanoVGHelper.drawRect(x, y, width, height,
+                    dragging ? new Color(100, 100, 255, 80) : new Color(0, 0, 0, 50));
+        });
+    }
+
+    @Override
     public void onRenderContent() {
+    }
+
+    private void calculateLayout() {
         if (mc.player == null) return;
 
         if (keyBindForward == null) {
@@ -49,18 +89,43 @@ public class KeyStrokesHud extends HudModule {
             keyBindJump = new Button(mc.options.jumpKey);
         }
 
-        float offset = offsetValue.get().floatValue();
-        float size = sizeValue.get().floatValue();
-        float increment = size + offset;
+        offset = offsetValue.get().floatValue();
+        size = sizeValue.get().floatValue();
+        increment = size + offset;
+        radius = radiusValue.get().floatValue();
 
         this.width = increment * 3 - offset;
         this.height = increment * 3 - offset;
+    }
 
-        float radius = radiusValue.get().floatValue();
+    private void renderBlur(DrawContext context) {
+        if (!blur.get() || mc.player == null) return;
 
-        if (blur.get()) {
-            NanoVGRenderer.INSTANCE.withRawCoords(() -> Shader2DUtils.drawRoundedBlur(getMatrix(), x, y, width, height, radius, new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f));
-        }
+        float blurValue = blurStrength.get().floatValue();
+
+        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+                x + width / 2f - size / 2f, y, size, size, radius,
+                new Color(0, 0, 0, 0), blurValue, 1.0f);
+
+        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+                x, y + increment, size, size, radius,
+                new Color(0, 0, 0, 0), blurValue, 1.0f);
+
+        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+                x + increment, y + increment, size, size, radius,
+                new Color(0, 0, 0, 0), blurValue, 1.0f);
+
+        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+                x + increment * 2, y + increment, size, size, radius,
+                new Color(0, 0, 0, 0), blurValue, 1.0f);
+
+        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+                x, y + increment * 2, width, size, radius,
+                new Color(0, 0, 0, 0), blurValue, 1.0f);
+    }
+
+    private void renderContent() {
+        if (mc.player == null) return;
 
         keyBindForward.render(x + width / 2f - size / 2f, y, size, size, radius);
         keyBindLeft.render(x, y + increment, size, size, radius);

@@ -84,6 +84,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new DynamicIslandHud());
             manager.tryLoad(() -> new KeyStrokesHud());
             manager.tryLoad(() -> new Notify());
+            manager.tryLoad(() -> new HotbarHud());
         }
     }
 
