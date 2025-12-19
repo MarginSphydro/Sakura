@@ -1,12 +1,12 @@
 package dev.sakura.gui.mainmenu;
 
-import dev.sakura.Sakura;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.MainMenuShader;
 import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.shaders.SplashShader;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -17,7 +17,6 @@ import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
-import org.lwjgl.nanovg.NanoVG;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -30,12 +29,9 @@ public class MainMenuScreen extends Screen {
     private int iconImage = -1;
     private int iconWidth, iconHeight;
 
-    private float accumulatedTime = 0f;
-    private long lastFrameTime = System.nanoTime();
+    private long initTime = 0;
     private static final long FADE_DURATION = 800;
     private static final long BUTTON_STAGGER = 80;
-
-    private float globalAlpha = 1.0f;
 
     public MainMenuScreen() {
         super(Text.of("SakuraMainMenuScreen"));
@@ -53,10 +49,7 @@ public class MainMenuScreen extends Screen {
 
     @Override
     protected void init() {
-        if (buttons.isEmpty()) {
-            accumulatedTime = 0f;
-            lastFrameTime = System.nanoTime();
-        }
+        if (initTime == 0) initTime = System.currentTimeMillis();
         buttons.clear();
 
         int centerX = this.width / 2;
@@ -137,31 +130,14 @@ public class MainMenuScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        long currentTime = System.nanoTime();
-        float deltaTime = (currentTime - lastFrameTime) / 1_000_000_000f;
-        lastFrameTime = currentTime;
-
-        // 限制最大deltaTime，防止卡顿后动画跳跃
-        deltaTime = Math.min(deltaTime, 0.05f);
-
-        accumulatedTime += deltaTime;
-
         float transitionProgress = 1.0f;
-        boolean inTransition = false;
 
         try {
             SplashShader splash = SplashShader.getInstance();
             if (splash != null && splash.isTransitionStarted() && !splash.isTransitionComplete()) {
-                transitionProgress = Math.min(1.0f, accumulatedTime / 2.0f);
-                inTransition = true;
+                transitionProgress = splash.getTransitionProgress();
             }
         } catch (Exception ignored) {
-        }
-
-        if (inTransition) {
-            globalAlpha = transitionProgress;
-        } else {
-            globalAlpha = 1.0f;
         }
 
         final float finalTransitionProgress = transitionProgress;
@@ -170,26 +146,16 @@ public class MainMenuScreen extends Screen {
 
         renderButtonBlurs(context, finalTransitionProgress);
 
-        final float finalDeltaTime = deltaTime;
-
         NanoVGRenderer.INSTANCE.draw(vg -> {
             renderIcon(finalTransitionProgress);
-            renderButtons(vg, mouseX, mouseY, finalTransitionProgress, finalDeltaTime);
-            renderVersionText(vg, finalTransitionProgress);
-            renderCopyright(vg, finalTransitionProgress);
+            renderButtons(mouseX, mouseY, finalTransitionProgress);
+            renderVersionText(finalTransitionProgress);
+            renderCopyright(finalTransitionProgress);
         });
     }
 
-    private float easeInOutCubic(float t) {
-        return t < 0.5f ? 4.0f * t * t * t : 1.0f - (float) Math.pow(-2.0f * t + 2.0f, 3.0) / 2.0f;
-    }
-
     private void renderButtonBlurs(DrawContext context, float transitionProgress) {
-        long elapsed = (long) (accumulatedTime * 1000);
-
-        float spreadProgress = easeInOutCubic(transitionProgress);
-        float centerX = width / 2f;
-        float centerY = height / 2f;
+        long elapsed = System.currentTimeMillis() - initTime;
 
         for (int i = 0; i < buttons.size(); i++) {
             MenuButton button = buttons.get(i);
@@ -208,32 +174,15 @@ public class MainMenuScreen extends Screen {
             if (finalAlpha <= 0) continue;
 
             float buttonScale = 0.8f + fadeProgress * 0.2f;
+            float centerX = button.x + button.width / 2f;
+            float centerY = button.y + button.height / 2f;
 
-            float introScale = 0.2f + 0.8f * spreadProgress;
-            float totalScale = buttonScale * introScale;
+            float scaledX = centerX - (button.width / 2f) * buttonScale;
+            float scaledY = centerY - (button.height / 2f) * buttonScale;
+            float scaledW = button.width * buttonScale;
+            float scaledH = button.height * buttonScale;
 
-            float buttonCenterX = button.x + button.width / 2f;
-            float buttonCenterY = button.y + button.height / 2f;
-
-            float currentCenterX = centerX + (buttonCenterX - centerX) * spreadProgress;
-            float currentCenterY = centerY + (buttonCenterY - centerY) * spreadProgress;
-
-            float scaledW = button.width * totalScale;
-            float scaledH = button.height * totalScale;
-            float scaledX = currentCenterX - scaledW / 2f;
-            float scaledY = currentCenterY - scaledH / 2f;
-
-            Shader2DUtils.drawRoundedBlur(
-                    context.getMatrices(),
-                    scaledX,
-                    scaledY,
-                    scaledW,
-                    scaledH,
-                    4 * totalScale,
-                    new Color(0, 0, 0, 0),
-                    10f,
-                    finalAlpha
-            );
+            Shader2DUtils.drawRoundedBlur(context.getMatrices(), scaledX, scaledY, scaledW, scaledH, 4 * buttonScale, new Color(0, 0, 0, 0), 10f, finalAlpha);
         }
     }
 
@@ -244,34 +193,17 @@ public class MainMenuScreen extends Screen {
         float displayWidth = iconWidth * scale;
         float displayHeight = iconHeight * scale;
 
-        float spreadProgress = easeInOutCubic(transitionProgress);
-        float centerX = width / 2f;
-        float centerY = height / 2f;
-
-        float targetX = (width - displayWidth) / 2f;
-        float targetY = height / 4f - displayHeight / 2f + 10;
-
-        float targetCenterX = targetX + displayWidth / 2f;
-        float targetCenterY = targetY + displayHeight / 2f;
-
-        float currentCenterX = centerX + (targetCenterX - centerX) * spreadProgress;
-        float currentCenterY = centerY + (targetCenterY - centerY) * spreadProgress;
-
-        float currentX = currentCenterX - displayWidth / 2f;
-        float currentY = currentCenterY - displayHeight / 2f;
+        float x = (width - displayWidth) / 2f;
+        float y = height / 4f - displayHeight / 2f + 10;
 
         float easeT = 1.0f - (float) Math.pow(1.0f - transitionProgress, 3.0);
-        float iconScale = (0.5f + easeT * 0.5f) * (0.2f + 0.8f * spreadProgress);
+        float iconScale = 0.5f + easeT * 0.5f;
 
-        NanoVGHelper.drawTexture(iconImage, currentX, currentY, displayWidth, displayHeight, transitionProgress, iconScale, iconScale, 0);
+        NanoVGHelper.drawTexture(iconImage, x, y, displayWidth, displayHeight, transitionProgress, iconScale, iconScale, 0);
     }
 
-    private void renderButtons(long vg, int mouseX, int mouseY, float transitionProgress, float deltaTime) {
-        long elapsed = (long) (accumulatedTime * 1000);
-
-        float spreadProgress = easeInOutCubic(transitionProgress);
-        float centerX = width / 2f;
-        float centerY = height / 2f;
+    private void renderButtons(int mouseX, int mouseY, float transitionProgress) {
+        long elapsed = System.currentTimeMillis() - initTime;
 
         for (int i = 0; i < buttons.size(); i++) {
             MenuButton button = buttons.get(i);
@@ -289,30 +221,14 @@ public class MainMenuScreen extends Screen {
             float finalAlpha = fadeProgress * transitionProgress;
             float buttonScale = 0.8f + fadeProgress * 0.2f;
 
-            float introScale = 0.2f + 0.8f * spreadProgress;
-            float totalScale = buttonScale * introScale;
+            boolean hovered = mouseX >= button.x && mouseX <= button.x + button.width && mouseY >= button.y && mouseY <= button.y + button.height;
 
-            float buttonCenterX = button.x + button.width / 2f;
-            float buttonCenterY = button.y + button.height / 2f;
-
-            float currentCenterX = centerX + (buttonCenterX - centerX) * spreadProgress;
-            float currentCenterY = centerY + (buttonCenterY - centerY) * spreadProgress;
-
-            float renderX = currentCenterX - button.width / 2f;
-            float renderY = currentCenterY - button.height / 2f;
-
-            boolean hovered = mouseX >= button.x && mouseX <= button.x + button.width
-                    && mouseY >= button.y && mouseY <= button.y + button.height;
-
-            // 如果正在动画中，暂时禁用hover效果，避免位置错位时的视觉干扰
-            if (spreadProgress < 0.95f) hovered = false;
-
-            button.render(vg, renderX, renderY, hovered, finalAlpha, totalScale, deltaTime);
+            button.render(hovered, finalAlpha, buttonScale);
         }
     }
 
-    private void renderVersionText(long vg, float transitionProgress) {
-        String version = "桜 " + Sakura.MOD_VER;
+    private void renderVersionText(float transitionProgress) {
+        String version = "Minecraft " + SharedConstants.getGameVersion().getName();
         if (mc.isDemo()) {
             version += " Demo";
         } else {
@@ -333,8 +249,8 @@ public class MainMenuScreen extends Screen {
         NanoVGHelper.drawString(version, 2, height - 2, font, 12, color);
     }
 
-    private void renderCopyright(long vg, float transitionProgress) {
-        String copyright = I18n.translate("title.credits");
+    private void renderCopyright(float transitionProgress) {
+        String copyright = "Copyright© Sakura2025.";
         int font = FontLoader.greycliffRegular(12);
         float textWidth = NanoVGHelper.getTextWidth(copyright, font, 12);
 
@@ -406,42 +322,30 @@ public class MainMenuScreen extends Screen {
             }
         }
 
-        void render(long vg, float renderX, float renderY, boolean hovered, float alpha, float scale, float deltaTime) {
+        void render(boolean hovered, float alpha, float scale) {
             if (alpha <= 0) return;
 
             float targetHover = hovered && enabled ? 1.0f : 0.0f;
-
-            float speed = 15.0f;
-            hoverProgress += (targetHover - hoverProgress) * Math.min(1.0f, deltaTime * speed);
+            hoverProgress += (targetHover - hoverProgress) * 0.2f;
 
             int baseAlpha = (int) (alpha * 255);
             int bgAlpha = enabled ? (int) (baseAlpha * (0.4f + hoverProgress * 0.2f)) : (int) (baseAlpha * 0.2f);
 
             Color bgColor = enabled ? new Color(255, 200, 220, bgAlpha) : new Color(128, 128, 128, bgAlpha);
-            NanoVGHelper.drawRoundRectScaled(renderX, renderY, width, height, 4, bgColor, scale);
+            NanoVGHelper.drawRoundRectScaled(x, y, width, height, 4, bgColor, scale);
 
             int borderAlpha = (int) (baseAlpha * (0.5f + hoverProgress * 0.3f));
             Color borderColor = enabled ? new Color(255, 150, 180, borderAlpha) : new Color(100, 100, 100, borderAlpha);
-            NanoVGHelper.drawRoundRectOutlineScaled(renderX, renderY, width, height, 4, 1, borderColor, scale);
+            NanoVGHelper.drawRoundRectOutlineScaled(x, y, width, height, 4, 1, borderColor, scale);
 
             int font = FontLoader.greycliffRegular(14);
             float textWidth = NanoVGHelper.getTextWidth(text, font, 14);
-            float centerX = renderX + width / 2f;
-            float centerY = renderY + height / 2f;
-
-            NanoVG.nvgSave(vg);
-            NanoVG.nvgTranslate(vg, centerX, centerY);
-            NanoVG.nvgScale(vg, scale, scale);
-            NanoVG.nvgTranslate(vg, -centerX, -centerY);
-
-            float textX = renderX + (width - textWidth) / 2f;
-            float textY = renderY + height / 2f + 5;
+            float textX = x + (width - textWidth) / 2f;
+            float textY = y + height / 2f + 5;
 
             int textAlpha = enabled ? baseAlpha : (int) (baseAlpha * 0.6f);
             Color textColor = new Color(255, 255, 255, textAlpha);
             NanoVGHelper.drawString(text, textX, textY, font, 14, textColor);
-
-            NanoVG.nvgRestore(vg);
         }
     }
 

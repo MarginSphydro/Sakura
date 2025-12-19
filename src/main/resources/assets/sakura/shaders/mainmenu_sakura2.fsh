@@ -9,11 +9,9 @@ out vec4 fragColor;
 #define S(a,b,c) smoothstep(a,b,c)
 #define sat(a) clamp(a,0.0,1.0)
 
-
 vec4 N14(float t) {
 	return fract(sin(t*vec4(123., 104., 145., 24.))*vec4(657., 345., 879., 154.));
 }
-
 
 vec4 sakura(vec2 uv, vec2 id, float blur) {
     float t = time + 45.0; 
@@ -24,9 +22,7 @@ vec4 sakura(vec2 uv, vec2 id, float blur) {
     uv.x += sin(t * rnd.z * 0.3) * 0.6;
     uv.y += sin(t * rnd.w * 0.45) * 0.4;
 
-
     float angle = atan(uv.y, uv.x) + rnd.x * 421.47 + t * mix(-0.6, 0.6, rnd.x);
-
 
     float dist = length(uv);
 
@@ -37,7 +33,6 @@ vec4 sakura(vec2 uv, vec2 id, float blur) {
     petal += petal2 * 0.2;
 
     float sakuraDist = dist + petal * 0.25;
-
 
     float shadowblur = 0.3;
     float shadow = S(0.5 + shadowblur, 0.5 - shadowblur, sakuraDist) * 0.4;
@@ -74,19 +69,16 @@ vec4 sakura(vec2 uv, vec2 id, float blur) {
     return vec4(sakuraCol, sakuraMask);
 }
 
-vec3 premulMix(vec4 src, vec3 dst)
-{
+vec3 premulMix(vec4 src, vec3 dst) {
     return dst.rgb * (1.0 - src.a) + src.rgb;
 }
 
-vec4 premulMix(vec4 src, vec4 dst)
-{
+vec4 premulMix(vec4 src, vec4 dst) {
     vec4 res;
     res.rgb = premulMix(src, dst.rgb);
     res.a = 1.0 - (1.0 - src.a) * (1.0 - dst.a);
     return res;
 }
-
 
 vec4 layer(vec2 uv, float blur)
 {
@@ -108,21 +100,21 @@ vec4 layer(vec2 uv, float blur)
  	return accum;
 }
 
-
-
-
 void main() {
     vec2 fragCoord = gl_FragCoord.xy;
     vec2 nominalUV = fragCoord/resolution.xy;
 
     vec2 uv = nominalUV - 0.5;
-    uv.x *= resolution.x / resolution.y;
+    float aspectRatio = resolution.x / resolution.y;
+    uv.x *= aspectRatio;
+
+    vec2 originalUV = uv;
 
     float t = clamp(transition, 0.0, 1.0);
 
-    float easeT = 1.0 - pow(1.0 - t, 3.0);
+    float easeT = t < 0.5 ? 2.0 * t * t : 1.0 - pow(-2.0 * t + 2.0, 2.0) / 2.0;
 
-    float centerDist = length(uv);
+    float centerDist = length(originalUV);
 
     float expandRadius = easeT * 3.5;
     float expandMask = smoothstep(expandRadius - 0.5, expandRadius + 0.5, centerDist);
@@ -130,15 +122,13 @@ void main() {
 
     float alpha = smoothstep(0.0, 0.25, t);
 
+    float scaleT = easeT;
+    float scaleTransition = mix(0.1, 1.0, scaleT);
+
+    uv *= 4.3 * scaleTransition;
+
     uv.y += time * 0.1;
     uv.x -= time * 0.03 + sin(time) * 0.1;
-
-    float scaleTransition = mix(0.02, 1.0, easeT);
-
-    vec2 burstOffset = normalize(uv + 0.001) * (1.0 - easeT) * 0.5;
-    uv += burstOffset;
-    
-    uv *= 4.3 * scaleTransition;
 
     float screenY = nominalUV.y;
     vec3 bgColor = vec3(1.0, 0.7529, 0.8235) - 0.15;
