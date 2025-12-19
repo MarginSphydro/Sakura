@@ -91,7 +91,7 @@ public class ModuleComponent implements IComponent {
                         ColorUtil.applyOpacity(ClickGui.expandedBackgroundColor.get(), (float) (0.3f * openAnimation.getOutput())));
             }
 
-            NanoVGHelper.drawString(module.getName(), x + 4, y + 11, FontLoader.greycliffRegular(7.5f), 7.5f, Color.WHITE);
+            NanoVGHelper.drawString(module.getName(), x + 4, y + 11, FontLoader.regular(7.5f), 7.5f, Color.WHITE);
 
             float boxWidth = 18;
             float boxHeight = 8;
@@ -118,7 +118,7 @@ public class ModuleComponent implements IComponent {
             NanoVGHelper.drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 2, 0.5f, borderColor);
 
             float fontSize = 5;
-            int font = FontLoader.greycliffRegular(fontSize);
+            int font = FontLoader.regular(fontSize);
             String displayText = listening ? "..." : (hasKey ? getKeyName(keyCode) : "");
             float textWidth = NanoVGHelper.getTextWidth(displayText, font, fontSize);
             float textX = boxX + (boxWidth - textWidth) / 2;

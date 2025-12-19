@@ -89,7 +89,7 @@ public class HudModuleComponent implements IComponent {
                         ColorUtil.applyOpacity(ClickGui.expandedBackgroundColor.get(), (float) (0.3f * openAnimation.getOutput())));
             }
 
-            NanoVGHelper.drawString(hudModule.getName(), x + 4, y + 11, FontLoader.greycliffRegular(7.5f), 7.5f, Color.WHITE);
+            NanoVGHelper.drawString(hudModule.getName(), x + 4, y + 11, FontLoader.regular(7.5f), 7.5f, Color.WHITE);
         });
 
         float componentYOffset = 18;

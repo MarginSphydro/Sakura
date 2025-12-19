@@ -43,7 +43,7 @@ public class CategoryPanel implements IComponent {
         NanoVGRenderer.INSTANCE.draw(vg -> {
             Color bgColor = ClickGui.backgroundColor.get();
             NanoVGHelper.drawRoundRectBloom(x, y - 1, width, (float) (18 + ((height - 18))), 7, new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 100));
-            NanoVGHelper.drawString(category.name(), x + 4, y + 12f, FontLoader.greycliffBold(10), 10, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(category.name(), x + 4, y + 12f, FontLoader.bold(10), 10, new Color(255, 255, 255, 255));
             NanoVGHelper.drawString(category.icon, x + 4 + width - NanoVGHelper.getTextWidth(category.icon, FontLoader.icons(15), 15) - (category == Category.Render ? 7 : 3), y + 13f, FontLoader.icons(15), 15, new Color(255, 255, 255, 255));
         });
 

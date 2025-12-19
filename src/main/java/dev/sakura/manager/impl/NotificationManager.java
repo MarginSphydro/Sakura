@@ -68,7 +68,7 @@ public class NotificationManager {
     public static float[] renderPreview(MatrixStack matrices, float x, float y, boolean leftAligned, Color primaryColor, Color backgroundColor, float maxWidth, boolean blur, float blurStrength) {
         String previewMessage = "Preview Notification";
         float padding = 4.0f;
-        int font = FontLoader.greycliffMedium(12);
+        int font = FontLoader.medium(12);
         float fontSize = 12;
         float textHeight = NanoVGHelper.getFontHeight(font, fontSize);
         float height = textHeight * 2.5f;
@@ -155,7 +155,7 @@ public class NotificationManager {
 
         private float getWidth(float padding, float minWidth) {
             if (cachedWidth == -1f) {
-                int font = FontLoader.greycliffMedium(12);
+                int font = FontLoader.medium(12);
                 float fontSize = 12;
                 String plainText = message.replaceAll("§.", "");
                 cachedWidth = Math.max(minWidth, padding * 3 + NanoVGHelper.getTextWidth(plainText, font, fontSize));
@@ -167,7 +167,7 @@ public class NotificationManager {
             if (startTime == -1L) return null;
 
             float padding = 4.0f;
-            int font = FontLoader.greycliffMedium(12);
+            int font = FontLoader.medium(12);
             float fontSize = 12;
             float textHeight = NanoVGHelper.getFontHeight(font, fontSize);
             float height = textHeight * 2.5f;
@@ -186,7 +186,7 @@ public class NotificationManager {
             }
 
             float padding = 4.0f;
-            int font = FontLoader.greycliffMedium(12);
+            int font = FontLoader.medium(12);
             float fontSize = 12;
             float textHeight = NanoVGHelper.getFontHeight(font, fontSize);
             float height = textHeight * 2.5f;

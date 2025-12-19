@@ -30,7 +30,7 @@ public class EnumValueComponent extends Component {
         float offset = 0;
         float heightoff = 0;
 
-        int font = FontLoader.greycliffRegular(FONT_SIZE);
+        int font = FontLoader.regular(FONT_SIZE);
         float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
         String currentMode = setting.get().name();
 
@@ -57,7 +57,7 @@ public class EnumValueComponent extends Component {
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         float offset = 0;
         float heightoff = 0;
-        int font = FontLoader.greycliffRegular(FONT_SIZE);
+        int font = FontLoader.regular(FONT_SIZE);
         for (String text : setting.getModeNames()) {
             float textWidth = NanoVGHelper.getTextWidth(text, font, FONT_SIZE);
             float off = textWidth + 4;

@@ -132,7 +132,7 @@ public class NanoVGRenderer {
     /**
      * 在已开始的帧中临时暂停NanoVG（用于其他渲染器如Shader）
      */
-    public void withRawCoordsAndPause(Runnable drawer) {
+    public void withRawCoords(Runnable drawer) {
         if (!inFrame) {
             throw new IllegalStateException("必须在draw()回调内使用");
         }

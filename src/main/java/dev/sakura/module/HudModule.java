@@ -63,7 +63,6 @@ public abstract class HudModule extends Module {
         NanoVGRenderer.INSTANCE.draw(vg -> onRenderContent());
     }
 
-
     public void renderInEditor(DrawContext context, float mouseX, float mouseY) {
         if (dragging) {
             int gameWidth = mc.getWindow().getScaledWidth();
@@ -78,13 +77,7 @@ public abstract class HudModule extends Module {
 
         onRender(context);
 
-        NanoVGRenderer.INSTANCE.draw(canvas -> NanoVGHelper.drawRect(
-                x,
-                y,
-                width,
-                height,
-                dragging ? new Color(100, 100, 255, 80) : new Color(0, 0, 0, 50)
-        ));
+        NanoVGRenderer.INSTANCE.draw(canvas -> NanoVGHelper.drawRect(x, y, width, height, dragging ? new Color(100, 100, 255, 80) : new Color(0, 0, 0, 50)));
     }
 
     public void renderInGame(DrawContext context) {
@@ -93,15 +86,6 @@ public abstract class HudModule extends Module {
             return;
         }
         onRender(context);
-    }
-
-    /**
-     * 在draw()回调内临时切换到像素坐标（暂停NanoVG）
-     * 用于使用着色器等需要像素坐标的渲染器
-     */
-    protected void withPixelCoords(float logicX, float logicY, float logicW, float logicH, PixelDrawer drawer) {
-        float scale = (float) mc.getWindow().getScaleFactor();
-        NanoVGRenderer.INSTANCE.withRawCoordsAndPause(() -> drawer.draw(logicX * scale, logicY * scale, logicW * scale, logicH * scale));
     }
 
     @FunctionalInterface
@@ -115,18 +99,6 @@ public abstract class HudModule extends Module {
 
     protected MatrixStack getMatrix() {
         return currentContext.getMatrices();
-    }
-
-    protected float getScaleFactor() {
-        return (float) mc.getWindow().getScaleFactor();
-    }
-
-    public void onResolutionChanged() {
-        int gameWidth = mc.getWindow().getScaledWidth();
-        int gameHeight = mc.getWindow().getScaledHeight();
-
-        x = Math.max(0, Math.min(gameWidth * relativeX, gameWidth - width));
-        y = Math.max(0, Math.min(gameHeight * relativeY, gameHeight - height));
     }
 
     @Override
@@ -148,7 +120,7 @@ public abstract class HudModule extends Module {
         return false;
     }
 
-    public boolean mouseReleased(float mouseX, float mouseY, int button) {
+    public boolean mouseReleased(int button) {
         if (dragging && button == 0) {
             dragging = false;
             return true;

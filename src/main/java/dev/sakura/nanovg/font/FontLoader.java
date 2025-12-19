@@ -1,15 +1,15 @@
 package dev.sakura.nanovg.font;
 
 public class FontLoader {
-    public static int greycliffRegular(float size) {
+    public static int regular(float size) {
         return FontManager.fontWithCJK("regular.otf", size);
     }
 
-    public static int greycliffBold(float size) {
+    public static int bold(float size) {
         return FontManager.fontWithCJK("regular_bold.otf", size);
     }
 
-    public static int greycliffMedium(float size) {
+    public static int medium(float size) {
         return FontManager.fontWithCJK("regular_medium.otf", size);
     }
 
@@ -17,7 +17,7 @@ public class FontLoader {
         return FontManager.fontWithCJK("regular_semi.otf", size);
     }
 
-    public static int icon(float size) {
+    public static int solid(float size) {
         return FontManager.font("solid.ttf", size);
     }
 

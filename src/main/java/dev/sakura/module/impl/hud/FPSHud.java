@@ -52,7 +52,7 @@ public class FPSHud extends HudModule {
         }
 
         String text = String.format("FPS %d", cachedFps);
-        int font = FontLoader.greycliffBold(14);
+        int font = FontLoader.bold(14);
         float fontSize = 14 * s;
 
         NanoVGHelper.drawString(text, x + 2 * s, y + fontSize, font, fontSize, new Color(calculateColor()));

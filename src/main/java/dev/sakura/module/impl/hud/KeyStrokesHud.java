@@ -59,15 +59,7 @@ public class KeyStrokesHud extends HudModule {
         float radius = radiusValue.get().floatValue();
 
         if (blur.get()) {
-            withPixelCoords(x, y, width, height, (px, py, pw, ph) ->
-                    Shader2DUtils.drawRoundedBlur(
-                            getMatrix(),
-                            px, py, pw, ph,
-                            (float) (radius * mc.getWindow().getScaleFactor()),
-                            new Color(0, 0, 0, 0),
-                            blurStrength.get().floatValue(),
-                            1.0f
-                    ));
+            NanoVGRenderer.INSTANCE.withRawCoords(() -> Shader2DUtils.drawRoundedBlur(getMatrix(), x, y, width, height, radius, new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f));
         }
 
         keyBindForward.render(x + width / 2f - size / 2f, y, size, size, radius);
@@ -97,7 +89,7 @@ public class KeyStrokesHud extends HudModule {
             NanoVGHelper.drawRoundRect(x, y, w, h, radius, baseColor);
 
             String keyName = getKeyName(binding);
-            int font = FontLoader.greycliffBold(h * 0.55f);
+            int font = FontLoader.bold(h * 0.55f);
             float textWidth = NanoVGHelper.getTextWidth(keyName, font, h * 0.55f);
             float fontHeight = NanoVGHelper.getFontHeight(font, h * 0.55f);
 

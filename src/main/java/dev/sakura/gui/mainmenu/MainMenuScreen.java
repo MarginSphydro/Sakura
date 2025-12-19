@@ -182,7 +182,7 @@ public class MainMenuScreen extends Screen {
             float scaledW = button.width * buttonScale;
             float scaledH = button.height * buttonScale;
 
-            Shader2DUtils.drawRoundedBlur(context.getMatrices(), scaledX, scaledY, scaledW, scaledH, 4 * buttonScale, new Color(0, 0, 0, 0), 10f, finalAlpha);
+            Shader2DUtils.drawRoundedBlur(context.getMatrices(), scaledX, scaledY, scaledW, scaledH, 4 * buttonScale, new Color(0, 0, 0, 0), 20f, finalAlpha);
         }
     }
 
@@ -242,7 +242,7 @@ public class MainMenuScreen extends Screen {
             version += I18n.translate("menu.modded");
         }
 
-        int font = FontLoader.greycliffRegular(12);
+        int font = FontLoader.regular(12);
         int alpha = (int) (255 * transitionProgress);
         Color color = new Color(255, 255, 255, alpha);
 
@@ -251,7 +251,7 @@ public class MainMenuScreen extends Screen {
 
     private void renderCopyright(float transitionProgress) {
         String copyright = "Copyright© Sakura2025.";
-        int font = FontLoader.greycliffRegular(12);
+        int font = FontLoader.regular(12);
         float textWidth = NanoVGHelper.getTextWidth(copyright, font, 12);
 
         int alpha = (int) (255 * transitionProgress);
@@ -338,7 +338,7 @@ public class MainMenuScreen extends Screen {
             Color borderColor = enabled ? new Color(255, 150, 180, borderAlpha) : new Color(100, 100, 100, borderAlpha);
             NanoVGHelper.drawRoundRectOutlineScaled(x, y, width, height, 4, 1, borderColor, scale);
 
-            int font = FontLoader.greycliffRegular(14);
+            int font = FontLoader.regular(14);
             float textWidth = NanoVGHelper.getTextWidth(text, font, 14);
             float textX = x + (width - textWidth) / 2f;
             float textY = y + height / 2f + 5;

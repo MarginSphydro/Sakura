@@ -35,7 +35,7 @@ public class ColorValueComponent extends Component {
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         open.setDirection(opened ? Direction.FORWARDS : Direction.BACKWARDS);
-        float fontHeight = NanoVGHelper.getFontHeight(FontLoader.greycliffRegular(7.5f), 7.5f);
+        float fontHeight = NanoVGHelper.getFontHeight(FontLoader.regular(7.5f), 7.5f);
 
         float baseHeight = fontHeight + 2 + 50 + 3 + 5;
         if (setting.allowAlpha()) {
@@ -59,7 +59,7 @@ public class ColorValueComponent extends Component {
         int b = currentColor.getBlue();
 
         NanoVGRenderer.INSTANCE.draw(canvas -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.greycliffRegular(7.5f), 7.5f, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.regular(7.5f), 7.5f, new Color(255, 255, 255, 255));
 
             NanoVGHelper.drawCircle(getX() + getWidth() - 5, getY() - 3, 4, setting.get());
 
@@ -168,17 +168,17 @@ public class ColorValueComponent extends Component {
             NanoVGHelper.drawRoundRectOutline(x, inputY, width, inputHeight, 1, 0.5f, new Color(100, 100, 150));
 
             String displayText = tempText;
-            NanoVGHelper.drawString(displayText, x + 2, inputY + 6, FontLoader.greycliffRegular(5), 5, Color.WHITE);
+            NanoVGHelper.drawString(displayText, x + 2, inputY + 6, FontLoader.regular(5), 5, Color.WHITE);
 
             if (cursorVisible) {
                 String beforeCursor = tempText.substring(0, Math.min(cursorPos, tempText.length()));
-                float cursorX = x + 2 + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.greycliffRegular(5), 5);
+                float cursorX = x + 2 + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.regular(5), 5);
                 NanoVGHelper.drawRect(cursorX, inputY + 1, 0.5f, inputHeight - 2, Color.WHITE);
             }
         } else {
             NanoVGHelper.drawRoundRect(x, inputY, width, inputHeight, 1, new Color(40, 40, 40));
             String text = label + ": " + value;
-            NanoVGHelper.drawString(text, x + 2, inputY + 6, FontLoader.greycliffRegular(5), 5, new Color(200, 200, 200));
+            NanoVGHelper.drawString(text, x + 2, inputY + 6, FontLoader.regular(5), 5, new Color(200, 200, 200));
         }
     }
 
@@ -223,7 +223,7 @@ public class ColorValueComponent extends Component {
         }
 
         if (opened && open.getOutput() > 0.5) {
-            float fontHeight = NanoVGHelper.getFontHeight(FontLoader.greycliffRegular(8), 8);
+            float fontHeight = NanoVGHelper.getFontHeight(FontLoader.regular(8), 8);
             float gradientY = getY() + fontHeight + 2;
             float gradientHeight = (float) (50 * open.getOutput());
             float sliderX = getX();

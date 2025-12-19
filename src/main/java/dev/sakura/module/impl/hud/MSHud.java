@@ -36,7 +36,7 @@ public class MSHud extends HudModule {
         }
 
         String text = String.format("MS %d", cachedPing);
-        int font = FontLoader.greycliffBold(14);
+        int font = FontLoader.bold(14);
         float fontSize = 14 * s;
 
         NanoVGHelper.drawString(text, x + 2 * s, y + fontSize, font, fontSize, getPingColor(cachedPing));

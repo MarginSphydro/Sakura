@@ -2,8 +2,8 @@ package dev.sakura.module;
 
 public enum Category {
     Combat("A"),
-    Player("B"),
     Movement("C"),
+    Player("B"),
     Render("M"),
     Client("D"),
     HUD("F");

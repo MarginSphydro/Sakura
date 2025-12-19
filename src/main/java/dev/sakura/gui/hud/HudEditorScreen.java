@@ -37,7 +37,7 @@ public class HudEditorScreen extends Screen {
                 "拖拽HUD模块来调整位置 | 按ESC退出",
                 mc.getWindow().getScaledWidth() / 2f,
                 20,
-                FontLoader.greycliffRegular(14),
+                FontLoader.regular(14),
                 14,
                 new Color(255, 255, 255, 200)
         ));
@@ -73,7 +73,7 @@ public class HudEditorScreen extends Screen {
 
         for (Module module : Managers.MODULE.getAllModules()) {
             if (module instanceof HudModule hud && hud.isEnabled()) {
-                hud.mouseReleased((float) mouseX, (float) mouseY, button);
+                hud.mouseReleased(button);
             }
         }
         return super.mouseReleased(mouseX, mouseY, button);

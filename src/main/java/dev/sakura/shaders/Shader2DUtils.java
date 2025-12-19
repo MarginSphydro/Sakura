@@ -1,13 +1,11 @@
 package dev.sakura.shaders;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.sakura.gui.clickgui.ClickGuiScreen;
-import dev.sakura.gui.hud.HudEditorScreen;
-import dev.sakura.gui.mainmenu.MainMenuScreen;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -19,8 +17,7 @@ public class Shader2DUtils {
     public static BlurProgram BLUR_PROGRAM;
 
     private static boolean shouldSkipBlur() {
-        Screen screen = mc.currentScreen;
-        return !(screen instanceof ClickGuiScreen || screen instanceof HudEditorScreen || screen instanceof MainMenuScreen);
+        return mc.currentScreen instanceof GameMenuScreen;
     }
 
     public static void init() {
@@ -66,6 +63,10 @@ public class Shader2DUtils {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.disableDepthTest();
+        RenderSystem.disableCull();
+        RenderSystem.disableScissor();
+        GL11.glDisable(GL11.GL_STENCIL_TEST);
     }
 
     public static void endRender() {

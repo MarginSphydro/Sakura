@@ -29,7 +29,7 @@ public class NotificationHud extends HudModule {
 
     @Override
     public void onRenderContent() {
-        NanoVGRenderer.INSTANCE.withRawCoordsAndPause(() -> {
+        NanoVGRenderer.INSTANCE.withRawCoords(() -> {
             if (Managers.MODULE.getModule(HudEditor.class).isEnabled()) {
                 float[] size = NotificationManager.renderPreview(
                         getMatrix(),

@@ -5,7 +5,7 @@ import dev.sakura.events.type.EventType;
 import net.minecraft.network.packet.Packet;
 
 public class PacketEvent extends Cancellable {
-    private static EventType type;
+    private final EventType type;
     private Packet<?> packet;
 
     public EventType getType() {

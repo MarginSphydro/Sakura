@@ -35,7 +35,7 @@ public class StringValueComponent extends Component {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             NanoVGHelper.drawString(setting.getName(), getX(), getY(),
-                    FontLoader.greycliffRegular(7.5f), 7.5f, new Color(255, 255, 255, 255));
+                    FontLoader.regular(7.5f), 7.5f, new Color(255, 255, 255, 255));
 
             float inputWidth = getWidth();
             float inputX = getX();
@@ -51,7 +51,7 @@ public class StringValueComponent extends Component {
             String displayText = editing ? tempText : setting.get();
             if (displayText == null) displayText = "";
 
-            float textWidth = NanoVGHelper.getTextWidth(displayText, FontLoader.greycliffRegular(6.5f), 6.5f);
+            float textWidth = NanoVGHelper.getTextWidth(displayText, FontLoader.regular(6.5f), 6.5f);
             String trimmedText = displayText;
 
             if (textWidth > inputWidth - 6) {
@@ -62,7 +62,7 @@ public class StringValueComponent extends Component {
                         trimmedText = trimmedText.substring(0, trimmedText.length() - 1);
                     }
                     textWidth = NanoVGHelper.getTextWidth(trimmedText + (editing && cursorPos == displayText.length() ? "" : "..."),
-                            FontLoader.greycliffRegular(6.5f), 6.5f);
+                            FontLoader.regular(6.5f), 6.5f);
                 }
                 if (!editing || cursorPos < displayText.length()) {
                     trimmedText = trimmedText + "...";
@@ -70,12 +70,12 @@ public class StringValueComponent extends Component {
             }
 
             NanoVGHelper.drawString(trimmedText, inputX + 2, inputY + 9,
-                    FontLoader.greycliffRegular(6.5f), 6.5f,
+                    FontLoader.regular(6.5f), 6.5f,
                     editing ? new Color(255, 255, 255) : new Color(200, 200, 200));
 
             if (editing && cursorVisible) {
                 String beforeCursor = tempText.substring(0, Math.min(cursorPos, tempText.length()));
-                float cursorX = inputX + 2 + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.greycliffRegular(6.5f), 6.5f);
+                float cursorX = inputX + 2 + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.regular(6.5f), 6.5f);
 
                 if (cursorX < inputX + inputWidth - 2) {
                     NanoVGHelper.drawRect(cursorX, inputY + 2, 0.5f, inputHeight - 4, new Color(255, 255, 255));

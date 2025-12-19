@@ -20,7 +20,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class DynamicIslandHud extends HudModule {
-
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     private static final class Size {
@@ -225,7 +224,7 @@ public class DynamicIslandHud extends HudModule {
     }
 
     private void drawCenteredTitle() {
-        int font = FontLoader.greycliffBold(11);
+        int font = FontLoader.bold(11);
         String name = Sakura.MOD_NAME;
         float textW = NanoVGHelper.getTextWidth(name, font, 11);
         NanoVGHelper.drawString(name, animX + (animW - textW) / 2f, animY + animH / 2f + 4, font, 11, Color.WHITE);
@@ -233,7 +232,7 @@ public class DynamicIslandHud extends HudModule {
 
     private void drawSideInfo(float expandProgress) {
         float offset = (animW - Size.BASE_W) / 2f + 7;
-        int font = FontLoader.greycliffMedium(8);
+        int font = FontLoader.medium(8);
         Color color = new Color(200, 200, 200, (int) (255 * (1 - expandProgress * 0.3f)));
         float centerY = animY + animH / 2f + 3;
 
@@ -249,14 +248,14 @@ public class DynamicIslandHud extends HudModule {
         float padding = 6, iconSize = 12;
         float centerY = animY + (animH - 3) / 2f;
 
-        int iconFont = FontLoader.icon(iconSize);
+        int iconFont = FontLoader.solid(iconSize);
         String icon = currentToggle.enabled ? "\uf00c" : "\uf00d";
         Color iconColor = currentToggle.enabled ? ClickGui.color(0) : new Color(255, 80, 80);
         float iconW = NanoVGHelper.getTextWidth(icon, iconFont, iconSize);
         NanoVGHelper.drawString(icon, animX + padding, centerY + iconSize * 0.35f, iconFont, iconSize,
                 withAlpha(iconColor, alpha));
 
-        int textFont = FontLoader.greycliffMedium(7);
+        int textFont = FontLoader.medium(7);
         String status = currentToggle.name + (currentToggle.enabled ? " 已开启" : " 已关闭");
         NanoVGHelper.drawString(status, animX + padding + iconW + 4, centerY + 7 * 0.35f, textFont, 7,
                 new Color(255, 255, 255, alpha));
@@ -282,8 +281,8 @@ public class DynamicIslandHud extends HudModule {
         if (currentToggle == null) return Size.EXPANDED_W;
 
         float padding = 6, iconSize = 12, textSize = 7;
-        int iconFont = FontLoader.icon(iconSize);
-        int textFont = FontLoader.greycliffMedium(textSize);
+        int iconFont = FontLoader.solid(iconSize);
+        int textFont = FontLoader.medium(textSize);
 
         String icon = currentToggle.enabled ? "\uf00c" : "\uf00d";
         String status = currentToggle.name + (currentToggle.enabled ? " 已开启" : " 已关闭");

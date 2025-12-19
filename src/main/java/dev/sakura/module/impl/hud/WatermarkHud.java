@@ -3,6 +3,7 @@ package dev.sakura.module.impl.hud;
 import dev.sakura.Sakura;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.impl.client.ClickGui;
+import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.Shader2DUtils;
@@ -29,23 +30,14 @@ public class WatermarkHud extends HudModule {
 
         String text = Sakura.MOD_NAME + " " + Sakura.MOD_VER;
         float fontSize = 30 * s;
-        int fontLoader = FontLoader.greycliffBold((int) fontSize);
+        int fontLoader = FontLoader.bold((int) fontSize);
         float fontW = NanoVGHelper.getTextWidth(text, fontLoader, fontSize);
         float fontH = NanoVGHelper.getFontHeight(fontLoader, fontSize);
         this.width = fontW + 5 * s;
         this.height = fontH + 10 * s;
 
         if (backgroundBlur.get()) {
-            float radius = 4f * s;
-            withPixelCoords(x, y, width, height, (px, py, pw, ph) ->
-                    Shader2DUtils.drawRoundedBlur(
-                            getMatrix(),
-                            px, py, pw, ph,
-                            (float) (radius * mc.getWindow().getScaleFactor()),
-                            new Color(0, 0, 0, 0),
-                            blurStrength.get().floatValue(),
-                            1.0f
-                    ));
+            NanoVGRenderer.INSTANCE.withRawCoords(() -> Shader2DUtils.drawRoundedBlur(getMatrix(), x, y, width, height, 4f * s, new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f));
         }
 
         NanoVGHelper.drawRoundRectBloom(x, y, width, height, 4 * s, backgroundColor.get());

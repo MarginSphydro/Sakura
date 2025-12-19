@@ -36,7 +36,7 @@ public class MultiBoolValueComponent extends Component {
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         float offset = 4;
         float heightoff = 0;
-        int font = FontLoader.greycliffRegular(FONT_SIZE);
+        int font = FontLoader.regular(FONT_SIZE);
         float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
 
         NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, FONT_SIZE, WHITE));
@@ -67,7 +67,7 @@ public class MultiBoolValueComponent extends Component {
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         float offset = 4;
         float heightoff = 0;
-        int font = FontLoader.greycliffRegular(FONT_SIZE);
+        int font = FontLoader.regular(FONT_SIZE);
         float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
 
         for (BoolValue boolValue : setting.getValues()) {
