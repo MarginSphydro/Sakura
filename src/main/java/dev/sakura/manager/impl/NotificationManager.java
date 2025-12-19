@@ -100,7 +100,7 @@ public class NotificationManager {
             float offsetY = 0;
             for (int i = notifications.size() - 1; i >= 0; i--) {
                 Notification notification = notifications.get(i);
-                float[] bounds = notification.getBounds(x, y + offsetY, maxWidth);
+                float[] bounds = notification.getBounds(x, y + offsetY, maxWidth, leftAligned);
                 if (bounds != null) {
                     Shader2DUtils.drawRoundedBlur(matrices, bounds[0], bounds[1], bounds[2], bounds[3], 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
                     offsetY += bounds[3] + 4.0f;
@@ -110,7 +110,6 @@ public class NotificationManager {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             float offsetY = 0;
-
             for (int i = notifications.size() - 1; i >= 0; i--) {
                 Notification notification = notifications.get(i);
                 float height = notification.render(x, y + offsetY, leftAligned, primaryColor, backgroundColor, maxWidth);
@@ -163,7 +162,7 @@ public class NotificationManager {
             return cachedWidth;
         }
 
-        public float[] getBounds(float x, float y, float maxWidth) {
+        public float[] getBounds(float x, float y, float maxWidth, boolean leftAligned) {
             if (startTime == -1L) return null;
 
             float padding = 4.0f;
@@ -177,7 +176,28 @@ public class NotificationManager {
             long deltaTotal = System.currentTimeMillis() - startTime;
             if (deltaTotal >= length + 500L) return null;
 
-            return new float[]{x, y, width, height};
+            if (deltaTotal < 300L) {
+                float delta = deltaTotal / 300.0f;
+                float progress = (float) Easing.CUBIC_OUT.ease(delta);
+                if (leftAligned) {
+                    return new float[]{x, y, width * progress, height};
+                } else {
+                    return new float[]{x + minWidth * (1.0f - progress), y, width, height};
+                }
+            } else if (deltaTotal < length + 200L) {
+                return new float[]{x, y, width, height};
+            } else if (deltaTotal < length + 500L) {
+                long endDelta = deltaTotal - length;
+                float delta = (endDelta - 200L) / 300.0f;
+                float progress = (float) (1.0 - Easing.CUBIC_OUT.ease(delta));
+                if (leftAligned) {
+                    return new float[]{x, y, width * progress, height};
+                } else {
+                    return new float[]{x + minWidth * (1.0f - progress), y, width, height};
+                }
+            }
+            
+            return null;
         }
 
         public float render(float x, float y, boolean leftAligned, Color primaryColor, Color backgroundColor, float maxWidth) {
