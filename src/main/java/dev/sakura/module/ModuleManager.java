@@ -17,7 +17,6 @@ import dev.sakura.module.impl.combat.Burrow;
 import dev.sakura.module.impl.combat.Velocity;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.*;
-import dev.sakura.module.impl.player.NoRotate;
 import dev.sakura.module.impl.render.*;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
@@ -57,9 +56,6 @@ public class ModuleManager {
             manager.tryLoad(() -> new HoleSnap());
             manager.tryLoad(() -> new Scaffold());
 
-            // Player
-            manager.tryLoad(() -> new NoRotate());
-
             // Render
             manager.tryLoad(() -> new CameraClip());
             //TODO: manager.tryLoad(() -> new EnvParticles());
@@ -98,7 +94,8 @@ public class ModuleManager {
                 field.setAccessible(true);
                 final Object obj = field.get(module);
                 if (obj instanceof Value<?>) module.getValues().add((Value<?>) obj);
-            } catch (IllegalAccessException ignored) {
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
         modules.put(module.getClass(), module);
