@@ -17,6 +17,7 @@ import dev.sakura.module.impl.combat.Burrow;
 import dev.sakura.module.impl.combat.Velocity;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.*;
+import dev.sakura.module.impl.player.FakePlayer;
 import dev.sakura.module.impl.render.*;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
@@ -78,6 +79,10 @@ public class ModuleManager {
             manager.tryLoad(() -> new MSHud());
             manager.tryLoad(() -> new DynamicIslandHud());
             manager.tryLoad(() -> new KeyStrokesHud());
+            manager.tryLoad(() -> new Notify());
+
+            //Player
+            manager.tryLoad(() -> new FakePlayer());
         }
     }
 
