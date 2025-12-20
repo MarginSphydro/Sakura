@@ -73,6 +73,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new ViewModel());
             manager.tryLoad(() -> new Hat());
             manager.tryLoad(() -> new JumpCircles());
+            manager.tryLoad(() -> new XRay());
 
             // Client
             manager.tryLoad(() -> new ClickGui());

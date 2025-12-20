@@ -33,4 +33,10 @@ public interface IMinecraftClient {
 
     @Accessor("disconnecting")
     void hookSetDisconnecting(boolean disconnecting);
+
+    @Accessor("chunkCullingEnabled")
+    void setChunkCullingEnabled(boolean enabled);
+
+    @Accessor("chunkCullingEnabled")
+    boolean isChunkCullingEnabled();
 }
