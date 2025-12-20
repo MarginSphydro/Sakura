@@ -8,7 +8,7 @@ import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.utils.math.MathUtils;
+import dev.sakura.utils.math.MathUtil;
 import dev.sakura.utils.player.FindItemResult;
 import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.player.MovementUtil;
@@ -90,7 +90,8 @@ public class Scaffold extends Module {
     @EventHandler
     public void onStrafe(StrafeEvent event) {
         if (mc.player == null || mc.world == null) return;
-        if (mc.player.isOnGround() && MovementUtil.isMoving() && telly.get() && !mc.options.jumpKey.isPressed()) mc.player.jump();
+        if (mc.player.isOnGround() && MovementUtil.isMoving() && telly.get() && !mc.options.jumpKey.isPressed())
+            mc.player.jump();
     }
 
     @EventHandler
@@ -193,16 +194,16 @@ public class Scaffold extends Module {
         double y = (double) pos.getY() + 0.5;
         double z = (double) pos.getZ() + 0.5;
         if (face == Direction.UP || face == Direction.DOWN) {
-            x += MathUtils.getRandom(0.3, -0.3);
-            z += MathUtils.getRandom(0.3, -0.3);
+            x += MathUtil.getRandom(0.3, -0.3);
+            z += MathUtil.getRandom(0.3, -0.3);
         } else {
-            y += MathUtils.getRandom(0.3, -0.3);
+            y += MathUtil.getRandom(0.3, -0.3);
         }
         if (face == Direction.WEST || face == Direction.EAST) {
-            z += MathUtils.getRandom(0.3, -0.3);
+            z += MathUtil.getRandom(0.3, -0.3);
         }
         if (face == Direction.SOUTH || face == Direction.NORTH) {
-            x += MathUtils.getRandom(0.3, -0.3);
+            x += MathUtil.getRandom(0.3, -0.3);
         }
         return new Vec3d(x, y, z);
     }
@@ -211,7 +212,8 @@ public class Scaffold extends Module {
         Vector2f calculate = RotationUtil.calculate(blockCache.position.toCenterPos());
         Vector2f reverseYaw = new Vector2f(MathHelper.wrapDegrees(mc.player.getYaw() - 180), calculate.y);
         boolean hasRotated = RaytraceUtil.overBlock(reverseYaw, blockCache.facing, blockCache.position, false);
-        if (hasRotated) return reverseYaw; else return calculate;
+        if (hasRotated) return reverseYaw;
+        else return calculate;
     }
 
     private record BlockCache(BlockPos position, Direction facing) {

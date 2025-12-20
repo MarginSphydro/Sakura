@@ -6,8 +6,8 @@ import dev.sakura.command.Command;
 import dev.sakura.command.ModuleArgumentType;
 import dev.sakura.manager.Managers;
 import dev.sakura.module.Module;
-import dev.sakura.utils.client.ChatUtils;
-import dev.sakura.utils.client.KeyUtils;
+import dev.sakura.utils.client.ChatUtil;
+import dev.sakura.utils.client.KeyUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.command.CommandSource;
 import org.lwjgl.glfw.GLFW;
@@ -29,26 +29,26 @@ public class BindCommand extends Command {
 
                                             if (keyName.equalsIgnoreCase("none")) {
                                                 module.setKey(InputUtil.UNKNOWN_KEY.getCode());
-                                                ChatUtils.addChatMessage("Unbound " + module.getName() + ".");
+                                                ChatUtil.addChatMessage("Unbound " + module.getName() + ".");
                                                 Managers.CONFIG.saveDefaultConfig();
                                                 return 1;
                                             }
 
-                                            InputUtil.Key key = KeyUtils.getKeyFromName(keyName);
+                                            InputUtil.Key key = KeyUtil.getKeyFromName(keyName);
                                             if (key == InputUtil.UNKNOWN_KEY || key.getCode() == GLFW.GLFW_KEY_UNKNOWN) {
-                                                ChatUtils.addChatMessage("Invalid key: " + keyName);
+                                                ChatUtil.addChatMessage("Invalid key: " + keyName);
                                                 return 0;
                                             }
 
                                             Module.BindMode bindMode = parseBindMode(modeName);
                                             if (bindMode == null) {
-                                                ChatUtils.addChatMessage("Invalid mode: " + modeName + ". Use 'toggle' or 'hold'.");
+                                                ChatUtil.addChatMessage("Invalid mode: " + modeName + ". Use 'toggle' or 'hold'.");
                                                 return 0;
                                             }
 
                                             module.setKey(key.getCode());
                                             module.setBindMode(bindMode);
-                                            ChatUtils.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + bindMode.name() + ").");
+                                            ChatUtil.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + bindMode.name() + ").");
                                             Managers.CONFIG.saveDefaultConfig();
                                             return 1;
                                         }))
@@ -58,28 +58,28 @@ public class BindCommand extends Command {
 
                                     if (keyName.equalsIgnoreCase("none")) {
                                         module.setKey(InputUtil.UNKNOWN_KEY.getCode());
-                                        ChatUtils.addChatMessage("Unbound " + module.getName() + ".");
+                                        ChatUtil.addChatMessage("Unbound " + module.getName() + ".");
                                         Managers.CONFIG.saveDefaultConfig();
                                         return 1;
                                     }
 
-                                    InputUtil.Key key = KeyUtils.getKeyFromName(keyName);
+                                    InputUtil.Key key = KeyUtil.getKeyFromName(keyName);
                                     if (key == InputUtil.UNKNOWN_KEY || key.getCode() == GLFW.GLFW_KEY_UNKNOWN) {
-                                        ChatUtils.addChatMessage("Invalid key: " + keyName);
+                                        ChatUtil.addChatMessage("Invalid key: " + keyName);
                                         return 0;
                                     }
 
                                     module.setKey(key.getCode());
-                                    ChatUtils.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + module.getBindMode().name() + ").");
+                                    ChatUtil.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + module.getBindMode().name() + ").");
                                     Managers.CONFIG.saveDefaultConfig();
                                     return 1;
                                 }))
                         .executes(c -> {
-                            ChatUtils.addChatMessage("Usage: .bind <module> <key> [toggle/hold]");
+                            ChatUtil.addChatMessage("Usage: .bind <module> <key> [toggle/hold]");
                             return 1;
                         }))
                 .executes(c -> {
-                    ChatUtils.addChatMessage("Usage: .bind <module> <key> [toggle/hold]");
+                    ChatUtil.addChatMessage("Usage: .bind <module> <key> [toggle/hold]");
                     return 1;
                 });
     }

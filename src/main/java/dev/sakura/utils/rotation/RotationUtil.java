@@ -2,7 +2,7 @@ package dev.sakura.utils.rotation;
 
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.mixin.accessor.IEntity;
-import dev.sakura.utils.math.MathUtils;
+import dev.sakura.utils.math.MathUtil;
 import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.utils.vector.Vector3d;
 import net.minecraft.entity.Entity;
@@ -17,8 +17,8 @@ public class RotationUtil {
     public static Vector2f calculate(final Vector3d from, final Vector3d to) {
         final Vector3d diff = to.subtract(from);
         final double distance = Math.hypot(diff.getX(), diff.getZ());
-        final float yaw = (float) (MathHelper.atan2(diff.getZ(), diff.getX()) * MathUtils.TO_DEGREES) - 90.0F;
-        final float pitch = (float) (-(MathHelper.atan2(diff.getY(), distance) * MathUtils.TO_DEGREES));
+        final float yaw = (float) (MathHelper.atan2(diff.getZ(), diff.getX()) * MathUtil.TO_DEGREES) - 90.0F;
+        final float pitch = (float) (-(MathHelper.atan2(diff.getY(), distance) * MathUtil.TO_DEGREES));
         return new Vector2f(yaw, pitch);
     }
 

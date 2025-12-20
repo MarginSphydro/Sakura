@@ -8,7 +8,7 @@ import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.utils.animations.Animation;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.DecelerateAnimation;
-import dev.sakura.utils.math.MathUtils;
+import dev.sakura.utils.math.MathUtil;
 import dev.sakura.utils.render.RenderUtil;
 import dev.sakura.values.impl.NumberValue;
 import net.minecraft.client.gui.DrawContext;
@@ -105,8 +105,8 @@ public class NumberValueComponent extends Component {
 
         if (dragging && !editing) {
             final double difference = max - min;
-            final double value = min + MathUtils.clamp((mouseX - getX()) / w, 0, 1) * difference;
-            setValueFromDouble(MathUtils.incValue(value, setting.getStep().doubleValue()));
+            final double value = min + MathUtil.clamp((mouseX - getX()) / w, 0, 1) * difference;
+            setValueFromDouble(MathUtil.incValue(value, setting.getStep().doubleValue()));
         }
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }

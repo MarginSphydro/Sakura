@@ -5,7 +5,7 @@ import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.type.EventType;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.utils.entity.InventoryUtil;
+import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.EnumValue;
@@ -180,7 +180,7 @@ public class AutoTotem extends Module {
             for (int i = 0; i < 9; i++) {
                 ItemStack stack = mc.player.getInventory().getStack(i);
                 if (stack.getItem() == Items.TOTEM_OF_UNDYING) {
-                    InventoryUtil.switchToSlot(i);
+                    InvUtil.swap(i, false);
                     break;
                 }
             }
@@ -247,7 +247,7 @@ public class AutoTotem extends Module {
     }
 
     private int countTotems() {
-        return InventoryUtil.getItemCount(Items.TOTEM_OF_UNDYING);
+        return InvUtil.find(Items.TOTEM_OF_UNDYING).count();
     }
 
     private boolean hasItem(Item item) {

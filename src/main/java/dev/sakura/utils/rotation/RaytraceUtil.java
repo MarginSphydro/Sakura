@@ -3,7 +3,6 @@ package dev.sakura.utils.rotation;
 import dev.sakura.utils.vector.Vector2f;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.hit.BlockHitResult;
@@ -14,10 +13,9 @@ import net.minecraft.world.RaycastContext;
 
 import java.util.function.Predicate;
 
+import static dev.sakura.Sakura.mc;
+
 public class RaytraceUtil {
-
-    private static final MinecraftClient mc = MinecraftClient.getInstance();
-
     /**
      * Helper to convert Vector2f rotation (yaw, pitch) to a direction vector.
      */

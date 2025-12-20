@@ -5,7 +5,7 @@ import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.entity.EntityUtil;
-import dev.sakura.utils.entity.InventoryUtil;
+import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.values.impl.BoolValue;
@@ -63,16 +63,16 @@ public class AutoPearl extends Module {
 
             if (mc.player.getMainHandStack().getItem() == Items.ENDER_PEARL) {
                 mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, mc.player.getYaw(), mc.player.getPitch()));
-            } else if (inventorySwap.get() && (pearl = InventoryUtil.findItemInventorySlot(Items.ENDER_PEARL)) != -1) {
-                InventoryUtil.inventorySwap(pearl, mc.player.getInventory().selectedSlot);
+            } else if (inventorySwap.get() && (pearl = InvUtil.find(Items.ENDER_PEARL).slot()) != -1) {
+                InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(pearl);
                 mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, mc.player.getYaw(), mc.player.getPitch()));
-                InventoryUtil.inventorySwap(pearl, mc.player.getInventory().selectedSlot);
+                InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(pearl);
                 EntityUtil.syncInventory();
-            } else if ((pearl = InventoryUtil.findItem(Items.ENDER_PEARL)) != -1) {
+            } else if ((pearl = InvUtil.findInHotbar(Items.ENDER_PEARL).slot()) != -1) {
                 int old = mc.player.getInventory().selectedSlot;
-                InventoryUtil.switchToSlot(pearl);
+                InvUtil.swap(pearl, false);
                 mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, mc.player.getYaw(), mc.player.getPitch()));
-                InventoryUtil.switchToSlot(old);
+                InvUtil.swap(old, false);
             }
 
             throwing = false;
@@ -104,16 +104,16 @@ public class AutoPearl extends Module {
 
         if (mc.player.getMainHandStack().getItem() == Items.ENDER_PEARL) {
             mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, yaw, pitch));
-        } else if (inventorySwap.get() && (pearl = InventoryUtil.findItemInventorySlot(Items.ENDER_PEARL)) != -1) {
-            InventoryUtil.inventorySwap(pearl, mc.player.getInventory().selectedSlot);
+        } else if (inventorySwap.get() && (pearl = InvUtil.find(Items.ENDER_PEARL).slot()) != -1) {
+            InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(pearl);
             mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, yaw, pitch));
-            InventoryUtil.inventorySwap(pearl, mc.player.getInventory().selectedSlot);
+            InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(pearl);
             EntityUtil.syncInventory();
-        } else if ((pearl = InventoryUtil.findItem(Items.ENDER_PEARL)) != -1) {
+        } else if ((pearl = InvUtil.findInHotbar(Items.ENDER_PEARL).slot()) != -1) {
             int old = mc.player.getInventory().selectedSlot;
-            InventoryUtil.switchToSlot(pearl);
+            InvUtil.swap(pearl, false);
             mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, yaw, pitch));
-            InventoryUtil.switchToSlot(old);
+            InvUtil.swap(old, false);
         }
 
         throwing = false;

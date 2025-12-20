@@ -5,7 +5,7 @@ import net.minecraft.client.util.InputUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KeyUtils {
+public class KeyUtil {
 
     private static final Map<String, String> KEY_NAME_MAP = new HashMap<>();
 

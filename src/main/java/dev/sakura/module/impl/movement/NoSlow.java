@@ -25,7 +25,6 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class NoSlow extends Module {
-
     public final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Vanilla);
     public final BoolValue invFix = new BoolValue("Rotate Fix", false, () -> mode.get() == Mode.Meow);
     public final BoolValue items = new BoolValue("Items", true);

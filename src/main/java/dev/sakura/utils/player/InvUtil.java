@@ -1,9 +1,13 @@
 package dev.sakura.utils.player;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import org.jetbrains.annotations.Range;
@@ -15,6 +19,14 @@ import static dev.sakura.Sakura.mc;
 public class InvUtil {
     private static final Action ACTION = new Action();
     public static int previousSlot = -1;
+
+    public static int getEnchantmentLevel(ItemStack stack, RegistryKey<Enchantment> enchantment) {
+        if (stack.isEmpty()) return 0;
+        return mc.world.getRegistryManager()
+                .getOrThrow(RegistryKeys.ENCHANTMENT)
+                .getOptional(enchantment)
+                .map(enchantmentReference -> EnchantmentHelper.getLevel(enchantmentReference, stack)).orElse(0);
+    }
 
     public static boolean testInMainHand(Predicate<ItemStack> predicate) {
         return predicate.test(mc.player.getMainHandStack());

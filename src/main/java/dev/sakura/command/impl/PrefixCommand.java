@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.sakura.command.Command;
 import dev.sakura.manager.Managers;
-import dev.sakura.utils.client.ChatUtils;
+import dev.sakura.utils.client.ChatUtil;
 import net.minecraft.command.CommandSource;
 import org.lwjgl.glfw.GLFW;
 
@@ -19,19 +19,19 @@ public class PrefixCommand extends Command {
                         .executes(c -> {
                             String newPrefix = StringArgumentType.getString(c, "prefix");
                             if (newPrefix.isEmpty()) {
-                                ChatUtils.addChatMessage("Prefix cannot be empty.");
+                                ChatUtil.addChatMessage("Prefix cannot be empty.");
                                 return 0;
                             }
 
                             int prefixKey = getPrefixKey(newPrefix);
                             Managers.COMMAND.setPrefix(newPrefix, prefixKey);
                             Managers.CONFIG.savePrefix(newPrefix);
-                            ChatUtils.addChatMessage("Command prefix set to: §a" + newPrefix);
+                            ChatUtil.addChatMessage("Command prefix set to: §a" + newPrefix);
                             return 1;
                         }))
                 .executes(c -> {
-                    ChatUtils.addChatMessage("Current prefix: §a" + Managers.COMMAND.getPrefix());
-                    ChatUtils.addChatMessage("Usage: " + Managers.COMMAND.getPrefix() + "prefix <new prefix>");
+                    ChatUtil.addChatMessage("Current prefix: §a" + Managers.COMMAND.getPrefix());
+                    ChatUtil.addChatMessage("Usage: " + Managers.COMMAND.getPrefix() + "prefix <new prefix>");
                     return 1;
                 });
     }

@@ -8,8 +8,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MathUtils {
-
+public class MathUtil {
     public static final float PI = (float) Math.PI;
     public static final float TO_RADIANS = PI / 180.0F;
     public static final float TO_DEGREES = 180.0F / PI;
