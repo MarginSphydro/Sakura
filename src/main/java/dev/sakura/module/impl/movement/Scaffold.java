@@ -42,7 +42,7 @@ public class Scaffold extends Module {
     private final NumberValue<Integer> tellyTick = new NumberValue<>("Telly Tick", 1, 0, 8, 1, telly::get);
     private final BoolValue keepY = new BoolValue("Keep Y", true, telly::get);
     private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1);
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", 10, 0, 10, 1);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", 10, 0, 10, 1, telly::get);
     private final BoolValue moveFix = new BoolValue("Movement Fix", true);
     private final BoolValue render = new BoolValue("Render", true);
     private final BoolValue shrink = new BoolValue("Shrink", true, render::get);
@@ -66,12 +66,12 @@ public class Scaffold extends Module {
 
         if (telly.get()) {
             if (mc.player.isOnGround()) {
-                yLevel = (int) (mc.player.getY() - 1);
+                yLevel = (int) Math.floor(mc.player.getY()) - 1;
                 airTicks = 0;
                 Vector2f rotation = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
                 MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
                 RotationManager.setRotations(rotation, rotationBackSpeed.get(), movementFix);
-                blockCache = null;
+                if (!mc.options.jumpKey.isPressed()) blockCache = null;
             } else {
                 if (airTicks >= tellyTick.get() && blockCache != null) {
                     MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
@@ -102,7 +102,7 @@ public class Scaffold extends Module {
         if (keepY.get() && !mc.options.jumpKey.isPressed() && MovementUtil.isMoving() && telly.get()) {
             return yLevel;
         } else {
-            return (int) (Math.floor(mc.player.getY()) - 1);
+            return  (int) Math.floor(mc.player.getY());
         }
     }
 
