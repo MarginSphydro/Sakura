@@ -49,10 +49,10 @@
     "render.MixinWorldRenderer",
     "render.MixinParticleManager",
     "render.MixinBlock",
+    "render.MixinPlayerEntityRenderer",
     "shader.MixinShaderProgram"
   ],
   "mixins": [
-    "accessor.IAbstractBlockSettings",
     "accessor.IHorseScreenHandler"
   ]
 }
