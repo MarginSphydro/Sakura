@@ -1,6 +1,5 @@
 package dev.sakura.module.impl.hud;
 
-import dev.sakura.Sakura;
 import dev.sakura.events.misc.WorldLoadEvent;
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.type.EventType;
@@ -62,7 +61,6 @@ public class Notify extends HudModule {
 
     @Override
     protected void onEnable() {
-        Sakura.EVENT_BUS.subscribe(this);
         notifications.clear();
         popCounts.clear();
         packetTimestamps.clear();
@@ -74,7 +72,6 @@ public class Notify extends HudModule {
 
     @Override
     protected void onDisable() {
-        Sakura.EVENT_BUS.unsubscribe(this);
         notifications.clear();
         popCounts.clear();
         packetTimestamps.clear();
