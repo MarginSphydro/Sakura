@@ -20,8 +20,8 @@ public class AutoPearl extends Module {
 
     private final BoolValue inventorySwap = new BoolValue("InventorySwap", true);
     private final BoolValue rotation = new BoolValue("Rotation", false);
-    private final NumberValue<Float> rotationSpeed = new NumberValue<>("RotationSpeed", 0.5f, 0.0f, 1.0f, 0.01f, rotation::get);
-    private final NumberValue<Float> fov = new NumberValue<>("Fov", 10.0f, 0.0f, 50.0f, 1.0f, rotation::get);
+    private final NumberValue<Double> rotationSpeed = new NumberValue<>("RotationSpeed", 0.5, 0.0, 1.0, 0.01, rotation::get);
+    private final NumberValue<Double> fov = new NumberValue<>("Fov", 10.0, 0.0, 50.0, 1.0, rotation::get);
 
     private boolean shouldThrow = false;
     public static boolean throwing = false;
@@ -119,7 +119,7 @@ public class AutoPearl extends Module {
         throwing = false;
     }
 
-    private boolean inFov(float targetYaw, float targetPitch, float fov) {
+    private boolean inFov(float targetYaw, float targetPitch, double fov) {
         float currentYaw = RotationManager.getYaw();
         float currentPitch = RotationManager.getPitch();
 

@@ -5,7 +5,6 @@ import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.type.EventType;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.utils.entity.EntityUtil;
 import dev.sakura.utils.entity.InventoryUtil;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.values.impl.BoolValue;
@@ -17,7 +16,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
-import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.hit.BlockHitResult;
@@ -27,7 +25,7 @@ public class AutoTotem extends Module {
     public static AutoTotem INSTANCE;
 
     private final EnumValue<OffhandItem> item = new EnumValue<>("Item", OffhandItem.TOTEM);
-    private final NumberValue<Float> health = new NumberValue<>("Health", 14.0f, 0.0f, 20.0f, 0.5f);
+    private final NumberValue<Double> health = new NumberValue<>("Health", 14.0, 0.0, 20.0, 0.5);
     private final BoolValue offhandGapple = new BoolValue("OffhandGapple", true);
     private final BoolValue crapple = new BoolValue("Crapple", true, offhandGapple::get);
     private final BoolValue lethal = new BoolValue("Lethal", false, () -> item.get() != OffhandItem.TOTEM);
@@ -190,14 +188,14 @@ public class AutoTotem extends Module {
     }
 
     private boolean checkLethal() {
-        float playerHealth = getPlayerHealth();
+        double playerHealth = getPlayerHealth();
         if (playerHealth <= health.get()) return true;
         if (lethal.get() && checkLethalCrystal(playerHealth)) return true;
         float fallDamage = computeFallDamage(mc.player.fallDistance);
         return fallDamage + 0.5f > mc.player.getHealth();
     }
 
-    private boolean checkLethalCrystal(float playerHealth) {
+    private boolean checkLethalCrystal(double playerHealth) {
         for (Entity e : mc.world.getEntities()) {
             if (e == null || !e.isAlive() || !(e instanceof EndCrystalEntity crystal)) continue;
             if (mc.player.squaredDistanceTo(e) > 144.0) continue;
@@ -244,7 +242,7 @@ public class AutoTotem extends Module {
         return checkLethalCrystal(getPlayerHealth());
     }
 
-    private float getPlayerHealth() {
+    private double getPlayerHealth() {
         return mc.player.getHealth() + mc.player.getAbsorptionAmount();
     }
 

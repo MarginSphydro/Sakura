@@ -4,8 +4,10 @@ import dev.sakura.events.misc.WorldLoadEvent;
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.type.EventType;
 import dev.sakura.module.HudModule;
+import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
+import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.utils.animations.Easing;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
@@ -33,6 +35,8 @@ public class Notify extends HudModule {
     private final NumberValue<Integer> packetWarningPercent = new NumberValue<>("WarningAt%", 80, 50, 95, 5, packetWarning::get);
     private final BoolValue blockWarning = new BoolValue("BlockWarning", true);
     private final NumberValue<Integer> blockThreshold = new NumberValue<>("BlockThreshold", 20, 5, 64, 1, blockWarning::get);
+    private final BoolValue blur = new BoolValue("Blur", true);
+    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 8.0, 1.0, 20.0, 0.5, blur::get);
 
     private final List<NotifyEntry> notifications = new CopyOnWriteArrayList<>();
     private final Map<UUID, Integer> popCounts = new HashMap<>();
@@ -260,6 +264,20 @@ public class Notify extends HudModule {
         int bgAlpha = (int) (200 * alpha);
 
         float iconAreaWidth = NOTIFICATION_WIDTH / 4f;
+
+        if (blur.get() && alpha > 0.1f) {
+            NanoVGRenderer.INSTANCE.withRawCoords(() ->
+                    Shader2DUtils.drawRoundedBlur(
+                            getMatrix(),
+                            x, y,
+                            NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT,
+                            RADIUS,
+                            new Color(0, 0, 0, 0),
+                            blurStrength.get().floatValue() * alpha,
+                            alpha
+                    )
+            );
+        }
 
         Color bgColor = new Color(20, 20, 25, bgAlpha);
         Color iconBgColor = getIconBgColor(entry.type, alpha);
