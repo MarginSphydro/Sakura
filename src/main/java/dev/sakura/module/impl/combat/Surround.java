@@ -5,6 +5,7 @@ import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
+import dev.sakura.module.impl.hud.Notify;
 import dev.sakura.utils.player.FindItemResult;
 import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.rotation.MovementFix;
@@ -15,8 +16,11 @@ import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.hit.BlockHitResult;
@@ -56,9 +60,27 @@ public class Surround extends Module {
         isCentered = false;
     }
 
+    private int countBlocks() {
+        int count = 0;
+        for (int i = 0; i < 36; i++) {
+            ItemStack stack = mc.player.getInventory().getStack(i);
+            if (stack.getItem() instanceof BlockItem blockItem) {
+                if (blockItem.getBlock() == Blocks.OBSIDIAN || blockItem.getBlock() == Blocks.ENDER_CHEST) {
+                    count += stack.getCount();
+                }
+            }
+        }
+        return count;
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onTick(TickEvent.Pre event) {
         if (mc.player == null || mc.world == null) return;
+
+        int blockCount = countBlocks();
+        if (Notify.INSTANCE != null && Notify.INSTANCE.isEnabled()) {
+            Notify.INSTANCE.updateBlockWarning(blockCount);
+        }
 
         BlockPos currentPos = BlockPos.ofFloored(mc.player.getPos());
 
@@ -73,7 +95,6 @@ public class Surround extends Module {
 
         updateBlocks();
         if (support.get()) {
-            // 辅助放置，后续加个airplace检测。 如果airplace就不用放
             updateSupport();
         }
 
@@ -228,7 +249,6 @@ public class Surround extends Module {
         if (!PlaceManager.isReplaceable(pos)) return 0;
 
         if (attack.get()) {
-            // 遍历当前碰撞箱碰到的水晶实体并且攻击它
             for (Entity entity : mc.world.getOtherEntities(null, new Box(pos))) {
                 if (entity instanceof EndCrystalEntity) {
                     mc.interactionManager.attackEntity(mc.player, entity);

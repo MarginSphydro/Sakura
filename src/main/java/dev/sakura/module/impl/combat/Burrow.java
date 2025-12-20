@@ -5,6 +5,7 @@ import dev.sakura.events.client.TickEvent;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
+import dev.sakura.module.impl.hud.Notify;
 import dev.sakura.utils.client.ChatUtils;
 import dev.sakura.utils.combat.CombatUtil;
 import dev.sakura.utils.entity.EntityUtil;
@@ -25,6 +26,8 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -96,9 +99,27 @@ public class Burrow extends Module {
         mc.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(yaw, pitch, onGround, mc.player.horizontalCollision));
     }
 
+    private int countBlocks() {
+        int count = 0;
+        for (int i = 0; i < 36; i++) {
+            ItemStack stack = mc.player.getInventory().getStack(i);
+            if (stack.getItem() instanceof BlockItem blockItem) {
+                if (blockItem.getBlock() == Blocks.OBSIDIAN || (enderChest.get() && blockItem.getBlock() == Blocks.ENDER_CHEST)) {
+                    count += stack.getCount();
+                }
+            }
+        }
+        return count;
+    }
+
     @EventHandler
     public void onTick(TickEvent.Pre event) {
         if (mc.player == null || mc.world == null) return;
+
+        int blockCount = countBlocks();
+        if (Notify.INSTANCE != null && Notify.INSTANCE.isEnabled()) {
+            Notify.INSTANCE.updateBlockWarning(blockCount);
+        }
 
         if (EntityUtil.isInWeb(mc.player)) {
             webTimer.reset();
