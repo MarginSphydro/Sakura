@@ -32,7 +32,6 @@ public class Notify extends HudModule {
     private final BoolValue deathNotify = new BoolValue("DeathNotify", true);
     private final BoolValue packetWarning = new BoolValue("PacketWarning", true);
     private final NumberValue<Integer> packetThreshold = new NumberValue<>("PacketLimit", 20, 10, 50, 1, packetWarning::get);
-    private final NumberValue<Integer> packetWarningPercent = new NumberValue<>("WarningAt%", 80, 50, 95, 5, packetWarning::get);
     private final BoolValue blockWarning = new BoolValue("BlockWarning", true);
     private final NumberValue<Integer> blockThreshold = new NumberValue<>("BlockThreshold", 20, 5, 64, 1, blockWarning::get);
     private final BoolValue blur = new BoolValue("Blur", true);
@@ -124,9 +123,8 @@ public class Notify extends HudModule {
 
         int currentPackets = packetTimestamps.size();
         int threshold = packetThreshold.get();
-        int warningThreshold = (int) (threshold * (packetWarningPercent.get() / 100.0));
 
-        if (currentPackets >= warningThreshold) {
+        if (currentPackets >= threshold) {
             if (!packetWarningTriggered) {
                 packetWarningTriggered = true;
                 addNotification(NotifyType.PACKET_WARNING, "Packet Overflow",
@@ -188,13 +186,6 @@ public class Notify extends HudModule {
     }
 
     private void addNotification(NotifyType type, String title, String subtitle) {
-        for (NotifyEntry entry : notifications) {
-            if (entry.type == type && entry.title.equals(title) && !entry.isExpired()) {
-                entry.subtitle = subtitle;
-                entry.resetTime();
-                return;
-            }
-        }
         notifications.add(new NotifyEntry(type, title, subtitle));
     }
 
