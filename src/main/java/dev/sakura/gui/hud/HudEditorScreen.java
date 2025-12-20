@@ -17,7 +17,6 @@ import static dev.sakura.Sakura.mc;
 
 public class HudEditorScreen extends Screen {
     private final HudPanel hudPanel;
-    private float accumulatedScroll = 0;
 
     public HudEditorScreen() {
         super(Text.literal("HUD Editor"));
@@ -97,7 +96,6 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        accumulatedScroll += (float) scrollY;
         if (!hudPanel.isDragging()) {
             hudPanel.setY(hudPanel.getY() + (scrollY > 0 ? 15 : -15));
         }
