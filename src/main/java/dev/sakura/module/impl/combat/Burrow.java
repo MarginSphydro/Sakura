@@ -36,6 +36,8 @@ import net.minecraft.util.math.MathHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dev.sakura.Sakura.mc;
+
 public class Burrow extends Module {
     public static Burrow INSTANCE;
     private final TimerUtil timer = new TimerUtil();
@@ -172,13 +174,13 @@ public class Burrow extends Module {
             }
             boolean moved = false;
             BlockPos offPos = playerPos;
-            if (checkSelf(offPos) && !BlockUtil.canReplace(offPos) && (!this.headFill.get() || !BlockUtil.canReplace(offPos.up()))) {
+            if (checkSelf(offPos) && !mc.world.getBlockState(offPos).isReplaceable() && (!this.headFill.get() || !mc.world.getBlockState(offPos.up()).isReplaceable())) {
                 gotoPos(offPos);
             } else {
                 for (final Direction facing : Direction.values()) {
                     if (facing == Direction.UP || facing == Direction.DOWN) continue;
                     offPos = playerPos.offset(facing);
-                    if (checkSelf(offPos) && !BlockUtil.canReplace(offPos) && (!this.headFill.get() || !BlockUtil.canReplace(offPos.up()))) {
+                    if (checkSelf(offPos) && !mc.world.getBlockState(offPos).isReplaceable() && (!this.headFill.get() || !mc.world.getBlockState(offPos.up()).isReplaceable())) {
                         gotoPos(offPos);
                         moved = true;
                         break;
@@ -351,14 +353,14 @@ public class Burrow extends Module {
         if (!BlockUtil.airPlace() && BlockUtil.getPlaceSide(pos) == null) {
             return false;
         }
-        if (!BlockUtil.canReplace(pos)) {
+        if (!mc.world.getBlockState(pos).isReplaceable()) {
             return false;
         }
         return !hasEntity(pos);
     }
 
     private boolean hasEntity(BlockPos pos) {
-        for (Entity entity : BlockUtil.getEntities(new Box(pos))) {
+        for (Entity entity : mc.world.getOtherEntities(null, new Box(pos))) {
             if (entity == mc.player) continue;
             if (!entity.isAlive() || entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof ExperienceBottleEntity || entity instanceof ArrowEntity || entity instanceof EndCrystalEntity && breakCrystal.get() || entity instanceof ArmorStandEntity && obsMode.get())
                 continue;
@@ -372,7 +374,7 @@ public class Burrow extends Module {
     }
 
     private boolean trapped(BlockPos pos) {
-        return (mc.world.canCollide(mc.player, new Box(pos)) || BlockUtil.getBlock(pos) == Blocks.COBWEB) && checkSelf(pos.down(2));
+        return (mc.world.canCollide(mc.player, new Box(pos)) || mc.world.getBlockState(pos).getBlock() == Blocks.COBWEB) && checkSelf(pos.down(2));
     }
 
     private int getBlock() {

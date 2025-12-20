@@ -3,6 +3,7 @@ package dev.sakura.manager;
 import dev.sakura.command.CommandManager;
 import dev.sakura.config.ConfigManager;
 import dev.sakura.manager.impl.AccountManager;
+import dev.sakura.manager.impl.ExtrapolationManager;
 import dev.sakura.module.ModuleManager;
 
 public class Managers {
@@ -12,6 +13,7 @@ public class Managers {
     public static ModuleManager MODULE;
     public static ConfigManager CONFIG;
     public static CommandManager COMMAND;
+    public static ExtrapolationManager EXTRAPOLATION;
 
     public static void init() {
         if (initialized) return;
@@ -20,6 +22,7 @@ public class Managers {
         MODULE = new ModuleManager();
         CONFIG = new ConfigManager();
         COMMAND = new CommandManager();
+        EXTRAPOLATION = new ExtrapolationManager();
 
         initialized = true;
     }

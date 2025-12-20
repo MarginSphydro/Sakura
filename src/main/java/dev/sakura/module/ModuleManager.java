@@ -14,6 +14,7 @@ import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.module.impl.client.StringTest;
 import dev.sakura.module.impl.combat.AutoPot;
 import dev.sakura.module.impl.combat.Burrow;
+import dev.sakura.module.impl.combat.Surround;
 import dev.sakura.module.impl.combat.Velocity;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.*;
@@ -46,9 +47,10 @@ public class ModuleManager {
     private static class ManualLoader {
         static void load(ModuleManager manager) {
             // Combat
-            manager.tryLoad(() -> new Burrow());
-            manager.tryLoad(() -> new Velocity());
             manager.tryLoad(() -> new AutoPot());
+            manager.tryLoad(() -> new Burrow());
+            manager.tryLoad(() -> new Surround());
+            manager.tryLoad(() -> new Velocity());
 
             // Movement
             manager.tryLoad(() -> new AutoSprint());

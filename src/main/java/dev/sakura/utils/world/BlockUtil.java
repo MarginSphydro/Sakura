@@ -18,28 +18,10 @@ import java.util.List;
 
 import static dev.sakura.Sakura.mc;
 
+//todo:这个傻逼alien137的东西有个鸡巴用
+
 public class BlockUtil {
     public static List<BlockPos> placedPos = new ArrayList<>();
-
-    public static Block getBlock(BlockPos pos) {
-        if (mc.world == null) return Blocks.AIR;
-        return mc.world.getBlockState(pos).getBlock();
-    }
-
-    public static BlockState getState(BlockPos pos) {
-        if (mc.world == null) return Blocks.AIR.getDefaultState();
-        return mc.world.getBlockState(pos);
-    }
-
-    public static boolean canReplace(BlockPos pos) {
-        if (mc.world == null) return false;
-        return mc.world.getBlockState(pos).isReplaceable();
-    }
-
-    public static boolean isAir(BlockPos pos) {
-        if (mc.world == null) return false;
-        return mc.world.isAir(pos);
-    }
 
     public static boolean airPlace() {
         return false;
@@ -74,15 +56,5 @@ public class BlockUtil {
         } else {
             mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, hitResult);
         }
-    }
-
-    public static List<Entity> getEntities(Box box) {
-        if (mc.world == null) return new ArrayList<>();
-        return mc.world.getOtherEntities(null, box);
-    }
-
-    public static boolean isBlockSolid(BlockPos pos) {
-        if (mc.world == null) return false;
-        return mc.world.getBlockState(pos).blocksMovement();
     }
 }
