@@ -91,7 +91,7 @@ public class Scaffold extends Module {
     @EventHandler
     public void onStrafe(StrafeEvent event) {
         if (mc.player == null || mc.world == null) return;
-        if (mc.player.isOnGround() && MovementUtil.isMoving() && telly.get()) mc.player.jump();
+        if (mc.player.isOnGround() && MovementUtil.isMoving() && telly.get() && !mc.options.jumpKey.isPressed()) mc.player.jump();
     }
 
     @EventHandler
