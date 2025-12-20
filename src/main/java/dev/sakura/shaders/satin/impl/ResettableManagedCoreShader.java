@@ -43,6 +43,7 @@ public final class ResettableManagedCoreShader extends ResettableManagedShaderBa
         super(location);
         this.vertexFormat = vertexFormat;
         this.initCallback = initCallback;
+        this.ownsShader = false;
     }
 
     @Override

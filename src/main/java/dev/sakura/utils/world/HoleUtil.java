@@ -2,7 +2,6 @@ package dev.sakura.utils.world;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -11,9 +10,9 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HoleUtil {
-    private static final MinecraftClient mc = MinecraftClient.getInstance();
+import static dev.sakura.Sakura.mc;
 
+public class HoleUtil {
     public static boolean isHole(BlockPos pos) {
         return isHole(pos, true, false, false);
     }

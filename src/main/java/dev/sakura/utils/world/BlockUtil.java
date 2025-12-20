@@ -3,7 +3,6 @@ package dev.sakura.utils.world;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -17,8 +16,9 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dev.sakura.Sakura.mc;
+
 public class BlockUtil {
-    private static final MinecraftClient mc = MinecraftClient.getInstance();
     public static List<BlockPos> placedPos = new ArrayList<>();
 
     public static Block getBlock(BlockPos pos) {

@@ -6,8 +6,6 @@ import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.MainMenuShader;
 import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.shaders.SplashShader;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -149,8 +147,8 @@ public class MainMenuScreen extends Screen {
         NanoVGRenderer.INSTANCE.draw(vg -> {
             renderIcon(finalTransitionProgress);
             renderButtons(mouseX, mouseY, finalTransitionProgress);
-            renderVersionText(finalTransitionProgress);
-            renderCopyright(finalTransitionProgress);
+            //renderVersionText(finalTransitionProgress);
+            //renderCopyright(finalTransitionProgress);
         });
     }
 
@@ -227,7 +225,7 @@ public class MainMenuScreen extends Screen {
         }
     }
 
-    private void renderVersionText(float transitionProgress) {
+/*    private void renderVersionText(float transitionProgress) {
         String version = "Minecraft " + SharedConstants.getGameVersion().getName();
         if (mc.isDemo()) {
             version += " Demo";
@@ -247,9 +245,9 @@ public class MainMenuScreen extends Screen {
         Color color = new Color(255, 255, 255, alpha);
 
         NanoVGHelper.drawString(version, 2, height - 2, font, 12, color);
-    }
+    }*/
 
-    private void renderCopyright(float transitionProgress) {
+/*    private void renderCopyright(float transitionProgress) {
         String copyright = "Copyright© Sakura2025.";
         int font = FontLoader.regular(12);
         float textWidth = NanoVGHelper.getTextWidth(copyright, font, 12);
@@ -258,7 +256,7 @@ public class MainMenuScreen extends Screen {
         Color color = new Color(255, 255, 255, alpha);
 
         NanoVGHelper.drawString(copyright, width - textWidth - 2, height - 2, font, 12, color);
-    }
+    }*/
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
