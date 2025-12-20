@@ -3,6 +3,7 @@ package dev.sakura.module.impl.player;
 import com.mojang.authlib.GameProfile;
 import dev.sakura.Sakura;
 import dev.sakura.events.packet.PacketEvent;
+import dev.sakura.events.player.MotionEvent;
 import dev.sakura.events.type.EventType;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -21,21 +22,24 @@ import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class FakePlayer extends Module {
-    public static FakePlayer INSTANCE;
-
-    private final StringValue name = new StringValue("Name", "Sakura");
-    private final BoolValue damage = new BoolValue("Damage", true);
-    private final BoolValue autoTotem = new BoolValue("AutoTotem", true);
-
-    public static OtherClientPlayerEntity fakePlayer;
-
     public FakePlayer() {
         super("FakePlayer", Category.Player);
-        INSTANCE = this;
     }
+
+    private final StringValue name = new StringValue("Name", "BC_zxy");
+    private final BoolValue damage = new BoolValue("Damage", true);
+    private final BoolValue record = new BoolValue("Record", false);
+    private final BoolValue play = new BoolValue("Play", false);
+    private final BoolValue autoTotem = new BoolValue("AutoTotem", false);
+
+    public static OtherClientPlayerEntity fakePlayer;
+    private final List<PlayerState> positions = new ArrayList<>();
+    private int movementTick, deathTime;
 
     @Override
     protected void onEnable() {
@@ -70,10 +74,43 @@ public class FakePlayer extends Module {
         fakePlayer.setRemoved(Entity.RemovalReason.DISCARDED);
         fakePlayer.onRemoved();
         fakePlayer = null;
+        positions.clear();
+        deathTime = 0;
     }
 
     @EventHandler
-    public void onPacket(PacketEvent event) {
+    private void onMotion(MotionEvent event) {
+        if (record.get()) {
+            positions.add(new PlayerState(mc.player.getX(), mc.player.getY(), mc.player.getZ(), mc.player.getYaw(), mc.player.getPitch()));
+            return;
+        }
+
+        if (fakePlayer != null) {
+            if (play.get() && !positions.isEmpty()) {
+                movementTick++;
+                if (movementTick >= positions.size()) {
+                    movementTick = 0;
+                    return;
+                }
+
+                PlayerState p = positions.get(movementTick);
+                fakePlayer.setYaw(p.yaw);
+                fakePlayer.setPitch(p.pitch);
+                fakePlayer.setHeadYaw(p.yaw);
+
+                fakePlayer.updateTrackedPosition(p.x, p.y, p.z);
+                fakePlayer.updateTrackedPositionAndAngles(p.x, p.y, p.z, p.yaw, p.pitch, 3);
+            } else movementTick = 0;
+
+            if (fakePlayer.isDead()) {
+                deathTime++;
+                if (deathTime > 10) setState(false);
+            }
+        }
+    }
+
+    @EventHandler
+    private void onPacket(PacketEvent event) {
         if (mc.player == null || mc.world == null) return;
         if (event.getType() != EventType.RECEIVE) return;
         if (fakePlayer == null) return;
@@ -139,5 +176,8 @@ public class FakePlayer extends Module {
         }
         baseDamage = baseDamage * (1 - (resistance * 0.2f));
         return Math.max(0, baseDamage * 0.5f);
+    }
+
+    private record PlayerState(double x, double y, double z, float yaw, float pitch) {
     }
 }
