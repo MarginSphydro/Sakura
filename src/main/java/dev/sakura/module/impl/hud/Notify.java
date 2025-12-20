@@ -166,15 +166,10 @@ public class Notify extends HudModule {
     public void updateBlockWarning(int blockCount) {
         if (!blockWarning.get()) return;
         if (blockCount <= blockThreshold.get()) {
-            for (NotifyEntry entry : notifications) {
-                if (entry.type == NotifyType.BLOCK_WARNING && !entry.isExpired()) {
-                    entry.subtitle = "Blocks remaining: " + blockCount;
-                    entry.resetTime();
-                    return;
-                }
+            if (!blockWarningTriggered) {
+                blockWarningTriggered = true;
+                addNotification(NotifyType.BLOCK_WARNING, "Warning!", "Blocks remaining: " + blockCount);
             }
-            blockWarningTriggered = true;
-            addNotification(NotifyType.BLOCK_WARNING, "Warning!", "Blocks remaining: " + blockCount);
         } else {
             blockWarningTriggered = false;
         }

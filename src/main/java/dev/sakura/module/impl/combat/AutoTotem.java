@@ -258,7 +258,7 @@ public class AutoTotem extends Module {
         }
         return false;
     }
-//牛逼判断 震撼首发
+
     private boolean isSneakBlock(BlockState state) {
         return state.getBlock() instanceof net.minecraft.block.CraftingTableBlock
                 || state.getBlock() instanceof net.minecraft.block.ChestBlock
