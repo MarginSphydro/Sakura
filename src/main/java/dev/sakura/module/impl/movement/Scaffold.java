@@ -3,6 +3,7 @@ package dev.sakura.module.impl.movement;
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.player.StrafeEvent;
 import dev.sakura.events.render.Render3DEvent;
+import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
@@ -26,10 +27,7 @@ import net.minecraft.block.FallingBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 
 import java.awt.*;
 
@@ -47,6 +45,7 @@ public class Scaffold extends Module {
     private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", 10, 0, 10, 1);
     private final BoolValue moveFix = new BoolValue("Movement Fix", true);
     private final BoolValue render = new BoolValue("Render", true);
+    private final BoolValue shrink = new BoolValue("Shrink", true, render::get);
     private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 183, 197, 100), render::get);
     private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 105, 180), render::get);
 
@@ -122,10 +121,18 @@ public class Scaffold extends Module {
         FindItemResult item = InvUtil.findInHotbar(itemStack -> validItem(itemStack, blockCache.position));
 
         if (hasRotated) {
+            BlockPos targetPos = blockCache.position.offset(blockCache.facing);
+            if (!PlaceManager.isReplaceable(targetPos)) return;
+            if (!mc.world.getOtherEntities(null, new Box(targetPos)).isEmpty()) return;
+
             PlaceManager.placeBlock(
                     new BlockHitResult(getVec3(blockCache.position, blockCache.facing), blockCache.facing, blockCache.position, false),
                     item, swingHand.get(), swapMode.is(SwapMode.Silent)
             );
+
+            if (render.get()) {
+                Managers.RENDER.add(targetPos, sideColor.get(), lineColor.get(), 1000, shrink.get());
+            }
         }
     }
 

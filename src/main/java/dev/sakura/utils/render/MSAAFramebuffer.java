@@ -46,7 +46,7 @@ public class MSAAFramebuffer extends Framebuffer {
     }
 
     public static void use(Runnable drawAction) {
-        use(Math.min(16, MAX_SAMPLES), MinecraftClient.getInstance().getFramebuffer(), drawAction); // 16 samples max, everything above is overkill
+        use(Math.min(16, MAX_SAMPLES), MinecraftClient.getInstance().getFramebuffer(), drawAction);
     }
 
     public static void use(int samples, Framebuffer mainBuffer, Runnable drawAction) {
