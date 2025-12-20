@@ -11,7 +11,7 @@ import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.EaseInOutQuad;
-import dev.sakura.utils.render.RenderUtils;
+import dev.sakura.utils.render.RenderUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.DrawContext;
 
@@ -133,7 +133,7 @@ public class HudPanel implements IComponent {
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        return RenderUtils.isHovering(x, y, width, 18, mouseX, mouseY);
+        return RenderUtil.isHovering(x, y, width, 18, mouseX, mouseY);
     }
 
     public float getX() {

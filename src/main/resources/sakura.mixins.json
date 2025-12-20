@@ -15,8 +15,8 @@
     "accessor.IAccessorBundlePacket",
     "accessor.IChatInputSuggestor",
     "accessor.IClientPlayerEntity",
-    "accessor.IMinecraftClient",
     "accessor.IEntity",
+    "accessor.IMinecraftClient",
     "accessor.ISuggestionWindow",
     "client.MixinChatInputSuggestor",
     "client.MixinGameOptions",
@@ -30,7 +30,6 @@
     "input.MixinMouse",
     "network.MixinClientConnection",
     "network.MixinClientPlayNetworkHandler",
-    "packet.MixinPlayerInteractEntityC2SPacket",
     "render.MixinBackgroundRenderer",
     "render.MixinBossBarHud",
     "render.MixinCamera",
@@ -49,5 +48,8 @@
     "render.MixinWindow",
     "render.MixinWorldRenderer",
     "shader.MixinShaderProgram"
+  ],
+  "mixins": [
+    "accessor.IHorseScreenHandler"
   ]
 }

@@ -3,9 +3,9 @@ package dev.sakura.manager.impl;
 import dev.sakura.events.input.MoveInputEvent;
 import dev.sakura.events.player.*;
 import dev.sakura.events.type.EventType;
-import dev.sakura.utils.player.MovementUtils;
+import dev.sakura.utils.player.MovementUtil;
 import dev.sakura.utils.rotation.MovementFix;
-import dev.sakura.utils.rotation.RotationUtils;
+import dev.sakura.utils.rotation.RotationUtil;
 import dev.sakura.utils.vector.Vector2f;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.MinecraftClient;
@@ -91,7 +91,7 @@ public class RotationManager {
                 }
             }
 
-            rotations = RotationUtils.smooth(new Vector2f(targetYaw, targetPitch),
+            rotations = RotationUtil.smooth(new Vector2f(targetYaw, targetPitch),
                     rotationSpeed + Math.random());
 
         }
@@ -149,7 +149,7 @@ public class RotationManager {
 //        mc.player.getPitch() = rotations.y;
 
         if (correctMovement == MovementFix.BACKWARDS_SPRINT && active) {
-            if (Math.abs(rotations.x % 360 - Math.toDegrees(MovementUtils.getDirection()) % 360) > 45) {
+            if (Math.abs(rotations.x % 360 - Math.toDegrees(MovementUtil.getDirection()) % 360) > 45) {
                 mc.options.sprintKey.setPressed(false);
                 mc.player.setSprinting(false);
             }
@@ -163,7 +163,7 @@ public class RotationManager {
              * Calculating movement fix
              */
             final float yaw = rotations.x;
-            MovementUtils.fixMovement(event, yaw);
+            MovementUtil.fixMovement(event, yaw);
         }
     }
 
@@ -230,7 +230,7 @@ public class RotationManager {
 
     private void correctDisabledRotations() {
         final Vector2f rotations = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
-        final Vector2f fixedRotations = RotationUtils.resetRotation(RotationUtils.applySensitivityPatch(rotations, lastRotations));
+        final Vector2f fixedRotations = RotationUtil.resetRotation(RotationUtil.applySensitivityPatch(rotations, lastRotations));
 
         mc.player.setYaw(fixedRotations.x);
         mc.player.setPitch(fixedRotations.y);

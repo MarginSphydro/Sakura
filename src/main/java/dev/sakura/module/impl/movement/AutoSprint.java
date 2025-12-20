@@ -4,7 +4,6 @@ import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.type.EventType;
 import dev.sakura.mixin.accessor.IClientPlayerEntity;
-import dev.sakura.mixininterface.IPlayerInteractEntityC2SPacket;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.values.impl.BoolValue;
@@ -40,8 +39,8 @@ public class AutoSprint extends Module {
     private void onPacketSend(PacketEvent event) {
         if (event.getType() != EventType.SEND) return;
         if (!unsprintOnHit.get()) return;
-        if (!(event.getPacket() instanceof IPlayerInteractEntityC2SPacket packet)
-                || packet.getType() != PlayerInteractEntityC2SPacket.InteractType.ATTACK) return;
+        if (!(event.getPacket() instanceof PlayerInteractEntityC2SPacket packet) || packet.type.getType() != PlayerInteractEntityC2SPacket.InteractType.ATTACK)
+            return;
 
         mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.STOP_SPRINTING));
         mc.player.setSprinting(false);
@@ -52,8 +51,8 @@ public class AutoSprint extends Module {
         if (event.getType() != EventType.SENT) return;
 
         if (!unsprintOnHit.get() || !keepSprint.get()) return;
-        if (!(event.getPacket() instanceof IPlayerInteractEntityC2SPacket packet)
-                || packet.getType() != PlayerInteractEntityC2SPacket.InteractType.ATTACK) return;
+        if (!(event.getPacket() instanceof PlayerInteractEntityC2SPacket packet)
+                || packet.type.getType() != PlayerInteractEntityC2SPacket.InteractType.ATTACK) return;
 
         if (!shouldSprint() || mc.player.isSprinting()) return;
 

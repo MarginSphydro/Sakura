@@ -9,7 +9,7 @@ import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.utils.player.MovementUtils;
+import dev.sakura.utils.player.MovementUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.EnumValue;
 import meteordevelopment.orbit.EventHandler;
@@ -128,7 +128,7 @@ public class NoSlow extends Module {
                         if (mc.player.isUsingItem() && movePacket.changesPosition()) {
                             mc.getNetworkHandler().sendPacket(new UpdateSelectedSlotC2SPacket(mc.player.getInventory().selectedSlot));
                         }
-                    } else if (guiMove.get() && packet instanceof ClickSlotC2SPacket && MovementUtils.isMoving()) {
+                    } else if (guiMove.get() && packet instanceof ClickSlotC2SPacket && MovementUtil.isMoving()) {
                         doStrictPre();
                     }
                     break;
@@ -138,7 +138,7 @@ public class NoSlow extends Module {
         } else if (event.getType() == EventType.SENT) { // Post
             switch (mode.get()) {
                 case Strict:
-                    if (guiMove.get() && packet instanceof ClickSlotC2SPacket && MovementUtils.isMoving()) {
+                    if (guiMove.get() && packet instanceof ClickSlotC2SPacket && MovementUtil.isMoving()) {
                         doStrictPost();
                     }
                     break;

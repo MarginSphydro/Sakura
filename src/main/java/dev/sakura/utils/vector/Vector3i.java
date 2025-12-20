@@ -1,7 +1,6 @@
 package dev.sakura.utils.vector;
 
 public class Vector3i {
-
     public int x;
     public int y;
     public int z;

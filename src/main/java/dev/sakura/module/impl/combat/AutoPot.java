@@ -7,7 +7,6 @@ import dev.sakura.module.Module;
 import dev.sakura.utils.combat.CombatUtil;
 import dev.sakura.utils.entity.InventoryUtil;
 import dev.sakura.utils.time.TimerUtil;
-import dev.sakura.utils.world.BlockPosX;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
@@ -22,6 +21,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 
 public class AutoPot extends Module {
     public static AutoPot INSTANCE;
@@ -95,7 +95,7 @@ public class AutoPot extends Module {
 
         if (onlyGround.get()) {
             if (!mc.player.isOnGround()) return;
-            if (mc.world.isAir(new BlockPosX(mc.player.getPos().add(0, -1, 0)))) return;
+            if (mc.world.isAir(BlockPos.ofFloored(mc.player.getPos().add(0, -1, 0)))) return;
         }
 
         if (resistance.get() && needsEffect(StatusEffects.RESISTANCE, 2)) {

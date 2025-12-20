@@ -4,7 +4,7 @@ import dev.sakura.gui.Component;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.utils.render.RenderUtils;
+import dev.sakura.utils.render.RenderUtil;
 import dev.sakura.values.impl.StringValue;
 import net.minecraft.client.gui.DrawContext;
 import org.lwjgl.glfw.GLFW;
@@ -93,7 +93,7 @@ public class StringValueComponent extends Component {
         float inputY = getY() + 5;
         float inputHeight = 12;
 
-        if (RenderUtils.isHovering(inputX, inputY, inputWidth, inputHeight, (float) mouseX, (float) mouseY) && mouseButton == 0) {
+        if (RenderUtil.isHovering(inputX, inputY, inputWidth, inputHeight, (float) mouseX, (float) mouseY) && mouseButton == 0) {
             if (!editing) {
                 editing = true;
                 tempText = setting.get();

@@ -4,7 +4,7 @@ import dev.sakura.Sakura;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.color.ColorUtil;
-import dev.sakura.utils.render.RenderUtils;
+import dev.sakura.utils.render.RenderUtil;
 import dev.sakura.values.Value;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
@@ -70,7 +70,7 @@ public class ClickGui extends Module {
             case Astolfo ->
                     new Color(ColorUtil.swapAlpha(astolfoRainbow(tick, astolfoSaturation.get().floatValue(), astolfoBrightness.get().floatValue()), 255));
             case Rainbow ->
-                    new Color(RenderUtils.getRainbow(System.currentTimeMillis(), rainbowSpeed.get().intValue(), tick));
+                    new Color(RenderUtil.getRainbow(System.currentTimeMillis(), rainbowSpeed.get().intValue(), tick));
             case Tenacity ->
                     ColorUtil.interpolateColorsBackAndForth(colorSpeed.get().intValue(), colorIndex.get().intValue() * tick, mainColor.get(), secondColor.get(), false);
             case Dynamic ->

@@ -12,7 +12,7 @@ import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.EaseInOutQuad;
 import dev.sakura.utils.animations.impl.EaseOutSine;
 import dev.sakura.utils.color.ColorUtil;
-import dev.sakura.utils.render.RenderUtils;
+import dev.sakura.utils.render.RenderUtil;
 import dev.sakura.values.Value;
 import dev.sakura.values.impl.*;
 import net.minecraft.client.gui.DrawContext;
@@ -212,7 +212,7 @@ public class ModuleComponent implements IComponent {
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        return RenderUtils.isHovering(x, y, width, MODULE_HEIGHT, mouseX, mouseY);
+        return RenderUtil.isHovering(x, y, width, MODULE_HEIGHT, mouseX, mouseY);
     }
 
     public boolean isBindBoxHovered(int mouseX, int mouseY) {
@@ -220,7 +220,7 @@ public class ModuleComponent implements IComponent {
         float boxHeight = 8;
         float boxX = x + width - boxWidth - 4;
         float boxY = y + (MODULE_HEIGHT - boxHeight) / 2;
-        return RenderUtils.isHovering(boxX, boxY, boxWidth, boxHeight, mouseX, mouseY);
+        return RenderUtil.isHovering(boxX, boxY, boxWidth, boxHeight, mouseX, mouseY);
     }
 
     public boolean isListening() {

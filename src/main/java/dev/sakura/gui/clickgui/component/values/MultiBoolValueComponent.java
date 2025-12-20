@@ -7,7 +7,7 @@ import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.EaseOutSine;
 import dev.sakura.utils.color.ColorUtil;
-import dev.sakura.utils.render.RenderUtils;
+import dev.sakura.utils.render.RenderUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.MultiBoolValue;
 import net.minecraft.client.gui.DrawContext;
@@ -77,7 +77,7 @@ public class MultiBoolValueComponent extends Component {
                 offset = 4;
                 heightoff += 10;
             }
-            if (RenderUtils.isHovering(getX() + offset, getY() + 1 + heightoff, textWidth, fontHeight, (float) mouseX, (float) mouseY) && mouseButton == 0) {
+            if (RenderUtil.isHovering(getX() + offset, getY() + 1 + heightoff, textWidth, fontHeight, (float) mouseX, (float) mouseY) && mouseButton == 0) {
                 boolValue.set(!boolValue.get());
             }
             offset += off;

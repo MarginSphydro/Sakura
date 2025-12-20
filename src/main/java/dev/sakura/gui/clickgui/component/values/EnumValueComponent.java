@@ -4,7 +4,7 @@ import dev.sakura.gui.Component;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.utils.render.RenderUtils;
+import dev.sakura.utils.render.RenderUtil;
 import dev.sakura.values.impl.EnumValue;
 import net.minecraft.client.gui.DrawContext;
 
@@ -65,7 +65,7 @@ public class EnumValueComponent extends Component {
                 offset = 0;
                 heightoff += 10;
             }
-            if (RenderUtils.isHovering(getX() + offset + 4, getY() + 6 + heightoff, textWidth, NanoVGHelper.getFontHeight(font, FONT_SIZE), (float) mouseX, (float) mouseY) && mouseButton == 0) {
+            if (RenderUtil.isHovering(getX() + offset + 4, getY() + 6 + heightoff, textWidth, NanoVGHelper.getFontHeight(font, FONT_SIZE), (float) mouseX, (float) mouseY) && mouseButton == 0) {
                 setting.setMode(text);
             }
             offset += off;

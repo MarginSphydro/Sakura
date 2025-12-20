@@ -3,22 +3,28 @@ package dev.sakura.module.impl.movement;
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.player.StrafeEvent;
 import dev.sakura.events.render.Render3DEvent;
+import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.math.MathUtils;
-import dev.sakura.utils.player.MovementUtils;
+import dev.sakura.utils.player.FindItemResult;
+import dev.sakura.utils.player.InvUtil;
+import dev.sakura.utils.player.MovementUtil;
 import dev.sakura.utils.rotation.MovementFix;
-import dev.sakura.utils.rotation.RaytraceUtils;
-import dev.sakura.utils.rotation.RotationUtils;
+import dev.sakura.utils.rotation.RaytraceUtil;
+import dev.sakura.utils.rotation.RotationUtil;
 import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
+import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.AirBlock;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.block.Block;
+import net.minecraft.block.FallingBlock;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -32,6 +38,8 @@ public class Scaffold extends Module {
         super("Scaffold", Category.Movement);
     }
 
+    private final EnumValue<SwapMode> swapMode = new EnumValue<>("Swap Mode", SwapMode.Silent);
+    private final BoolValue swingHand = new BoolValue("Swing Hand", true);
     private final BoolValue telly = new BoolValue("Telly", false);
     private final NumberValue<Integer> tellyTick = new NumberValue<>("Telly Tick", 1, 0, 8, 1, telly::get);
     private final BoolValue keepY = new BoolValue("Keep Y", true, telly::get);
@@ -45,6 +53,11 @@ public class Scaffold extends Module {
     private int yLevel;
     private BlockCache blockCache;
     private int airTicks;
+
+    private enum SwapMode {
+        Normal,
+        Silent
+    }
 
     @EventHandler
     public void onTick(TickEvent.Pre event) {
@@ -61,7 +74,7 @@ public class Scaffold extends Module {
                 RotationManager.setRotations(rotation, rotationBackSpeed.get(), movementFix);
             } else {
                 if (airTicks >= tellyTick.get() && blockCache != null) {
-                    Vector2f calculate = RotationUtils.calculate(getVec3(blockCache.position, blockCache.facing));
+                    Vector2f calculate = RotationUtil.calculate(getVec3(blockCache.position, blockCache.facing));
                     MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
                     RotationManager.setRotations(calculate, rotationSpeed.get(), movementFix);
                     place();
@@ -69,7 +82,7 @@ public class Scaffold extends Module {
                 airTicks++;
             }
         } else if (blockCache != null) {
-            Vector2f calculate = RotationUtils.calculate(getVec3(blockCache.position, blockCache.facing));
+            Vector2f calculate = RotationUtil.calculate(getVec3(blockCache.position, blockCache.facing));
             MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
             RotationManager.setRotations(calculate, rotationSpeed.get(), movementFix);
             place();
@@ -79,7 +92,7 @@ public class Scaffold extends Module {
     @EventHandler
     public void onStrafe(StrafeEvent event) {
         if (mc.player == null || mc.world == null) return;
-        if (mc.player.isOnGround() && MovementUtils.isMoving() && telly.get()) mc.player.jump();
+        if (mc.player.isOnGround() && MovementUtil.isMoving() && telly.get()) mc.player.jump();
     }
 
     @EventHandler
@@ -88,25 +101,36 @@ public class Scaffold extends Module {
     }
 
     public int getYLevel() {
-        if (keepY.get() && !mc.options.jumpKey.isPressed() && MovementUtils.isMoving() && telly.get()) {
+        if (keepY.get() && !mc.options.jumpKey.isPressed() && MovementUtil.isMoving() && telly.get()) {
             return yLevel;
         } else {
             return (int) (mc.player.getY() - 1);
         }
     }
 
+    private boolean validItem(ItemStack itemStack, BlockPos pos) {
+        if (!(itemStack.getItem() instanceof BlockItem)) return false;
+
+        Block block = ((BlockItem) itemStack.getItem()).getBlock();
+
+        if (!Block.isShapeFullCube(block.getDefaultState().getCollisionShape(mc.world, pos))) return false;
+        return !(block instanceof FallingBlock) || !FallingBlock.canFallThrough(mc.world.getBlockState(pos));
+    }
+
     public void place() {
-        boolean b = RaytraceUtils.overBlock(RotationManager.getRotation(), blockCache.facing, blockCache.position, false);
-        if (b) {
-            if (mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, new BlockHitResult(getVec3(blockCache.position, blockCache.facing), blockCache.facing, blockCache.position, false)) == ActionResult.SUCCESS) {
-                mc.player.swingHand(Hand.MAIN_HAND);
-            }
+        boolean hasRotated = RaytraceUtil.overBlock(RotationManager.getRotation(), blockCache.facing, blockCache.position, false);
+        FindItemResult item = InvUtil.findInHotbar(itemStack -> validItem(itemStack, blockCache.position));
+
+        if (hasRotated) {
+            PlaceManager.placeBlock(
+                    new BlockHitResult(getVec3(blockCache.position, blockCache.facing), blockCache.facing, blockCache.position, false),
+                    item, swingHand.get(), swapMode.is(SwapMode.Silent)
+            );
         }
     }
 
     public void getBlockInfo() {
         Vec3d baseVec = mc.player.getEyePos();
-//        BlockPos base = new BlockPos(baseVec.x, baseY + 0.1f, baseVec.z);
         BlockPos base = BlockPos.ofFloored(baseVec.x, getYLevel(), baseVec.z);
         int baseX = base.getX();
         int baseZ = base.getZ();
@@ -149,9 +173,8 @@ public class Scaffold extends Module {
 
             Vec3d relevant = hit.subtract(baseVec);
             if (relevant.lengthSquared() <= 4.5 * 4.5 && relevant.dotProduct(new Vec3d(dir.getVector())) >= 0) {
-                if (dir.getOpposite() == Direction.UP && !telly.get() && MovementUtils.isMoving() && !mc.options.jumpKey.isPressed())
+                if (dir.getOpposite() == Direction.UP && !telly.get() && MovementUtil.isMoving() && !mc.options.jumpKey.isPressed())
                     continue;
-
                 blockCache = new BlockCache(new BlockPos(baseBlock), dir.getOpposite());
                 return true;
             }

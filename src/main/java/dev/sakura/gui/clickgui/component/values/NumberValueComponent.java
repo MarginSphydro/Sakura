@@ -9,7 +9,7 @@ import dev.sakura.utils.animations.Animation;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.DecelerateAnimation;
 import dev.sakura.utils.math.MathUtils;
-import dev.sakura.utils.render.RenderUtils;
+import dev.sakura.utils.render.RenderUtil;
 import dev.sakura.values.impl.NumberValue;
 import net.minecraft.client.gui.DrawContext;
 import org.lwjgl.glfw.GLFW;
@@ -46,7 +46,7 @@ public class NumberValueComponent extends Component {
         double max = setting.getMax().doubleValue();
         double current = setting.get().doubleValue();
 
-        anim = RenderUtils.animate(anim, (float) (w * (current - min) / (max - min)), 50);
+        anim = RenderUtil.animate(anim, (float) (w * (current - min) / (max - min)), 50);
         float sliderWidth = anim;
         drag.setDirection(dragging ? Direction.FORWARDS : Direction.BACKWARDS);
 
@@ -124,7 +124,7 @@ public class NumberValueComponent extends Component {
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         float w = getWidth();
 
-        if (RenderUtils.isHovering(getX(), getY() + 7, w, 4, (float) mouseX, (float) mouseY)) {
+        if (RenderUtil.isHovering(getX(), getY() + 7, w, 4, (float) mouseX, (float) mouseY)) {
             if (mouseButton == 0 && !editing) {
                 dragging = true;
             } else if (mouseButton == 1 && !editing) {

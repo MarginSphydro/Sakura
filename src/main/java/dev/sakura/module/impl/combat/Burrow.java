@@ -12,7 +12,6 @@ import dev.sakura.utils.entity.InventoryUtil;
 import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.utils.vector.Vector2f;
-import dev.sakura.utils.world.BlockPosX;
 import dev.sakura.utils.world.BlockUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.EnumValue;
@@ -130,18 +129,18 @@ public class Burrow extends Module {
         progress = 0;
         placePos.clear();
         double offset = 0.3;
-        BlockPos pos1 = new BlockPosX(mc.player.getX() + offset, mc.player.getY() + 0.5, mc.player.getZ() + offset);
-        BlockPos pos2 = new BlockPosX(mc.player.getX() - offset, mc.player.getY() + 0.5, mc.player.getZ() + offset);
-        BlockPos pos3 = new BlockPosX(mc.player.getX() + offset, mc.player.getY() + 0.5, mc.player.getZ() - offset);
-        BlockPos pos4 = new BlockPosX(mc.player.getX() - offset, mc.player.getY() + 0.5, mc.player.getZ() - offset);
-        BlockPos pos5 = new BlockPosX(mc.player.getX() + offset, mc.player.getY() + 1.5, mc.player.getZ() + offset);
-        BlockPos pos6 = new BlockPosX(mc.player.getX() - offset, mc.player.getY() + 1.5, mc.player.getZ() + offset);
-        BlockPos pos7 = new BlockPosX(mc.player.getX() + offset, mc.player.getY() + 1.5, mc.player.getZ() - offset);
-        BlockPos pos8 = new BlockPosX(mc.player.getX() - offset, mc.player.getY() + 1.5, mc.player.getZ() - offset);
-        BlockPos pos9 = new BlockPosX(mc.player.getX() + offset, mc.player.getY() - 1, mc.player.getZ() + offset);
-        BlockPos pos10 = new BlockPosX(mc.player.getX() - offset, mc.player.getY() - 1, mc.player.getZ() + offset);
-        BlockPos pos11 = new BlockPosX(mc.player.getX() + offset, mc.player.getY() - 1, mc.player.getZ() - offset);
-        BlockPos pos12 = new BlockPosX(mc.player.getX() - offset, mc.player.getY() - 1, mc.player.getZ() - offset);
+        BlockPos pos1 = BlockPos.ofFloored(mc.player.getX() + offset, mc.player.getY() + 0.5, mc.player.getZ() + offset);
+        BlockPos pos2 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() + 0.5, mc.player.getZ() + offset);
+        BlockPos pos3 = BlockPos.ofFloored(mc.player.getX() + offset, mc.player.getY() + 0.5, mc.player.getZ() - offset);
+        BlockPos pos4 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() + 0.5, mc.player.getZ() - offset);
+        BlockPos pos5 = BlockPos.ofFloored(mc.player.getX() + offset, mc.player.getY() + 1.5, mc.player.getZ() + offset);
+        BlockPos pos6 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() + 1.5, mc.player.getZ() + offset);
+        BlockPos pos7 = BlockPos.ofFloored(mc.player.getX() + offset, mc.player.getY() + 1.5, mc.player.getZ() - offset);
+        BlockPos pos8 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() + 1.5, mc.player.getZ() - offset);
+        BlockPos pos9 = BlockPos.ofFloored(mc.player.getX() + offset, mc.player.getY() - 1, mc.player.getZ() + offset);
+        BlockPos pos10 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() - 1, mc.player.getZ() + offset);
+        BlockPos pos11 = BlockPos.ofFloored(mc.player.getX() + offset, mc.player.getY() - 1, mc.player.getZ() - offset);
+        BlockPos pos12 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() - 1, mc.player.getZ() - offset);
         BlockPos playerPos = EntityUtil.getPlayerPos(true);
         boolean headFillFlag = false;
         if (!canPlace(pos1) && !canPlace(pos2) && !canPlace(pos3) && !canPlace(pos4)) {
@@ -255,7 +254,7 @@ public class Burrow extends Module {
                 for (double x = mc.player.getPos().getX() - smartX.get(); x < mc.player.getPos().getX() + smartX.get(); ++x) {
                     for (double z = mc.player.getPos().getZ() - smartX.get(); z < mc.player.getPos().getZ() + smartX.get(); ++z) {
                         for (double y = mc.player.getPos().getY() - smartDown.get(); y < mc.player.getPos().getY() + smartUp.get(); ++y) {
-                            list.add(new BlockPosX(x, y, z));
+                            list.add(BlockPos.ofFloored(x, y, z));
                         }
                     }
                 }

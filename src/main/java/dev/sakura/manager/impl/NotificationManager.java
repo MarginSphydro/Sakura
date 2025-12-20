@@ -196,7 +196,7 @@ public class NotificationManager {
                     return new float[]{x + minWidth * (1.0f - progress), y, width, height};
                 }
             }
-            
+
             return null;
         }
 

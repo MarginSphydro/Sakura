@@ -7,7 +7,7 @@ import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.SmoothStepAnimation;
-import dev.sakura.utils.render.RenderUtils;
+import dev.sakura.utils.render.RenderUtil;
 import dev.sakura.values.impl.BoolValue;
 import net.minecraft.client.gui.DrawContext;
 
@@ -40,7 +40,7 @@ public class BoolValueComponent extends Component {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (RenderUtils.isHovering(getX() + getWidth() - 15, getY() - 7, 15, 8, (float) mouseX, (float) mouseY) && mouseButton == 0) {
+        if (RenderUtil.isHovering(getX() + getWidth() - 15, getY() - 7, 15, 8, (float) mouseX, (float) mouseY) && mouseButton == 0) {
             this.setting.set(!this.setting.get());
         }
         return super.mouseClicked(mouseX, mouseY, mouseButton);
