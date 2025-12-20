@@ -74,17 +74,15 @@ public class Scaffold extends Module {
                 blockCache = null;
             } else {
                 if (airTicks >= tellyTick.get() && blockCache != null) {
-                    Vector2f calculate = RotationUtil.calculate(getVec3(blockCache.position, blockCache.facing));
                     MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
-                    RotationManager.setRotations(calculate, rotationSpeed.get(), movementFix);
+                    RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix);
                     place();
                 }
                 airTicks++;
             }
         } else if (blockCache != null) {
-            Vector2f calculate = RotationUtil.calculate(getVec3(blockCache.position, blockCache.facing));
             MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
-            RotationManager.setRotations(calculate, rotationSpeed.get(), movementFix);
+            RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix);
             place();
         }
     }
@@ -207,6 +205,13 @@ public class Scaffold extends Module {
             x += MathUtils.getRandom(0.3, -0.3);
         }
         return new Vec3d(x, y, z);
+    }
+
+    public Vector2f getRotation(BlockCache blockCache) {
+        Vector2f calculate = RotationUtil.calculate(blockCache.position.toCenterPos());
+        Vector2f reverseYaw = new Vector2f(MathHelper.wrapDegrees(mc.player.getYaw() - 180), calculate.y);
+        boolean hasRotated = RaytraceUtil.overBlock(reverseYaw, blockCache.facing, blockCache.position, false);
+        if (hasRotated) return reverseYaw; else return calculate;
     }
 
     private record BlockCache(BlockPos position, Direction facing) {
