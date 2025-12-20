@@ -47,7 +47,7 @@ public class MixinSplashOverlay {
     private Consumer<Optional<Throwable>> exceptionHandler;
 
     @Unique
-    private boolean sakura$shaderInitialized = false;
+    private boolean shaderInitialized = false;
 
     @Unique
     private float sakura$displayProgress = 0f;
@@ -56,13 +56,10 @@ public class MixinSplashOverlay {
     private long sakura$startTime = -1L;
 
     @Unique
-    private MainMenuScreen sakura$mainMenuScreen = null;
+    private MainMenuScreen mainMenuScreen = null;
 
     @Unique
     private static final float PROGRESS_SMOOTH_SPEED = 0.3f;
-
-    @Unique
-    private static final long MIN_DISPLAY_TIME = 5700L;
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void onRenderHead(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
@@ -70,9 +67,9 @@ public class MixinSplashOverlay {
         int height = context.getScaledWindowHeight();
         long currentTime = Util.getMeasuringTimeMs();
 
-        if (!sakura$shaderInitialized) {
+        if (!shaderInitialized) {
             SplashShader.getInstance().init();
-            sakura$shaderInitialized = true;
+            shaderInitialized = true;
             sakura$startTime = currentTime;
         }
 
@@ -86,17 +83,12 @@ public class MixinSplashOverlay {
         float loadProgress = this.reload.getProgress();
         this.progress = MathHelper.clamp(this.progress * 0.95F + loadProgress * 0.05F, 0.0F, 1.0F);
 
-        long elapsedTime = currentTime - sakura$startTime;
-        float timeBasedMaxProgress = MathHelper.clamp((float) elapsedTime / MIN_DISPLAY_TIME, 0f, 1f);
-
-        timeBasedMaxProgress = 1f - (1f - timeBasedMaxProgress) * (1f - timeBasedMaxProgress);
-
-        float targetProgress = Math.min(loadProgress, timeBasedMaxProgress);
+        float targetProgress = loadProgress;
 
         sakura$displayProgress += (targetProgress - sakura$displayProgress) * PROGRESS_SMOOTH_SPEED * delta;
         sakura$displayProgress = MathHelper.clamp(sakura$displayProgress, 0f, 1f);
 
-        if (loadProgress >= 1.0f && elapsedTime >= MIN_DISPLAY_TIME) {
+        if (loadProgress >= 1.0f) {
             sakura$displayProgress += (1f - sakura$displayProgress) * 0.1f;
         }
 
@@ -111,8 +103,8 @@ public class MixinSplashOverlay {
                 fadeOut = fadeOut * fadeOut;
             }
 
-            if (sakura$mainMenuScreen != null) {
-                sakura$mainMenuScreen.render(context, 0, 0, delta);
+            if (mainMenuScreen != null) {
+                mainMenuScreen.render(context, 0, 0, delta);
             }
         }
 
@@ -122,17 +114,15 @@ public class MixinSplashOverlay {
 
         if (fadeOutProgress >= 2.0F || SplashShader.getInstance().isTransitionComplete()) {
             this.client.setOverlay(null);
-            if (sakura$mainMenuScreen != null) {
-                this.client.setScreen(sakura$mainMenuScreen);
-                sakura$mainMenuScreen = null;
+            if (mainMenuScreen != null) {
+                this.client.setScreen(mainMenuScreen);
+                mainMenuScreen = null;
             }
             SplashShader.getInstance().cleanup();
-            sakura$shaderInitialized = false;
+            shaderInitialized = false;
         }
 
-        long elapsedTotal = currentTime - sakura$startTime;
-        boolean minTimeReached = elapsedTotal >= MIN_DISPLAY_TIME;
-        if (this.reloadCompleteTime == -1L && this.reload.isComplete() && sakura$displayProgress >= 0.95f && minTimeReached && (!this.reloading || fadeInProgress >= 2.0F)) {
+        if (this.reloadCompleteTime == -1L && this.reload.isComplete() && sakura$displayProgress >= 0.95f && (!this.reloading || fadeInProgress >= 2.0F)) {
             try {
                 this.reload.throwException();
                 this.exceptionHandler.accept(Optional.empty());
@@ -143,8 +133,12 @@ public class MixinSplashOverlay {
             this.reloadCompleteTime = Util.getMeasuringTimeMs();
             SplashShader.getInstance().startTransition();
 
-            sakura$mainMenuScreen = new MainMenuScreen();
-            sakura$mainMenuScreen.init(this.client, width, height);
+            if (!this.reloading) {
+                mainMenuScreen = new MainMenuScreen();
+                mainMenuScreen.init(this.client, width, height);
+            } else if (this.client.currentScreen != null){
+                this.client.currentScreen.init(this.client, width, height);
+            }
         }
 
         ci.cancel();

@@ -9,6 +9,7 @@ import dev.sakura.shaders.satin.api.uniform.Uniform2f;
 import dev.sakura.shaders.satin.api.uniform.Uniform4f;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
@@ -29,12 +30,16 @@ public class BlurProgram {
     private SamplerUniform sampler;
 
     private Framebuffer input;
+    private int currentProgramId = -1;
 
-    public static final ManagedCoreShader BLUR = ShaderEffectManager.getInstance()
-            .manageCoreShader(Identifier.of("sakura", "core/blur"), VertexFormats.POSITION);
+    public static final ManagedCoreShader BLUR = ShaderEffectManager.getInstance().manageCoreShader(Identifier.of("sakura", "core/blur"), VertexFormats.POSITION);
 
     public BlurProgram() {
         setup();
+        WindowResizeCallback.EVENT.register((client, window) -> {
+            if (input != null)
+                input.resize(window.getFramebufferWidth(), window.getFramebufferHeight());
+        });
     }
 
     public void setParameters(float x, float y, float width, float height, float r, float blurStrenth, float blurOpacity) {
@@ -43,9 +48,12 @@ public class BlurProgram {
 
     public void setParameters(float x, float y, float width, float height, float r, Color c1, float blurStrenth, float blurOpacity) {
         if (input == null)
-            input = new SimpleFramebuffer(mc.getWindow().getScaledWidth(), mc.getWindow().getScaledHeight(), false);
+            input = new SimpleFramebuffer(mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight(), true);
 
         float i = (float) mc.getWindow().getScaleFactor();
+        
+        suckMyDick();
+
         radius.set(r * i);
         uLocation.set(x * i, -y * i + mc.getWindow().getScaledHeight() * i - height * i);
         uSize.set(width * i, height * i);
@@ -56,14 +64,16 @@ public class BlurProgram {
     }
 
     public void use() {
+        if (input != null && (input.textureWidth != mc.getWindow().getFramebufferWidth() || input.textureHeight != mc.getWindow().getFramebufferHeight()))
+            input.resize(mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
+
         var buffer = MinecraftClient.getInstance().getFramebuffer();
         input.beginWrite(false);
         GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, buffer.fbo);
         GL30.glBlitFramebuffer(0, 0, buffer.textureWidth, buffer.textureHeight, 0, 0, buffer.textureWidth, buffer.textureHeight, GL30.GL_COLOR_BUFFER_BIT, GL30.GL_LINEAR);
         buffer.beginWrite(false);
-
-        if (input != null && (input.textureWidth != mc.getWindow().getFramebufferWidth() || input.textureHeight != mc.getWindow().getFramebufferHeight()))
-            input.resize(mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
+        
+        suckMyDick();
 
         inputResolution.set((float) buffer.textureWidth, (float) buffer.textureHeight);
         sampler.set(input.getColorAttachment());
@@ -72,6 +82,17 @@ public class BlurProgram {
             RenderSystem.setShader(BLUR.getProgram());
         } else {
             System.err.println("[BlurProgram] Shader not loaded!");
+        }
+    }
+
+    private void suckMyDick() {
+        ShaderProgram program = BLUR.getProgram();
+        if (program != null) {
+            int newId = program.getGlRef();
+            if (newId != currentProgramId) {
+                setup();
+                currentProgramId = newId;
+            }
         }
     }
 
@@ -84,9 +105,10 @@ public class BlurProgram {
         this.uLocation = BLUR.findUniform2f("uLocation");
         this.radius = BLUR.findUniform1f("radius");
         sampler = BLUR.findSampler("InputSampler");
-        WindowResizeCallback.EVENT.register((client, window) -> {
-            if (input != null)
-                input.resize(window.getFramebufferWidth(), window.getFramebufferHeight());
-        });
+        
+        ShaderProgram program = BLUR.getProgram();
+        if (program != null) {
+            currentProgramId = program.getGlRef();
+        }
     }
 }
