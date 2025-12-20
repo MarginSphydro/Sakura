@@ -71,6 +71,7 @@ public class Scaffold extends Module {
                 Vector2f rotation = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
                 MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
                 RotationManager.setRotations(rotation, rotationBackSpeed.get(), movementFix);
+                blockCache = null;
             } else {
                 if (airTicks >= tellyTick.get() && blockCache != null) {
                     Vector2f calculate = RotationUtil.calculate(getVec3(blockCache.position, blockCache.facing));
