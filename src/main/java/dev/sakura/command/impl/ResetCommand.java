@@ -7,7 +7,7 @@ import dev.sakura.command.ModuleArgumentType;
 import dev.sakura.gui.clickgui.panel.CategoryPanel;
 import dev.sakura.manager.Managers;
 import dev.sakura.module.Module;
-import dev.sakura.utils.client.ChatUtils;
+import dev.sakura.utils.client.ChatUtil;
 import net.minecraft.command.CommandSource;
 
 public class ResetCommand extends Command {
@@ -20,7 +20,7 @@ public class ResetCommand extends Command {
         builder
                 .then(literal("all").executes(c -> {
                     resetAll();
-                    ChatUtils.addChatMessage("§a已重置所有配置为默认值。");
+                    ChatUtil.addChatMessage("§a已重置所有配置为默认值。");
                     return 1;
                 }))
                 .then(literal("module")
@@ -28,13 +28,13 @@ public class ResetCommand extends Command {
                                 .executes(c -> {
                                     Module module = ModuleArgumentType.getModule(c, "module");
                                     module.reset();
-                                    ChatUtils.addChatMessage("§a已重置模块 " + module.getName() + " 为默认值。");
+                                    ChatUtil.addChatMessage("§a已重置模块 " + module.getName() + " 为默认值。");
                                     return 1;
                                 })))
                 .executes(c -> {
-                    ChatUtils.addChatMessage("§e用法:");
-                    ChatUtils.addChatMessage("  §7" + Managers.COMMAND.getPrefix() + "reset all §f- 重置所有配置");
-                    ChatUtils.addChatMessage("  §7" + Managers.COMMAND.getPrefix() + "reset module <名称> §f- 重置指定模块");
+                    ChatUtil.addChatMessage("§e用法:");
+                    ChatUtil.addChatMessage("  §7" + Managers.COMMAND.getPrefix() + "reset all §f- 重置所有配置");
+                    ChatUtil.addChatMessage("  §7" + Managers.COMMAND.getPrefix() + "reset module <名称> §f- 重置指定模块");
                     return 1;
                 });
     }

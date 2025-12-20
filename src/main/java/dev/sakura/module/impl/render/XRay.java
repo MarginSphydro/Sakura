@@ -12,7 +12,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class XRay extends Module {
-    public static XRay INSTANCE;
+    public XRay() {
+        super("XRay", Category.Render);
+
+        initOreMap();
+    }
 
     private final BoolValue coal = new BoolValue("Coal", false);
     private final BoolValue iron = new BoolValue("Iron", true);
@@ -27,12 +31,6 @@ public class XRay extends Module {
     private final BoolValue netherQuartz = new BoolValue("NetherQuartz", false);
 
     private final Map<Block, BoolValue> oreMap = new HashMap<>();
-
-    public XRay() {
-        super("XRay", Category.Render);
-        INSTANCE = this;
-        initOreMap();
-    }
 
     private void initOreMap() {
         Set.of(Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE, Blocks.COAL_BLOCK).forEach(b -> oreMap.put(b, coal));

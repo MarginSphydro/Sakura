@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.sakura.command.Command;
 import dev.sakura.command.ModuleArgumentType;
 import dev.sakura.module.Module;
-import dev.sakura.utils.client.ChatUtils;
+import dev.sakura.utils.client.ChatUtil;
 import net.minecraft.command.CommandSource;
 
 public class ToggleCommand extends Command {
@@ -18,12 +18,12 @@ public class ToggleCommand extends Command {
                         .executes(c -> {
                             Module module = ModuleArgumentType.getModule(c, "module");
                             module.toggle();
-                            ChatUtils.addChatMessage(module.getName() + " is now " +
+                            ChatUtil.addChatMessage(module.getName() + " is now " +
                                     (module.isEnabled() ? "§aenabled" : "§cdisabled") + "§f.");
                             return 1;
                         }))
                 .executes(c -> {
-                    ChatUtils.addChatMessage("Usage: .toggle <module>");
+                    ChatUtil.addChatMessage("Usage: .toggle <module>");
                     return 1;
                 });
     }

@@ -5,7 +5,7 @@ import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.combat.CombatUtil;
-import dev.sakura.utils.entity.InventoryUtil;
+import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.EnumValue;
@@ -14,10 +14,13 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Hand;
@@ -155,21 +158,21 @@ public class AutoPot extends Module {
         lastYaw = mc.player.getYaw();
         lastPitch = mc.player.getPitch();
 
-        if (inventory.get() && (newSlot = InventoryUtil.findPotionInventorySlot(targetEffect)) != -1) {
+        if (inventory.get() && (newSlot = findPotionInventorySlot(targetEffect)) != -1) {
             sendLookPacket(lastYaw, pitch.get().floatValue());
-            InventoryUtil.inventorySwap(newSlot, oldSlot);
+            InvUtil.quickSwap().fromId(oldSlot).to(newSlot);
             useItem();
-            InventoryUtil.inventorySwap(newSlot, oldSlot);
-            InventoryUtil.syncInventory();
+            InvUtil.quickSwap().fromId(oldSlot).to(newSlot);
+            mc.player.getInventory().updateItems();
             if (snapBack.get()) {
                 sendLookPacket(lastYaw, lastPitch);
             }
             delayTimer.reset();
-        } else if ((newSlot = InventoryUtil.findPotion(targetEffect)) != -1) {
+        } else if ((newSlot = findPotion(targetEffect)) != -1) {
             sendLookPacket(lastYaw, pitch.get().floatValue());
-            InventoryUtil.switchToSlot(newSlot);
+            InvUtil.swap(newSlot, false);
             useItem();
-            InventoryUtil.switchToSlot(oldSlot);
+            InvUtil.swap(oldSlot, false);
             if (snapBack.get()) {
                 sendLookPacket(lastYaw, lastPitch);
             }
@@ -204,10 +207,28 @@ public class AutoPot extends Module {
             return false;
         }
 
-        boolean hasInHotbar = InventoryUtil.findPotion(targetEffect) != -1;
-        boolean hasInInventory = inventory.get() && InventoryUtil.findPotionInventorySlot(targetEffect) != -1;
+        boolean hasInHotbar = findPotion(targetEffect) != -1;
+        boolean hasInInventory = inventory.get() && findPotionInventorySlot(targetEffect) != -1;
 
         return hasInHotbar || hasInInventory;
+    }
+
+    private int findPotion(StatusEffect effect) {
+        return InvUtil.findInHotbar(stack -> isPotion(stack, effect)).slot();
+    }
+
+    private int findPotionInventorySlot(StatusEffect effect) {
+        return InvUtil.find(stack -> isPotion(stack, effect)).slot();
+    }
+
+    private boolean isPotion(ItemStack stack, StatusEffect effect) {
+        if (!stack.isOf(Items.SPLASH_POTION)) return false;
+        var contents = stack.get(DataComponentTypes.POTION_CONTENTS);
+        if (contents == null) return false;
+        for (StatusEffectInstance instance : contents.getEffects()) {
+            if (instance.getEffectType().value() == effect) return true;
+        }
+        return false;
     }
 
     public boolean isThrowing() {

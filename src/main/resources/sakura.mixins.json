@@ -12,7 +12,9 @@
   },
   "client": [
     "MixinMain",
+    "accessor.IHorseScreenHandler",
     "accessor.IAccessorBundlePacket",
+    "accessor.IAbstractBlockSettings",
     "accessor.IChatInputSuggestor",
     "accessor.IClientPlayerEntity",
     "accessor.IEntity",
@@ -49,10 +51,8 @@
     "render.MixinWorldRenderer",
     "render.MixinParticleManager",
     "render.MixinBlock",
+    "shader.MixinShaderProgram",
+    "render.MixinPlayerEntityRenderer",
     "shader.MixinShaderProgram"
-  ],
-  "mixins": [
-    "accessor.IAbstractBlockSettings",
-    "accessor.IHorseScreenHandler"
   ]
 }

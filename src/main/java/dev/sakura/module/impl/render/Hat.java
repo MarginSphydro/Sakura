@@ -5,7 +5,7 @@ import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.color.ColorUtil;
-import dev.sakura.utils.math.MathUtils;
+import dev.sakura.utils.math.MathUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.EnumValue;
@@ -101,10 +101,10 @@ public class Hat extends Module {
             matrices.translate(0, -0.2, 0);
         }
 
-        float yaw = MathUtils.interpolateFloat(player.prevHeadYaw, player.headYaw, tickDelta);
+        float yaw = MathUtil.interpolateFloat(player.prevHeadYaw, player.headYaw, tickDelta);
         matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
 
-        float pitch = MathUtils.interpolateFloat(player.prevPitch, player.getPitch(), tickDelta);
+        float pitch = MathUtil.interpolateFloat(player.prevPitch, player.getPitch(), tickDelta);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(pitch / 3.0f));
         matrices.translate(0, 0, pitch / 270.0);
 

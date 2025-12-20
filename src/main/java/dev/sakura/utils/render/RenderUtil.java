@@ -2,7 +2,7 @@ package dev.sakura.utils.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.sakura.utils.color.ColorUtil;
-import dev.sakura.utils.math.MathUtils;
+import dev.sakura.utils.math.MathUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
@@ -103,6 +103,6 @@ public class RenderUtil {
     }
 
     public static float animate(float end, float start, float multiple) {
-        return (1 - MathUtils.clamp((float) (deltaTime() * multiple), 0, 1)) * end + MathUtils.clamp((float) (deltaTime() * multiple), 0, 1) * start;
+        return (1 - MathUtil.clamp((float) (deltaTime() * multiple), 0, 1)) * end + MathUtil.clamp((float) (deltaTime() * multiple), 0, 1) * start;
     }
 }

@@ -6,10 +6,10 @@ import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.hud.Notify;
-import dev.sakura.utils.client.ChatUtils;
+import dev.sakura.utils.client.ChatUtil;
 import dev.sakura.utils.combat.CombatUtil;
 import dev.sakura.utils.entity.EntityUtil;
-import dev.sakura.utils.entity.InventoryUtil;
+import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.utils.vector.Vector2f;
@@ -143,7 +143,7 @@ public class Burrow extends Module {
         int oldSlot = mc.player.getInventory().selectedSlot;
         int block;
         if ((block = getBlock()) == -1) {
-            ChatUtils.addChatMessage("§c§oObsidian" + (enderChest.get() ? "/EnderChest" : "") + "?");
+            ChatUtil.addChatMessage("§c§oObsidian" + (enderChest.get() ? "/EnderChest" : "") + "?");
             setState(false);
             return;
         }
@@ -347,9 +347,9 @@ public class Burrow extends Module {
 
     private void doSwap(int slot) {
         if (inventory.get()) {
-            InventoryUtil.inventorySwap(slot, mc.player.getInventory().selectedSlot);
+            InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(slot);
         } else {
-            InventoryUtil.switchToSlot(slot);
+            InvUtil.swap(slot, false);
         }
     }
 
@@ -398,15 +398,15 @@ public class Burrow extends Module {
 
     private int getBlock() {
         if (inventory.get()) {
-            if (InventoryUtil.findBlockInventorySlot(Blocks.OBSIDIAN) != -1 || !enderChest.get()) {
-                return InventoryUtil.findBlockInventorySlot(Blocks.OBSIDIAN);
+            if (InvUtil.find(Blocks.OBSIDIAN.asItem()).slot() != -1 || !enderChest.get()) {
+                return InvUtil.find(Blocks.OBSIDIAN.asItem()).slot();
             }
-            return InventoryUtil.findBlockInventorySlot(Blocks.ENDER_CHEST);
+            return InvUtil.find(Blocks.ENDER_CHEST.asItem()).slot();
         } else {
-            if (InventoryUtil.findBlock(Blocks.OBSIDIAN) != -1 || !enderChest.get()) {
-                return InventoryUtil.findBlock(Blocks.OBSIDIAN);
+            if (InvUtil.findInHotbar(Blocks.OBSIDIAN.asItem()).slot() != -1 || !enderChest.get()) {
+                return InvUtil.findInHotbar(Blocks.OBSIDIAN.asItem()).slot();
             }
-            return InventoryUtil.findBlock(Blocks.ENDER_CHEST);
+            return InvUtil.findInHotbar(Blocks.ENDER_CHEST.asItem()).slot();
         }
     }
 

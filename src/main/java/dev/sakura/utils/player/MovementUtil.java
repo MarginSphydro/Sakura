@@ -1,7 +1,7 @@
 package dev.sakura.utils.player;
 
 import dev.sakura.events.input.MoveInputEvent;
-import dev.sakura.utils.math.MathUtils;
+import dev.sakura.utils.math.MathUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.math.MathHelper;
 
@@ -180,7 +180,7 @@ public class MovementUtil {
                 if (predictedStrafe == 0 && predictedForward == 0) continue;
 
                 final double predictedAngle = MathHelper.wrapDegrees(Math.toDegrees(getDirection(yaw, predictedForward, predictedStrafe)));
-                final double difference = MathUtils.wrappedDifference(angle, predictedAngle);
+                final double difference = MathUtil.wrappedDifference(angle, predictedAngle);
 
                 if (difference < closestDifference) {
                     closestDifference = (float) difference;

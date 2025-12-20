@@ -37,6 +37,10 @@ public class Render3DUtil {
         drawBoxOutline(stack, box, lineColor, thickness);
     }
 
+    public static void drawFilledBox(MatrixStack stack, BlockPos blockPos, Color color) {
+        drawFilledBox(stack, new Box(blockPos), color.getRGB());
+    }
+
     public static void drawFilledBox(MatrixStack stack, Box box, int c) {
         drawFilledFadeBox(stack, box, c, c);
     }

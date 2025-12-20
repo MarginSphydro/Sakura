@@ -18,14 +18,14 @@ import java.util.Map;
 import static dev.sakura.Sakura.mc;
 
 public class ExtrapolationManager {
-    private static Map<AbstractClientPlayerEntity, List<Vec3d>> motions = new HashMap<>();
+    private Map<AbstractClientPlayerEntity, List<Vec3d>> motions = new HashMap<>();
 
-    public void ExtrapolationManager() {
+    public ExtrapolationManager() {
         Sakura.EVENT_BUS.subscribe(this);
     }
 
     @EventHandler(priority = 1000000)
-    private static void onTick(TickEvent.Post event) {
+    private void onTick(TickEvent.Post event) {
         if (mc.player == null || mc.world == null || mc.world.getPlayers().isEmpty()) return;
 
         Map<AbstractClientPlayerEntity, List<Vec3d>> newMotions = new HashMap<>();
@@ -53,7 +53,7 @@ public class ExtrapolationManager {
         motions = newMotions;
     }
 
-    public static void extrapolateMap(Map<AbstractClientPlayerEntity, Box> old, EpicInterface<AbstractClientPlayerEntity, Integer> extrapolation, EpicInterface<AbstractClientPlayerEntity, Integer> smoothening) {
+    public void extrapolateMap(Map<AbstractClientPlayerEntity, Box> old, EpicInterface<AbstractClientPlayerEntity, Integer> extrapolation, EpicInterface<AbstractClientPlayerEntity, Integer> smoothening) {
         old.clear();
 
         motions.forEach((player, m) -> {
@@ -62,13 +62,13 @@ public class ExtrapolationManager {
         });
     }
 
-    public static Box extrapolate(AbstractClientPlayerEntity player, int extrapolation, int smoothening) {
+    public Box extrapolate(AbstractClientPlayerEntity player, int extrapolation, int smoothening) {
         List<Vec3d> m = motions.get(player);
         if (m == null) return null;
         return extrapolate(player, m, extrapolation, smoothening);
     }
 
-    public static Box extrapolate(AbstractClientPlayerEntity player, List<Vec3d> m, int extrapolation, int smoothening) {
+    public Box extrapolate(AbstractClientPlayerEntity player, List<Vec3d> m, int extrapolation, int smoothening) {
         Vec3d motion = getMotion(m, smoothening);
 
         double x = motion.x;
@@ -115,11 +115,11 @@ public class ExtrapolationManager {
         return box;
     }
 
-    private static boolean inside(PlayerEntity player, Box box) {
+    private boolean inside(PlayerEntity player, Box box) {
         return mc.world.getBlockCollisions(player, box).iterator().hasNext();
     }
 
-    private static Vec3d getMotion(List<Vec3d> vecs, int max) {
+    private Vec3d getMotion(List<Vec3d> vecs, int max) {
         Vec3d avg = new Vec3d(0, (vecs.get(0).y - 0.08) * 0.98, 0);
 
         int s = Math.min(vecs.size(), max);
@@ -131,7 +131,7 @@ public class ExtrapolationManager {
     }
 
     @FunctionalInterface
-    private interface EpicInterface<T, E> {
+    public interface EpicInterface<T, E> {
         E get(T t);
     }
 }
