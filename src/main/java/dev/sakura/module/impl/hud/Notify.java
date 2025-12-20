@@ -22,6 +22,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Notify extends HudModule {
 
+    public static Notify INSTANCE;
+
     private final BoolValue totemPop = new BoolValue("TotemPop", true);
     private final BoolValue selfPop = new BoolValue("SelfPop", true, totemPop::get);
     private final BoolValue enemyPop = new BoolValue("EnemyPop", true, totemPop::get);
@@ -29,11 +31,14 @@ public class Notify extends HudModule {
     private final BoolValue packetWarning = new BoolValue("PacketWarning", true);
     private final NumberValue<Integer> packetThreshold = new NumberValue<>("PacketLimit", 20, 10, 50, 1, packetWarning::get);
     private final NumberValue<Integer> packetWarningPercent = new NumberValue<>("WarningAt%", 80, 50, 95, 5, packetWarning::get);
+    private final BoolValue blockWarning = new BoolValue("BlockWarning", true);
+    private final NumberValue<Integer> blockThreshold = new NumberValue<>("BlockThreshold", 20, 5, 64, 1, blockWarning::get);
 
     private final List<NotifyEntry> notifications = new CopyOnWriteArrayList<>();
     private final Map<UUID, Integer> popCounts = new HashMap<>();
     private final LinkedList<Long> packetTimestamps = new LinkedList<>();
     private boolean packetWarningTriggered = false;
+    private boolean blockWarningTriggered = false;
     private boolean wasAlive = true;
     private boolean hasDied = false;
     private int lastDeathMessageIndex = -1;
@@ -57,6 +62,7 @@ public class Notify extends HudModule {
         super("Notify", -210, -58);
         this.width = NOTIFICATION_WIDTH;
         this.height = NOTIFICATION_HEIGHT;
+        INSTANCE = this;
     }
 
     @Override
@@ -65,6 +71,7 @@ public class Notify extends HudModule {
         popCounts.clear();
         packetTimestamps.clear();
         packetWarningTriggered = false;
+        blockWarningTriggered = false;
         wasAlive = true;
         hasDied = false;
         lastDeathMessageIndex = -1;
@@ -76,6 +83,7 @@ public class Notify extends HudModule {
         popCounts.clear();
         packetTimestamps.clear();
         packetWarningTriggered = false;
+        blockWarningTriggered = false;
         wasAlive = true;
         hasDied = false;
         lastDeathMessageIndex = -1;
@@ -143,6 +151,38 @@ public class Notify extends HudModule {
         }
     }
 
+    public void checkBlockWarning(int blockCount) {
+        if (!blockWarning.get()) return;
+        if (blockCount <= blockThreshold.get()) {
+            if (!blockWarningTriggered) {
+                blockWarningTriggered = true;
+                addNotification(NotifyType.BLOCK_WARNING, "Warning!", "Blocks remaining: " + blockCount);
+            }
+        } else {
+            blockWarningTriggered = false;
+        }
+    }
+
+    public void updateBlockWarning(int blockCount) {
+        if (!blockWarning.get()) return;
+        if (blockCount <= blockThreshold.get()) {
+            if (!blockWarningTriggered) {
+                blockWarningTriggered = true;
+                addNotification(NotifyType.BLOCK_WARNING, "Warning!", "Blocks remaining: " + blockCount);
+            }
+        } else {
+            blockWarningTriggered = false;
+        }
+    }
+
+    public int getBlockThreshold() {
+        return blockThreshold.get();
+    }
+
+    public boolean isBlockWarningEnabled() {
+        return blockWarning.get();
+    }
+
     private void addNotification(NotifyType type, String title, String subtitle) {
         for (NotifyEntry entry : notifications) {
             if (entry.type == type && entry.title.equals(title) && !entry.isExpired()) {
@@ -159,6 +199,7 @@ public class Notify extends HudModule {
         popCounts.clear();
         notifications.clear();
         packetWarningTriggered = false;
+        blockWarningTriggered = false;
         wasAlive = true;
         hasDied = false;
     }
@@ -287,6 +328,11 @@ public class Notify extends HudModule {
                 g = 50;
                 b = 80;
             }
+            case BLOCK_WARNING -> {
+                r = 200;
+                g = 170;
+                b = 50;
+            }
             default -> {
                 r = 90;
                 g = 70;
@@ -302,6 +348,7 @@ public class Notify extends HudModule {
             case ENEMY_POP -> new Color(130, 110, 255, alpha);
             case PACKET_WARNING -> new Color(190, 130, 255, alpha);
             case DEATH -> new Color(255, 80, 120, alpha);
+            case BLOCK_WARNING -> new Color(255, 220, 80, alpha);
         };
     }
 
@@ -311,6 +358,7 @@ public class Notify extends HudModule {
             case ENEMY_POP -> "\uf007";
             case PACKET_WARNING -> "\uf70c";
             case DEATH -> "\uf714";
+            case BLOCK_WARNING -> "\uf1b2";
         };
     }
 
@@ -322,7 +370,8 @@ public class Notify extends HudModule {
         SELF_POP,
         ENEMY_POP,
         PACKET_WARNING,
-        DEATH
+        DEATH,
+        BLOCK_WARNING
     }
 
     private static class NotifyEntry {

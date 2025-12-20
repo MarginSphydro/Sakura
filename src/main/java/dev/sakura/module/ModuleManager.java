@@ -12,12 +12,10 @@ import dev.sakura.manager.impl.SoundManager;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.module.impl.client.StringTest;
-import dev.sakura.module.impl.combat.AutoPot;
-import dev.sakura.module.impl.combat.Burrow;
-import dev.sakura.module.impl.combat.Surround;
-import dev.sakura.module.impl.combat.Velocity;
+import dev.sakura.module.impl.combat.*;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.*;
+import dev.sakura.module.impl.player.AutoPearl;
 import dev.sakura.module.impl.player.FakePlayer;
 import dev.sakura.module.impl.player.NoRotate;
 import dev.sakura.module.impl.render.*;
@@ -51,6 +49,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new Burrow());
             manager.tryLoad(() -> new Surround());
             manager.tryLoad(() -> new Velocity());
+            manager.tryLoad(() -> new AutoTotem());
 
             // Movement
             manager.tryLoad(() -> new AutoSprint());
@@ -63,6 +62,7 @@ public class ModuleManager {
             // Player
             manager.tryLoad(() -> new NoRotate());
             manager.tryLoad(() -> new FakePlayer());
+            manager.tryLoad(() -> new AutoPearl());
 
             // Render
             manager.tryLoad(() -> new CameraClip());
