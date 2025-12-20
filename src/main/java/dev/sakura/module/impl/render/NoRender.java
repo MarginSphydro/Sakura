@@ -31,6 +31,7 @@ public class NoRender extends Module {
     public final BoolValue noFog = new BoolValue("No Fog", false);
     public final BoolValue noBlindness = new BoolValue("No Blindness", false);
     public final BoolValue noDarkness = new BoolValue("No Darkness", false);
+    public final BoolValue noExplosionParticles = new BoolValue("No Explosion Particles", false);
 
     public NoRender() {
         super("NoRender", Category.Render);
@@ -114,5 +115,9 @@ public class NoRender extends Module {
 
     public boolean noDarkness() {
         return isEnabled() && noDarkness.get();
+    }
+
+    public boolean noExplosionParticles() {
+        return isEnabled() && noExplosionParticles.get();
     }
 }

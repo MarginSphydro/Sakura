@@ -47,6 +47,7 @@
     "render.MixinTitleScreen",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
+    "render.MixinParticleManager",
     "shader.MixinShaderProgram"
   ],
   "mixins": [
