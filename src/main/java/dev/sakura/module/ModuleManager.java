@@ -74,6 +74,8 @@ public class ModuleManager {
             manager.tryLoad(() -> new Hat());
             manager.tryLoad(() -> new JumpCircles());
             manager.tryLoad(() -> new XRay());
+            manager.tryLoad(() -> new NameTag());
+            manager.tryLoad(() -> new Glow());
 
             // Client
             manager.tryLoad(() -> new ClickGui());

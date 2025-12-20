@@ -4,6 +4,7 @@ import dev.sakura.Sakura;
 import dev.sakura.events.player.MoveEvent;
 import dev.sakura.events.player.RayTraceEvent;
 import dev.sakura.events.player.StrafeEvent;
+import dev.sakura.module.impl.render.Glow;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.util.math.Vec3d;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static dev.sakura.Sakura.mc;
 
@@ -21,6 +23,20 @@ public abstract class MixinEntity {
 
     @Shadow
     public abstract Vec3d getRotationVector(float pitch, float yaw);
+
+    @Inject(method = "isGlowing", at = @At("HEAD"), cancellable = true)
+    private void onIsGlowing(CallbackInfoReturnable<Boolean> cir) {
+        if (Glow.INSTANCE != null && Glow.INSTANCE.shouldGlow((Entity) (Object) this) && Glow.INSTANCE.useNativeGlow()) {
+            cir.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "getTeamColorValue", at = @At("HEAD"), cancellable = true)
+    private void onGetTeamColorValue(CallbackInfoReturnable<Integer> cir) {
+        if (Glow.INSTANCE != null && Glow.INSTANCE.shouldGlow((Entity) (Object) this) && Glow.INSTANCE.useNativeGlow()) {
+            cir.setReturnValue(Glow.INSTANCE.getGlowColor((Entity) (Object) this));
+        }
+    }
 
     @Redirect(method = "getRotationVec", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getRotationVector(FF)Lnet/minecraft/util/math/Vec3d;"))
     private Vec3d redirectGetRotationVector(Entity instance, float pitch, float yaw) {
