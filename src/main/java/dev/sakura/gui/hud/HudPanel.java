@@ -30,8 +30,8 @@ public class HudPanel implements IComponent {
         this.openAnimation.setDirection(Direction.BACKWARDS);
 
         for (Module module : Managers.MODULE.getAllModules()) {
-            if (module instanceof HudModule) {
-                hudComponents.add(new HudModuleComponent((HudModule) module));
+            if (module instanceof HudModule hudModule) {
+                hudComponents.add(new HudModuleComponent(hudModule));
             }
         }
     }

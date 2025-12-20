@@ -5,6 +5,7 @@ import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Hand;
 
 public class ViewModel extends Module {
@@ -13,20 +14,30 @@ public class ViewModel extends Module {
         super("ViewModel", Category.Render);
     }
 
-    private final NumberValue<Double> mainX = new NumberValue<>("MainX", 0.0, -3.0, 3.0, 0.01);
-    private final NumberValue<Double> mainY = new NumberValue<>("MainY", 0.0, -3.0, 3.0, 0.01);
-    private final NumberValue<Double> mainZ = new NumberValue<>("MainZ", 0.0, -3.0, 3.0, 0.01);
+    public final NumberValue<Double> scaleMainX = new NumberValue<>("Scale Main X", 1.0, 0.1, 5.0, 0.01);
+    public final NumberValue<Double> scaleMainY = new NumberValue<>("Scale Main Y", 1.0, 0.1, 5.0, 0.01);
+    public final NumberValue<Double> scaleMainZ = new NumberValue<>("Scale Main Z", 1.0, 0.1, 5.0, 0.01);
+    private final NumberValue<Double> mainX = new NumberValue<>("Main X", 0.0, -3.0, 3.0, 0.01);
+    private final NumberValue<Double> mainY = new NumberValue<>("Main Y", 0.0, -3.0, 3.0, 0.01);
+    private final NumberValue<Double> mainZ = new NumberValue<>("Main Z", 0.0, -3.0, 3.0, 0.01);
 
-    private final NumberValue<Double> offX = new NumberValue<>("OffX", 0.0, -3.0, 3.0, 0.01);
-    private final NumberValue<Double> offY = new NumberValue<>("OffY", 0.0, -3.0, 3.0, 0.01);
-    private final NumberValue<Double> offZ = new NumberValue<>("OffZ", 0.0, -3.0, 3.0, 0.01);
+    public final NumberValue<Double> scaleOffX = new NumberValue<>("Scale Off X", 1.0, 0.1, 5.0, 0.01);
+    public final NumberValue<Double> scaleOffY = new NumberValue<>("Scale Off Y", 1.0, 0.1, 5.0, 0.01);
+    public final NumberValue<Double> scaleOffZ = new NumberValue<>("Scale Off Z", 1.0, 0.1, 5.0, 0.01);
+    private final NumberValue<Double> offX = new NumberValue<>("Off X", 0.0, -3.0, 3.0, 0.01);
+    private final NumberValue<Double> offY = new NumberValue<>("Off Y", 0.0, -3.0, 3.0, 0.01);
+    private final NumberValue<Double> offZ = new NumberValue<>("Off Z", 0.0, -3.0, 3.0, 0.01);
 
     @EventHandler
     private void onHeldItemRender(HeldItemRendererEvent event) {
+        MatrixStack stack = event.getMatrices();
+
         if (event.getHand() == Hand.MAIN_HAND) {
-            event.getMatrices().translate(mainX.get(), mainY.get(), mainZ.get());
+            stack.scale(scaleMainX.get().floatValue(), scaleMainY.get().floatValue(), scaleMainZ.get().floatValue());
+            stack.translate(mainX.get(), mainY.get(), mainZ.get());
         } else {
-            event.getMatrices().translate(offX.get(), offY.get(), offZ.get());
+            stack.scale(scaleOffX.get().floatValue(), scaleOffY.get().floatValue(), scaleOffZ.get().floatValue());
+            stack.translate(offX.get(), offY.get(), offZ.get());
         }
     }
 }

@@ -5,8 +5,7 @@ public enum Category {
     Movement("C"),
     Player("B"),
     Render("M"),
-    Client("D"),
-    HUD("F");
+    Client("D");
 
     public final String icon;
 

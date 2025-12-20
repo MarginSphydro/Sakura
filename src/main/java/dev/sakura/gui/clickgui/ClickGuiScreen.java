@@ -24,15 +24,13 @@ public class ClickGuiScreen extends Screen {
     public static Animation openingAnimation = new EaseOutSine(400, 1);
     private final List<CategoryPanel> panels = new ArrayList<>();
     public int scroll;
-    private DrawContext currentGuiGraphics;
+    private DrawContext currentContext;
 
     public ClickGuiScreen() {
         super(Text.literal("ClickGui"));
         openingAnimation.setDirection(Direction.BACKWARDS);
         float width = 0;
         for (Category category : Category.values()) {
-            if (category == Category.HUD) continue;
-
             CategoryPanel panel = new CategoryPanel(category);
             panel.setX(50 + width);
             panel.setY(20);
@@ -44,11 +42,18 @@ public class ClickGuiScreen extends Screen {
     @Override
     public void init() {
         openingAnimation.setDirection(Direction.FORWARDS);
+        openingAnimation.reset();
+
+        for (CategoryPanel panel : panels) {
+            panel.setOpened(true);
+            panel.getOpenAnimation().setDirection(Direction.BACKWARDS);
+            panel.getOpenAnimation().timerUtil.setTime(0);
+        }
     }
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.currentGuiGraphics = guiGraphics;
+        this.currentContext = guiGraphics;
         final float wheel = getDWheel();
         if (wheel != 0) {
             scroll += wheel > 0 ? 15 : -15;
@@ -78,7 +83,7 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (currentGuiGraphics != null) {
+        if (currentContext != null) {
             int finalMouseY = (int) mouseY;
             boolean handled = false;
             for (CategoryPanel panel : panels) {
@@ -94,7 +99,7 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
-        if (currentGuiGraphics != null) {
+        if (currentContext != null) {
             int finalMouseY = (int) mouseY;
             boolean handled = false;
             for (CategoryPanel panel : panels) {
