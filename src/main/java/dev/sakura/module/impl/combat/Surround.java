@@ -1,6 +1,7 @@
 package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
+import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
@@ -13,6 +14,7 @@ import dev.sakura.utils.rotation.RaytraceUtil;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.values.impl.BoolValue;
+import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
@@ -27,6 +29,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +46,9 @@ public class Surround extends Module {
     private final BoolValue support = new BoolValue("Support", true);
     private final BoolValue floor = new BoolValue("Floor", true);
     private final BoolValue attack = new BoolValue("Attack", true);
+    private final BoolValue render = new BoolValue("Render", true);
+    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 183, 197, 100), render::get);
+    private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 105, 180), render::get);
 
     private boolean isCentered;
     private final TimerUtil timer = new TimerUtil();
@@ -270,6 +276,11 @@ public class Surround extends Module {
 
         BlockHitResult hitResult = new BlockHitResult(data.hitVec, data.mian, data.lingju, false);
         PlaceManager.placeBlock(hitResult, result, true, true);
+
+        if (render.get()) {
+            Managers.RENDER.add(pos, sideColor.get(), lineColor.get(), 1000);
+        }
+
         return 1;
     }
 

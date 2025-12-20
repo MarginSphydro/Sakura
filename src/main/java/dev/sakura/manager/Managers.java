@@ -4,6 +4,7 @@ import dev.sakura.command.CommandManager;
 import dev.sakura.config.ConfigManager;
 import dev.sakura.manager.impl.AccountManager;
 import dev.sakura.manager.impl.ExtrapolationManager;
+import dev.sakura.manager.impl.RenderManager;
 import dev.sakura.module.ModuleManager;
 
 public class Managers {
@@ -13,6 +14,7 @@ public class Managers {
     public static ModuleManager MODULE;
     public static ConfigManager CONFIG;
     public static CommandManager COMMAND;
+    public static RenderManager RENDER;
     public static ExtrapolationManager EXTRAPOLATION;
 
     public static void init() {
@@ -22,6 +24,7 @@ public class Managers {
         MODULE = new ModuleManager();
         CONFIG = new ConfigManager();
         COMMAND = new CommandManager();
+        RENDER = new RenderManager();
         EXTRAPOLATION = new ExtrapolationManager();
 
         initialized = true;
