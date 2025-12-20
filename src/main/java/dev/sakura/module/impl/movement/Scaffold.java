@@ -102,7 +102,7 @@ public class Scaffold extends Module {
         if (keepY.get() && !mc.options.jumpKey.isPressed() && MovementUtil.isMoving() && telly.get()) {
             return yLevel;
         } else {
-            return (int) (mc.player.getY() - 1);
+            return (int) (Math.floor(mc.player.getY()) - 1);
         }
     }
 
@@ -215,5 +215,15 @@ public class Scaffold extends Module {
     }
 
     private record BlockCache(BlockPos position, Direction facing) {
+    }
+
+    @Override
+    protected void onEnable() {
+        blockCache = null;
+    }
+
+    @Override
+    protected void onDisable() {
+        blockCache = null;
     }
 }
