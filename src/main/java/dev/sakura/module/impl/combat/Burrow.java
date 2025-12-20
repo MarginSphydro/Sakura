@@ -36,8 +36,6 @@ import net.minecraft.util.math.MathHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.sakura.Sakura.mc;
-
 public class Burrow extends Module {
     public static Burrow INSTANCE;
     private final TimerUtil timer = new TimerUtil();

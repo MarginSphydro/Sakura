@@ -40,6 +40,7 @@
     "render.MixinInGameOverlayRenderer",
     "render.MixinLightmapTextureManager",
     "render.MixinLivingEntityRenderer",
+    "render.MixinParticleManager",
     "render.MixinScreen",
     "render.MixinShaderLoader",
     "render.MixinSplashOverlay",
@@ -47,10 +48,10 @@
     "render.MixinTitleScreen",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
-    "render.MixinParticleManager",
     "shader.MixinShaderProgram"
   ],
   "mixins": [
+    "accessor.IAbstractBlockSettings",
     "accessor.IHorseScreenHandler"
   ]
 }

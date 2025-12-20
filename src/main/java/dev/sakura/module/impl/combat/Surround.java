@@ -8,16 +8,19 @@ import dev.sakura.module.Module;
 import dev.sakura.utils.player.FindItemResult;
 import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.rotation.MovementFix;
+import dev.sakura.utils.rotation.RaytraceUtil;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
+import meteordevelopment.orbit.EventPriority;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 
 import java.util.ArrayList;
@@ -27,11 +30,17 @@ public class Surround extends Module {
     private final NumberValue<Integer> delay = new NumberValue<>("Delay", 0, 0, 10, 1);
     private final NumberValue<Integer> blocksPerTick = new NumberValue<>("Blocks Per Tick", 4, 1, 10, 1);
     private final BoolValue rotate = new BoolValue("Rotate", true);
-    private final BoolValue center = new BoolValue("Center", true);
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, rotate::get);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", 10, 0, 10, 1, rotate::get);
+    private final BoolValue center = new BoolValue("Center", false);
+    private final BoolValue smartCenter = new BoolValue("Smart Center", true, center::get);
+    private final BoolValue phaseCenter = new BoolValue("Phase Friendly", true, center::get);
     private final BoolValue extend = new BoolValue("Extend", true);
     private final BoolValue support = new BoolValue("Support", true);
+    private final BoolValue floor = new BoolValue("Floor", true);
     private final BoolValue attack = new BoolValue("Attack", true);
 
+    private boolean isCentered;
     private final TimerUtil timer = new TimerUtil();
     private final List<BlockPos> insideBlocks = new ArrayList<>();
     private final List<BlockPos> surroundBlocks = new ArrayList<>();
@@ -44,16 +53,14 @@ public class Surround extends Module {
     @Override
     public void onEnable() {
         timer.reset();
-        if (center.get()) {
-            Vec3d centerPos = Vec3d.ofBottomCenter(mc.player.getBlockPos());
-            //mc.player.setPosition(centerPos.getX(), mc.player.getY(), centerPos.getZ());
-            mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(centerPos.getX(), mc.player.getY(), centerPos.getZ(), mc.player.isOnGround(), mc.player.horizontalCollision));
-        }
+        isCentered = false;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void onTick(TickEvent.Pre event) {
         if (mc.player == null || mc.world == null) return;
+
+        BlockPos currentPos = BlockPos.ofFloored(mc.player.getPos());
 
         if (!timer.delay(delay.get())) return;
 
@@ -62,8 +69,9 @@ public class Surround extends Module {
             return;
         }
 
-        updateBlocks();
+        centerPlayer(currentPos);
 
+        updateBlocks();
         if (support.get()) {
             // 辅助放置，后续加个airplace检测。 如果airplace就不用放
             updateSupport();
@@ -78,19 +86,27 @@ public class Surround extends Module {
             return;
         }
 
-        int placed = 0;
+        List<BlockPos> targets = new ArrayList<>(supportPositions);
+        targets.addAll(surroundBlocks);
+        targets.removeIf(blockPos -> !PlaceManager.isReplaceable(blockPos));
 
-        for (BlockPos pos : supportPositions) {
-            if (placed >= blocksPerTick.get()) break;
-            if (placeBlock(pos, result)) {
-                placed++;
+        if (targets.isEmpty()) {
+            if (rotate.get()) {
+                Vector2f current = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
+                RotationManager.setRotations(current, rotationBackSpeed.get(), MovementFix.NORMAL);
             }
+            return;
         }
 
-        for (BlockPos pos : surroundBlocks) {
+        int placed = 0;
+        for (BlockPos pos : targets) {
             if (placed >= blocksPerTick.get()) break;
-            if (placeBlock(pos, result)) {
+
+            int outcome = tryPlace(pos, result);
+            if (outcome == 1) {
                 placed++;
+            } else if (outcome == 2) {
+                break;
             }
         }
 
@@ -99,24 +115,82 @@ public class Surround extends Module {
         }
     }
 
+    private void centerPlayer(BlockPos currentPos) {
+        if (!isCentered && center.get() && mc.player.isOnGround() && (!phaseCenter.get() || !mc.world.getBlockCollisions(mc.player, mc.player.getBoundingBox().shrink(0.01, 0.01, 0.01)).iterator().hasNext())) {
+            double targetX, targetZ;
+
+            if (smartCenter.get()) {
+                targetX = MathHelper.clamp(mc.player.getX(), currentPos.getX() + 0.31, currentPos.getX() + 0.69);
+                targetZ = MathHelper.clamp(mc.player.getZ(), currentPos.getZ() + 0.31, currentPos.getZ() + 0.69);
+            } else {
+                targetX = currentPos.getX() + 0.5;
+                targetZ = currentPos.getZ() + 0.5;
+            }
+
+            Vec3d targetVec = new Vec3d(targetX, 0, targetZ);
+            Vec3d playerVec = new Vec3d(mc.player.getX(), 0, mc.player.getZ());
+            double dist = targetVec.distanceTo(playerVec);
+
+            if (dist < 0.2873) {
+                mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(targetX, mc.player.getY(), targetZ, mc.player.isOnGround(), mc.player.horizontalCollision));
+            }
+
+            double x = mc.player.getX(), z = mc.player.getZ();
+            double dx = targetX - x;
+            double dz = targetZ - z;
+            double totalDist = Math.sqrt(dx * dx + dz * dz);
+
+            if (totalDist > 0) {
+                double moveX = (dx / totalDist) * 0.2873;
+                double moveZ = (dz / totalDist) * 0.2873;
+
+                for (int i = 0; i < Math.ceil(dist / 0.2873); i++) {
+                    x += moveX;
+                    z += moveZ;
+                    mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(x, mc.player.getY(), z, mc.player.isOnGround(), mc.player.horizontalCollision));
+                }
+            }
+
+            mc.player.setPosition(targetX, mc.player.getY(), targetZ);
+            mc.player.setBoundingBox(new Box(targetX - 0.3, mc.player.getY(), targetZ - 0.3, targetX + 0.3, mc.player.getY() + (mc.player.getBoundingBox().maxY - mc.player.getBoundingBox().minY), targetZ + 0.3));
+
+            isCentered = true;
+        }
+    }
+
     private void updateBlocks() {
         insideBlocks.clear();
         surroundBlocks.clear();
 
         BlockPos playerPos = BlockPos.ofFloored(mc.player.getPos());
-        insideBlocks.add(playerPos);
 
         if (extend.get()) {
-            Box playerBox = mc.player.getBoundingBox();
-            for (Direction dir : Direction.Type.HORIZONTAL) {
-                BlockPos offset = playerPos.offset(dir);
-                if (playerBox.intersects(new Box(offset))) {
-                    insideBlocks.add(offset);
+            Box box = mc.player.getBoundingBox();
+            int minX = MathHelper.floor(box.minX);
+            int maxX = MathHelper.floor(box.maxX);
+            int minZ = MathHelper.floor(box.minZ);
+            int maxZ = MathHelper.floor(box.maxZ);
+
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    BlockPos pos = new BlockPos(x, playerPos.getY(), z);
+                    if (box.intersects(new Box(pos))) {
+                        insideBlocks.add(pos);
+                    }
                 }
             }
+        } else {
+            insideBlocks.add(playerPos);
         }
 
         for (BlockPos pos : insideBlocks) {
+            if (floor.get()) {
+                BlockPos down = pos.down();
+                if (!insideBlocks.contains(down) && !surroundBlocks.contains(down)) {
+                    surroundBlocks.add(down);
+                }
+            }
+
             for (Direction dir : Direction.Type.HORIZONTAL) {
                 BlockPos offset = pos.offset(dir);
                 if (!insideBlocks.contains(offset) && !surroundBlocks.contains(offset)) {
@@ -134,7 +208,7 @@ public class Surround extends Module {
     }
 
     private void addSupport(BlockPos pos) {
-        if (!mc.world.getBlockState(pos).isReplaceable()) return;
+        if (!PlaceManager.isReplaceable(pos)) return;
         if (PlaceManager.calcSide(pos) != null) return;
 
         for (Direction dir : Direction.values()) {
@@ -142,8 +216,7 @@ public class Surround extends Module {
             BlockPos neighbor = pos.offset(dir);
 
             if (surroundBlocks.contains(neighbor) || insideBlocks.contains(neighbor)) continue;
-            if (!mc.world.getBlockState(neighbor).isReplaceable()) continue;
-
+            if (!PlaceManager.isReplaceable(neighbor)) continue;
             if (PlaceManager.calcSide(neighbor) == null) continue;
 
             supportPositions.add(neighbor);
@@ -151,11 +224,11 @@ public class Surround extends Module {
         }
     }
 
-    private boolean placeBlock(BlockPos pos, FindItemResult result) {
-        if (!mc.world.getBlockState(pos).isReplaceable()) return false;
+    private int tryPlace(BlockPos pos, FindItemResult result) {
+        if (!PlaceManager.isReplaceable(pos)) return 0;
 
         if (attack.get()) {
-            // 便利当前碰撞箱碰到的水晶实体并且攻击它
+            // 遍历当前碰撞箱碰到的水晶实体并且攻击它
             for (Entity entity : mc.world.getOtherEntities(null, new Box(pos))) {
                 if (entity instanceof EndCrystalEntity) {
                     mc.interactionManager.attackEntity(mc.player, entity);
@@ -163,34 +236,43 @@ public class Surround extends Module {
             }
         }
 
-        if (!mc.world.getOtherEntities(null, new Box(pos)).isEmpty()) return false;
+        if (!mc.world.getOtherEntities(null, new Box(pos)).isEmpty()) return 0;
 
-        Direction side = PlaceManager.calcSide(pos);
-        if (side == null) return false;
-
-        BlockPos neighbor = pos.offset(side);
-        Direction opposite = side.getOpposite();
-        Vec3d hitVec = Vec3d.ofCenter(neighbor).add(opposite.getVector().getX() * 0.5, opposite.getVector().getY() * 0.5, opposite.getVector().getZ() * 0.5);
+        PlaceData data = getPlaceData(pos);
+        if (data == null) return 0;
 
         if (rotate.get()) {
-            Vector2f rotation = getRotationTo(hitVec);
-            RotationManager.setRotations(rotation, 100, MovementFix.NORMAL);
+            RotationManager.lookAt(data.hitVec, rotationSpeed.get());
+            if (!RotationManager.isLookingAt(data.lingju, data.mian)) {
+                return 2;
+            }
         }
 
-        BlockHitResult hitResult = new BlockHitResult(hitVec, opposite, neighbor, false);
+        BlockHitResult hitResult = new BlockHitResult(data.hitVec, data.mian, data.lingju, false);
         PlaceManager.placeBlock(hitResult, result, true, true);
-
-        return true;
+        return 1;
     }
 
-    private Vector2f getRotationTo(Vec3d posTo) {
-        Vec3d eyePos = mc.player.getEyePos();
-        double d = posTo.x - eyePos.x;
-        double d2 = posTo.y - eyePos.y;
-        double d3 = posTo.z - eyePos.z;
-        double d4 = Math.sqrt(d * d + d3 * d3);
-        float f = (float) (MathHelper.atan2(d3, d) * 57.2957763671875) - 90.0f;
-        float f2 = (float) (-(MathHelper.atan2(d2, d4) * 57.2957763671875));
-        return new Vector2f(f, f2);
+    private PlaceData getPlaceData(BlockPos pos) {
+        for (Direction dir : Direction.values()) {
+            BlockPos neighbor = pos.offset(dir);
+            if (!PlaceManager.solid(neighbor)) continue;
+
+            Direction side = dir.getOpposite();
+            Vec3d hitVec = Vec3d.ofCenter(neighbor).add(side.getOffsetX() * 0.5, side.getOffsetY() * 0.5, side.getOffsetZ() * 0.5);
+
+            if (rotate.get()) {
+                BlockHitResult result = RaytraceUtil.rayTraceCollidingBlocks(mc.player.getEyePos(), hitVec);
+                if (result != null && result.getType() == HitResult.Type.BLOCK && !result.getBlockPos().equals(neighbor)) {
+                    continue;
+                }
+            }
+
+            return new PlaceData(neighbor, side, hitVec);
+        }
+        return null;
+    }
+
+    private record PlaceData(BlockPos lingju, Direction mian, Vec3d hitVec) {
     }
 }

@@ -1,8 +1,9 @@
 package dev.sakura.manager.impl;
 
+import dev.sakura.mixin.accessor.IAbstractBlockSettings;
 import dev.sakura.utils.player.FindItemResult;
 import dev.sakura.utils.player.InvUtil;
-import dev.sakura.utils.world.BlockUtil;
+import net.minecraft.block.*;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -40,20 +41,21 @@ public class PlaceManager {
     public static Direction calcSide(BlockPos pos) {
         for (Direction side : Direction.values()) {
             BlockPos neighbor = pos.offset(side);
-            if (!mc.world.getBlockState(neighbor).isReplaceable() && !mc.world.isAir(neighbor)) {
+            if (!mc.world.getBlockState(neighbor).isReplaceable() && solid(neighbor)) {
                 return side;
             }
         }
         return null;
     }
 
-    public static BlockPos getSupportBlockPos(BlockPos pos) {
-        for (Direction direction : Direction.values()) {
-            BlockPos neighbor = pos.offset(direction);
-            if (mc.world.getBlockState(neighbor).isReplaceable()) {
-                if (calcSide(neighbor) != null) return neighbor;
-            }
-        }
-        return null;
+    @SuppressWarnings("DataFlowIssue")
+    public static boolean isReplaceable(BlockPos block) {
+        return ((IAbstractBlockSettings) AbstractBlock.Settings.copy(mc.world.getBlockState(block).getBlock())).replaceable();
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    public static boolean solid(BlockPos blockPos) {
+        Block block = mc.world.getBlockState(blockPos).getBlock();
+        return !(block instanceof AbstractFireBlock || block instanceof FluidBlock || block instanceof AirBlock);
     }
 }

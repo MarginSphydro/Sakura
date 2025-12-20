@@ -5,11 +5,15 @@ import dev.sakura.events.player.*;
 import dev.sakura.events.type.EventType;
 import dev.sakura.utils.player.MovementUtil;
 import dev.sakura.utils.rotation.MovementFix;
+import dev.sakura.utils.rotation.RaytraceUtil;
 import dev.sakura.utils.rotation.RotationUtil;
 import dev.sakura.utils.vector.Vector2f;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.function.Function;
 
@@ -311,5 +315,14 @@ public class RotationManager {
 
     public static float getPrevRenderYawOffset() {
         return prevRenderYawOffset;
+    }
+
+    public static void lookAt(Vec3d target, double speed) {
+        Vector2f rotation = RotationUtil.calculate(target);
+        setRotations(rotation, speed, MovementFix.NORMAL);
+    }
+
+    public static boolean isLookingAt(BlockPos pos, Direction side) {
+        return RaytraceUtil.overBlock(getRotation(), side, pos, false);
     }
 }
