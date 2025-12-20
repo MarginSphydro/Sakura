@@ -24,6 +24,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.FallingBlock;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
@@ -32,30 +33,42 @@ import net.minecraft.util.math.*;
 import java.awt.*;
 
 public class Scaffold extends Module {
-    public Scaffold() {
-        super("Scaffold", Category.Movement);
-    }
-
     private final EnumValue<SwapMode> swapMode = new EnumValue<>("Swap Mode", SwapMode.Silent);
     private final BoolValue swingHand = new BoolValue("Swing Hand", true);
     private final BoolValue telly = new BoolValue("Telly", false);
     private final NumberValue<Integer> tellyTick = new NumberValue<>("Telly Tick", 1, 0, 8, 1, telly::get);
     private final BoolValue keepY = new BoolValue("Keep Y", true, telly::get);
     private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1);
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", 10, 0, 10, 1);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", 10, 0, 10, 1, telly::get);
     private final BoolValue moveFix = new BoolValue("Movement Fix", true);
     private final BoolValue render = new BoolValue("Render", true);
     private final BoolValue shrink = new BoolValue("Shrink", true, render::get);
     private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 183, 197, 100), render::get);
     private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 105, 180), render::get);
-
     private int yLevel;
     private BlockCache blockCache;
     private int airTicks;
+    public Scaffold() {
+        super("Scaffold", Category.Movement);
+    }
 
-    private enum SwapMode {
-        Normal,
-        Silent
+    public static Vec3d getVec3(BlockPos pos, Direction face) {
+        double x = (double) pos.getX() + 0.5;
+        double y = (double) pos.getY() + 0.5;
+        double z = (double) pos.getZ() + 0.5;
+        if (face == Direction.UP || face == Direction.DOWN) {
+            x += MathUtil.getRandom(0.3, -0.3);
+            z += MathUtil.getRandom(0.3, -0.3);
+        } else {
+            y += MathUtil.getRandom(0.3, -0.3);
+        }
+        if (face == Direction.WEST || face == Direction.EAST) {
+            z += MathUtil.getRandom(0.3, -0.3);
+        }
+        if (face == Direction.SOUTH || face == Direction.NORTH) {
+            x += MathUtil.getRandom(0.3, -0.3);
+        }
+        return new Vec3d(x, y, z);
     }
 
     @EventHandler
@@ -66,12 +79,12 @@ public class Scaffold extends Module {
 
         if (telly.get()) {
             if (mc.player.isOnGround()) {
-                yLevel = (int) (mc.player.getY() - 1);
+                yLevel = (int) Math.floor(mc.player.getY()) - 1;
                 airTicks = 0;
+                blockCache = null;
                 Vector2f rotation = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
                 MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
                 RotationManager.setRotations(rotation, rotationBackSpeed.get(), movementFix);
-                blockCache = null;
             } else {
                 if (airTicks >= tellyTick.get() && blockCache != null) {
                     MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
@@ -100,10 +113,10 @@ public class Scaffold extends Module {
     }
 
     public int getYLevel() {
-        if (keepY.get() && !mc.options.jumpKey.isPressed() && MovementUtil.isMoving() && telly.get()) {
+        if (keepY.get() && !mc.options.jumpKey.isPressed() && MovementUtil.isMoving() && telly.get() && mc.player.fallDistance <= 1) {
             return yLevel;
         } else {
-            return (int) (mc.player.getY() - 1);
+            return (int) Math.floor(mc.player.getY()) - 1;
         }
     }
 
@@ -153,7 +166,7 @@ public class Scaffold extends Module {
             ))) {
                 return;
             }
-            for (int x = 1; x <= d; x++) {
+            for (int x = 0; x <= d; x++) {
                 for (int z = 0; z <= d - x; z++) {
                     int y = d - x - z;
                     for (int rev1 = 0; rev1 <= 1; rev1++) {
@@ -168,7 +181,8 @@ public class Scaffold extends Module {
     }
 
     private boolean checkBlock(Vec3d baseVec, BlockPos pos) {
-        if (!(mc.world.getBlockState(pos).getBlock() instanceof AirBlock)) return false;
+        if (!(mc.world.getBlockState(pos).getBlock() instanceof AirBlock) && !(mc.world.getBlockState(pos).getBlock() instanceof FluidBlock))
+            return false;
 
         Vec3d center = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         for (Direction dir : Direction.values()) {
@@ -189,31 +203,27 @@ public class Scaffold extends Module {
         return false;
     }
 
-    public static Vec3d getVec3(BlockPos pos, Direction face) {
-        double x = (double) pos.getX() + 0.5;
-        double y = (double) pos.getY() + 0.5;
-        double z = (double) pos.getZ() + 0.5;
-        if (face == Direction.UP || face == Direction.DOWN) {
-            x += MathUtil.getRandom(0.3, -0.3);
-            z += MathUtil.getRandom(0.3, -0.3);
-        } else {
-            y += MathUtil.getRandom(0.3, -0.3);
-        }
-        if (face == Direction.WEST || face == Direction.EAST) {
-            z += MathUtil.getRandom(0.3, -0.3);
-        }
-        if (face == Direction.SOUTH || face == Direction.NORTH) {
-            x += MathUtil.getRandom(0.3, -0.3);
-        }
-        return new Vec3d(x, y, z);
-    }
-
     public Vector2f getRotation(BlockCache blockCache) {
         Vector2f calculate = RotationUtil.calculate(blockCache.position.toCenterPos());
         Vector2f reverseYaw = new Vector2f(MathHelper.wrapDegrees(mc.player.getYaw() - 180), calculate.y);
         boolean hasRotated = RaytraceUtil.overBlock(reverseYaw, blockCache.facing, blockCache.position, false);
         if (hasRotated) return reverseYaw;
         else return calculate;
+    }
+
+    @Override
+    protected void onEnable() {
+        blockCache = null;
+    }
+
+    @Override
+    protected void onDisable() {
+        blockCache = null;
+    }
+
+    private enum SwapMode {
+        Normal,
+        Silent
     }
 
     private record BlockCache(BlockPos position, Direction facing) {

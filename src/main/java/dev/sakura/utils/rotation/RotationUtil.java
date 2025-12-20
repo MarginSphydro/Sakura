@@ -171,7 +171,7 @@ public class RotationUtil {
                 /*
                  * Setting rotations
                  */
-                yaw = fixedRotations.x;
+                yaw = MathHelper.wrapDegrees(fixedRotations.x);
                 pitch = Math.max(-90, Math.min(90, fixedRotations.y));
             }
         }
