@@ -51,8 +51,8 @@ public class BlurProgram {
             input = new SimpleFramebuffer(mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight(), true);
 
         float i = (float) mc.getWindow().getScaleFactor();
-        
-        suckMyDick();
+
+        checkProgram();
 
         radius.set(r * i);
         uLocation.set(x * i, -y * i + mc.getWindow().getScaledHeight() * i - height * i);
@@ -72,8 +72,8 @@ public class BlurProgram {
         GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, buffer.fbo);
         GL30.glBlitFramebuffer(0, 0, buffer.textureWidth, buffer.textureHeight, 0, 0, buffer.textureWidth, buffer.textureHeight, GL30.GL_COLOR_BUFFER_BIT, GL30.GL_LINEAR);
         buffer.beginWrite(false);
-        
-        suckMyDick();
+
+        checkProgram();
 
         inputResolution.set((float) buffer.textureWidth, (float) buffer.textureHeight);
         sampler.set(input.getColorAttachment());
@@ -85,7 +85,7 @@ public class BlurProgram {
         }
     }
 
-    private void suckMyDick() {
+    private void checkProgram() {
         ShaderProgram program = BLUR.getProgram();
         if (program != null) {
             int newId = program.getGlRef();
@@ -96,7 +96,7 @@ public class BlurProgram {
         }
     }
 
-    protected void setup() {
+    private void setup() {
         this.inputResolution = BLUR.findUniform2f("InputResolution");
         this.brightness = BLUR.findUniform1f("Brightness");
         this.quality = BLUR.findUniform1f("Quality");
@@ -105,7 +105,7 @@ public class BlurProgram {
         this.uLocation = BLUR.findUniform2f("uLocation");
         this.radius = BLUR.findUniform1f("radius");
         sampler = BLUR.findSampler("InputSampler");
-        
+
         ShaderProgram program = BLUR.getProgram();
         if (program != null) {
             currentProgramId = program.getGlRef();

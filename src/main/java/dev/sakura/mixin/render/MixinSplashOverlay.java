@@ -136,7 +136,7 @@ public class MixinSplashOverlay {
             if (!this.reloading) {
                 mainMenuScreen = new MainMenuScreen();
                 mainMenuScreen.init(this.client, width, height);
-            } else if (this.client.currentScreen != null){
+            } else if (this.client.currentScreen != null) {
                 this.client.currentScreen.init(this.client, width, height);
             }
         }
