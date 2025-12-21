@@ -54,7 +54,8 @@ public class CrystalAura extends Module {
     public enum SwitchMode {
         None,
         Normal,
-        Silent
+        Silent,
+        InvSilent
     }
 
     public enum FadeMode {
@@ -281,7 +282,7 @@ public class CrystalAura extends Module {
 
             mc.interactionManager.attackEntity(mc.player, bestCrystal);
 
-            Hand hand = result == null ? Hand.MAIN_HAND : result.getHand();
+            Hand hand = result == null || result.getHand() == null ? Hand.MAIN_HAND : result.getHand();
             if (attackSwing.get()) mc.player.swingHand(hand);
             else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(hand));
 
@@ -330,7 +331,7 @@ public class CrystalAura extends Module {
 
                     mc.interactionManager.attackEntity(mc.player, blockingCrystal);
 
-                    Hand hand = result == null ? Hand.MAIN_HAND : result.getHand();
+                    Hand hand = result == null || result.getHand() == null ? Hand.MAIN_HAND : result.getHand();
                     if (attackSwing.get()) mc.player.swingHand(hand);
                     else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(hand));
 
@@ -348,11 +349,13 @@ public class CrystalAura extends Module {
             if (mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL) {
                 if (autoSwitch.is(SwitchMode.None)) return;
 
-                if (autoSwitch.is(SwitchMode.Silent)) {
-                    InvUtil.swap(slot, true);
-                    switched = true;
-                } else {
-                    InvUtil.swap(slot, false);
+                switch (autoSwitch.get()) {
+                    case Silent -> {
+                        InvUtil.swap(slot, true);
+                        switched = true;
+                    }
+                    case InvSilent -> switched = InvUtil.invSwitch(slot);
+                    default -> InvUtil.swap(slot, false);
                 }
             }
 
@@ -363,19 +366,23 @@ public class CrystalAura extends Module {
             }
 
             BlockHitResult hitResult = new BlockHitResult(bestPos.toCenterPos().add(0, 1, 0), Direction.UP, bestPos, false);
-            ActionResult actionResult = mc.interactionManager.interactBlock(mc.player, result.getHand(), hitResult);
+            Hand hand = result.getHand() == null ? Hand.MAIN_HAND : result.getHand();
+            ActionResult actionResult = mc.interactionManager.interactBlock(mc.player, hand, hitResult);
 
             if (actionResult.isAccepted()) {
-                if (swingHand.get()) mc.player.swingHand(result.getHand(), true);
-                else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(result.getHand()));
+                if (swingHand.get()) mc.player.swingHand(hand, true);
+                else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(hand));
             }
 
             renderPos = bestPos;
             renderDamage = bestDamage;
             placeTimer.reset();
 
-            if (switched && autoSwitch.get() == SwitchMode.Silent) {
-                InvUtil.swapBack();
+            if (switched) {
+                switch (autoSwitch.get()) {
+                    case Silent -> InvUtil.swapBack();
+                    case InvSilent -> InvUtil.invSwapBack();
+                }
             }
         }
     }
