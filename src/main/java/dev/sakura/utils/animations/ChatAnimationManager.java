@@ -41,12 +41,12 @@ public class ChatAnimationManager {
     public double getChatHudAnimation(String key, double target, int duration) {
         animations.putIfAbsent(key, new EaseOutSine(duration, target));
         EaseOutSine animation = animations.get(key);
-        
+
         if (Math.abs(animation.getEndPoint() - target) > 0.01) {
             animation.setEndPoint(target);
             animation.reset();
         }
-        
+
         return animation.getOutput();
     }
 }
