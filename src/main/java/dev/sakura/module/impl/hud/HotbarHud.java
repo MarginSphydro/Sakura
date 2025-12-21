@@ -5,7 +5,6 @@ import dev.sakura.module.HudModule;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.NumberValue;
@@ -18,11 +17,10 @@ public class HotbarHud extends HudModule {
 
     private final NumberValue<Double> scale = new NumberValue<>("Scale", 1.0, 0.5, 2.0, 0.05);
     private final NumberValue<Double> radius = new NumberValue<>("Radius", 6.0, 0.0, 15.0, 1.0);
-    private final BoolValue enableBlur = new BoolValue("Blur", true);
-    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 8.0, 1.0, 20.0, 0.5, enableBlur::get);
+    private final BoolValue enableBloom = new BoolValue("Bloom", true);
     private final NumberValue<Double> tension = new NumberValue<>("Tension", 0.25, 0.05, 0.5, 0.01);
     private final NumberValue<Double> friction = new NumberValue<>("Friction", 0.65, 0.3, 0.9, 0.01);
-    private final ColorValue bgColor = new ColorValue("Background", new Color(20, 20, 20, 140));
+
     private final ColorValue selectorColor = new ColorValue("SelectorColor", new Color(255, 255, 255, 160));
     private final BoolValue showHandSlots = new BoolValue("ShowHandSlots", true);
     private final BoolValue selectorGlow = new BoolValue("SelectorGlow", true);
@@ -62,7 +60,7 @@ public class HotbarHud extends HudModule {
         this.currentContext = context;
         updateAnimation();
         calculateLayout();
-        renderBlur(context);
+        renderBloom(context);
         NanoVGRenderer.INSTANCE.draw(vg -> renderContent());
         renderItems(context);
     }
@@ -81,7 +79,7 @@ public class HotbarHud extends HudModule {
         this.currentContext = context;
         updateAnimation();
         calculateLayout();
-        renderBlur(context);
+        renderBloom(context);
         NanoVGRenderer.INSTANCE.draw(vg -> {
             renderContent();
             NanoVGHelper.drawRect(x, y, width, height,
@@ -145,30 +143,23 @@ public class HotbarHud extends HudModule {
         this.height = hotbarHeight;
     }
 
-    private void renderBlur(DrawContext context) {
-        if (!enableBlur.get()) return;
+    private void renderBloom(DrawContext context) {
+        if (!enableBloom.get()) return;
 
-        float blur = blurStrength.get().floatValue();
+        Color bloomColor = new Color(18, 18, 18, 70);;
+        
+        NanoVGRenderer.INSTANCE.draw(vg -> {
+            NanoVGHelper.drawRoundRectBloom(hotbarX, hotbarY, hotbarWidth, hotbarHeight, radius.get().floatValue(), bloomColor);
 
-        Shader2DUtils.drawRoundedBlur(
-                context.getMatrices(), hotbarX, hotbarY, hotbarWidth, hotbarHeight, r,
-                new Color(0, 0, 0, 0), blur, 0.85f
-        );
-
-        if (showHandSlots.get()) {
-            Shader2DUtils.drawRoundedBlur(
-                    context.getMatrices(), leftHandX, handSlotY, handSlotSize, handSlotSize, r,
-                    new Color(0, 0, 0, 0), blur, 0.85f
-            );
-            Shader2DUtils.drawRoundedBlur(
-                    context.getMatrices(), rightHandX, handSlotY, handSlotSize, handSlotSize, r,
-                    new Color(0, 0, 0, 0), blur, 0.85f
-            );
-        }
+            if (showHandSlots.get()) {
+                NanoVGHelper.drawRoundRectBloom(leftHandX, handSlotY, handSlotSize, handSlotSize, radius.get().floatValue(), bloomColor);
+                NanoVGHelper.drawRoundRectBloom(rightHandX, handSlotY, handSlotSize, handSlotSize, radius.get().floatValue(), bloomColor);
+            }
+        });
     }
 
     private void renderContent() {
-        Color bg = bgColor.get();
+        Color bg = new Color(18, 18, 18, 70);
         Color selector = selectorColor.get();
 
         NanoVGHelper.drawRoundRect(hotbarX, hotbarY, hotbarWidth, hotbarHeight, r, bg);

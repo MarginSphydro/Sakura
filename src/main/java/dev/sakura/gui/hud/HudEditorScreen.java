@@ -32,17 +32,7 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        NanoVGRenderer.INSTANCE.draw(canvas -> NanoVGHelper.drawCenteredString(
-                "拖拽HUD模块来调整位置 | 按ESC退出",
-                mc.getWindow().getScaledWidth() / 2f,
-                20,
-                FontLoader.regular(14),
-                14,
-                new Color(255, 255, 255, 200)
-        ));
-
         hudPanel.render(context, mouseX, mouseY, delta);
-
         for (Module module : Managers.MODULE.getAllModules()) {
             if (module instanceof HudModule hud && hud.isEnabled()) {
                 hud.renderInEditor(context, mouseX, mouseY);

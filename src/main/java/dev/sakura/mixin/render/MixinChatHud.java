@@ -2,7 +2,6 @@ package dev.sakura.mixin.render;
 
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.shaders.Shader2DUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHud;
 import org.spongepowered.asm.mixin.Mixin;
@@ -47,8 +46,6 @@ public class MixinChatHud {
         if (!shouldRender || cachedContext == null) return;
         
         float radius = 3f;
-        float blurStrength = 8f;
-        float blurOpacity = 0.85f;
         int width = maxX - minX;
         int height = maxY - minY;
         float padding = 4f;
@@ -57,10 +54,9 @@ public class MixinChatHud {
         float currentX = minX - 4f + 6F;
         float currentY = minY - 4f;
         
-        Shader2DUtils.drawRoundedBlur(cachedContext.getMatrices(), currentX, currentY, finalWidth, finalHeight, radius, new Color(0, 0, 0, 0), blurStrength, blurOpacity);
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            Color backgroundColor = new Color(20, 20, 20, 140);
-            NanoVGHelper.drawRoundRect(currentX, currentY, finalWidth, finalHeight, radius, backgroundColor);
+            Color backgroundColor = new Color(18, 18, 18, 70);
+            NanoVGHelper.drawRoundRectBloom(currentX, currentY, finalWidth, finalHeight, radius, backgroundColor);
         });
     }
 }

@@ -39,6 +39,11 @@ vec4 blur() {
 
 void main() {
     vec2 halfSize = uSize / 2.0;
-    float smoothedAlpha =  (1.0 - smoothstep(0.0, 1.0, roundedBoxSDF(gl_FragCoord.xy - uLocation - halfSize, halfSize, radius)));
-    fragColor = vec4(blur().rgb, smoothedAlpha);
+    // 改进alpha计算以减少边缘闪烁
+    float sdf = roundedBoxSDF(gl_FragCoord.xy - uLocation - halfSize, halfSize, radius);
+    float smoothedAlpha = 1.0 - smoothstep(-1.0, 1.0, sdf);
+    vec4 blurredResult = blur();
+    // 确保最小alpha值以避免完全透明导致的闪烁
+    float finalAlpha = max(smoothedAlpha * Brightness, 0.01);
+    fragColor = vec4(blurredResult.rgb, finalAlpha);
 }

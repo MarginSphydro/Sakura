@@ -27,6 +27,8 @@ public class Shader2DUtils {
     }
 
     public static void drawRoundedBlur(MatrixStack matrices, float x, float y, float width, float height, float radius, Color c1, float blurStrenth, float blurOpacity) {
+        blurOpacity = Math.max(0f, Math.min(1f, blurOpacity));
+        
         BufferBuilder bb = preShaderDraw(matrices, x - 10, y - 10, width + 20, height + 20);
         BLUR_PROGRAM.setParameters(x, y, width, height, radius, c1, blurStrenth, blurOpacity);
         BLUR_PROGRAM.use();

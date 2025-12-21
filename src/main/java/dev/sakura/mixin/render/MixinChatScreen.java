@@ -7,8 +7,6 @@ import dev.sakura.mixin.accessor.IChatInputSuggestor;
 import dev.sakura.mixin.accessor.ISuggestionWindow;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.shaders.Shader2DUtils;
-import dev.sakura.utils.animations.ChatAnimationManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -43,8 +41,6 @@ public class MixinChatScreen {
     {
         int adjustedX1 = x1;
         float radius = 3f;
-        float blurStrength = 8f;
-        float blurOpacity = 0.85f;
         int width = 340;
         int height = y2 - y1;
         
@@ -69,12 +65,9 @@ public class MixinChatScreen {
         int animatedY1 = (int) inputCurrentY;
         int animatedY2 = animatedY1 + height;
         
-        Color backgroundColor = new Color(20, 20, 20, (int)(140 * inputAlpha));
-        Color blurColor = new Color(0, 0, 0, (int)(0 * inputAlpha));
-        
-        Shader2DUtils.drawRoundedBlur(context.getMatrices(), adjustedX1, animatedY1, width, height, radius, blurColor, blurStrength, blurOpacity * inputAlpha);
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawRoundRect(adjustedX1, animatedY1, width, height, radius, backgroundColor);
+            Color backgroundColor = new Color(18, 18, 18, 70);
+            NanoVGHelper.drawRoundRectBloom(adjustedX1, animatedY1, width, height, radius, backgroundColor);
         });
     }
 
