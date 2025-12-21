@@ -51,6 +51,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new Surround());
             manager.tryLoad(() -> new Velocity());
             manager.tryLoad(() -> new AutoTotem());
+            manager.tryLoad(() -> new AutoWeb());
 
             // Movement
             manager.tryLoad(() -> new AutoSprint());
