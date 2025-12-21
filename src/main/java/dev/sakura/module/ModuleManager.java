@@ -44,6 +44,7 @@ public class ModuleManager {
     private static class ManualLoader {
         static void load(ModuleManager manager) {
             // Combat
+            manager.tryLoad(() -> new KillAura());
             manager.tryLoad(() -> new AutoPot());
             manager.tryLoad(() -> new Burrow());
             manager.tryLoad(() -> new CrystalAura());

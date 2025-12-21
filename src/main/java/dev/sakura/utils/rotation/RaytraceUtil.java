@@ -24,13 +24,7 @@ public class RaytraceUtil {
     }
 
     public static Vec3d getRotationVector(float yaw, float pitch) {
-        float f = yaw * ((float) Math.PI / 180F);
-        float g = -pitch * ((float) Math.PI / 180F);
-        float h = MathHelper.cos(g);
-        float i = MathHelper.sin(g);
-        float j = MathHelper.cos(f);
-        float k = MathHelper.sin(f);
-        return new Vec3d((double) (i * k), (double) (-h), (double) (i * j));
+        return Vec3d.fromPolar(pitch, yaw);
     }
 
     public static BlockHitResult rayTraceCollidingBlocks(Vec3d start, Vec3d end) {
