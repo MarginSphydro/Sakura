@@ -19,6 +19,7 @@
     "accessor.IEntity",
     "accessor.IHorseScreenHandler",
     "accessor.IMinecraftClient",
+    "accessor.IParticle",
     "accessor.ISuggestionWindow",
     "client.MixinChatInputSuggestor",
     "client.MixinGameOptions",
