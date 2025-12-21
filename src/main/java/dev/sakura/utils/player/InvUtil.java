@@ -1,11 +1,15 @@
 package dev.sakura.utils.player;
 
+import dev.sakura.manager.Managers;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandler;
@@ -19,6 +23,7 @@ import static dev.sakura.Sakura.mc;
 public class InvUtil {
     private static final Action ACTION = new Action();
     public static int previousSlot = -1;
+    public static int[] invSlots;
 
     public static int getEnchantmentLevel(ItemStack stack, RegistryKey<Enchantment> enchantment) {
         if (stack.isEmpty()) return 0;
@@ -173,6 +178,36 @@ public class InvUtil {
         return return_;
     }
 
+    public static boolean invSwitch(int slot) {
+        if (slot >= 0) {
+            ScreenHandler handler = mc.player.currentScreenHandler;
+            Int2ObjectArrayMap<ItemStack> stack = new Int2ObjectArrayMap<>();
+            stack.put(slot, handler.getSlot(slot).getStack());
+
+            int selectedSlot = mc.player.getInventory().selectedSlot;
+            mc.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(handler.syncId,
+                    handler.getRevision(), PlayerInventory.MAIN_SIZE + selectedSlot,
+                    slot, SlotActionType.SWAP, handler.getSlot(slot).getStack(), stack)
+            );
+            mc.interactionManager.syncSelectedSlot();
+            invSlots = new int[]{slot, selectedSlot};
+            return true;
+        }
+        return false;
+    }
+
+    public static void invSwapBack() {
+        ScreenHandler handler = mc.player.currentScreenHandler;
+        Int2ObjectArrayMap<ItemStack> stack = new Int2ObjectArrayMap<>();
+        stack.put(invSlots[0], handler.getSlot(invSlots[0]).getStack());
+
+        mc.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(handler.syncId,
+                handler.getRevision(), PlayerInventory.MAIN_SIZE + invSlots[1],
+                invSlots[0], SlotActionType.SWAP, handler.getSlot(invSlots[0]).getStack().copy(), stack)
+        );
+        mc.interactionManager.syncSelectedSlot();
+    }
+
     public static Action move() {
         ACTION.type = SlotActionType.PICKUP;
         ACTION.two = true;
@@ -184,10 +219,6 @@ public class InvUtil {
         return ACTION;
     }
 
-    /**
-     * When writing code with quickSwap, both to and from should provide the ID of a slot, not the index.
-     * From should be the slot in the hotbar, to should be the slot you're switching an item from.
-     */
     public static Action quickSwap() {
         ACTION.type = SlotActionType.SWAP;
         return ACTION;
