@@ -77,6 +77,8 @@ public class ModuleManager {
             manager.tryLoad(() -> new XRay());
             manager.tryLoad(() -> new NameTag());
             manager.tryLoad(() -> new Glow());
+            manager.tryLoad(() -> new TotemParticles());
+
 
             // Client
             manager.tryLoad(() -> new ClickGui());
