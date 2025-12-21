@@ -44,44 +44,63 @@ public class CrystalAura extends Module {
         super("CrystalAura", Category.Combat);
     }
 
-    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 10.0, 1.0, 20.0, 0.1);
-    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 20.0, 0.1);
-    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 20.0, 0.1);
-    private final NumberValue<Double> facePlaceHealth = new NumberValue<>("Face Place Health", 8.0, 0.0, 36.0, 0.1);
+    public enum Page {
+        General,
+        Timing,
+        Place,
+        Render
+    }
 
-    private final BoolValue place = new BoolValue("Place", true);
-    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 0, 0, 1000, 1);
-    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 0.1);
-    private final BoolValue houyuepingMode = new BoolValue("1.12 Place", false);
+    public enum SwitchMode {
+        None,
+        Normal,
+        Silent
+    }
 
-    private final BoolValue attack = new BoolValue("Attack", true);
-    private final NumberValue<Integer> attackDelay = new NumberValue<>("Attack Delay", 0, 0, 1000, 1);
-    private final NumberValue<Integer> facePlaceDelay = new NumberValue<>("FacePlace Delay", 0, 0, 1000, 1);
-    private final NumberValue<Double> breakRange = new NumberValue<>("Break Range", 5.0, 1.0, 6.0, 0.1);
+    public enum FadeMode {
+        Up,
+        Down,
+        Normal
+    }
 
-    private final EnumValue<SwitchMode> autoSwitch = new EnumValue<>("Switch", SwitchMode.Normal);
-    private final BoolValue rotate = new BoolValue("Rotate", true);
-    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, rotate::get);
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, rotate::get);
-    private final BoolValue extrapolation = new BoolValue("Extrapolation", true);
-    private final NumberValue<Integer> extrapolationTicks = new NumberValue<>("Extra Ticks", 0, 0, 20, 1, extrapolation::get);
-    private final NumberValue<Integer> smooth = new NumberValue<>("Smooth", 1, 1, 10, 1, extrapolation::get);
+    private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
 
-    private final BoolValue render = new BoolValue("Render", true);
-    private final BoolValue swingHand = new BoolValue("Place Swing", true);
-    private final BoolValue attackSwing = new BoolValue("Attack Swing", true);
-    private final BoolValue renderDamageText = new BoolValue("Render Damage", false, render::get);
-    private final EnumValue<FadeMode> fadeMode = new EnumValue<>("Fade Mode", FadeMode.Normal, render::get);
-    private final NumberValue<Double> animationSpeed = new NumberValue<>("Animation Speed", 5.0, 0.1, 20.0, 0.1, render::get);
-    private final NumberValue<Double> animationExponent = new NumberValue<>("Animation Exp", 3.0, 0.1, 10.0, 0.1, render::get);
-    private final BoolValue smoothBox = new BoolValue("Smooth Box", true, render::get);
-    private final BoolValue breathing = new BoolValue("Breathing", true, render::get);
-    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 192, 203, 50), render::get);
-    private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 192, 203, 255), render::get);
+    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 10.0, 1.0, 20.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 20.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 20.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> facePlaceHealth = new NumberValue<>("Face Place Health", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
 
-    private final BoolValue renderExtrapolation = new BoolValue("Render Extrapolation", true, render::get);
-    private final ColorValue extraSideColor = new ColorValue("Extra Side Color", new Color(135, 206, 235, 50), renderExtrapolation::get);
-    private final ColorValue extraLineColor = new ColorValue("Extra Line Color", new Color(135, 206, 235, 255), renderExtrapolation::get);
+    private final BoolValue rotate = new BoolValue("Rotate", true, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
+    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 0, 0, 1000, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> attackDelay = new NumberValue<>("Attack Delay", 0, 0, 1000, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> facePlaceDelay = new NumberValue<>("FacePlace Delay", 0, 0, 1000, 1, () -> page.is(Page.Timing));
+
+    private final BoolValue place = new BoolValue("Place", true, () -> page.is(Page.Place));
+    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Place));
+    private final BoolValue houyuepingMode = new BoolValue("1.12 Place", false, () -> page.is(Page.Place));
+    private final BoolValue attack = new BoolValue("Attack", true, () -> page.is(Page.Place));
+    private final NumberValue<Double> breakRange = new NumberValue<>("Break Range", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Place));
+    private final EnumValue<SwitchMode> autoSwitch = new EnumValue<>("Switch", SwitchMode.Normal, () -> page.is(Page.Place));
+    private final BoolValue swingHand = new BoolValue("Place Swing", true, () -> page.is(Page.Place));
+    private final BoolValue attackSwing = new BoolValue("Attack Swing", true, () -> page.is(Page.Place));
+
+    private final BoolValue render = new BoolValue("Render", true, () -> page.is(Page.Render));
+    private final BoolValue renderDamageText = new BoolValue("Render Damage", false, () -> page.is(Page.Render) && render.get());
+    private final EnumValue<FadeMode> fadeMode = new EnumValue<>("Fade Mode", FadeMode.Normal, () -> page.is(Page.Render) && render.get());
+    private final NumberValue<Double> animationSpeed = new NumberValue<>("Animation Speed", 5.0, 0.1, 20.0, 0.1, () -> page.is(Page.Render) && render.get());
+    private final NumberValue<Double> animationExponent = new NumberValue<>("Animation Exp", 3.0, 0.1, 10.0, 0.1, () -> page.is(Page.Render) && render.get());
+    private final BoolValue smoothBox = new BoolValue("Smooth Box", true, () -> page.is(Page.Render) && render.get());
+    private final BoolValue breathing = new BoolValue("Breathing", true, () -> page.is(Page.Render) && render.get());
+    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 192, 203, 50), () -> page.is(Page.Render) && render.get());
+    private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 192, 203, 255), () -> page.is(Page.Render) && render.get());
+    private final BoolValue extrapolation = new BoolValue("Extrapolation", true, () -> page.is(Page.Render));
+    private final NumberValue<Integer> extrapolationTicks = new NumberValue<>("Extra Ticks", 0, 0, 20, 1, () -> page.is(Page.Render) && extrapolation.get());
+    private final NumberValue<Integer> smooth = new NumberValue<>("Smooth", 1, 1, 10, 1, () -> page.is(Page.Render) && extrapolation.get());
+    private final BoolValue renderExtrapolation = new BoolValue("Render Extrapolation", true, () -> page.is(Page.Render) && render.get());
+    private final ColorValue extraSideColor = new ColorValue("Extra Side Color", new Color(135, 206, 235, 50), () -> page.is(Page.Render) && renderExtrapolation.get());
+    private final ColorValue extraLineColor = new ColorValue("Extra Line Color", new Color(135, 206, 235, 255), () -> page.is(Page.Render) && renderExtrapolation.get());
 
     private final TimerUtil placeTimer = new TimerUtil();
     private final TimerUtil breakTimer = new TimerUtil();
@@ -108,18 +127,6 @@ public class CrystalAura extends Module {
         renderDamage = 0;
         isRotating = false;
         result = null;
-    }
-
-    public enum SwitchMode {
-        None,
-        Normal,
-        Silent
-    }
-
-    public enum FadeMode {
-        Up,
-        Down,
-        Normal
     }
 
     @EventHandler
