@@ -53,6 +53,6 @@
     "render.MixinBlock",
     "shader.MixinShaderProgram",
     "render.MixinPlayerEntityRenderer",
-    "shader.MixinShaderProgram"
+    "world.MixinFlowableFluid"
   ]
 }
