@@ -6,7 +6,7 @@ public class TimerUtil {
     private long lastTime = 0;
 
     public boolean delay(float ticks) {
-        return System.currentTimeMillis() - lastTime >= ticks * 50;
+        return getCurrentMS() - lastMS >= ticks * 50;
     }
 
     public long getCurrentMS() {
@@ -21,11 +21,10 @@ public class TimerUtil {
     }
 
     public boolean hasTimeElapsed(long time) {
-        return System.currentTimeMillis() - this.lastMS > time;
+        return getCurrentMS() - this.lastMS > time;
     }
 
     public void reset() {
-        this.lastTime = System.currentTimeMillis();
         this.lastMS = this.getCurrentMS();
     }
 
@@ -34,7 +33,7 @@ public class TimerUtil {
     }
 
     public long getTime() {
-        return System.currentTimeMillis() - this.lastMS;
+        return getCurrentMS() - this.lastMS;
     }
 
     public void setTime(long time) {

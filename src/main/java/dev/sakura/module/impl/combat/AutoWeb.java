@@ -1,6 +1,7 @@
 package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
+import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -22,7 +23,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 
 public class AutoWeb extends Module {
     public AutoWeb() {
@@ -55,7 +55,7 @@ public class AutoWeb extends Module {
             if (placeTimer.hasTimeElapsed(placeDelay.get().longValue())) {
                 for (double x : new double[]{0, offset.get(), -offset.get()}) {
                     for (double z : new double[]{0, offset.get(), -offset.get()}) {
-                        BlockPos pos = new BlockPos(MathHelper.floor(target.getX() + x), MathHelper.floor(target.getY()), MathHelper.floor(target.getZ() + z));
+                        BlockPos pos = BlockPos.ofFloored(target.getX() + x, target.getY(), target.getZ() + z);
                         if (face.get()) {
                             place(pos.up());
                         }
@@ -75,7 +75,7 @@ public class AutoWeb extends Module {
     }
 
     private void place(BlockPos pos) {
-        if (!mc.world.getBlockState(pos).isAir()) {
+        if (PlaceManager.solid(pos)) {
             return;
         }
         FindItemResult result = InvUtil.findInHotbar(Items.COBWEB);

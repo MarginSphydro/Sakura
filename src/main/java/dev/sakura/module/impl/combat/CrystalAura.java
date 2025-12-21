@@ -67,16 +67,16 @@ public class CrystalAura extends Module {
     private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
 
     private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 10.0, 1.0, 20.0, 0.1, () -> page.is(Page.General));
-    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 20.0, 0.1, () -> page.is(Page.General));
-    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 20.0, 0.1, () -> page.is(Page.General));
-    private final NumberValue<Double> facePlaceHealth = new NumberValue<>("Face Place Health", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> forcePlaceHealth = new NumberValue<>("Force Place Health", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
 
     private final BoolValue rotate = new BoolValue("Rotate", true, () -> page.is(Page.Timing));
     private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
     private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
-    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 0, 0, 1000, 1, () -> page.is(Page.Timing));
-    private final NumberValue<Integer> attackDelay = new NumberValue<>("Attack Delay", 0, 0, 1000, 1, () -> page.is(Page.Timing));
-    private final NumberValue<Integer> facePlaceDelay = new NumberValue<>("FacePlace Delay", 0, 0, 1000, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 0, 0, 750, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> attackDelay = new NumberValue<>("Attack Delay", 0, 0, 750, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> forcePlaceDelay = new NumberValue<>("Force Place Delay", 0, 0, 750, 1, () -> page.is(Page.Timing));
 
     private final BoolValue place = new BoolValue("Place", true, () -> page.is(Page.Place));
     private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Place));
@@ -444,14 +444,14 @@ public class CrystalAura extends Module {
     }
 
     private long getAttackDelay(PlayerEntity target) {
-        if (target != null && (target.getHealth() + target.getAbsorptionAmount() <= facePlaceHealth.get())) {
-            return facePlaceDelay.get().longValue();
+        if (target != null && (target.getHealth() + target.getAbsorptionAmount() <= forcePlaceHealth.get())) {
+            return forcePlaceDelay.get().longValue();
         }
         return attackDelay.get().longValue();
     }
 
     private double getMinDamage(PlayerEntity target) {
-        if (target.getHealth() + target.getAbsorptionAmount() <= facePlaceHealth.get()) {
+        if (target.getHealth() + target.getAbsorptionAmount() <= forcePlaceHealth.get()) {
             return 1.0;
         }
         return minDamage.get();
