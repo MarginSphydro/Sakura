@@ -6,14 +6,15 @@ import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.MainMenuShader;
 import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.shaders.SplashShader;
+import dev.sakura.shaders.WindowResizeCallback;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.Window;
 import net.minecraft.text.Text;
 
 import java.awt.*;
@@ -30,6 +31,10 @@ public class MainMenuScreen extends Screen {
     private long initTime = 0;
     private static final long FADE_DURATION = 800;
     private static final long BUTTON_STAGGER = 80;
+
+    private static final int BASE_WIDTH = 1280;
+    private static final int BASE_HEIGHT = 720;
+    private static final float MIN_SCALE = 0.8f;
 
     public MainMenuScreen() {
         super(Text.of("SakuraMainMenuScreen"));
@@ -48,13 +53,32 @@ public class MainMenuScreen extends Screen {
     @Override
     protected void init() {
         if (initTime == 0) initTime = System.currentTimeMillis();
+
+        WindowResizeCallback.EVENT.register(this::onWindowResized);
+        
+        updateLayout();
+        loadIcon();
+    }
+
+    private void onWindowResized(net.minecraft.client.MinecraftClient client, Window window) {
+        updateLayout();
+    }
+
+    private void updateLayout() {
         buttons.clear();
 
+        float scaleX = (float) this.width / BASE_WIDTH;
+        float scaleY = (float) this.height / BASE_HEIGHT;
+        float scale = Math.min(scaleX, scaleY);
+        scale = Math.max(MIN_SCALE, scale);
         int centerX = this.width / 2;
-        int startY = this.height / 2 + 20;
-        int buttonWidth = 200;
-        int buttonHeight = 20;
-        int spacing = 24;
+        int startY = this.height / 2 - (int)(40 * scale);
+        int buttonWidth = (int)(200 * scale);
+        int buttonHeight = (int)(20 * scale);
+        int spacing = (int)(24 * scale);
+
+        buttonHeight = Math.max(buttonHeight, 16);
+        buttonWidth = Math.max(buttonWidth, 120);
 
         buttons.add(new MenuButton(
                 centerX - buttonWidth / 2, startY,
@@ -67,10 +91,7 @@ public class MainMenuScreen extends Screen {
                 centerX - buttonWidth / 2, startY + spacing,
                 buttonWidth, buttonHeight,
                 I18n.translate("menu.multiplayer"),
-                () -> {
-                    Screen screen = mc.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this);
-                    mc.setScreen(screen);
-                },
+                () -> mc.setScreen(new MultiplayerScreen(this)),
                 !isMultiplayerDisabled()
         ));
 
@@ -82,28 +103,26 @@ public class MainMenuScreen extends Screen {
                 !isMultiplayerDisabled()
         ));
 
-        int bottomY = startY + spacing * 3 + 12;
+        int bottomY = startY + spacing * 3 + (int)(4 * scale);
 
         buttons.add(new MenuButton(
-                centerX - buttonWidth / 2 - 2, bottomY,
+                centerX - buttonWidth / 2 - (int)(2 * scale), bottomY,
                 buttonWidth / 2, buttonHeight,
                 I18n.translate("menu.options"),
                 () -> mc.setScreen(new OptionsScreen(this, mc.options))
         ));
 
         buttons.add(new MenuButton(
-                centerX + 2, bottomY,
+                centerX + (int)(2 * scale), bottomY,
                 buttonWidth / 2, buttonHeight,
                 I18n.translate("menu.quit"),
                 mc::scheduleStop
         ));
 
         buttons.add(new ShaderButton(
-                centerX - buttonWidth / 2, this.height - 30,
+                centerX - buttonWidth / 2, this.height - (int)(30 * scale),
                 buttonWidth, buttonHeight
         ));
-
-        loadIcon();
     }
 
     private void loadIcon() {
@@ -187,12 +206,18 @@ public class MainMenuScreen extends Screen {
     private void renderIcon(float transitionProgress) {
         if (iconImage == -1) return;
 
-        float scale = 0.15f;
-        float displayWidth = iconWidth * scale;
-        float displayHeight = iconHeight * scale;
+        float scaleX = (float) this.width / BASE_WIDTH;
+        float scaleY = (float) this.height / BASE_HEIGHT;
+        float scale = Math.min(scaleX, scaleY);
+        scale = Math.max(MIN_SCALE, scale);
+
+        float iconScaleFactor = Math.max(0.4f, scale * 0.7f);
+        float displayScale = 0.15f * iconScaleFactor;
+        float displayWidth = iconWidth * displayScale;
+        float displayHeight = iconHeight * displayScale;
 
         float x = (width - displayWidth) / 2f;
-        float y = height / 4f - displayHeight / 2f + 10;
+        float y = height / 5f - displayHeight / 2f;
 
         float easeT = 1.0f - (float) Math.pow(1.0f - transitionProgress, 3.0);
         float iconScale = 0.5f + easeT * 0.5f;
@@ -336,14 +361,15 @@ public class MainMenuScreen extends Screen {
             Color borderColor = enabled ? new Color(255, 150, 180, borderAlpha) : new Color(100, 100, 100, borderAlpha);
             NanoVGHelper.drawRoundRectOutlineScaled(x, y, width, height, 4, 1, borderColor, scale);
 
-            int font = FontLoader.regular(14);
-            float textWidth = NanoVGHelper.getTextWidth(text, font, 14);
+            float fontSize = Math.max(10f, Math.min(16f, height * 0.7f));
+            int font = FontLoader.regular((int)fontSize);
+            float textWidth = NanoVGHelper.getTextWidth(text, font, fontSize);
             float textX = x + (width - textWidth) / 2f;
-            float textY = y + height / 2f + 5;
+            float textY = y + height / 2f + fontSize/3;
 
             int textAlpha = enabled ? baseAlpha : (int) (baseAlpha * 0.6f);
             Color textColor = new Color(255, 255, 255, textAlpha);
-            NanoVGHelper.drawString(text, textX, textY, font, 14, textColor);
+            NanoVGHelper.drawString(text, textX, textY, font, fontSize, textColor);
         }
     }
 

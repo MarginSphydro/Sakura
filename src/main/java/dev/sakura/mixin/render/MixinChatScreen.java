@@ -7,6 +7,8 @@ import dev.sakura.mixin.accessor.IChatInputSuggestor;
 import dev.sakura.mixin.accessor.ISuggestionWindow;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.util.NanoVGHelper;
+import dev.sakura.shaders.Shader2DUtils;
+import dev.sakura.utils.animations.ChatAnimationManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -16,6 +18,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
@@ -28,17 +31,71 @@ public class MixinChatScreen {
     protected TextFieldWidget chatField;
     @Shadow
     ChatInputSuggestor chatInputSuggestor;
+    
+    private static float inputTargetY = 0;
+    private static float inputCurrentY = 0;
+    private static boolean inputInitialized = false;
+    private static long openTime = 0;
+    private static float inputAlpha = 0f;
+
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V", ordinal = 0))
+    private void redirectInputBoxBackground(DrawContext context, int x1, int y1, int x2, int y2, int color)
+    {
+        int adjustedX1 = x1;
+        float radius = 3f;
+        float blurStrength = 8f;
+        float blurOpacity = 0.85f;
+        int width = 340;
+        int height = y2 - y1;
+        
+        if (!inputInitialized) {
+            inputCurrentY = mc.getWindow().getScaledHeight();
+            inputTargetY = y1;
+            inputInitialized = true;
+            openTime = System.currentTimeMillis();
+            inputAlpha = 0f;
+        }
+        
+        inputTargetY = y1;
+        
+        long elapsed = System.currentTimeMillis() - openTime;
+        float progress = Math.min(1.0f, elapsed / 300.0f);
+        
+        float easedProgress = (float) (1 - Math.pow(1 - progress, 3));
+        inputCurrentY = inputTargetY + (mc.getWindow().getScaledHeight() - inputTargetY) * (1 - easedProgress);
+        
+        inputAlpha = Math.min(1.0f, elapsed / 200.0f);
+        
+        int animatedY1 = (int) inputCurrentY;
+        int animatedY2 = animatedY1 + height;
+        
+        Color backgroundColor = new Color(20, 20, 20, (int)(140 * inputAlpha));
+        Color blurColor = new Color(0, 0, 0, (int)(0 * inputAlpha));
+        
+        Shader2DUtils.drawRoundedBlur(context.getMatrices(), adjustedX1, animatedY1, width, height, radius, blurColor, blurStrength, blurOpacity * inputAlpha);
+        NanoVGRenderer.INSTANCE.draw(vg -> {
+            NanoVGHelper.drawRoundRect(adjustedX1, animatedY1, width, height, radius, backgroundColor);
+        });
+    }
 
     @Inject(method = "render", at = @At("RETURN"))
     private void onRenderPost(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (chatField == null || !chatField.getText().startsWith(Managers.COMMAND.getPrefix())) return;
-
         NanoVGRenderer.INSTANCE.draw(vg -> {
             final float PAD = 0.5F;
-            final Color SAKURA = new Color(255, 183, 197);
-
-            NanoVGHelper.drawRectOutline(2 - PAD, mc.getWindow().getScaledHeight() - 14 - PAD, mc.getWindow().getScaledWidth() - 4 + PAD * 2, 12 + PAD * 2, 0.7f, SAKURA);
-
+            final Color SAKURA = new Color(255, 183, 197, (int)(255 * inputAlpha));
+            int marginLeft = 4;
+            
+            int animatedY = (int) inputCurrentY;
+            NanoVGHelper.drawRoundRectOutline(
+                    marginLeft-1.5f,
+                    mc.getWindow().getScaledHeight() - 14 - PAD,
+                    340,
+                    12 + PAD * 2,
+                    3f,
+                    0.6f,
+                    SAKURA
+            );
             var window = ((IChatInputSuggestor) chatInputSuggestor).getWindow();
             if (window != null) {
                 Rect2i a = ((ISuggestionWindow) window).getArea();
@@ -47,9 +104,20 @@ public class MixinChatScreen {
             }
         });
     }
-
+    
     @Inject(method = "sendMessage", at = @At("HEAD"), cancellable = true)
     private void hookSendMessage(String chatText, boolean addToHistory, CallbackInfo ci) {
         if (Sakura.EVENT_BUS.post(new ChatMessageEvent.Client(chatText)).isCancelled()) ci.cancel();
+    }
+    
+    @Inject(method = "init", at = @At("TAIL"))
+    private void onInit(CallbackInfo ci) {
+        inputInitialized = false;
+    }
+    
+    @Inject(method = "removed", at = @At("HEAD"))
+    private void onRemoved(CallbackInfo ci) {
+        inputInitialized = false;
+        inputAlpha = 0f;
     }
 }

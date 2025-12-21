@@ -34,6 +34,9 @@ public class ClickGui extends Module {
     public static Value<Boolean> backgroundBlur = new BoolValue("Background Blur", true);
     public static Value<Double> blurStrength = new NumberValue<>("Blur Strength", 8.0, 1.0, 20.0, 0.5, () -> backgroundBlur.get());
 
+    public static Value<Double> guiScale = new NumberValue<>("Gui Scale", 1.0, 0.5, 2.0, 0.05);
+    public static Value<Double> fontSize = new NumberValue<>("Font Size", 10.0, 6.0, 20.0, 0.5);
+
     public ClickGui() {
         super("ClickGui", Category.Client);
         setKey(GLFW.GLFW_KEY_RIGHT_SHIFT);
@@ -92,5 +95,13 @@ public class ClickGui extends Module {
     public static int astolfoRainbow(final int offset, final float saturation, final float brightness) {
         double currentColor = Math.ceil((double) (System.currentTimeMillis() + offset * 20L)) / 6.0;
         return Color.getHSBColor(((float) ((currentColor %= 360.0) / 360.0) < 0.5) ? (-(float) (currentColor / 360.0)) : ((float) (currentColor / 360.0)), saturation, brightness).getRGB();
+    }
+
+    public static double getGuiScale() {
+        return guiScale.get();
+    }
+
+    public static double getFontSize() {
+        return fontSize.get();
     }
 }

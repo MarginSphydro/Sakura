@@ -40,26 +40,34 @@ public class CategoryPanel implements IComponent {
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         update(mouseX, mouseY);
 
-        NanoVGRenderer.INSTANCE.draw(vg -> {
-            Color bgColor = ClickGui.backgroundColor.get();
-            NanoVGHelper.drawRoundRectBloom(x, y - 1, width, (float) (18 + ((height - 18))), 7, new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 100));
-            NanoVGHelper.drawString(category.name(), x + 4, y + 12f, FontLoader.bold(10), 10, new Color(255, 255, 255, 255));
-            NanoVGHelper.drawString(category.icon, x + 4 + width - NanoVGHelper.getTextWidth(category.icon, FontLoader.icons(15), 15) - (category == Category.Render ? 7 : 3), y + 13f, FontLoader.icons(15), 15, new Color(255, 255, 255, 255));
-        });
+        float guiScale = (float) ClickGui.getGuiScale();
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float scaledWidth = width * guiScale;
+        float headerHeight = 18 * guiScale;
 
-        float componentOffsetY = 18;
-
+        float componentOffsetY = headerHeight;
         for (ModuleComponent component : moduleComponents) {
             component.setX(x);
             component.setY(y + componentOffsetY);
-            component.setWidth(width);
+            component.setWidth(scaledWidth);
+            component.setScale(guiScale);
+            componentOffsetY += (float) (component.getHeight() * openAnimation.getOutput());
+        }
+        height = componentOffsetY + 9 * guiScale;
+
+        NanoVGRenderer.INSTANCE.draw(vg -> {
+            Color bgColor = ClickGui.backgroundColor.get();
+            NanoVGHelper.drawRoundRectBloom(x, y - 1, scaledWidth, height, 7, new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 100));
+            NanoVGHelper.drawString(category.name(), x + 4 * guiScale, y + 12f * guiScale, FontLoader.bold(baseFontSize), baseFontSize, new Color(255, 255, 255, 255));
+            float iconSize = baseFontSize * 1.5f;
+            NanoVGHelper.drawString(category.icon, x + 4 * guiScale + scaledWidth - NanoVGHelper.getTextWidth(category.icon, FontLoader.icons(iconSize), iconSize) - (category == Category.Render ? 7 : 3) * guiScale, y + 13f * guiScale, FontLoader.icons(iconSize), iconSize, new Color(255, 255, 255, 255));
+        });
+
+        for (ModuleComponent component : moduleComponents) {
             if (openAnimation.getOutput() > 0.7f) {
                 component.render(guiGraphics, mouseX, mouseY, partialTicks);
             }
-            componentOffsetY += (float) (component.getHeight() * openAnimation.getOutput());
         }
-
-        height = componentOffsetY + 9;
 
         IComponent.super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
@@ -133,7 +141,8 @@ public class CategoryPanel implements IComponent {
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        return RenderUtil.isHovering(x, y, width, 18, mouseX, mouseY);
+        float guiScale = (float) ClickGui.getGuiScale();
+        return RenderUtil.isHovering(x, y, width * guiScale, 18 * guiScale, mouseX, mouseY);
     }
 
     // Getter methods

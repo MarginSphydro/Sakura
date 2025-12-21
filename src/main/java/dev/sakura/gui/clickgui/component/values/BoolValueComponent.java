@@ -28,19 +28,27 @@ public class BoolValueComponent extends Component {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        setHeight(14);
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float scaledHeight = 14 * scale;
+        setHeight(scaledHeight);
         this.toggleAnimation.setDirection(setting.get() ? Direction.FORWARDS : Direction.BACKWARDS);
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.regular(7.5f), 7.5f, Color.WHITE);
-            NanoVGHelper.drawRoundRect(getX() + getWidth() - 15, getY() - 7, 15, 8, 4, setting.get() ? ClickGui.color(0).darker() : new Color(70, 70, 70));
-            NanoVGHelper.drawCircle(getX() + getWidth() - 11 + 7 * toggleAnimation.getOutput().floatValue(), getY() - 3, 3, setting.get() ? Color.WHITE : new Color(150, 150, 150));
+            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.regular(baseFontSize * 0.75f), baseFontSize * 0.75f, Color.WHITE);
+            float toggleWidth = 15 * scale;
+            float toggleHeight = 8 * scale;
+            float toggleRadius = 4 * scale;
+            float circleRadius = 3 * scale;
+            NanoVGHelper.drawRoundRect(getX() + getWidth() - toggleWidth, getY() - 7 * scale, toggleWidth, toggleHeight, toggleRadius, setting.get() ? ClickGui.color(0).darker() : new Color(70, 70, 70));
+            NanoVGHelper.drawCircle(getX() + getWidth() - 11 * scale + 7 * scale * toggleAnimation.getOutput().floatValue(), getY() - 3 * scale, circleRadius, setting.get() ? Color.WHITE : new Color(150, 150, 150));
         });
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (RenderUtil.isHovering(getX() + getWidth() - 15, getY() - 7, 15, 8, (float) mouseX, (float) mouseY) && mouseButton == 0) {
+        float toggleWidth = 15 * scale;
+        float toggleHeight = 8 * scale;
+        if (RenderUtil.isHovering(getX() + getWidth() - toggleWidth, getY() - 7 * scale, toggleWidth, toggleHeight, (float) mouseX, (float) mouseY) && mouseButton == 0) {
             this.setting.set(!this.setting.get());
         }
         return super.mouseClicked(mouseX, mouseY, mouseButton);

@@ -1,6 +1,7 @@
 package dev.sakura.gui.clickgui.component.values;
 
 import dev.sakura.gui.Component;
+import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -34,18 +35,20 @@ public class MultiBoolValueComponent extends Component {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        float offset = 4;
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float titleFontSize = baseFontSize * 0.75f;
+        float offset = 4 * scale;
         float heightoff = 0;
-        int font = FontLoader.regular(FONT_SIZE);
-        float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
+        int font = FontLoader.regular(titleFontSize);
+        float fontHeight = NanoVGHelper.getFontHeight(font, titleFontSize);
 
-        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, FONT_SIZE, WHITE));
+        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, titleFontSize, WHITE));
 
         for (BoolValue boolValue : setting.getValues()) {
-            float off = NanoVGHelper.getTextWidth(boolValue.getName(), font, FONT_SIZE) + 4;
-            if (offset + off >= getWidth() - 4) {
-                offset = 4;
-                heightoff += 10;
+            float off = NanoVGHelper.getTextWidth(boolValue.getName(), font, titleFontSize) + 4 * scale;
+            if (offset + off >= getWidth() - 4 * scale) {
+                offset = 4 * scale;
+                heightoff += 10 * scale;
             }
             select.putIfAbsent(boolValue, new EaseOutSine(250, 1));
             EaseOutSine anim = select.get(boolValue);
@@ -54,30 +57,32 @@ public class MultiBoolValueComponent extends Component {
             float finalOffset = offset;
             float finalHeightoff = heightoff;
             Color textColor = new Color(ColorUtil.interpolateColor2(GRAY, WHITE, anim.getOutput().floatValue()));
-            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(boolValue.getName(), getX() + finalOffset + 4, getY() + 2 + finalHeightoff + fontHeight, font, FONT_SIZE, textColor));
+            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(boolValue.getName(), getX() + finalOffset + 4 * scale, getY() + 2 * scale + finalHeightoff + fontHeight, font, titleFontSize, textColor));
 
             offset += off;
         }
 
-        setHeight(23 + heightoff);
+        setHeight(23 * scale + heightoff);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        float offset = 4;
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float titleFontSize = baseFontSize * 0.75f;
+        float offset = 4 * scale;
         float heightoff = 0;
-        int font = FontLoader.regular(FONT_SIZE);
-        float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
+        int font = FontLoader.regular(titleFontSize);
+        float fontHeight = NanoVGHelper.getFontHeight(font, titleFontSize);
 
         for (BoolValue boolValue : setting.getValues()) {
-            float textWidth = NanoVGHelper.getTextWidth(boolValue.getName(), font, FONT_SIZE);
-            float off = textWidth + 4;
-            if (offset + off >= getWidth() - 3) {
-                offset = 4;
-                heightoff += 10;
+            float textWidth = NanoVGHelper.getTextWidth(boolValue.getName(), font, titleFontSize);
+            float off = textWidth + 4 * scale;
+            if (offset + off >= getWidth() - 3 * scale) {
+                offset = 4 * scale;
+                heightoff += 10 * scale;
             }
-            if (RenderUtil.isHovering(getX() + offset, getY() + 1 + heightoff, textWidth, fontHeight, (float) mouseX, (float) mouseY) && mouseButton == 0) {
+            if (RenderUtil.isHovering(getX() + offset, getY() + 1 * scale + heightoff, textWidth, fontHeight, (float) mouseX, (float) mouseY) && mouseButton == 0) {
                 boolValue.set(!boolValue.get());
             }
             offset += off;

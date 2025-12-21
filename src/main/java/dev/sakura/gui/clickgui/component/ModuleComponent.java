@@ -26,6 +26,7 @@ public class ModuleComponent implements IComponent {
     private static final int MODULE_HEIGHT = 18;
 
     private float x, y, width, height = MODULE_HEIGHT;
+    private float scale = 1.0f;
     private final Module module;
     private boolean opened;
     private boolean listening = false;
@@ -58,7 +59,9 @@ public class ModuleComponent implements IComponent {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        float yOffset = 18;
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float scaledHeight = MODULE_HEIGHT * scale;
+        float yOffset = scaledHeight;
         openAnimation.setDirection(opened ? Direction.FORWARDS : Direction.BACKWARDS);
         toggleAnimation.setDirection(module.isEnabled() ? Direction.FORWARDS : Direction.BACKWARDS);
         hoverAnimation.setDirection(isHovered(mouseX, mouseY) ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -67,11 +70,12 @@ public class ModuleComponent implements IComponent {
         for (Component component : settings) {
             if (!component.isVisible()) continue;
             hasVisibleSettings = true;
+            component.setScale(scale);
             yOffset += (float) (component.getHeight() * openAnimation.getOutput());
         }
 
         if (hasVisibleSettings && openAnimation.getOutput() > 0) {
-            yOffset += (float) (4 * openAnimation.getOutput());
+            yOffset += (float) (4 * scale * openAnimation.getOutput());
         }
 
         this.height = yOffset;
@@ -81,22 +85,22 @@ public class ModuleComponent implements IComponent {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             if (module.isEnabled()) {
-                NanoVGHelper.drawGradientRRect2(x, y, width, 18, 0, ClickGui.color(0), ClickGui.color2(0));
+                NanoVGHelper.drawGradientRRect2(x, y, width, scaledHeight, 0, ClickGui.color(0), ClickGui.color2(0));
             }
-            NanoVGHelper.drawRect(x, y, width, MODULE_HEIGHT, ColorUtil.applyOpacity(ClickGui.backgroundColor.get(), 0.4f));
+            NanoVGHelper.drawRect(x, y, width, scaledHeight, ColorUtil.applyOpacity(ClickGui.backgroundColor.get(), 0.4f));
 
             if (finalHasVisibleSettings && openAnimation.getOutput() > 0) {
-                float expandedHeight = (float) ((finalYOffset - 18) * openAnimation.getOutput());
-                NanoVGHelper.drawRect(x, y + 18, width, expandedHeight,
+                float expandedHeight = (float) ((finalYOffset - scaledHeight) * openAnimation.getOutput());
+                NanoVGHelper.drawRect(x, y + scaledHeight, width, expandedHeight,
                         ColorUtil.applyOpacity(ClickGui.expandedBackgroundColor.get(), (float) (0.3f * openAnimation.getOutput())));
             }
 
-            NanoVGHelper.drawString(module.getName(), x + 4, y + 11, FontLoader.regular(7.5f), 7.5f, Color.WHITE);
+            NanoVGHelper.drawString(module.getName(), x + 4 * scale, y + 11 * scale, FontLoader.regular(baseFontSize * 0.75f), baseFontSize * 0.75f, Color.WHITE);
 
-            float boxWidth = 18;
-            float boxHeight = 8;
-            float boxX = x + width - boxWidth - 4;
-            float boxY = y + (MODULE_HEIGHT - boxHeight) / 2;
+            float boxWidth = 18 * scale;
+            float boxHeight = 8 * scale;
+            float boxX = x + width - boxWidth - 4 * scale;
+            float boxY = y + (scaledHeight - boxHeight) / 2;
 
             int keyCode = module.getKey();
             boolean hasKey = keyCode != 0 && keyCode != GLFW.GLFW_KEY_UNKNOWN;
@@ -114,10 +118,10 @@ public class ModuleComponent implements IComponent {
                 borderColor = ColorUtil.applyOpacity(themeColor, hasKey ? 0.9f : 0.5f);
             }
 
-            NanoVGHelper.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 2, bgColor);
-            NanoVGHelper.drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 2, 0.5f, borderColor);
+            NanoVGHelper.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 2 * scale, bgColor);
+            NanoVGHelper.drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 2 * scale, 0.5f * scale, borderColor);
 
-            float fontSize = 5;
+            float fontSize = 5 * scale;
             int font = FontLoader.regular(fontSize);
             String displayText = listening ? "..." : (hasKey ? getKeyName(keyCode) : "");
             float textWidth = NanoVGHelper.getTextWidth(displayText, font, fontSize);
@@ -126,19 +130,19 @@ public class ModuleComponent implements IComponent {
             if (!displayText.isEmpty()) NanoVGHelper.drawString(displayText, textX, textY, font, fontSize, Color.WHITE);
 
             if (isHold && !listening) {
-                float lineWidth = hasKey ? textWidth + 1 : 6;
-                float lineX = hasKey ? textX - 0.5f : boxX + (boxWidth - lineWidth) / 2;
-                float lineY = boxY + boxHeight - 1;
-                NanoVGHelper.drawRect(lineX, lineY, lineWidth, 0.5f, Color.WHITE);
+                float lineWidth = hasKey ? textWidth + scale : 6 * scale;
+                float lineX = hasKey ? textX - 0.5f * scale : boxX + (boxWidth - lineWidth) / 2;
+                float lineY = boxY + boxHeight - scale;
+                NanoVGHelper.drawRect(lineX, lineY, lineWidth, 0.5f * scale, Color.WHITE);
             }
         });
 
-        float componentYOffset = 18;
+        float componentYOffset = scaledHeight;
         for (Component component : settings) {
             if (!component.isVisible()) continue;
-            component.setX(x + 4);
-            component.setY((float) (y + 10 + componentYOffset * openAnimation.getOutput()));
-            component.setWidth(width - 8);
+            component.setX(x + 4 * scale);
+            component.setY((float) (y + 10 * scale + componentYOffset * openAnimation.getOutput()));
+            component.setWidth(width - 8 * scale);
             if (openAnimation.getOutput() > .7f) {
                 component.render(guiGraphics, mouseX, mouseY, partialTicks);
             }
@@ -212,14 +216,14 @@ public class ModuleComponent implements IComponent {
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        return RenderUtil.isHovering(x, y, width, MODULE_HEIGHT, mouseX, mouseY);
+        return RenderUtil.isHovering(x, y, width, MODULE_HEIGHT * scale, mouseX, mouseY);
     }
 
     public boolean isBindBoxHovered(int mouseX, int mouseY) {
-        float boxWidth = 18;
-        float boxHeight = 8;
-        float boxX = x + width - boxWidth - 4;
-        float boxY = y + (MODULE_HEIGHT - boxHeight) / 2;
+        float boxWidth = 18 * scale;
+        float boxHeight = 8 * scale;
+        float boxX = x + width - boxWidth - 4 * scale;
+        float boxY = y + (MODULE_HEIGHT * scale - boxHeight) / 2;
         return RenderUtil.isHovering(boxX, boxY, boxWidth, boxHeight, mouseX, mouseY);
     }
 
@@ -289,6 +293,14 @@ public class ModuleComponent implements IComponent {
 
     public void setOpened(boolean opened) {
         this.opened = opened;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
     }
 
     private String getKeyName(int keyCode) {

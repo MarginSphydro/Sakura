@@ -1,6 +1,7 @@
 package dev.sakura.gui.clickgui.component.values;
 
 import dev.sakura.gui.Component;
+import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -25,7 +26,9 @@ public class StringValueComponent extends Component {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        setHeight(26);
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float titleFontSize = baseFontSize * 0.75f;
+        setHeight(26 * scale);
 
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastBlinkTime > 530) {
@@ -35,50 +38,51 @@ public class StringValueComponent extends Component {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             NanoVGHelper.drawString(setting.getName(), getX(), getY(),
-                    FontLoader.regular(7.5f), 7.5f, new Color(255, 255, 255, 255));
+                    FontLoader.regular(titleFontSize), titleFontSize, new Color(255, 255, 255, 255));
 
             float inputWidth = getWidth();
             float inputX = getX();
-            float inputY = getY() + 5;
-            float inputHeight = 12;
+            float inputY = getY() + 5 * scale;
+            float inputHeight = 12 * scale;
 
-            NanoVGHelper.drawRoundRect(inputX, inputY, inputWidth, inputHeight, 2,
+            NanoVGHelper.drawRoundRect(inputX, inputY, inputWidth, inputHeight, 2 * scale,
                     editing ? new Color(60, 60, 80) : new Color(40, 40, 40));
 
-            NanoVGHelper.drawRoundRectOutline(inputX, inputY, inputWidth, inputHeight, 2, 0.5f,
+            NanoVGHelper.drawRoundRectOutline(inputX, inputY, inputWidth, inputHeight, 2 * scale, 0.5f * scale,
                     editing ? new Color(100, 100, 150) : new Color(80, 80, 80));
 
             String displayText = editing ? tempText : setting.get();
             if (displayText == null) displayText = "";
 
-            float textWidth = NanoVGHelper.getTextWidth(displayText, FontLoader.regular(6.5f), 6.5f);
+            float textFontSize = baseFontSize * 0.65f;
+            float textWidth = NanoVGHelper.getTextWidth(displayText, FontLoader.regular(textFontSize), textFontSize);
             String trimmedText = displayText;
 
-            if (textWidth > inputWidth - 6) {
-                while (textWidth > inputWidth - 6 && !trimmedText.isEmpty()) {
+            if (textWidth > inputWidth - 6 * scale) {
+                while (textWidth > inputWidth - 6 * scale && !trimmedText.isEmpty()) {
                     if (editing && cursorPos == displayText.length()) {
                         trimmedText = trimmedText.substring(1);
                     } else {
                         trimmedText = trimmedText.substring(0, trimmedText.length() - 1);
                     }
                     textWidth = NanoVGHelper.getTextWidth(trimmedText + (editing && cursorPos == displayText.length() ? "" : "..."),
-                            FontLoader.regular(6.5f), 6.5f);
+                            FontLoader.regular(textFontSize), textFontSize);
                 }
                 if (!editing || cursorPos < displayText.length()) {
                     trimmedText = trimmedText + "...";
                 }
             }
 
-            NanoVGHelper.drawString(trimmedText, inputX + 2, inputY + 9,
-                    FontLoader.regular(6.5f), 6.5f,
+            NanoVGHelper.drawString(trimmedText, inputX + 2 * scale, inputY + 9 * scale,
+                    FontLoader.regular(textFontSize), textFontSize,
                     editing ? new Color(255, 255, 255) : new Color(200, 200, 200));
 
             if (editing && cursorVisible) {
                 String beforeCursor = tempText.substring(0, Math.min(cursorPos, tempText.length()));
-                float cursorX = inputX + 2 + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.regular(6.5f), 6.5f);
+                float cursorX = inputX + 2 * scale + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.regular(textFontSize), textFontSize);
 
-                if (cursorX < inputX + inputWidth - 2) {
-                    NanoVGHelper.drawRect(cursorX, inputY + 2, 0.5f, inputHeight - 4, new Color(255, 255, 255));
+                if (cursorX < inputX + inputWidth - 2 * scale) {
+                    NanoVGHelper.drawRect(cursorX, inputY + 2 * scale, 0.5f * scale, inputHeight - 4 * scale, new Color(255, 255, 255));
                 }
             }
         });
@@ -88,10 +92,10 @@ public class StringValueComponent extends Component {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        float inputWidth = getWidth() - 8;
-        float inputX = getX() + 1;
-        float inputY = getY() + 5;
-        float inputHeight = 12;
+        float inputWidth = getWidth() - 8 * scale;
+        float inputX = getX() + 1 * scale;
+        float inputY = getY() + 5 * scale;
+        float inputHeight = 12 * scale;
 
         if (RenderUtil.isHovering(inputX, inputY, inputWidth, inputHeight, (float) mouseX, (float) mouseY) && mouseButton == 0) {
             if (!editing) {

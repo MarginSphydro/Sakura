@@ -40,7 +40,9 @@ public class NumberValueComponent extends Component {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        setHeight(30);
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float titleFontSize = baseFontSize * 0.75f;
+        setHeight(30 * scale);
         float w = getWidth();
         double min = setting.getMin().doubleValue();
         double max = setting.getMax().doubleValue();
@@ -57,31 +59,33 @@ public class NumberValueComponent extends Component {
         }
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.regular(7.5f), 7.5f, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.regular(titleFontSize), titleFontSize, new Color(255, 255, 255, 255));
 
             if (editing) {
                 float inputWidth = w;
                 float inputX = getX();
-                float inputY = getY() + 7;
-                float inputHeight = 12;
+                float inputY = getY() + 7 * scale;
+                float inputHeight = 12 * scale;
 
-                NanoVGHelper.drawRoundRect(inputX, inputY, inputWidth, inputHeight, 2, new Color(60, 60, 80));
-                NanoVGHelper.drawRoundRectOutline(inputX, inputY, inputWidth, inputHeight, 2, 0.75f, new Color(100, 100, 150));
+                NanoVGHelper.drawRoundRect(inputX, inputY, inputWidth, inputHeight, 2 * scale, new Color(60, 60, 80));
+                NanoVGHelper.drawRoundRectOutline(inputX, inputY, inputWidth, inputHeight, 2 * scale, 0.75f * scale, new Color(100, 100, 150));
 
+                float textFontSize = baseFontSize * 0.6f;
                 String displayText = tempText;
-                NanoVGHelper.drawString(displayText, inputX + 3, inputY + 9, FontLoader.regular(6), 6, new Color(255, 255, 255));
+                NanoVGHelper.drawString(displayText, inputX + 3 * scale, inputY + 9 * scale, FontLoader.regular(textFontSize), textFontSize, new Color(255, 255, 255));
 
                 if (cursorVisible) {
                     String beforeCursor = tempText.substring(0, Math.min(cursorPos, tempText.length()));
-                    float cursorX = inputX + 3 + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.regular(6), 6);
-                    if (cursorX < inputX + inputWidth - 3) {
-                        NanoVGHelper.drawRect(cursorX, inputY + 2, 0.5f, inputHeight - 4, new Color(255, 255, 255));
+                    float cursorX = inputX + 3 * scale + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.regular(textFontSize), textFontSize);
+                    if (cursorX < inputX + inputWidth - 3 * scale) {
+                        NanoVGHelper.drawRect(cursorX, inputY + 2 * scale, 0.5f * scale, inputHeight - 4 * scale, new Color(255, 255, 255));
                     }
                 }
 
                 String hint = "Enter";
-                float hintWidth = NanoVGHelper.getTextWidth(hint, FontLoader.regular(5), 5);
-                NanoVGHelper.drawString(hint, inputX + inputWidth - hintWidth - 2, inputY + inputHeight / 2 + 2, FontLoader.regular(5), 5, new Color(150, 150, 150));
+                float hintFontSize = baseFontSize * 0.5f;
+                float hintWidth = NanoVGHelper.getTextWidth(hint, FontLoader.regular(hintFontSize), hintFontSize);
+                NanoVGHelper.drawString(hint, inputX + inputWidth - hintWidth - 2 * scale, inputY + inputHeight / 2 + 2 * scale, FontLoader.regular(hintFontSize), hintFontSize, new Color(150, 150, 150));
             } else {
                 String minStr = isInteger ? String.valueOf(setting.getMin().intValue()) : String.valueOf(setting.getMin());
                 String maxStr = isInteger ? String.valueOf(setting.getMax().intValue()) : String.valueOf(setting.getMax());
@@ -93,13 +97,14 @@ public class NumberValueComponent extends Component {
                     currentStr = df.format(current);
                 }
 
-                NanoVGHelper.drawString(minStr, getX(), getY() + 18, FontLoader.regular(5), 5, new Color(255, 255, 255, 255));
-                NanoVGHelper.drawCenteredString(currentStr, getX() + getWidth() / 2, getY() + 18 + NanoVGHelper.getFontHeight(FontLoader.regular(5), 5) / 2, FontLoader.regular(5), 5, new Color(255, 255, 255, 255));
-                NanoVGHelper.drawString(maxStr, getX() + getWidth() - NanoVGHelper.getTextWidth(maxStr, FontLoader.regular(5), 5), getY() + 18, FontLoader.regular(5), 5, new Color(255, 255, 255, 255));
+                float labelFontSize = baseFontSize * 0.5f;
+                NanoVGHelper.drawString(minStr, getX(), getY() + 18 * scale, FontLoader.regular(labelFontSize), labelFontSize, new Color(255, 255, 255, 255));
+                NanoVGHelper.drawCenteredString(currentStr, getX() + getWidth() / 2, getY() + 18 * scale + NanoVGHelper.getFontHeight(FontLoader.regular(labelFontSize), labelFontSize) / 2, FontLoader.regular(labelFontSize), labelFontSize, new Color(255, 255, 255, 255));
+                NanoVGHelper.drawString(maxStr, getX() + getWidth() - NanoVGHelper.getTextWidth(maxStr, FontLoader.regular(labelFontSize), labelFontSize), getY() + 18 * scale, FontLoader.regular(labelFontSize), labelFontSize, new Color(255, 255, 255, 255));
 
-                NanoVGHelper.drawRoundRect(getX(), getY() + 7, w, 4, 2, new Color(200, 200, 200, 255));
-                NanoVGHelper.drawGradientRRect2(getX(), getY() + 7, sliderWidth, 4, 2, ClickGui.color(0), ClickGui.color2(0));
-                NanoVGHelper.drawCircle(getX() + sliderWidth, getY() + 9, 3.5f, new Color(255, 255, 255));
+                NanoVGHelper.drawRoundRect(getX(), getY() + 7 * scale, w, 4 * scale, 2 * scale, new Color(200, 200, 200, 255));
+                NanoVGHelper.drawGradientRRect2(getX(), getY() + 7 * scale, sliderWidth, 4 * scale, 2 * scale, ClickGui.color(0), ClickGui.color2(0));
+                NanoVGHelper.drawCircle(getX() + sliderWidth, getY() + 9 * scale, 3.5f * scale, new Color(255, 255, 255));
             }
         });
 
@@ -124,7 +129,7 @@ public class NumberValueComponent extends Component {
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         float w = getWidth();
 
-        if (RenderUtil.isHovering(getX(), getY() + 7, w, 4, (float) mouseX, (float) mouseY)) {
+        if (RenderUtil.isHovering(getX(), getY() + 7 * scale, w, 4 * scale, (float) mouseX, (float) mouseY)) {
             if (mouseButton == 0 && !editing) {
                 dragging = true;
             } else if (mouseButton == 1 && !editing) {

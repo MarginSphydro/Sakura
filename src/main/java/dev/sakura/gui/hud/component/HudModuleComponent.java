@@ -24,6 +24,8 @@ public class HudModuleComponent implements IComponent {
     private static final int MODULE_HEIGHT = 18;
 
     private float x, y, width, height = MODULE_HEIGHT;
+    private float guiScale = 1.0f;
+    private float fontSize = 10.0f;
     private final HudModule hudModule;
     private boolean opened;
     private final EaseInOutQuad openAnimation = new EaseInOutQuad(250, 1);
@@ -56,7 +58,8 @@ public class HudModuleComponent implements IComponent {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        float yOffset = 18;
+        float scaledModuleHeight = MODULE_HEIGHT * guiScale;
+        float yOffset = scaledModuleHeight;
         openAnimation.setDirection(opened ? Direction.FORWARDS : Direction.BACKWARDS);
         toggleAnimation.setDirection(hudModule.isEnabled() ? Direction.FORWARDS : Direction.BACKWARDS);
         hoverAnimation.setDirection(isHovered(mouseX, mouseY) ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -69,7 +72,7 @@ public class HudModuleComponent implements IComponent {
         }
 
         if (hasVisibleSettings && openAnimation.getOutput() > 0) {
-            yOffset += (float) (4 * openAnimation.getOutput());
+            yOffset += (float) (4 * guiScale * openAnimation.getOutput());
         }
 
         this.height = yOffset;
@@ -79,25 +82,26 @@ public class HudModuleComponent implements IComponent {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             if (hudModule.isEnabled()) {
-                NanoVGHelper.drawGradientRRect2(x, y, width, 18, 0, ClickGui.color(0), ClickGui.color2(0));
+                NanoVGHelper.drawGradientRRect2(x, y, width, scaledModuleHeight, 0, ClickGui.color(0), ClickGui.color2(0));
             }
-            NanoVGHelper.drawRect(x, y, width, MODULE_HEIGHT, ColorUtil.applyOpacity(ClickGui.backgroundColor.get(), 0.4f));
+            NanoVGHelper.drawRect(x, y, width, scaledModuleHeight, ColorUtil.applyOpacity(ClickGui.backgroundColor.get(), 0.4f));
 
             if (finalHasVisibleSettings && openAnimation.getOutput() > 0) {
-                float expandedHeight = (float) ((finalYOffset - 18) * openAnimation.getOutput());
-                NanoVGHelper.drawRect(x, y + 18, width, expandedHeight,
+                float expandedHeight = (float) ((finalYOffset - scaledModuleHeight) * openAnimation.getOutput());
+                NanoVGHelper.drawRect(x, y + scaledModuleHeight, width, expandedHeight,
                         ColorUtil.applyOpacity(ClickGui.expandedBackgroundColor.get(), (float) (0.3f * openAnimation.getOutput())));
             }
 
-            NanoVGHelper.drawString(hudModule.getName(), x + 4, y + 11, FontLoader.regular(7.5f), 7.5f, Color.WHITE);
+            float textFontSize = fontSize * 0.75f;
+            NanoVGHelper.drawString(hudModule.getName(), x + 4 * guiScale, y + 11 * guiScale, FontLoader.regular(textFontSize), textFontSize, Color.WHITE);
         });
 
-        float componentYOffset = 18;
+        float componentYOffset = scaledModuleHeight;
         for (Component component : settings) {
             if (!component.isVisible()) continue;
-            component.setX(x + 4);
-            component.setY((float) (y + 10 + componentYOffset * openAnimation.getOutput()));
-            component.setWidth(width - 8);
+            component.setX(x + 4 * guiScale);
+            component.setY((float) (y + 10 * guiScale + componentYOffset * openAnimation.getOutput()));
+            component.setWidth(width - 8 * guiScale);
             if (openAnimation.getOutput() > .7f) {
                 component.render(guiGraphics, mouseX, mouseY, partialTicks);
             }
@@ -150,7 +154,7 @@ public class HudModuleComponent implements IComponent {
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        return RenderUtil.isHovering(x, y, width, 18, mouseX, mouseY);
+        return RenderUtil.isHovering(x, y, width, 18 * guiScale, mouseX, mouseY);
     }
 
     public float getX() {
@@ -187,5 +191,13 @@ public class HudModuleComponent implements IComponent {
 
     public boolean isOpened() {
         return opened;
+    }
+
+    public void setGuiScale(float guiScale) {
+        this.guiScale = guiScale;
+    }
+
+    public void setFontSize(float fontSize) {
+        this.fontSize = fontSize;
     }
 }

@@ -19,7 +19,7 @@ import java.awt.*;
 
 public class HudPanel implements IComponent {
     private float x, y, dragX, dragY;
-    private final float width = 110;
+    private float width = 110;
     private float height;
     private boolean dragging, opened;
     private final ObjectArrayList<HudModuleComponent> hudComponents = new ObjectArrayList<>();
@@ -39,27 +39,34 @@ public class HudPanel implements IComponent {
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         update(mouseX, mouseY);
+        float guiScale = (float) ClickGui.getGuiScale();
+        float fontSize = (float) ClickGui.getFontSize();
+        width = 110 * guiScale;
+        float headerHeight = 18 * guiScale;
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             Color bgColor = ClickGui.backgroundColor.get();
-            NanoVGHelper.drawRoundRectBloom(x, y - 1, width, 18 + ((height - 18)), 7, new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 100));
-            NanoVGHelper.drawString("HUD", x + 4, y + 12f, FontLoader.bold(10), 10, new Color(255, 255, 255, 255));
-            NanoVGHelper.drawString("H", x + width - NanoVGHelper.getTextWidth("H", FontLoader.icons(15), 15) - 3, y + 13f, FontLoader.icons(15), 15, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawRoundRectBloom(x, y - 1, width, headerHeight + ((height - headerHeight)), 7 * guiScale, new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 100));
+            NanoVGHelper.drawString("HUD", x + 4 * guiScale, y + 12f * guiScale, FontLoader.bold((int) fontSize), fontSize, new Color(255, 255, 255, 255));
+            float iconSize = 15 * guiScale;
+            NanoVGHelper.drawString("H", x + width - NanoVGHelper.getTextWidth("H", FontLoader.icons((int) iconSize), iconSize) - 3 * guiScale, y + 13f * guiScale, FontLoader.icons((int) iconSize), iconSize, new Color(255, 255, 255, 255));
         });
 
-        float componentOffsetY = 18;
+        float componentOffsetY = headerHeight;
 
         for (HudModuleComponent component : hudComponents) {
             component.setX(x);
             component.setY(y + componentOffsetY);
             component.setWidth(width);
+            component.setGuiScale(guiScale);
+            component.setFontSize(fontSize);
             if (openAnimation.getOutput() > 0.7f) {
                 component.render(guiGraphics, mouseX, mouseY, partialTicks);
             }
             componentOffsetY += (float) (component.getHeight() * openAnimation.getOutput());
         }
 
-        height = componentOffsetY + 9;
+        height = componentOffsetY + 9 * guiScale;
 
         IComponent.super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
@@ -133,7 +140,8 @@ public class HudPanel implements IComponent {
     }
 
     public boolean isHovered(int mouseX, int mouseY) {
-        return RenderUtil.isHovering(x, y, width, 18, mouseX, mouseY);
+        float guiScale = (float) ClickGui.getGuiScale();
+        return RenderUtil.isHovering(x, y, width, 18 * guiScale, mouseX, mouseY);
     }
 
     public float getX() {

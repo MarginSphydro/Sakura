@@ -1,6 +1,7 @@
 package dev.sakura.gui.clickgui.component.values;
 
 import dev.sakura.gui.Component;
+import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -35,13 +36,15 @@ public class ColorValueComponent extends Component {
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
         open.setDirection(opened ? Direction.FORWARDS : Direction.BACKWARDS);
-        float fontHeight = NanoVGHelper.getFontHeight(FontLoader.regular(7.5f), 7.5f);
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float titleFontSize = baseFontSize * 0.75f;
+        float fontHeight = NanoVGHelper.getFontHeight(FontLoader.regular(titleFontSize), titleFontSize);
 
-        float baseHeight = fontHeight + 2 + 50 + 3 + 5;
+        float baseHeight = fontHeight + 2 * scale + 50 * scale + 3 * scale + 5 * scale;
         if (setting.allowAlpha()) {
-            baseHeight += 3 + 5;
+            baseHeight += 3 * scale + 5 * scale;
         }
-        baseHeight += 3 + 5 + 8;
+        baseHeight += 3 * scale + 5 * scale + 8 * scale;
 
         this.setHeight((float) (18 + (baseHeight * open.getOutput())));
         final float[] hsb = new float[]{setting.getHue(), setting.getSaturation(), setting.getBrightness()};
@@ -59,9 +62,9 @@ public class ColorValueComponent extends Component {
         int b = currentColor.getBlue();
 
         NanoVGRenderer.INSTANCE.draw(canvas -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.regular(7.5f), 7.5f, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.regular(titleFontSize), titleFontSize, new Color(255, 255, 255, 255));
 
-            NanoVGHelper.drawCircle(getX() + getWidth() - 5, getY() - 3, 4, setting.get());
+            NanoVGHelper.drawCircle(getX() + getWidth() - 5 * scale, getY() - 3 * scale, 4 * scale, setting.get());
 
             if (open.getOutput() > 0.01) {
                 float sliderX = getX();

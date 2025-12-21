@@ -1,6 +1,7 @@
 package dev.sakura.gui.clickgui.component.values;
 
 import dev.sakura.gui.Component;
+import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -27,45 +28,49 @@ public class EnumValueComponent extends Component {
 
     @Override
     public void render(DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float fontSize = baseFontSize * 0.75f;
         float offset = 0;
         float heightoff = 0;
 
-        int font = FontLoader.regular(FONT_SIZE);
-        float fontHeight = NanoVGHelper.getFontHeight(font, FONT_SIZE);
+        int font = FontLoader.regular(fontSize);
+        float fontHeight = NanoVGHelper.getFontHeight(font, fontSize);
         String currentMode = setting.get().name();
 
-        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, FONT_SIZE, WHITE));
+        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, fontSize, WHITE));
 
         for (String text : setting.getModeNames()) {
-            float off = NanoVGHelper.getTextWidth(text, font, FONT_SIZE) + 4;
-            if (offset + off >= (getWidth() - 4)) {
+            float off = NanoVGHelper.getTextWidth(text, font, fontSize) + 4 * scale;
+            if (offset + off >= (getWidth() - 4 * scale)) {
                 offset = 0;
-                heightoff += 10;
+                heightoff += 10 * scale;
             }
             float finalOffset = offset;
             float finalHeightoff = heightoff;
             Color textColor = text.equals(currentMode) ? WHITE : GRAY;
-            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(text, getX() + finalOffset + 4, getY() + 6 + finalHeightoff + fontHeight, font, FONT_SIZE, textColor));
+            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(text, getX() + finalOffset + 4 * scale, getY() + 6 * scale + finalHeightoff + fontHeight, font, fontSize, textColor));
             offset += off;
         }
 
-        setHeight(27 + heightoff);
+        setHeight(27 * scale + heightoff);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+        float baseFontSize = (float) ClickGui.getFontSize();
+        float fontSize = baseFontSize * 0.75f;
         float offset = 0;
         float heightoff = 0;
-        int font = FontLoader.regular(FONT_SIZE);
+        int font = FontLoader.regular(fontSize);
         for (String text : setting.getModeNames()) {
-            float textWidth = NanoVGHelper.getTextWidth(text, font, FONT_SIZE);
-            float off = textWidth + 4;
-            if (offset + off >= (getWidth() - 4)) {
+            float textWidth = NanoVGHelper.getTextWidth(text, font, fontSize);
+            float off = textWidth + 4 * scale;
+            if (offset + off >= (getWidth() - 4 * scale)) {
                 offset = 0;
-                heightoff += 10;
+                heightoff += 10 * scale;
             }
-            if (RenderUtil.isHovering(getX() + offset + 4, getY() + 6 + heightoff, textWidth, NanoVGHelper.getFontHeight(font, FONT_SIZE), (float) mouseX, (float) mouseY) && mouseButton == 0) {
+            if (RenderUtil.isHovering(getX() + offset + 4 * scale, getY() + 6 * scale + heightoff, textWidth, NanoVGHelper.getFontHeight(font, fontSize), (float) mouseX, (float) mouseY) && mouseButton == 0) {
                 setting.setMode(text);
             }
             offset += off;
