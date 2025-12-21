@@ -2,7 +2,6 @@ package dev.sakura.module.impl.movement;
 
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.player.StrafeEvent;
-import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
@@ -45,9 +44,11 @@ public class Scaffold extends Module {
     private final BoolValue shrink = new BoolValue("Shrink", true, render::get);
     private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 183, 197, 100), render::get);
     private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 105, 180), render::get);
+
     private int yLevel;
     private BlockCache blockCache;
     private int airTicks;
+
     public Scaffold() {
         super("Scaffold", Category.Movement);
     }
@@ -84,18 +85,18 @@ public class Scaffold extends Module {
                 blockCache = null;
                 Vector2f rotation = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
                 MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
-                RotationManager.setRotations(rotation, rotationBackSpeed.get(), movementFix);
+                RotationManager.setRotations(rotation, rotationBackSpeed.get(), movementFix, RotationManager.Priority.High);
             } else {
                 if (airTicks >= tellyTick.get() && blockCache != null) {
                     MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
-                    RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix);
+                    RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix, RotationManager.Priority.High);
                     place();
                 }
                 airTicks++;
             }
         } else if (blockCache != null) {
             MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
-            RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix);
+            RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix, RotationManager.Priority.High);
             place();
         }
     }
@@ -105,11 +106,6 @@ public class Scaffold extends Module {
         if (mc.player == null || mc.world == null) return;
         if (mc.player.isOnGround() && MovementUtil.isMoving() && telly.get() && !mc.options.jumpKey.isPressed())
             mc.player.jump();
-    }
-
-    @EventHandler
-    public void onRender3D(Render3DEvent event) {
-        //TODO:Render3DUtils.drawFullBox();
     }
 
     public int getYLevel() {
@@ -181,8 +177,9 @@ public class Scaffold extends Module {
     }
 
     private boolean checkBlock(Vec3d baseVec, BlockPos pos) {
-        if (!(mc.world.getBlockState(pos).getBlock() instanceof AirBlock) && !(mc.world.getBlockState(pos).getBlock() instanceof FluidBlock))
+        if (!(mc.world.getBlockState(pos).getBlock() instanceof AirBlock) && !(mc.world.getBlockState(pos).getBlock() instanceof FluidBlock)) {
             return false;
+        }
 
         Vec3d center = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         for (Direction dir : Direction.values()) {

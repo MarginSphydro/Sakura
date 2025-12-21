@@ -5,8 +5,6 @@ import dev.sakura.events.input.MouseButtonEvent;
 import dev.sakura.events.misc.KeyAction;
 import dev.sakura.events.misc.KeyEvent;
 import dev.sakura.events.render.Render2DEvent;
-import dev.sakura.gui.clickgui.ClickGuiScreen;
-import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.impl.NotificationManager;
 import dev.sakura.manager.impl.SoundManager;
 import dev.sakura.module.impl.client.ClickGui;
@@ -21,12 +19,13 @@ import dev.sakura.module.impl.player.NoRotate;
 import dev.sakura.module.impl.render.*;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.gui.screen.Screen;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static dev.sakura.Sakura.mc;
 
 public class ModuleManager {
     private final Map<Class<? extends Module>, Module> modules;
@@ -45,8 +44,10 @@ public class ModuleManager {
     private static class ManualLoader {
         static void load(ModuleManager manager) {
             // Combat
+            manager.tryLoad(() -> new KillAura());
             manager.tryLoad(() -> new AutoPot());
             manager.tryLoad(() -> new Burrow());
+            manager.tryLoad(() -> new CrystalAura());
             manager.tryLoad(() -> new Surround());
             manager.tryLoad(() -> new Velocity());
             manager.tryLoad(() -> new AutoTotem());
@@ -76,6 +77,8 @@ public class ModuleManager {
             manager.tryLoad(() -> new XRay());
             manager.tryLoad(() -> new NameTag());
             manager.tryLoad(() -> new Glow());
+            manager.tryLoad(() -> new TotemParticles());
+
 
             // Client
             manager.tryLoad(() -> new ClickGui());
@@ -139,10 +142,7 @@ public class ModuleManager {
 
     @EventHandler
     public void onKey(KeyEvent event) {
-        Screen currentScreen = Sakura.mc.currentScreen;
-        if (currentScreen instanceof ClickGuiScreen || currentScreen instanceof HudEditorScreen) {
-            return;
-        }
+        if (mc.currentScreen != null) return;
 
         boolean isPress = event.getAction() == KeyAction.Press;
         boolean isRelease = event.getAction() == KeyAction.Release;

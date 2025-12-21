@@ -1,6 +1,7 @@
 package dev.sakura.mixin.entity;
 
 import dev.sakura.Sakura;
+import dev.sakura.events.entity.EntityPushEvent;
 import dev.sakura.events.player.MoveEvent;
 import dev.sakura.events.player.RayTraceEvent;
 import dev.sakura.events.player.StrafeEvent;
@@ -56,6 +57,17 @@ public abstract class MixinEntity {
             return event.getYaw();
         }
         return instance.getYaw();
+    }
+
+    @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
+    private void onPushAwayFrom(Entity entity, CallbackInfo ci) {
+        if ((Object) this == mc.player) {
+            EntityPushEvent event = new EntityPushEvent((Entity) (Object) this, entity);
+            Sakura.EVENT_BUS.post(event);
+            if (event.isCancelled()) {
+                ci.cancel();
+            }
+        }
     }
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)

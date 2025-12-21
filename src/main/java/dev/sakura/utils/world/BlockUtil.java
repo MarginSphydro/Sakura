@@ -1,7 +1,6 @@
 package dev.sakura.utils.world;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.util.Hand;
@@ -19,14 +18,6 @@ import static dev.sakura.Sakura.mc;
 
 public class BlockUtil {
     public static List<BlockPos> placedPos = new ArrayList<>();
-
-    public static boolean canPlaceCrystal(BlockPos pos) {
-        BlockState state = mc.world.getBlockState(pos);
-        if (!state.isOf(Blocks.OBSIDIAN) && !state.isOf(Blocks.BEDROCK)) return false;
-        BlockPos up = pos.up();
-        BlockPos up2 = up.up();
-        return mc.world.isAir(up) && mc.world.isAir(up2);
-    }
 
     public static List<BlockPos> getSphere(float range) {
         List<BlockPos> sphere = new ArrayList<>();

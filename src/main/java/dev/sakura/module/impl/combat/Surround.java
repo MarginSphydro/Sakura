@@ -120,7 +120,7 @@ public class Surround extends Module {
         if (targets.isEmpty()) {
             if (rotate.get()) {
                 Vector2f current = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
-                RotationManager.setRotations(current, rotationBackSpeed.get(), MovementFix.NORMAL);
+                RotationManager.setRotations(current, rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Highest);
             }
             return;
         }
@@ -268,7 +268,7 @@ public class Surround extends Module {
         if (data == null) return 0;
 
         if (rotate.get()) {
-            RotationManager.lookAt(data.hitVec, rotationSpeed.get());
+            RotationManager.lookAt(data.hitVec, rotationSpeed.get(), RotationManager.Priority.Highest);
             if (!RotationManager.isLookingAt(data.lingju, data.mian)) {
                 return 2;
             }

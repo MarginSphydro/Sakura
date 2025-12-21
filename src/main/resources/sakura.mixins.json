@@ -12,13 +12,14 @@
   },
   "client": [
     "MixinMain",
-    "accessor.IHorseScreenHandler",
-    "accessor.IAccessorBundlePacket",
     "accessor.IAbstractBlockSettings",
+    "accessor.IAccessorBundlePacket",
     "accessor.IChatInputSuggestor",
     "accessor.IClientPlayerEntity",
     "accessor.IEntity",
+    "accessor.IHorseScreenHandler",
     "accessor.IMinecraftClient",
+    "accessor.IParticle",
     "accessor.ISuggestionWindow",
     "client.MixinChatInputSuggestor",
     "client.MixinGameOptions",
@@ -33,6 +34,7 @@
     "network.MixinClientConnection",
     "network.MixinClientPlayNetworkHandler",
     "render.MixinBackgroundRenderer",
+    "render.MixinBlock",
     "render.MixinBossBarHud",
     "render.MixinCamera",
     "render.MixinChatScreen",
@@ -42,6 +44,8 @@
     "render.MixinInGameOverlayRenderer",
     "render.MixinLightmapTextureManager",
     "render.MixinLivingEntityRenderer",
+    "render.MixinParticleManager",
+    "render.MixinPlayerEntityRenderer",
     "render.MixinScreen",
     "render.MixinShaderLoader",
     "render.MixinSplashOverlay",
@@ -49,10 +53,10 @@
     "render.MixinTitleScreen",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
-    "render.MixinParticleManager",
-    "render.MixinBlock",
     "shader.MixinShaderProgram",
-    "render.MixinPlayerEntityRenderer",
-    "shader.MixinShaderProgram"
+    "world.MixinFlowableFluid"
+  ],
+  "mixins": [
+    "accessor.IEntityTrackingSection"
   ]
 }

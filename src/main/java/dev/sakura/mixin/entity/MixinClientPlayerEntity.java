@@ -1,6 +1,7 @@
 package dev.sakura.mixin.entity;
 
 import dev.sakura.Sakura;
+import dev.sakura.events.entity.BlockPushEvent;
 import dev.sakura.events.player.MotionEvent;
 import dev.sakura.events.player.PlayerTickEvent;
 import dev.sakura.events.type.EventType;
@@ -58,6 +59,15 @@ public class MixinClientPlayerEntity {
     private void sendMovementPacketsTailInject(CallbackInfo info) {
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
         Sakura.EVENT_BUS.post(new MotionEvent(EventType.POST, player.getYaw(), player.getPitch()));
+    }
+
+    @Inject(method = "pushOutOfBlocks", at = @At("HEAD"), cancellable = true)
+    private void onPushOutOfBlocks(double x, double z, CallbackInfo ci) {
+        BlockPushEvent event = new BlockPushEvent((ClientPlayerEntity) (Object) this);
+        Sakura.EVENT_BUS.post(event);
+        if (event.isCancelled()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
