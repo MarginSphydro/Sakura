@@ -21,7 +21,6 @@ import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.projectile.FishingBobberEntity;
@@ -285,12 +284,12 @@ public class Velocity extends Module {
 
     private void sendRotationFix() {
         if (RotationManager.lastServerRotations == null) return;
-        
+
         float yaw = RotationManager.lastServerRotations.x;
         float pitch = RotationManager.lastServerRotations.y;
 
         RotationManager.setRotations(new Vector2f(yaw, pitch), 100, MovementFix.NORMAL);
-        
+
         mc.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(
                 PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK,
                 mc.player.isCrawling() ? mc.player.getBlockPos() : mc.player.getBlockPos().up(),

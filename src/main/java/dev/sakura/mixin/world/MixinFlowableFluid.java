@@ -2,7 +2,6 @@ package dev.sakura.mixin.world;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.entity.LiquidPushEvent;
-import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;

@@ -36,21 +36,45 @@ public class RotationManager {
     private static float rotationYawHead;
     private static int ticksExisted;
 
-    /*
-     * This method must be called on Pre Update Event to work correctly
-     */
-    public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement) {
-        setRotations(rotations, rotationSpeed, correctMovement, null);
+    private static int priority;
+
+    // 婆罗门这一块
+    public enum Priority {
+        Lowest(0),
+        Low(10),
+        Medium(50),
+        High(100),
+        Highest(1000);
+
+        public final int priority;
+
+        Priority(int priority) {
+            this.priority = priority;
+        }
     }
 
     /*
      * This method must be called on Pre Update Event to work correctly
      */
-    public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, final Function<Vector2f, Boolean> raycast) {
+    public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement) {
+        setRotations(rotations, rotationSpeed, correctMovement, null, Priority.Lowest);
+    }
+
+    public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, Priority priority) {
+        setRotations(rotations, rotationSpeed, correctMovement, null, priority);
+    }
+
+    /*
+     * This method must be called on Pre Update Event to work correctly
+     */
+    public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, final Function<Vector2f, Boolean> raycast, Priority priority) {
+        if (active && priority.priority < RotationManager.priority) return;
+
         RotationManager.targetRotations = rotations;
         RotationManager.rotationSpeed = rotationSpeed * 18;
         RotationManager.correctMovement = correctMovement;
         RotationManager.raycast = raycast;
+        RotationManager.priority = priority.priority;
         active = true;
 
         smooth();
@@ -208,6 +232,7 @@ public class RotationManager {
 
                 if (Math.abs((rotations.x - mc.player.getYaw()) % 360) < 1 && Math.abs((rotations.y - mc.player.getPitch())) < 1) {
                     active = false;
+                    priority = 0;
 
                     this.correctDisabledRotations();
                 }
@@ -318,8 +343,12 @@ public class RotationManager {
     }
 
     public static void lookAt(Vec3d target, double speed) {
+        lookAt(target, speed, Priority.Lowest);
+    }
+
+    public static void lookAt(Vec3d target, double speed, Priority priority) {
         Vector2f rotation = RotationUtil.calculate(target);
-        setRotations(rotation, speed, MovementFix.NORMAL);
+        setRotations(rotation, speed, MovementFix.NORMAL, priority);
     }
 
     public static boolean isLookingAt(BlockPos pos, Direction side) {

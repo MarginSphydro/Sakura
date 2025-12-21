@@ -34,20 +34,28 @@ public class NanoVGHelper {
     }
 
     /**
-     * 绘制字符串
+     * 绘制字符串（指定对齐方式）
      */
-    public static float drawString(String text, float x, float y, int font, Color color) {
+    public static float drawText(String text, float x, float y, int font, float size, int align, Color color) {
         long vg = getContext();
 
         nvgFontFaceId(vg, font);
-        nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+        nvgFontSize(vg, size);
+        nvgTextAlign(vg, align);
 
         NVGColor nvgColor = nvgColor(color);
         nvgFillColor(vg, nvgColor);
 
         nvgText(vg, x, y, text);
 
-        return getTextHeight(font, text);
+        return size;
+    }
+
+    /**
+     * 绘制字符串
+     */
+    public static float drawString(String text, float x, float y, int font, Color color) {
+        return drawText(text, x, y, font, 18, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE, color);
     }
 
     /**
@@ -77,27 +85,14 @@ public class NanoVGHelper {
      * 绘制字符串（指定字体大小）
      */
     public static float drawString(String text, float x, float y, int font, float size, Color color) {
-        long vg = getContext();
-
-        nvgFontFaceId(vg, font);
-        nvgFontSize(vg, size);
-        nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
-
-        NVGColor nvgColor = nvgColor(color);
-        nvgFillColor(vg, nvgColor);
-
-        nvgText(vg, x, y, text);
-
-        return size;
+        return drawText(text, x, y, font, size, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE, color);
     }
 
     /**
      * 绘制居中字符串
      */
     public static float drawCenteredString(String text, float x, float y, int font, float size, Color color) {
-        float width = getTextWidth(text, font, size);
-        float height = size;
-        return drawString(text, x - width / 2f, y - height / 2f, font, size, color);
+        return drawText(text, x, y, font, size, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE, color);
     }
 
     /**

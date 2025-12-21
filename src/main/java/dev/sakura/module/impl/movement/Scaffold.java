@@ -85,18 +85,18 @@ public class Scaffold extends Module {
                 blockCache = null;
                 Vector2f rotation = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
                 MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
-                RotationManager.setRotations(rotation, rotationBackSpeed.get(), movementFix);
+                RotationManager.setRotations(rotation, rotationBackSpeed.get(), movementFix, RotationManager.Priority.High);
             } else {
                 if (airTicks >= tellyTick.get() && blockCache != null) {
                     MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
-                    RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix);
+                    RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix, RotationManager.Priority.High);
                     place();
                 }
                 airTicks++;
             }
         } else if (blockCache != null) {
             MovementFix movementFix = moveFix.get() ? MovementFix.NORMAL : MovementFix.OFF;
-            RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix);
+            RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix, RotationManager.Priority.High);
             place();
         }
     }

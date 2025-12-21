@@ -1,5 +1,6 @@
 package dev.sakura.module.impl.combat;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.player.MotionEvent;
@@ -12,16 +13,15 @@ import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.render.Render3DUtil;
 import dev.sakura.utils.rotation.RaytraceUtil;
 import dev.sakura.utils.rotation.RotationUtil;
-import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.utils.time.TimerUtil;
+import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.render.*;
 import net.minecraft.client.gl.ShaderProgramKeys;
-import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.render.*;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -33,7 +33,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.MaceItem;
@@ -270,7 +269,7 @@ public class KillAura extends Module {
                 }
             }
 
-            RotationManager.setRotations(desired, 100, dev.sakura.utils.rotation.MovementFix.NORMAL);
+            RotationManager.setRotations(desired, 100, dev.sakura.utils.rotation.MovementFix.NORMAL, RotationManager.Priority.Medium);
             if (!silentRotate.get()) {
                 mc.player.setYaw(desired.x);
                 mc.player.setPitch(desired.y);
@@ -472,7 +471,8 @@ public class KillAura extends Module {
         if (e.age < ticksExisted.get()) return false;
 
         if (!invisibles.get() && e.isInvisible()) return false;
-        if (!(e instanceof PlayerEntity) && !(e instanceof LivingEntity) && !(e instanceof ShulkerBulletEntity)) return false;
+        if (!(e instanceof PlayerEntity) && !(e instanceof LivingEntity) && !(e instanceof ShulkerBulletEntity))
+            return false;
 
         if (e instanceof PlayerEntity) {
             if (!players.get()) return false;
@@ -504,7 +504,8 @@ public class KillAura extends Module {
     private double getPriorityValue(Entity e, Vec3d eyePos) {
         return switch (priority.get()) {
             case Distance -> eyePos.distanceTo(getAttackVec(e));
-            case Health -> e instanceof LivingEntity living ? (living.getHealth() + living.getAbsorptionAmount()) : Double.MAX_VALUE;
+            case Health ->
+                    e instanceof LivingEntity living ? (living.getHealth() + living.getAbsorptionAmount()) : Double.MAX_VALUE;
             case Armor -> e instanceof LivingEntity living ? getArmorDurability(living) : Double.MAX_VALUE;
         };
     }
@@ -593,7 +594,7 @@ public class KillAura extends Module {
     private int getWeaponSlot() {
         int bestSlot = -1;
         float bestDamage = -1f;
-        boolean prioritizeMace = !mc.player.getAbilities().flying && !mc.player.isOnGround(); 
+        boolean prioritizeMace = !mc.player.getAbilities().flying && !mc.player.isOnGround();
 
         for (int i = 0; i < 9; i++) {
             ItemStack stack = mc.player.getInventory().getStack(i);

@@ -5,6 +5,7 @@ import dev.sakura.Sakura;
 import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.manager.Managers;
 import dev.sakura.module.impl.render.NoRender;
+import dev.sakura.utils.render.MSAAFramebuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.ObjectAllocator;
 import net.minecraft.client.util.math.MatrixStack;
@@ -25,7 +26,7 @@ public class MixinWorldRenderer {
         matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
         matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0f));
 
-        Sakura.EVENT_BUS.post(new Render3DEvent(matrixStack, tickCounter.getTickDelta(true)));
+        MSAAFramebuffer.use(() -> Sakura.EVENT_BUS.post(new Render3DEvent(matrixStack, tickCounter.getTickDelta(true))));
 
         RenderSystem.getModelViewStack().popMatrix();
     }

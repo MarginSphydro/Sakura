@@ -8,7 +8,10 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
 import java.util.function.Predicate;
@@ -29,7 +32,7 @@ public class RaytraceUtil {
 
     public static BlockHitResult rayTraceCollidingBlocks(Vec3d start, Vec3d end) {
         if (mc.world == null || mc.player == null) return null;
-        HitResult result = mc.world.raycast(new RaycastContext(
+        BlockHitResult result = mc.world.raycast(new RaycastContext(
                 start,
                 end,
                 RaycastContext.ShapeType.COLLIDER,
@@ -41,7 +44,7 @@ public class RaytraceUtil {
             return null;
         }
 
-        return (BlockHitResult) result;
+        return result;
     }
 
     public static EntityHitResult rayTraceEntity(double range, Vector2f rotation, Predicate<Entity> filter) {

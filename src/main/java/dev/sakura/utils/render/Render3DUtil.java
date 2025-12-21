@@ -1,21 +1,30 @@
 package dev.sakura.utils.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.sakura.nanovg.NanoVGRenderer;
+import dev.sakura.nanovg.font.FontLoader;
+import dev.sakura.nanovg.util.NanoVGHelper;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
+import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.awt.*;
+import java.util.List;
 
 import static dev.sakura.Sakura.mc;
 
 public class Render3DUtil {
+    private static final BufferAllocator allocator = new BufferAllocator(786432);
+
     public static void drawFullBox(MatrixStack stack, BlockPos blockPos, Color sideColor, Color lineColor) {
         drawFullBox(stack, blockPos, sideColor, lineColor, 2f);
     }
@@ -35,6 +44,100 @@ public class Render3DUtil {
     public static void drawFullBox(MatrixStack stack, Box box, int sideColor, int lineColor, float thickness) {
         drawFilledBox(stack, box, sideColor);
         drawBoxOutline(stack, box, lineColor, thickness);
+    }
+
+    public static void drawBatchBoxes(MatrixStack stack, List<Box> boxes, List<Color> sideColors, List<Color> lineColors, float thickness) {
+        if (boxes.isEmpty()) return;
+        setup3D();
+
+        BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
+        Matrix4f matrix = stack.peek().getPositionMatrix();
+        Vec3d camPos = mc.getEntityRenderDispatcher().camera.getPos();
+
+        for (int i = 0; i < boxes.size(); i++) {
+            Box box = boxes.get(i);
+            int color = sideColors.get(i).getRGB();
+            addBoxVertices(bufferBuilder, matrix, box, camPos, color, color);
+        }
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+
+        BufferBuilder lineBuffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
+        RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_LINES);
+        RenderSystem.lineWidth(thickness);
+        MatrixStack.Entry entry = stack.peek();
+
+        for (int i = 0; i < boxes.size(); i++) {
+            Box box = boxes.get(i);
+            int color = lineColors.get(i).getRGB();
+            addBoxLineVertices(lineBuffer, matrix, entry, box, camPos, color);
+        }
+        BufferRenderer.drawWithGlobalProgram(lineBuffer.end());
+
+        cleanup3D();
+    }
+
+    private static void addBoxVertices(BufferBuilder bufferBuilder, Matrix4f matrix, Box box, Vec3d camPos, int c, int c1) {
+        float minX = (float) (box.minX - camPos.getX());
+        float minY = (float) (box.minY - camPos.getY());
+        float minZ = (float) (box.minZ - camPos.getZ());
+        float maxX = (float) (box.maxX - camPos.getX());
+        float maxY = (float) (box.maxY - camPos.getY());
+        float maxZ = (float) (box.maxZ - camPos.getZ());
+
+        vertex(bufferBuilder, matrix, minX, minY, minZ, c);
+        vertex(bufferBuilder, matrix, minX, minY, maxZ, c);
+        vertex(bufferBuilder, matrix, maxX, minY, maxZ, c);
+        vertex(bufferBuilder, matrix, maxX, minY, minZ, c);
+
+        vertex(bufferBuilder, matrix, minX, maxY, minZ, c1);
+        vertex(bufferBuilder, matrix, maxX, maxY, minZ, c1);
+        vertex(bufferBuilder, matrix, maxX, maxY, maxZ, c1);
+        vertex(bufferBuilder, matrix, minX, maxY, maxZ, c);
+
+        vertex(bufferBuilder, matrix, minX, minY, minZ, c);
+        vertex(bufferBuilder, matrix, minX, maxY, minZ, c1);
+        vertex(bufferBuilder, matrix, maxX, maxY, minZ, c1);
+        vertex(bufferBuilder, matrix, maxX, minY, minZ, c);
+
+        vertex(bufferBuilder, matrix, maxX, minY, minZ, c);
+        vertex(bufferBuilder, matrix, maxX, maxY, minZ, c1);
+        vertex(bufferBuilder, matrix, maxX, maxY, maxZ, c1);
+        vertex(bufferBuilder, matrix, maxX, minY, maxZ, c);
+
+        vertex(bufferBuilder, matrix, minX, minY, maxZ, c);
+        vertex(bufferBuilder, matrix, maxX, minY, maxZ, c);
+        vertex(bufferBuilder, matrix, maxX, maxY, maxZ, c1);
+        vertex(bufferBuilder, matrix, minX, maxY, maxZ, c1);
+
+        vertex(bufferBuilder, matrix, minX, minY, minZ, c);
+        vertex(bufferBuilder, matrix, minX, minY, maxZ, c);
+        vertex(bufferBuilder, matrix, minX, maxY, maxZ, c1);
+        vertex(bufferBuilder, matrix, minX, maxY, minZ, c1);
+    }
+
+    private static void addBoxLineVertices(BufferBuilder buffer, Matrix4f matrix, MatrixStack.Entry entry, Box box, Vec3d camPos, int color) {
+        float minX = (float) (box.minX - camPos.getX());
+        float minY = (float) (box.minY - camPos.getY());
+        float minZ = (float) (box.minZ - camPos.getZ());
+        float maxX = (float) (box.maxX - camPos.getX());
+        float maxY = (float) (box.maxY - camPos.getY());
+        float maxZ = (float) (box.maxZ - camPos.getZ());
+
+        vertexLine(buffer, matrix, entry, minX, minY, minZ, maxX, minY, minZ, color);
+        vertexLine(buffer, matrix, entry, maxX, minY, minZ, maxX, minY, maxZ, color);
+        vertexLine(buffer, matrix, entry, maxX, minY, maxZ, minX, minY, maxZ, color);
+        vertexLine(buffer, matrix, entry, minX, minY, maxZ, minX, minY, minZ, color);
+
+        vertexLine(buffer, matrix, entry, minX, maxY, minZ, maxX, maxY, minZ, color);
+        vertexLine(buffer, matrix, entry, maxX, maxY, minZ, maxX, maxY, maxZ, color);
+        vertexLine(buffer, matrix, entry, maxX, maxY, maxZ, minX, maxY, maxZ, color);
+        vertexLine(buffer, matrix, entry, minX, maxY, maxZ, minX, maxY, minZ, color);
+
+        vertexLine(buffer, matrix, entry, minX, minY, minZ, minX, maxY, minZ, color);
+        vertexLine(buffer, matrix, entry, maxX, minY, minZ, maxX, maxY, minZ, color);
+        vertexLine(buffer, matrix, entry, maxX, minY, maxZ, maxX, maxY, maxZ, color);
+        vertexLine(buffer, matrix, entry, minX, minY, maxZ, minX, maxY, maxZ, color);
     }
 
     public static void drawFilledBox(MatrixStack stack, BlockPos blockPos, Color color) {
@@ -186,5 +289,41 @@ public class Render3DUtil {
         float zNormal = z2 - z1;
         float normalSqrt = MathHelper.sqrt(xNormal * xNormal + yNormal * yNormal + zNormal * zNormal);
         return new Vector3f(xNormal / normalSqrt, yNormal / normalSqrt, zNormal / normalSqrt);
+    }
+
+    public static void drawText(String text, @NotNull Vec3d pos, double offX, double offY, double textOffset, @NotNull Color color) {
+        Vec3d screenPos = worldToScreen(pos.add(offX, offY, 0));
+        if (screenPos != null) {
+            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawCenteredString(text, (float) screenPos.x + (float) textOffset, (float) screenPos.y, FontLoader.medium(12), 12, color));
+        }
+    }
+
+    private static Vec3d worldToScreen(Vec3d pos) {
+        Camera camera = mc.gameRenderer.getCamera();
+        int width = mc.getWindow().getScaledWidth();
+        int height = mc.getWindow().getScaledHeight();
+
+        Vec3d vec = pos.subtract(camera.getPos());
+        Vector3f v = vec.toVector3f();
+
+        Quaternionf cameraRotation = camera.getRotation();
+        Quaternionf viewRotation = new Quaternionf(cameraRotation).conjugate();
+        v.rotate(viewRotation);
+
+        if (v.z > 0) return null;
+
+        float fov = mc.gameRenderer.getFov(camera, mc.getRenderTickCounter().getTickDelta(true), true);
+        float aspectRatio = (float) width / height;
+
+        float tanHalfFov = (float) Math.tan(Math.toRadians(fov / 2.0));
+
+        float z = -v.z;
+        float x_ndc = v.x / z / (aspectRatio * tanHalfFov);
+        float y_ndc = v.y / z / tanHalfFov;
+
+        float screenX = (x_ndc + 1) * width / 2f;
+        float screenY = (1 - y_ndc) * height / 2f;
+
+        return new Vec3d(screenX, screenY, z);
     }
 }

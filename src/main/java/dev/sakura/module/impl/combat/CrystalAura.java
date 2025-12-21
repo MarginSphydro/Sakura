@@ -6,36 +6,37 @@ import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.utils.combat.CombatUtil;
-import dev.sakura.utils.combat.CrystalUtil;
 import dev.sakura.utils.combat.DamageUtil;
+import dev.sakura.utils.entity.EntityUtil;
+import dev.sakura.utils.player.FindItemResult;
 import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.render.Render3DUtil;
+import dev.sakura.utils.rotation.MovementFix;
+import dev.sakura.utils.rotation.RotationUtil;
 import dev.sakura.utils.time.TimerUtil;
-import dev.sakura.utils.world.BlockUtil;
+import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class CrystalAura extends Module {
@@ -43,395 +44,420 @@ public class CrystalAura extends Module {
         super("CrystalAura", Category.Combat);
     }
 
-    private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
+    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 10.0, 1.0, 20.0, 0.1);
+    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 20.0, 0.1);
+    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 20.0, 0.1);
+    private final NumberValue<Double> facePlaceHealth = new NumberValue<>("Face Place Health", 8.0, 0.0, 36.0, 0.1);
 
-    // --- General Settings ---
-    private final EnumValue<TargetMode> targetMode = new EnumValue<>("Target Mode", TargetMode.Closest, () -> page.is(Page.General));
-    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 10.0, 1.0, 15.0, 0.5, () -> page.is(Page.General));
-    private final EnumValue<SwitchMode> autoSwitch = new EnumValue<>("Auto Switch", SwitchMode.Normal, () -> page.is(Page.General));
-    private final EnumValue<RotateMode> rotate = new EnumValue<>("Rotate", RotateMode.Packet, () -> page.is(Page.General));
+    private final BoolValue place = new BoolValue("Place", true);
+    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 0, 0, 1000, 1);
+    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 0.1);
+    private final BoolValue houyuepingMode = new BoolValue("1.12 Place", false);
 
-    // --- Place Settings ---
-    private final BoolValue place = new BoolValue("Place", true, () -> page.is(Page.Place));
-    private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", 50.0, 0.0, 500.0, 10.0, () -> page.is(Page.Place) && place.get());
-    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Place) && place.get());
-    private final NumberValue<Double> minPlaceDamage = new NumberValue<>("Min Place Dmg", 6.0, 0.0, 20.0, 0.5, () -> page.is(Page.Place) && place.get());
-    private final NumberValue<Double> maxSelfPlace = new NumberValue<>("Max Self Dmg", 8.0, 0.0, 20.0, 0.5, () -> page.is(Page.Place) && place.get());
-    private final BoolValue facePlace = new BoolValue("Face Place", true, () -> page.is(Page.Place));
-    private final NumberValue<Double> facePlaceHealth = new NumberValue<>("Face Place HP", 8.0, 1.0, 20.0, 0.5, () -> page.is(Page.Place) && facePlace.get());
-    private final BoolValue placeCollision = new BoolValue("Place Raytrace", true, () -> page.is(Page.Place));
-    private final NumberValue<Double> collisionOffset = new NumberValue<>("Raytrace Offset", 0.1, 0.0, 0.5, 0.05, () -> page.is(Page.Place) && placeCollision.get());
+    private final BoolValue attack = new BoolValue("Attack", true);
+    private final NumberValue<Integer> attackDelay = new NumberValue<>("Attack Delay", 0, 0, 1000, 1);
+    private final NumberValue<Integer> facePlaceDelay = new NumberValue<>("FacePlace Delay", 0, 0, 1000, 1);
+    private final NumberValue<Double> breakRange = new NumberValue<>("Break Range", 5.0, 1.0, 6.0, 0.1);
 
-    // --- Break Settings ---
-    private final BoolValue explode = new BoolValue("Break", true, () -> page.is(Page.Break));
-    private final NumberValue<Double> breakDelay = new NumberValue<>("Break Delay", 50.0, 0.0, 500.0, 10.0, () -> page.is(Page.Break) && explode.get());
-    private final NumberValue<Double> breakRange = new NumberValue<>("Break Range", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Break) && explode.get());
-    private final NumberValue<Double> minBreakDamage = new NumberValue<>("Min Break Dmg", 4.0, 0.0, 20.0, 0.5, () -> page.is(Page.Break) && explode.get());
-    private final NumberValue<Double> maxSelfBreak = new NumberValue<>("Max Self Break", 8.0, 0.0, 20.0, 0.5, () -> page.is(Page.Break) && explode.get());
-    private final NumberValue<Integer> breakAttempts = new NumberValue<>("Break Attempts", 1, 1, 5, 1, () -> page.is(Page.Break) && explode.get());
+    private final EnumValue<SwitchMode> autoSwitch = new EnumValue<>("Switch", SwitchMode.Normal);
+    private final BoolValue rotate = new BoolValue("Rotate", true);
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, rotate::get);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, rotate::get);
+    private final BoolValue extrapolation = new BoolValue("Extrapolation", true);
+    private final NumberValue<Integer> extrapolationTicks = new NumberValue<>("Extra Ticks", 0, 0, 20, 1, extrapolation::get);
+    private final NumberValue<Integer> smooth = new NumberValue<>("Smooth", 1, 1, 10, 1, extrapolation::get);
 
-    // --- Render Settings ---
-    private final BoolValue render = new BoolValue("Render", true, () -> page.is(Page.Render));
-    private final ColorValue renderColor = new ColorValue("Color", new Color(255, 0, 0, 100), () -> page.is(Page.Render) && render.get());
-    private final EnumValue<SwingMode> swing = new EnumValue<>("Swing", SwingMode.Main, () -> page.is(Page.Render));
+    private final BoolValue render = new BoolValue("Render", true);
+    private final BoolValue swingHand = new BoolValue("Place Swing", true);
+    private final BoolValue attackSwing = new BoolValue("Attack Swing", true);
+    private final BoolValue renderDamageText = new BoolValue("Render Damage", false, render::get);
+    private final EnumValue<FadeMode> fadeMode = new EnumValue<>("Fade Mode", FadeMode.Normal, render::get);
+    private final NumberValue<Double> animationSpeed = new NumberValue<>("Animation Speed", 5.0, 0.1, 20.0, 0.1, render::get);
+    private final NumberValue<Double> animationExponent = new NumberValue<>("Animation Exp", 3.0, 0.1, 10.0, 0.1, render::get);
+    private final BoolValue smoothBox = new BoolValue("Smooth Box", true, render::get);
+    private final BoolValue breathing = new BoolValue("Breathing", true, render::get);
+    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 192, 203, 50), render::get);
+    private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 192, 203, 255), render::get);
 
-    // --- Calculation Settings ---
-    private final NumberValue<Double> calcDelay = new NumberValue<>("Calc Delay", 5.0, 0.0, 500.0, 5.0, () -> page.is(Page.Calc));
-    private final NumberValue<Double> predictTicks = new NumberValue<>("Predict Ticks", 2.0, 0.0, 10.0, 1.0, () -> page.is(Page.Calc));
-    private final BoolValue extrapolation = new BoolValue("Extrapolation", true, () -> page.is(Page.Calc));
+    private final BoolValue renderExtrapolation = new BoolValue("Render Extrapolation", true, render::get);
+    private final ColorValue extraSideColor = new ColorValue("Extra Side Color", new Color(135, 206, 235, 50), renderExtrapolation::get);
+    private final ColorValue extraLineColor = new ColorValue("Extra Line Color", new Color(135, 206, 235, 255), renderExtrapolation::get);
 
-    private final TimerUtil calcTimer = new TimerUtil();
     private final TimerUtil placeTimer = new TimerUtil();
     private final TimerUtil breakTimer = new TimerUtil();
 
-    private final List<PlayerEntity> activeTargets = new ArrayList<>();
-    private final List<EndCrystalEntity> activeCrystals = new ArrayList<>();
+    private BlockPos renderPos = null;
+    private Vec3d currentRenderPos = null;
+    private double renderProgress = 0;
+    private long lastTime = 0;
+    private double renderDamage = 0;
+    private boolean isRotating = false;
+    private FindItemResult result = null;
 
-    private CalculationResult currentResult = new CalculationResult(null, null, 0, null);
+    @Override
+    public void onEnable() {
 
-    private enum Page {
-        General,
-        Place,
-        Break,
-        Render,
-        Calc,
-        Misc
     }
 
-    private enum SwitchMode {
+    @Override
+    public void onDisable() {
+        renderPos = null;
+        currentRenderPos = null;
+        renderProgress = 0;
+        lastTime = 0;
+        renderDamage = 0;
+        isRotating = false;
+        result = null;
+    }
+
+    public enum SwitchMode {
         None,
         Normal,
         Silent
     }
 
-    private enum SwingMode {
-        Main,
-        Off,
-        None
-    }
-
-    private enum RotateMode {
-        Off,
-        On,
-        Packet
-    }
-
-    private enum TargetMode {
-        Closest,
-        Health,
-        Damage
-    }
-
-    @Override
-    public void onEnable() {
-        calcTimer.reset();
-        placeTimer.reset();
-        breakTimer.reset();
-        resetState();
-    }
-
-    @Override
-    public void onDisable() {
-        resetState();
-    }
-
-    private void resetState() {
-        activeTargets.clear();
-        activeCrystals.clear();
-        currentResult = new CalculationResult(null, null, 0, null);
+    public enum FadeMode {
+        Up,
+        Down,
+        Normal
     }
 
     @EventHandler
-    public void onTick(TickEvent.Pre event) {
-        if (mc.player == null || mc.world == null) return;
+    public void onTick(TickEvent.Post event) {
+        if (mc.world == null || mc.player == null) return;
 
-        if (calcTimer.hasReached(calcDelay.get())) {
-            updateEntities();
-            currentResult = performCalculation();
-            calcTimer.reset();
+        isRotating = false;
+
+        PlayerEntity target = getTarget();
+
+        if (target == null) {
+            renderPos = null;
+            if (rotate.get()) {
+                RotationManager.setRotations(new Vector2f(mc.player.getYaw(), mc.player.getPitch()), rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+            }
+            return;
         }
 
-        handleBreakage();
-        handlePlacement();
+        if (attack.get() && breakTimer.hasTimeElapsed(getAttackDelay(target))) {
+            doBreak(target);
+        }
+
+        if (place.get() && placeTimer.hasTimeElapsed(placeDelay.get().longValue())) {
+            doPlace(target);
+        }
+
+        if (!isRotating && rotate.get()) {
+            RotationManager.setRotations(new Vector2f(mc.player.getYaw(), mc.player.getPitch()), rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+        }
     }
 
     @EventHandler
     public void onRender3D(Render3DEvent event) {
-        if (!render.get() || currentResult.placePos() == null) return;
-        Render3DUtil.drawFilledBox(event.getMatrices(), currentResult.placePos(), renderColor.get());
+        if (!render.get()) return;
 
-        if (!extrapolation.get()) return;
-        activeTargets.forEach(playerEntity -> {
-            Box box = Managers.EXTRAPOLATION.extrapolate((AbstractClientPlayerEntity) playerEntity, predictTicks.get().intValue(), 2);
-            Render3DUtil.drawFilledBox(event.getMatrices(), box, renderColor.get());
-        });
-    }
+        long currentTime = System.currentTimeMillis();
+        double delta = (currentTime - lastTime) / 1000.0;
+        lastTime = currentTime;
 
-    private void updateEntities() {
-        activeTargets.clear();
-        for (PlayerEntity p : mc.world.getPlayers()) {
-            if (isValidTarget(p)) {
-                activeTargets.add(p);
+        if (renderPos != null) {
+            renderProgress = Math.min(1.0, renderProgress + delta * animationSpeed.get());
+            if (currentRenderPos == null || !smoothBox.get()) {
+                currentRenderPos = new Vec3d(renderPos.getX(), renderPos.getY(), renderPos.getZ());
+            } else {
+                currentRenderPos = currentRenderPos.lerp(new Vec3d(renderPos.getX(), renderPos.getY(), renderPos.getZ()), delta * animationSpeed.get());
+            }
+        } else {
+            renderProgress = Math.max(0.0, renderProgress - delta * animationSpeed.get());
+        }
+
+        if (renderProgress > 0.001 && currentRenderPos != null) {
+            double r = 0.5 - Math.pow(1.0 - renderProgress, animationExponent.get()) / 2.0;
+
+            double down = 0;
+            double up = 0;
+            double width = 0.5;
+
+            switch (fadeMode.get()) {
+                case Up -> {
+                    up = 1.0;
+                    down = 1.0 - (r * 2);
+                }
+                case Down -> {
+                    up = r * 2;
+                    down = 0;
+                }
+                case Normal -> {
+                    up = 0.5 + r;
+                    down = 0.5 - r;
+                    width = r;
+                }
+            }
+
+            Color sColor = sideColor.get();
+            Color lColor = lineColor.get();
+
+            if (breathing.get()) {
+                float breatheFactor = (float) (Math.sin(System.currentTimeMillis() / 1000.0 * 2.0) + 1.0) / 2.0f;
+                float alphaFactor = 0.4f + (breatheFactor * 0.6f);
+                float scale = 1.0f - (breatheFactor * 0.15f);
+
+                sColor = new Color(sColor.getRed(), sColor.getGreen(), sColor.getBlue(), Math.max(0, Math.min(255, (int) (sColor.getAlpha() * alphaFactor))));
+                lColor = new Color(lColor.getRed(), lColor.getGreen(), lColor.getBlue(), Math.max(0, Math.min(255, (int) (lColor.getAlpha() * alphaFactor))));
+
+                width *= scale;
+                double height = up - down;
+                double newHeight = height * scale;
+                double heightDiff = height - newHeight;
+
+                up -= heightDiff / 2.0;
+                down += heightDiff / 2.0;
+            }
+
+            Box box = new Box(
+                    currentRenderPos.getX() + 0.5 - width, currentRenderPos.getY() + down, currentRenderPos.getZ() + 0.5 - width,
+                    currentRenderPos.getX() + 0.5 + width, currentRenderPos.getY() + up, currentRenderPos.getZ() + 0.5 + width
+            );
+
+            final Color finalSColor = sColor;
+            final Color finalLColor = lColor;
+
+            Render3DUtil.drawFullBox(event.getMatrices(), box, finalSColor, finalLColor);
+
+            if (renderDamageText.get()) {
+                Vec3d center = new Vec3d(
+                        box.minX + (box.maxX - box.minX) * 0.5,
+                        box.minY + (box.maxY - box.minY) * 0.5,
+                        box.minZ + (box.maxZ - box.minZ) * 0.5
+                );
+                Render3DUtil.drawText(String.format("%.1f", renderDamage), center, 0, 0, 0, Color.WHITE);
             }
         }
 
-        switch (targetMode.get()) {
-            case Closest -> activeTargets.sort(Comparator.comparingDouble(p -> mc.player.distanceTo(p)));
-            case Health -> activeTargets.sort(Comparator.comparingDouble(p -> p.getHealth() + p.getAbsorptionAmount()));
-        }
-
-        activeCrystals.clear();
-        for (Entity e : mc.world.getEntities()) {
-            if (e instanceof EndCrystalEntity crystal && e.isAlive() && mc.player.distanceTo(e) <= breakRange.get()) {
-                activeCrystals.add(crystal);
+        if (renderExtrapolation.get()) {
+            PlayerEntity target = getTarget();
+            if (target != null) {
+                Box predicted = Managers.EXTRAPOLATION.extrapolate((AbstractClientPlayerEntity) target, extrapolationTicks.get(), smooth.get());
+                if (predicted != null) {
+                    Render3DUtil.drawFullBox(event.getMatrices(), predicted, extraSideColor.get(), extraLineColor.get());
+                }
             }
         }
     }
 
-    private boolean isValidTarget(PlayerEntity p) {
-        return p != mc.player
-                && p.isAlive()
-                && !p.isSpectator()
-                && mc.player.distanceTo(p) <= targetRange.get();
-    }
-
-    private CalculationResult performCalculation() {
-        if (activeTargets.isEmpty()) return new CalculationResult(null, null, 0, null);
-        if (!place.get() && !explode.get()) return new CalculationResult(null, null, 0, null);
-
+    private void doBreak(PlayerEntity target) {
         EndCrystalEntity bestCrystal = null;
-        double maxBreakDmg = 0.0;
+        float bestDamage = 0;
 
-        PlayerEntity self = mc.player;
+        for (Entity entity : mc.world.getEntities()) {
+            if (!(entity instanceof EndCrystalEntity crystal)) continue;
+            if (mc.player.distanceTo(crystal) > breakRange.get()) continue;
+            if (!crystal.isAlive()) continue;
 
-        // 1. Calculate Best Break
-        if (explode.get()) {
-            for (EndCrystalEntity crystal : activeCrystals) {
-                if (mc.player.distanceTo(crystal) > breakRange.get()) continue;
+            float damage = calculateDamage(target, crystal.getPos());
+            float selfDamage = calculateDamage(mc.player, crystal.getPos());
 
-                double selfDamage = DamageUtil.calculateDamage(crystal.getX(), crystal.getY(), crystal.getZ(), self, self, 6);
-                if (selfDamage > maxSelfBreak.get()) continue;
+            if (selfDamage > maxSelfDamage.get()) continue;
+            if (damage < getMinDamage(target)) continue;
 
-                for (PlayerEntity target : activeTargets) {
-                    double dmg = calculateDamage(crystal.getX(), crystal.getY(), crystal.getZ(), target);
-                    if (dmg > maxBreakDmg && dmg >= minBreakDamage.get()) {
-                        maxBreakDmg = dmg;
-                        bestCrystal = crystal;
-                    }
-                }
+            if (damage > bestDamage) {
+                bestDamage = damage;
+                bestCrystal = crystal;
             }
         }
 
-        BlockPos bestPlacePos = null;
-        double maxPlaceDmg = 0.0;
-        Vec3d bestHitVec = null;
-        EndCrystalEntity blockingCrystal = null;
-
-        // 2. Calculate Best Place
-        if (place.get()) {
-            List<BlockPos> sphere = BlockUtil.getSphere(placeRange.get().floatValue());
-            List<PlaceCandidate> candidates = new ArrayList<>();
-
-            for (BlockPos pos : sphere) {
-                // Check if we can place (standard check)
-                if (!CrystalUtil.canPlaceCrystal(pos)) {
-                    // Check if blocked ONLY by a crystal (and we can break it)
-                    if (CrystalUtil.canPlaceCrystalOn(pos) && CrystalUtil.hasValidSpaceForCrystal(pos)) {
-                        EndCrystalEntity blocker = getBlockingCrystal(pos);
-                        if (blocker != null && explode.get()) {
-                            // This is a "Break before Place" candidate
-                            double selfDamage = DamageUtil.calculateDamage(pos, self);
-                            if (selfDamage > maxSelfPlace.get()) continue;
-
-                            for (PlayerEntity target : activeTargets) {
-                                double dmg = calculateDamage(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target);
-                                // Prioritize this if it's good
-                                if (dmg >= minPlaceDamage.get()) {
-                                    candidates.add(new PlaceCandidate(pos, dmg, selfDamage, blocker));
-                                }
-                            }
-                        }
-                    }
-                    continue;
-                }
-
-                double selfDamage = DamageUtil.calculateDamage(pos, self);
-                if (selfDamage > maxSelfPlace.get()) continue;
-
-                for (PlayerEntity target : activeTargets) {
-                    double dmg = calculateDamage(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target);
-
-                    boolean isFacePlace = facePlace.get() && (target.getHealth() + target.getAbsorptionAmount()) <= facePlaceHealth.get();
-                    double minDmg = isFacePlace ? 2.0 : minPlaceDamage.get();
-
-                    if (dmg >= minDmg) {
-                        candidates.add(new PlaceCandidate(pos, dmg, selfDamage, null));
-                    }
-                }
+        if (bestCrystal != null) {
+            if (rotate.get()) {
+                Vector2f rotation = RotationUtil.calculate(bestCrystal.getPos());
+                RotationManager.setRotations(rotation, rotationSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+                isRotating = true;
             }
 
-            // Sort by Damage
-            candidates.sort(Comparator.comparingDouble(PlaceCandidate::damage).reversed());
+            mc.interactionManager.attackEntity(mc.player, bestCrystal);
 
-            // Select best valid candidate
-            for (PlaceCandidate c : candidates) {
-                Vec3d hitVec = getVisibleVec(c.pos);
-                if (hitVec != null) {
-                    if (c.damage > maxPlaceDmg) {
-                        maxPlaceDmg = c.damage;
-                        bestPlacePos = c.pos;
-                        bestHitVec = hitVec;
-                        if (c.blocker != null) {
-                            blockingCrystal = c.blocker;
-                        }
-                    }
-                    break;
-                }
-            }
-        }
+            Hand hand = result == null ? Hand.MAIN_HAND : result.getHand();
+            if (attackSwing.get()) mc.player.swingHand(hand);
+            else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(hand));
 
-        //这个傻逼ai
-        EndCrystalEntity finalBreak = bestCrystal;
-        if (blockingCrystal != null) {
-            finalBreak = blockingCrystal;
-        }
-
-        return new CalculationResult(bestPlacePos, finalBreak, Math.max(maxBreakDmg, maxPlaceDmg), bestHitVec);
-    }
-
-    private record PlaceCandidate(BlockPos pos, double damage, double selfDamage, EndCrystalEntity blocker) {
-    }
-
-    private EndCrystalEntity getBlockingCrystal(BlockPos pos) {
-        Box box = CrystalUtil.getCrystalPlacingBB(pos);
-        for (Entity e : mc.world.getOtherEntities(null, box)) {
-            if (e instanceof EndCrystalEntity crystal && e.isAlive()) return crystal;
-        }
-        return null;
-    }
-
-    private Vec3d getVisibleVec(BlockPos pos) {
-        if (!placeCollision.get()) return pos.toCenterPos();
-
-        // Check center top surface
-        Vec3d center = pos.toCenterPos().add(0, 0.5, 0); // Top of block
-        if (canSee(center)) return center;
-
-        // Try offsets
-        double off = collisionOffset.get();
-        if (off == 0) return null;
-
-        Vec3d[] offsets = {
-                center.add(off, 0, off),
-                center.add(-off, 0, off),
-                center.add(off, 0, -off),
-                center.add(-off, 0, -off),
-                center.add(off, 0, 0),
-                center.add(-off, 0, 0),
-                center.add(0, 0, off),
-                center.add(0, 0, -off)
-        };
-
-        for (Vec3d v : offsets) {
-            if (canSee(v)) return v;
-        }
-
-        return null;
-    }
-
-    private boolean canSee(Vec3d to) {
-        Vec3d eyes = mc.player.getEyePos();
-        // Raycast to the point. If we hit air until the point, good.
-        // If we hit a block, it should be the block at 'to' (implied, but 'to' is usually air/surface).
-        // Using SHAPE_TYPE.COLLIDER so we hit blocks.
-        HitResult result = mc.world.raycast(new RaycastContext(eyes, to, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mc.player));
-        return result == null || result.getType() == HitResult.Type.MISS || result.getPos().distanceTo(to) < 0.1;
-    }
-
-    private double calculateDamage(double x, double y, double z, PlayerEntity target) {
-        if (extrapolation.get()) {
-            Box box = Managers.EXTRAPOLATION.extrapolate((AbstractClientPlayerEntity) target, predictTicks.get().intValue(), 2);
-            if (box != null) {
-                return DamageUtil.calculateDamage(x, y, z, target, box, 6);
-            }
-        }
-        return DamageUtil.calculateDamage(x, y, z, target, target, 6);
-    }
-
-    private void handleBreakage() {
-        if (!explode.get() || currentResult.breakEntity() == null) return;
-        // Check delay only if we are NOT in "Break to Place" mode? 
-        // No, always check delay to prevent ban.
-        if (!breakTimer.hasReached(breakDelay.get())) return;
-
-        EndCrystalEntity crystal = currentResult.breakEntity();
-        if (crystal != null && crystal.isAlive()) {
-            rotate(crystal.getPos());
-            for (int i = 0; i < breakAttempts.get(); i++) {
-                CombatUtil.attackEntity(crystal, swing.get() != SwingMode.None);
-            }
-            if (swing.get() != SwingMode.None) swingHand();
             breakTimer.reset();
         }
     }
 
-    private void handlePlacement() {
-        if (!place.get() || currentResult.placePos() == null) return;
-        if (!placeTimer.hasReached(placeDelay.get())) return;
+    private void doPlace(PlayerEntity target) {
+        BlockPos bestPos = null;
+        float bestDamage = 0;
+        EndCrystalEntity blockingCrystal = null;
 
-        BlockPos pos = currentResult.placePos();
-        Vec3d hitVec = currentResult.hitVec();
-        if (hitVec == null) hitVec = pos.toCenterPos(); // Fallback
+        for (BlockPos pos : getSphere(placeRange.get())) {
+            if (!isValidBaseBlock(pos)) continue;
 
-        // Switch Item
-        if (!ensureCrystalInHand()) return;
+            EndCrystalEntity crystal = getCrystalAt(pos);
+            if (crystal == null) {
+                if (EntityUtil.intersectsWithEntity(new Box(pos.up()).stretch(0, 1, 0), entity -> true)) continue;
+            } else {
+                if (EntityUtil.intersectsWithEntity(new Box(pos.up()).stretch(0, 1, 0), entity -> !entity.equals(crystal)))
+                    continue;
+            }
 
-        rotate(hitVec);
+            Vec3d crystalPos = new Vec3d(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
+            float damage = calculateDamage(target, crystalPos);
+            float selfDamage = calculateDamage(mc.player, crystalPos);
 
-        // Use the hitVec for interaction
-        BlockHitResult result = new BlockHitResult(hitVec, Direction.UP, pos, false);
-        mc.getNetworkHandler().sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, result, 0));
+            if (selfDamage > maxSelfDamage.get()) continue;
+            if (damage < getMinDamage(target)) continue;
 
-        if (swing.get() != SwingMode.None) swingHand();
-
-        if (autoSwitch.get().equals(SwitchMode.Silent)) InvUtil.swapBack();
-
-        placeTimer.reset();
-    }
-
-    private boolean ensureCrystalInHand() {
-        if (isHoldingCrystal()) return true;
-
-        if (autoSwitch.get() != SwitchMode.None) {
-            int slot = InvUtil.findInHotbar(Items.END_CRYSTAL).slot();
-            if (slot != -1) {
-                InvUtil.swap(slot, autoSwitch.get() == SwitchMode.Silent);
-                return true;
+            if (damage > bestDamage) {
+                bestDamage = damage;
+                bestPos = pos;
+                blockingCrystal = crystal;
             }
         }
-        return false;
-    }
 
-    private boolean isHoldingCrystal() {
-        return mc.player.getMainHandStack().getItem() == Items.END_CRYSTAL ||
-                mc.player.getOffHandStack().getItem() == Items.END_CRYSTAL;
-    }
+        if (bestPos != null) {
+            if (blockingCrystal != null) {
+                if (breakTimer.hasTimeElapsed(getAttackDelay(target))) {
+                    if (rotate.get()) {
+                        Vector2f rotation = RotationUtil.calculate(blockingCrystal.getPos());
+                        RotationManager.setRotations(rotation, rotationSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+                        isRotating = true;
+                    }
 
-    private void rotate(Vec3d pos) {
-        switch (rotate.get()) {
-            case Packet -> RotationManager.lookAt(pos, 100);
-            case On -> {
+                    mc.interactionManager.attackEntity(mc.player, blockingCrystal);
+
+                    Hand hand = result == null ? Hand.MAIN_HAND : result.getHand();
+                    if (attackSwing.get()) mc.player.swingHand(hand);
+                    else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(hand));
+
+                    breakTimer.reset();
+                }
+                return;
             }
-            case Off -> {
+
+            result = InvUtil.findInHotbar(Items.END_CRYSTAL);
+            if (!result.found()) return;
+
+            int slot = result.slot();
+            boolean switched = false;
+
+            if (mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL) {
+                if (autoSwitch.is(SwitchMode.None)) return;
+
+                if (autoSwitch.is(SwitchMode.Silent)) {
+                    InvUtil.swap(slot, true);
+                    switched = true;
+                } else {
+                    InvUtil.swap(slot, false);
+                }
+            }
+
+            if (rotate.get()) {
+                Vector2f rotation = RotationUtil.calculate(bestPos.toCenterPos().add(0, 0.5, 0));
+                RotationManager.setRotations(rotation, rotationSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+                isRotating = true;
+            }
+
+            BlockHitResult hitResult = new BlockHitResult(bestPos.toCenterPos().add(0, 1, 0), Direction.UP, bestPos, false);
+            ActionResult actionResult = mc.interactionManager.interactBlock(mc.player, result.getHand(), hitResult);
+
+            if (actionResult.isAccepted()) {
+                if (swingHand.get()) mc.player.swingHand(result.getHand(), true);
+                else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(result.getHand()));
+            }
+
+            renderPos = bestPos;
+            renderDamage = bestDamage;
+            placeTimer.reset();
+
+            if (switched && autoSwitch.get() == SwitchMode.Silent) {
+                InvUtil.swapBack();
             }
         }
     }
 
-    private void swingHand() {
-        if (swing.get() == SwingMode.Main) mc.player.swingHand(Hand.MAIN_HAND);
-        else if (swing.get() == SwingMode.Off) mc.player.swingHand(Hand.OFF_HAND);
+    private boolean isValidBaseBlock(BlockPos pos) {
+        if (mc.world.getBlockState(pos).getBlock() != Blocks.OBSIDIAN && mc.world.getBlockState(pos).getBlock() != Blocks.BEDROCK) {
+            return false;
+        }
+
+        BlockPos up = pos.up();
+        if (!mc.world.isAir(up)) return false;
+
+        if (houyuepingMode.get()) {
+            return mc.world.isAir(up.up());
+        }
+        return true;
     }
 
-    private record CalculationResult(BlockPos placePos, EndCrystalEntity breakEntity, double damage, Vec3d hitVec) {
+    private EndCrystalEntity getCrystalAt(BlockPos pos) {
+        BlockPos up = pos.up();
+        Box box = new Box(up);
+        List<EndCrystalEntity> crystals = mc.world.getEntitiesByClass(EndCrystalEntity.class, box, Entity::isAlive);
+        return crystals.isEmpty() ? null : crystals.getFirst();
+    }
+
+    private PlayerEntity getTarget() {
+        PlayerEntity target = null;
+        double distance = targetRange.get();
+
+        for (PlayerEntity player : mc.world.getPlayers()) {
+            if (player == mc.player) continue;
+            if (mc.player.distanceTo(player) > distance) continue;
+
+            target = player;
+            distance = mc.player.distanceTo(player);
+        }
+        return target;
+    }
+
+    private float calculateDamage(PlayerEntity entity, Vec3d crystalPos) {
+        if (extrapolation.get() && entity != mc.player) {
+            Box predicted = Managers.EXTRAPOLATION.extrapolate((AbstractClientPlayerEntity) entity, extrapolationTicks.get(), smooth.get());
+            if (predicted != null) {
+                Box oldBox = entity.getBoundingBox();
+                Vec3d oldPos = entity.getPos();
+
+                entity.setBoundingBox(predicted);
+                entity.setPos(predicted.getCenter().x, predicted.minY, predicted.getCenter().z);
+
+                float damage = DamageUtil.calculateCrystalDamage(entity, crystalPos);
+
+                entity.setBoundingBox(oldBox);
+                entity.setPos(oldPos.x, oldPos.y, oldPos.z);
+
+                return damage;
+            }
+        }
+        return DamageUtil.calculateCrystalDamage(entity, crystalPos);
+    }
+
+    private long getAttackDelay(PlayerEntity target) {
+        if (target != null && (target.getHealth() + target.getAbsorptionAmount() <= facePlaceHealth.get())) {
+            return facePlaceDelay.get().longValue();
+        }
+        return attackDelay.get().longValue();
+    }
+
+    private double getMinDamage(PlayerEntity target) {
+        if (target.getHealth() + target.getAbsorptionAmount() <= facePlaceHealth.get()) {
+            return 1.0;
+        }
+        return minDamage.get();
+    }
+
+    private List<BlockPos> getSphere(double range) {
+        List<BlockPos> list = new ArrayList<>();
+        BlockPos center = mc.player.getBlockPos();
+        int r = (int) Math.ceil(range);
+
+        for (int x = -r; x <= r; x++) {
+            for (int y = -r; y <= r; y++) {
+                for (int z = -r; z <= r; z++) {
+                    BlockPos pos = center.add(x, y, z);
+                    if (mc.player.squaredDistanceTo(pos.toCenterPos()) <= range * range) {
+                        list.add(pos);
+                    }
+                }
+            }
+        }
+        return list;
     }
 }

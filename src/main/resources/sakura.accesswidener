@@ -8,3 +8,8 @@ accessible class net/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPa
 accessible field net/minecraft/client/gui/screen/ingame/CreativeInventoryScreen selectedTab Lnet/minecraft/item/ItemGroup;
 accessible method net/minecraft/client/network/ClientPlayerInteractionManager syncSelectedSlot ()V
 accessible field net/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPacket type Lnet/minecraft/network/packet/c2s/play/PlayerInteractEntityC2SPacket$InteractTypeHandler;
+accessible method net/minecraft/client/world/ClientWorld getEntityLookup ()Lnet/minecraft/world/entity/EntityLookup;
+accessible field net/minecraft/world/entity/SimpleEntityLookup cache Lnet/minecraft/world/entity/SectionedEntityCache;
+accessible field net/minecraft/world/entity/SectionedEntityCache trackedPositions Lit/unimi/dsi/fastutil/longs/LongSortedSet;
+accessible field net/minecraft/world/entity/SectionedEntityCache trackingSections Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;
+accessible method net/minecraft/client/render/GameRenderer getFov (Lnet/minecraft/client/render/Camera;FZ)F
