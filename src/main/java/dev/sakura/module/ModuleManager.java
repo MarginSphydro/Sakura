@@ -7,15 +7,11 @@ import dev.sakura.events.misc.KeyEvent;
 import dev.sakura.events.render.Render2DEvent;
 import dev.sakura.manager.impl.NotificationManager;
 import dev.sakura.manager.impl.SoundManager;
-import dev.sakura.module.impl.client.ClickGui;
-import dev.sakura.module.impl.client.HudEditor;
-import dev.sakura.module.impl.client.StringTest;
+import dev.sakura.module.impl.client.*;
 import dev.sakura.module.impl.combat.*;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.*;
-import dev.sakura.module.impl.player.AutoPearl;
-import dev.sakura.module.impl.player.FakePlayer;
-import dev.sakura.module.impl.player.NoRotate;
+import dev.sakura.module.impl.player.*;
 import dev.sakura.module.impl.render.*;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
@@ -65,6 +61,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new NoRotate());
             manager.tryLoad(() -> new FakePlayer());
             manager.tryLoad(() -> new AutoPearl());
+            manager.tryLoad(() -> new TimerModule());
 
             // Render
             manager.tryLoad(() -> new CameraClip());
@@ -79,7 +76,6 @@ public class ModuleManager {
             manager.tryLoad(() -> new NameTag());
             manager.tryLoad(() -> new Glow());
             manager.tryLoad(() -> new TotemParticles());
-
 
             // Client
             manager.tryLoad(() -> new ClickGui());

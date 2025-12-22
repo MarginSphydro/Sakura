@@ -47,6 +47,7 @@
     "render.MixinLivingEntityRenderer",
     "render.MixinParticleManager",
     "render.MixinPlayerEntityRenderer",
+    "render.MixinRenderTickCounter",
     "render.MixinScreen",
     "render.MixinShaderLoader",
     "render.MixinSplashOverlay",
