@@ -56,7 +56,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new NoSlow());
             manager.tryLoad(() -> new HoleSnap());
             manager.tryLoad(() -> new Scaffold());
-            manager.tryLoad(() -> new NoFall());
+
 
             // Player
             manager.tryLoad(() -> new NoRotate());
@@ -64,6 +64,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new AutoPearl());
             manager.tryLoad(() -> new TimerModule());
             manager.tryLoad(() -> new PacketEat());
+            manager.tryLoad(() -> new InventorySort());
 
             // Render
             manager.tryLoad(() -> new CameraClip());
