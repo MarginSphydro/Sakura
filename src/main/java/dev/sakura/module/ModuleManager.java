@@ -65,6 +65,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new TimerModule());
             manager.tryLoad(() -> new PacketEat());
             manager.tryLoad(() -> new InventorySort());
+            manager.tryLoad(() -> new AutoArmor());
 
             // Render
             manager.tryLoad(() -> new CameraClip());
