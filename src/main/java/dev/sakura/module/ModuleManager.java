@@ -84,6 +84,10 @@ public class ModuleManager {
             manager.tryLoad(() -> new StringTest());
 
             // HUD
+            manager.tryLoad(() -> new FPSHud());
+            manager.tryLoad(() -> new NotificationHud());
+            manager.tryLoad(() -> new WatermarkHud());
+            manager.tryLoad(() -> new MSHud());
             manager.tryLoad(() -> new DynamicIslandHud());
             manager.tryLoad(() -> new KeyStrokesHud());
             manager.tryLoad(() -> new Notify());
