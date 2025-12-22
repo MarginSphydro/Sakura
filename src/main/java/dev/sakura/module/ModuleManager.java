@@ -62,6 +62,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new FakePlayer());
             manager.tryLoad(() -> new AutoPearl());
             manager.tryLoad(() -> new TimerModule());
+            manager.tryLoad(() -> new PacketEat());
 
             // Render
             manager.tryLoad(() -> new CameraClip());
