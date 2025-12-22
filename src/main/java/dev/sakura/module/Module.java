@@ -7,6 +7,7 @@ import dev.sakura.utils.animations.Animation;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.DecelerateAnimation;
 import dev.sakura.values.Value;
+import dev.sakura.values.impl.BoolValue;
 import net.minecraft.client.MinecraftClient;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class Module {
     private String suffix = "";
     private int key;
     private BindMode bindMode = BindMode.Toggle;
+    private final BoolValue hidden; // 控制模块是否在ModuleListHud中显示
     public final List<Value<?>> values = new ArrayList<>();
     private final Animation animations = new DecelerateAnimation(250, 1).setDirection(Direction.BACKWARDS);
 
@@ -32,6 +34,8 @@ public class Module {
         this.name = name;
         this.category = category;
         this.mc = MinecraftClient.getInstance();
+        this.hidden = new BoolValue("Hidden", false);
+        this.values.add(this.hidden);
     }
 
     protected void onEnable() {
@@ -128,5 +132,15 @@ public class Module {
 
     public void setBindMode(BindMode bindMode) {
         this.bindMode = bindMode;
+    }
+
+    // 获取模块是否隐藏
+    public boolean isHidden() {
+        return hidden.get();
+    }
+
+    // 设置模块是否隐藏
+    public void setHidden(boolean hidden) {
+        this.hidden.set(hidden);
     }
 }

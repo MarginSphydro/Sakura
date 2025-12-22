@@ -54,7 +54,6 @@
     "render.MixinTitleScreen",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
-    "render.ChatListenerMixin",
     "shader.MixinShaderProgram",
     "world.MixinFlowableFluid"
   ],

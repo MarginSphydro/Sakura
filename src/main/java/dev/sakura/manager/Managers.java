@@ -6,6 +6,7 @@ import dev.sakura.config.ConfigManager;
 import dev.sakura.manager.impl.AccountManager;
 import dev.sakura.manager.impl.ChatAnimationUpdater;
 import dev.sakura.manager.impl.ExtrapolationManager;
+import dev.sakura.manager.impl.NotificationManager;
 import dev.sakura.manager.impl.RenderManager;
 import dev.sakura.module.ModuleManager;
 
@@ -30,6 +31,9 @@ public class Managers {
         RENDER = new RenderManager();
         EXTRAPOLATION = new ExtrapolationManager();
         CHAT_ANIMATION = new ChatAnimationUpdater();
+
+        // 触发 NotificationManager 的类加载
+        NotificationManager.send("Initializing notifications...", 1L);
 
         // 注册事件监听器
         Sakura.EVENT_BUS.subscribe(CHAT_ANIMATION);

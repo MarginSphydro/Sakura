@@ -91,6 +91,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new KeyStrokesHud());
             manager.tryLoad(() -> new Notify());
             manager.tryLoad(() -> new HotbarHud());
+            manager.tryLoad(() -> new ModuleListHud()); // 新增的模块列表HUD
         }
     }
 
