@@ -4,7 +4,6 @@ import dev.sakura.verify.agent.AgentLoader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import sun.misc.Unsafe;
-
 import java.io.ByteArrayInputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

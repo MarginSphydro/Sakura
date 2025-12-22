@@ -7,6 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
+import dev.sakura.values.impl.NumberValue;
+import dev.sakura.values.impl.BoolValue;
 
 import java.util.*;
 
@@ -25,6 +27,10 @@ public class InventorySort extends Module {
         });
     }
 
+    private final NumberValue<Integer> sortDelay =
+            new NumberValue<>("SortDelay", 1, 0, 10, 1);
+
+
     @Override
     public void onEnable() {
         delay = 0;
@@ -35,10 +41,19 @@ public class InventorySort extends Module {
         delay = 0;
     }
 
+    private final BoolValue sortInGui =
+            new BoolValue("SortInGui", false);
+
+
     private void tickSort() {
 
-        // 打开任何界面时不整理
-        if (mc.currentScreen != null) return;
+        // 打开界面时是否整理
+        if (mc.currentScreen != null) {
+            // 创造模式下打开 GUI 时禁止整理（防吞物品）
+            if (mc.player.getAbilities().creativeMode) return;
+
+            if (!sortInGui.get()) return;
+        }
 
         if (delay > 0) {
             delay--;
@@ -49,7 +64,7 @@ public class InventorySort extends Module {
 
         // ===== 0. 合并一次同类 =====
         if (mergeOnce(inv)) {
-            delay = 1;
+            delay = sortDelay.get();
             return;
         }
 
@@ -101,7 +116,7 @@ public class InventorySort extends Module {
             if (from == to) continue;
 
             clickSwap(from, to);
-            delay = 1;
+            delay = sortDelay.get();
             return;
         }
     }
