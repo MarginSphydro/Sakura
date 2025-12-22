@@ -59,6 +59,7 @@
     "world.MixinFlowableFluid"
   ],
   "mixins": [
-    "accessor.IEntityTrackingSection"
+    "accessor.IEntityTrackingSection",
+    "accessor.IPlayerMoveC2SPacket"
   ]
 }

@@ -1,0 +1,62 @@
+package dev.sakura.module.impl.movement;
+
+import dev.sakura.events.client.TickEvent;
+import dev.sakura.events.packet.PacketEvent;
+import dev.sakura.events.type.EventType;
+import dev.sakura.mixin.accessor.IPlayerMoveC2SPacket;
+import dev.sakura.module.Category;
+import dev.sakura.module.Module;
+import dev.sakura.values.impl.EnumValue;
+import meteordevelopment.orbit.EventHandler;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+
+public class NoFall extends Module {
+    private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Packet);
+
+    public NoFall() {
+        super("NoFall", Category.Movement);
+    }
+
+    @Override
+    public String getSuffix() {
+        return mode.get().name();
+    }
+
+    @EventHandler
+    public void onTick(TickEvent.Pre event) {
+        if (!isFalling()) return;
+        if (mode.is(Mode.Grim)) {
+            mc.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.Full(mc.player.getX(), mc.player.getY() + 0.000000001, mc.player.getZ(), mc.player.getYaw(), mc.player.getPitch(), false, mc.player.horizontalCollision));
+            mc.player.onLanding();
+        }
+    }
+
+    @EventHandler
+    public void onPacketSend(PacketEvent event) {
+        if (mc.world == null || mc.player == null) {
+            return;
+        }
+        if (event.getType() != EventType.SEND) return;
+        for (ItemStack is : mc.player.getArmorItems()) {
+            if (is.getItem() == Items.ELYTRA) {
+                return;
+            }
+        }
+        if (mode.is(Mode.Packet)) {
+            if (event.getPacket() instanceof PlayerMoveC2SPacket packet && isFalling()) {
+                ((IPlayerMoveC2SPacket) packet).setOnGround(true);
+            }
+        }
+    }
+
+    private boolean isFalling() {
+        return mc.player.fallDistance > mc.player.getSafeFallDistance() && !mc.player.isOnGround();
+    }
+
+    private enum Mode {
+        Grim,
+        Packet
+    }
+}
