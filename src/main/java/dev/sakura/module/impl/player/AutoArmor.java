@@ -64,13 +64,11 @@ public class AutoArmor extends Module {
 
         // 可选：是否允许在 GUI 打开时整理
         if (!guiSort.get() && currentScreen != null) return;
-
+        if (mc.player.isCreative() && currentScreen != null) return;
         // 每件盔甲减延迟
         for (ArmorPiece piece : armorPieces) piece.tickTimer();
-
         // 重置每件盔甲
         for (ArmorPiece piece : armorPieces) piece.reset();
-
         // 遍历玩家背包
         for (int i = 0; i < mc.player.getInventory().size(); i++) {
             ItemStack stack = mc.player.getInventory().getStack(i);
