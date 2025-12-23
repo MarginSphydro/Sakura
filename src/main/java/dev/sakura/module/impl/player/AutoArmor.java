@@ -2,6 +2,8 @@ package dev.sakura.module.impl.player;
 
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
+import dev.sakura.values.impl.BoolValue;
+import dev.sakura.values.impl.NumberValue;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -9,8 +11,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.tag.ItemTags;
-import dev.sakura.values.impl.NumberValue;
-import dev.sakura.values.impl.BoolValue;
 
 import java.util.Arrays;
 import java.util.Comparator;

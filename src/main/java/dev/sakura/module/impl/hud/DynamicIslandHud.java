@@ -75,10 +75,10 @@ public class DynamicIslandHud extends HudModule {
         update();
         renderBlur(context);
         renderSideBlurs(context, phase == Phase.IDLE ? 0f :
-                       phase == Phase.EXPANDING ? progress :
-                       phase == Phase.DISPLAY ? 1f :
-                       phase == Phase.COLLAPSE_1 ? 1f :
-                       1f - progress);
+                phase == Phase.EXPANDING ? progress :
+                        phase == Phase.DISPLAY ? 1f :
+                                phase == Phase.COLLAPSE_1 ? 1f :
+                                        1f - progress);
         NanoVGRenderer.INSTANCE.draw(vg -> renderContent());
     }
 
@@ -89,10 +89,10 @@ public class DynamicIslandHud extends HudModule {
         update();
         renderBlur(context);
         renderSideBlurs(context, phase == Phase.IDLE ? 0f :
-                       phase == Phase.EXPANDING ? progress :
-                       phase == Phase.DISPLAY ? 1f :
-                       phase == Phase.COLLAPSE_1 ? 1f :
-                       1f - progress);
+                phase == Phase.EXPANDING ? progress :
+                        phase == Phase.DISPLAY ? 1f :
+                                phase == Phase.COLLAPSE_1 ? 1f :
+                                        1f - progress);
         NanoVGRenderer.INSTANCE.draw(vg -> {
             renderContent();
             NanoVGHelper.drawRect(x, y, width, height,
@@ -175,6 +175,7 @@ public class DynamicIslandHud extends HudModule {
         this.animH = h;
         this.blurOpacity = interpolateBlurOpacity(blur);
     }
+
     private float interpolateBlurOpacity(float targetBlur) {
         float delta = targetBlur - this.blurOpacity;
         float interpolationFactor = 0.15f;
@@ -226,7 +227,7 @@ public class DynamicIslandHud extends HudModule {
         drawBackground(INVENTORY_BG_COLOR);
         drawSideInfo(progress);
         if (currentToggle != null) {
-            drawToggleInfo(alphaFromProgress(progress), progress);
+            drawToggleInfo(alphaFromProgress(progress), 0f);
         }
     }
 
@@ -240,10 +241,9 @@ public class DynamicIslandHud extends HudModule {
 
     private void renderCollapse1() {
         drawBackground(INVENTORY_BG_COLOR);
-        drawColorBar(1f - progress);
         drawSideInfo(1f);
         if (currentToggle != null) {
-            drawToggleInfo(alphaFromProgress(1f - progress), 1f - progress);
+            drawToggleInfo(alphaFromProgress(1f - progress), 1f);
         }
     }
 
@@ -256,21 +256,8 @@ public class DynamicIslandHud extends HudModule {
         NanoVGHelper.drawRoundRectBloom(animX, animY, animW, animH, Size.RADIUS, color);
     }
 
-    private void drawColorBar(float progress) {
-        float padding = 8, barH = 1.5f;
-        float barY = animY + animH - barH - 3;
-        float maxW = animW - padding * 2;
-        float currentW = maxW * progress;
-        NanoVGHelper.drawRoundRect(animX + padding, barY, maxW, barH, barH / 2,
-                withAlpha(ClickGui.color(0), 50));
-        if (currentW > 0) {
-            NanoVGHelper.drawRoundRect(animX + padding, barY, currentW, barH, barH / 2,
-                    withAlpha(ClickGui.color(0), 220));
-        }
-    }
-
     private void drawCenteredTitle() {
-        int font = FontLoader.bold((int)Size.LOGO_FONT_SIZE);
+        int font = FontLoader.bold((int) Size.LOGO_FONT_SIZE);
         String name = Sakura.MOD_NAME;
         float textW = NanoVGHelper.getTextWidth(name, font, Size.LOGO_FONT_SIZE);
         NanoVGHelper.drawGlowingString(name, animX + (animW - textW) / 2f, animY + animH / 2f + 4, font, Size.LOGO_FONT_SIZE, ClickGui.color(0), Size.GLOW_RADIUS);
@@ -278,7 +265,7 @@ public class DynamicIslandHud extends HudModule {
 
     private void drawSideInfo(float expandProgress) {
         int font = FontLoader.medium(9);
-        Color color = new Color(255, 255, 255,255);
+        Color color = Color.WHITE;
         float centerY = animY + animH / 2f + 3;
         Color bgColor = INVENTORY_BG_COLOR;
         String time = LocalTime.now().format(TIME_FORMAT);
@@ -286,7 +273,7 @@ public class DynamicIslandHud extends HudModule {
         float timeBgX = animX - Size.ELEMENT_SPACING - Size.ELEMENT_WIDTH;
         NanoVGHelper.drawRoundRectBloom(timeBgX, animY, Size.ELEMENT_WIDTH, animH, Size.RADIUS, bgColor);
         NanoVGHelper.drawString(time, timeBgX + (Size.ELEMENT_WIDTH - timeW) / 2, centerY, font, Size.INFO_FONT_SIZE, color);
-        String username ="FPS:"+ mc.getCurrentFps();
+        String username = "FPS:" + mc.getCurrentFps();
         float nameW = NanoVGHelper.getTextWidth(username, font, Size.INFO_FONT_SIZE);
         float nameBgX = animX + animW + Size.ELEMENT_SPACING;
         NanoVGHelper.drawRoundRectBloom(nameBgX, animY, Size.ELEMENT_WIDTH, animH, Size.RADIUS, bgColor);
@@ -302,17 +289,20 @@ public class DynamicIslandHud extends HudModule {
         Color iconColor = currentToggle.enabled ? ClickGui.color(0) : ClickGui.color2(0);
         float iconW = NanoVGHelper.getTextWidth(icon, iconFont, iconSize);
         NanoVGHelper.drawString(icon, animX + padding + 6, centerY + iconSize * 0.35f, iconFont, iconSize, iconColor);
-        int textFont = FontLoader.medium((int)Size.LOGO_FONT_SIZE);
+        int textFont = FontLoader.medium((int) Size.LOGO_FONT_SIZE);
         String status = currentToggle.name + (currentToggle.enabled ? " 已开启" : " 已关闭");
         NanoVGHelper.drawString(status, animX + padding + iconW + 14, centerY + Size.LOGO_FONT_SIZE * 0.35f, textFont, Size.LOGO_FONT_SIZE - 2f, Color.WHITE);
 
         drawProgressBar(alpha, timeProgress);
     }
+
     private void drawProgressBar(int alpha, float timeProgress) {
         float padding = 8, barH = 1.5f;
         float barY = animY + animH - barH - 3;
-        float maxW = animW - padding * 2;
-        float currentW = maxW * (1f - timeProgress);
+        float maxW = Math.max(0, animW - padding * 2);
+        float progress = Math.max(0f, Math.min(1f, 1f - timeProgress));
+        float currentW = maxW * progress;
+
         NanoVGHelper.drawRoundRect(animX + padding, barY, maxW, barH, barH / 2,
                 withAlpha(ClickGui.color(0), 50));
         if (currentW > 0) {

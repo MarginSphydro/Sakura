@@ -10,6 +10,7 @@ import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 import net.minecraft.client.gui.DrawContext;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +40,11 @@ public class ModuleListHud extends HudModule {
     private static final float CATEGORY_ICON_SPACING = 6f;
     private static final Color SUFFIX_COLOR = new Color(180, 180, 180);
     private static final Color BACKGROUND_COLOR = new Color(18, 18, 18, 70);
-    
+
     private static final String[] ICON_SET = {"R", "D", "V", "W", "X", "O", "Z"};
     private static final float ICON_BACKGROUND_WIDTH = 12f;
     private static final float ICON_BACKGROUND_HEIGHT = 12f;
-    
+
     private static final java.util.Random RANDOM = new java.util.Random();
 
     public ModuleListHud() {
@@ -54,6 +55,7 @@ public class ModuleListHud extends HudModule {
         this.width = currentWidth * scale;
         this.height = currentHeight * scale;
     }
+
     @Override
     public void renderInGame(DrawContext context) {
         if (isHudEditorOpen()) return;
@@ -61,6 +63,7 @@ public class ModuleListHud extends HudModule {
         update();
         NanoVGRenderer.INSTANCE.draw(vg -> renderContent());
     }
+
     @Override
     public void renderInEditor(DrawContext context, float mouseX, float mouseY) {
         handleDrag(mouseX, mouseY);
@@ -73,10 +76,12 @@ public class ModuleListHud extends HudModule {
                     dragging ? new Color(ClickGui.color(0).getRed(), ClickGui.color(0).getGreen(), ClickGui.color(0).getBlue(), 80) : BACKGROUND_COLOR);
         });
     }
+
     @Override
     public void onRenderContent() {
         // 实际渲染在renderContent方法中完成
     }
+
     private boolean isHudEditorOpen() {
         dev.sakura.module.impl.client.HudEditor editor = Managers.MODULE.getModule(dev.sakura.module.impl.client.HudEditor.class);
         return editor != null && editor.isEnabled();
@@ -92,6 +97,7 @@ public class ModuleListHud extends HudModule {
         relativeX = x / sw;
         relativeY = y / sh;
     }
+
     private void update() {
         updateModuleList();
         calculateTargetSize();
@@ -103,7 +109,9 @@ public class ModuleListHud extends HudModule {
         this.height = currentHeight * scale;
         updateScroll();
     }
+
     private final java.util.Map<Module, String> moduleIconMap = new java.util.HashMap<>();
+
     private void updateModuleList() {
         moduleEntries.clear();
         List<Module> enabledModules = Managers.MODULE.getAllModules().stream()
@@ -135,6 +143,7 @@ public class ModuleListHud extends HudModule {
             }
         }
     }
+
     private void calculateTargetSize() {
         if (moduleEntries.isEmpty()) {
             targetWidth = 50;
@@ -161,6 +170,7 @@ public class ModuleListHud extends HudModule {
         targetWidth = Math.min(maxTextWidth + PADDING_X * 2, maxWidthValue);
         targetHeight = Math.min(totalHeight, maxHeightValue);
     }
+
     private void updateScroll() {
         float maxHeightValue = maxHeight.get().floatValue();
         if (targetHeight > maxHeightValue) {
@@ -169,6 +179,7 @@ public class ModuleListHud extends HudModule {
             scrollOffset = 0;
         }
     }
+
     private void renderContent() {
         float scale = hudScale.get().floatValue();
         float currentY = y + PADDING_Y * scale - scrollOffset;
@@ -218,33 +229,33 @@ public class ModuleListHud extends HudModule {
             }
             float textY = currentY + (textHeight * scale) / 2 + 2 * scale;
             NanoVGHelper.drawRoundRectBloom(
-                alignRight.get() && showCategory.get() ?
-                    itemX + 4 :
-                    itemX + (showCategory.get() ? (ICON_BACKGROUND_WIDTH + CATEGORY_ICON_SPACING) * scale + 4 : 4),
-                currentY - 3,
-                itemWidth - (showCategory.get() ? ICON_BACKGROUND_WIDTH * scale + CATEGORY_ICON_SPACING * scale : 0) - 7,
-                itemHeight + 3,
-                2 * scale,
-                BACKGROUND_COLOR
+                    alignRight.get() && showCategory.get() ?
+                            itemX + 4 :
+                            itemX + (showCategory.get() ? (ICON_BACKGROUND_WIDTH + CATEGORY_ICON_SPACING) * scale + 4 : 4),
+                    currentY - 3,
+                    itemWidth - (showCategory.get() ? ICON_BACKGROUND_WIDTH * scale + CATEGORY_ICON_SPACING * scale : 0) - 7,
+                    itemHeight + 3,
+                    2 * scale,
+                    BACKGROUND_COLOR
             );
             if (showCategory.get()) {
                 NanoVGHelper.drawRoundRectBloom(
-                    iconBgX,
-                    currentY - 3,
-                    ICON_BACKGROUND_WIDTH * scale,
-                    ICON_BACKGROUND_HEIGHT * scale,
-                    2 * scale,
-                    BACKGROUND_COLOR
+                        iconBgX,
+                        currentY - 3,
+                        ICON_BACKGROUND_WIDTH * scale,
+                        ICON_BACKGROUND_HEIGHT * scale,
+                        2 * scale,
+                        BACKGROUND_COLOR
                 );
                 float iconY = currentY + (ICON_BACKGROUND_HEIGHT * scale - iconHeight) / 2;
                 iconX = iconBgX + (ICON_BACKGROUND_WIDTH * scale - iconWidth) / 2;
                 float iconFontSize = 10 * scale;
                 int iconFont = FontLoader.icons(iconFontSize);
-                NanoVGHelper.drawGlowingString(categoryIcon, iconX+2, iconY+5, iconFont, iconFontSize, Color.WHITE, 2.0f);
+                NanoVGHelper.drawGlowingString(categoryIcon, iconX + 2, iconY + 5, iconFont, iconFontSize, Color.WHITE, 2.0f);
             }
             Color textColor = rainbowColor.get() ?
-                ClickGui.color(0) :
-                Color.WHITE;
+                    ClickGui.color(0) :
+                    Color.WHITE;
             NanoVGHelper.drawString(moduleName, textX, textY, font, 10 * scale, textColor);
             if (!suffix.isEmpty()) {
                 float suffixX = textX + moduleNameWidth * scale + 2 * scale;
@@ -263,6 +274,7 @@ public class ModuleListHud extends HudModule {
     private static float clamp(float v, float min, float max) {
         return Math.max(min, Math.min(max, v));
     }
+
     private String getRandomCategoryIcon(Module module) {
         if (!moduleIconMap.containsKey(module)) {
             String icon = ICON_SET[RANDOM.nextInt(ICON_SET.length)];
@@ -270,8 +282,10 @@ public class ModuleListHud extends HudModule {
         }
         return moduleIconMap.get(module);
     }
+
     private static class ModuleEntry {
         final Module module;
+
         ModuleEntry(Module module) {
             this.module = module;
         }

@@ -5,7 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
@@ -185,8 +184,8 @@ public class InvUtil {
 
             int selectedSlot = mc.player.getInventory().selectedSlot;
             mc.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(handler.syncId,
-                    handler.getRevision(), PlayerInventory.MAIN_SIZE + selectedSlot,
-                    slot, SlotActionType.SWAP, handler.getSlot(slot).getStack(), stack)
+                    handler.getRevision(), slot,
+                    selectedSlot, SlotActionType.SWAP, handler.getSlot(slot).getStack(), stack)
             );
             mc.interactionManager.syncSelectedSlot();
             invSlots = new int[]{slot, selectedSlot};
@@ -196,13 +195,14 @@ public class InvUtil {
     }
 
     public static void invSwapBack() {
+        if (invSlots == null || invSlots.length < 2) return;
         ScreenHandler handler = mc.player.currentScreenHandler;
         Int2ObjectArrayMap<ItemStack> stack = new Int2ObjectArrayMap<>();
         stack.put(invSlots[0], handler.getSlot(invSlots[0]).getStack());
 
         mc.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(handler.syncId,
-                handler.getRevision(), PlayerInventory.MAIN_SIZE + invSlots[1],
-                invSlots[0], SlotActionType.SWAP, handler.getSlot(invSlots[0]).getStack().copy(), stack)
+                handler.getRevision(), invSlots[0],
+                invSlots[1], SlotActionType.SWAP, handler.getSlot(invSlots[0]).getStack().copy(), stack)
         );
         mc.interactionManager.syncSelectedSlot();
     }

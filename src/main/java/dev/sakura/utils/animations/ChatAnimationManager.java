@@ -1,7 +1,6 @@
 package dev.sakura.utils.animations;
 
 import dev.sakura.utils.animations.impl.EaseOutSine;
-import net.minecraft.client.MinecraftClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,27 +8,29 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ChatAnimationManager {
     private static final ChatAnimationManager INSTANCE = new ChatAnimationManager();
-    
+
     private final Map<String, EaseOutSine> animations = new HashMap<>();
     private final Map<Integer, MessageAnimationData> messageAnimations = new ConcurrentHashMap<>();
     private long lastUpdateTime = System.currentTimeMillis();
-    
+
     public static class MessageAnimationData {
         public final long createdTime;
         public final String messageId;
         public boolean markedForRemoval = false;
-        
+
         public MessageAnimationData(String messageId) {
             this.messageId = messageId;
             this.createdTime = System.currentTimeMillis();
         }
     }
-    private ChatAnimationManager() {}
-    
+
+    private ChatAnimationManager() {
+    }
+
     public static ChatAnimationManager getInstance() {
         return INSTANCE;
     }
-    
+
     public void update() {
         long currentTime = System.currentTimeMillis();
         lastUpdateTime = currentTime;
@@ -38,6 +39,7 @@ public class ChatAnimationManager {
             return data.markedForRemoval && (currentTime - data.createdTime > 1000);
         });
     }
+
     public double getChatHudAnimation(String key, double target, int duration) {
         animations.putIfAbsent(key, new EaseOutSine(duration, target));
         EaseOutSine animation = animations.get(key);

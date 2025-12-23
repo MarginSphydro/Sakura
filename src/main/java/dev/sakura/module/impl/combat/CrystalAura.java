@@ -112,7 +112,6 @@ public class CrystalAura extends Module {
     private long lastTime = 0;
     private double renderDamage = 0;
     private boolean isRotating = false;
-    private FindItemResult result = null;
 
     @Override
     public void onEnable() {
@@ -127,7 +126,6 @@ public class CrystalAura extends Module {
         lastTime = 0;
         renderDamage = 0;
         isRotating = false;
-        result = null;
     }
 
     @EventHandler
@@ -146,12 +144,14 @@ public class CrystalAura extends Module {
             return;
         }
 
+        FindItemResult result = autoSwitch.is(SwitchMode.InvSilent) ? InvUtil.find(Items.END_CRYSTAL) : InvUtil.findInHotbar(Items.END_CRYSTAL);
+
         if (attack.get() && breakTimer.hasTimeElapsed(getAttackDelay(target))) {
-            doBreak(target);
+            doBreak(target, result);
         }
 
         if (place.get() && placeTimer.hasTimeElapsed(placeDelay.get().longValue())) {
-            doPlace(target);
+            doPlace(target, result);
         }
 
         if (!isRotating && rotate.get()) {
@@ -252,7 +252,7 @@ public class CrystalAura extends Module {
         }
     }
 
-    private void doBreak(PlayerEntity target) {
+    private void doBreak(PlayerEntity target, FindItemResult result) {
         EndCrystalEntity bestCrystal = null;
         float bestDamage = 0;
 
@@ -290,7 +290,7 @@ public class CrystalAura extends Module {
         }
     }
 
-    private void doPlace(PlayerEntity target) {
+    private void doPlace(PlayerEntity target, FindItemResult result) {
         BlockPos bestPos = null;
         float bestDamage = 0;
         EndCrystalEntity blockingCrystal = null;
@@ -340,13 +340,13 @@ public class CrystalAura extends Module {
                 return;
             }
 
-            result = InvUtil.findInHotbar(Items.END_CRYSTAL);
             if (!result.found()) return;
 
             int slot = result.slot();
             boolean switched = false;
+            boolean usedInvSwitch = false;
 
-            if (mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL) {
+            if (mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL && !result.isOffhand()) {
                 if (autoSwitch.is(SwitchMode.None)) return;
 
                 switch (autoSwitch.get()) {
@@ -354,7 +354,15 @@ public class CrystalAura extends Module {
                         InvUtil.swap(slot, true);
                         switched = true;
                     }
-                    case InvSilent -> switched = InvUtil.invSwitch(slot);
+                    case InvSilent -> {
+                        if (slot < 9) {
+                            InvUtil.swap(slot, true);
+                            switched = true;
+                        } else {
+                            switched = InvUtil.invSwitch(slot);
+                            usedInvSwitch = true;
+                        }
+                    }
                     default -> InvUtil.swap(slot, false);
                 }
             }
@@ -381,7 +389,10 @@ public class CrystalAura extends Module {
             if (switched) {
                 switch (autoSwitch.get()) {
                     case Silent -> InvUtil.swapBack();
-                    case InvSilent -> InvUtil.invSwapBack();
+                    case InvSilent -> {
+                        if (usedInvSwitch) InvUtil.invSwapBack();
+                        else InvUtil.swapBack();
+                    }
                 }
             }
         }

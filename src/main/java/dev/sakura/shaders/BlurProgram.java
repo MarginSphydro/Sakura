@@ -43,10 +43,14 @@ public class BlurProgram {
     }
 
     public void setParameters(float x, float y, float width, float height, float r, float blurStrenth, float blurOpacity) {
-        setParameters(x, y, width, height, r, new Color(0, 0, 0, 0), blurStrenth, blurOpacity);
+        setParameters(x, y, width, height, r, 0f, 0f, 0f, 0f, blurStrenth, blurOpacity);
     }
 
     public void setParameters(float x, float y, float width, float height, float r, Color c1, float blurStrenth, float blurOpacity) {
+        setParameters(x, y, width, height, r, c1.getRed() / 255f, c1.getGreen() / 255f, c1.getBlue() / 255f, c1.getAlpha() / 255f, blurStrenth, blurOpacity);
+    }
+
+    public void setParameters(float x, float y, float width, float height, float r, float red, float green, float blue, float alpha, float blurStrenth, float blurOpacity) {
         if (input == null)
             input = new SimpleFramebuffer(mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight(), true);
 
@@ -55,11 +59,16 @@ public class BlurProgram {
         checkProgram();
 
         radius.set(r * i);
-        uLocation.set(x * i, -y * i + mc.getWindow().getScaledHeight() * i - height * i);
+        float calculatedY = mc.getWindow().getFramebufferHeight() - (y * i) - (height * i);
+        uLocation.set(x * i, calculatedY);
         uSize.set(width * i, height * i);
+        
+        // Debug output to verify coordinates
+        // System.out.println("Blur Param: x=" + (x*i) + ", y=" + calculatedY + ", w=" + (width*i) + ", h=" + (height*i));
+        
         brightness.set(blurOpacity);
         quality.set(blurStrenth);
-        color1.set(c1.getRed() / 255f, c1.getGreen() / 255f, c1.getBlue() / 255f, c1.getAlpha() / 255f);
+        color1.set(red, green, blue, alpha);
         sampler.set(input.getColorAttachment());
     }
 
@@ -68,6 +77,11 @@ public class BlurProgram {
             input.resize(mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
 
         var buffer = MinecraftClient.getInstance().getFramebuffer();
+        
+        // Backup current state
+        int prevVAO = GL30.glGetInteger(GL30.GL_VERTEX_ARRAY_BINDING);
+        GL30.glBindVertexArray(0); // Unbind VAO for framebuffer operations to avoid conflicts
+        
         input.beginWrite(false);
         GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, buffer.fbo);
         GL30.glBlitFramebuffer(0, 0, buffer.textureWidth, buffer.textureHeight, 0, 0, buffer.textureWidth, buffer.textureHeight, GL30.GL_COLOR_BUFFER_BIT, GL30.GL_LINEAR);
@@ -83,6 +97,9 @@ public class BlurProgram {
         } else {
             System.err.println("[BlurProgram] Shader not loaded!");
         }
+        
+        // Restore state
+        GL30.glBindVertexArray(prevVAO);
     }
 
     private void checkProgram() {

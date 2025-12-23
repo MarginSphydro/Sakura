@@ -4,16 +4,9 @@ import dev.sakura.manager.Managers;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.HudEditor;
-import dev.sakura.nanovg.NanoVGRenderer;
-import dev.sakura.nanovg.font.FontLoader;
-import dev.sakura.nanovg.util.NanoVGHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
-
-import java.awt.*;
-
-import static dev.sakura.Sakura.mc;
 
 public class HudEditorScreen extends Screen {
     private final HudPanel hudPanel;

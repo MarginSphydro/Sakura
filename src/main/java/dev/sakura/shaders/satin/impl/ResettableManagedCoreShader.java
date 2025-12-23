@@ -83,5 +83,8 @@ public final class ResettableManagedCoreShader extends ResettableManagedShaderBa
     @Override
     protected void logInitError(IOException e) {
         LogUtils.getLogger().error("Could not create shader program {}", this.getLocation(), e);
+        // Add more visible error reporting
+        System.err.println("Shader compilation failed for " + this.getLocation());
+        e.printStackTrace();
     }
 }

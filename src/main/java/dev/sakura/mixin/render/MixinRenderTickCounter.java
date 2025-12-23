@@ -17,7 +17,7 @@ public class MixinRenderTickCounter {
     @Shadow
     private float lastFrameDuration;
 
-    @Inject(at = {@At(value = "FIELD", target = "Lnet/minecraft/client/render/RenderTickCounter$Dynamic;prevTimeMillis:J", opcode = Opcodes.PUTFIELD, ordinal = 0) }, method = {"beginRenderTick(J)I" })
+    @Inject(at = {@At(value = "FIELD", target = "Lnet/minecraft/client/render/RenderTickCounter$Dynamic;prevTimeMillis:J", opcode = Opcodes.PUTFIELD, ordinal = 0)}, method = {"beginRenderTick(J)I"})
     public void onBeginRenderTick(long long_1, CallbackInfoReturnable<Integer> cir) {
         TimerEvent event = new TimerEvent();
         Sakura.EVENT_BUS.post(event);

@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import java.awt.*;
 
 @Mixin(ChatHud.class)
@@ -29,10 +30,9 @@ public class MixinChatHud {
         maxY = Integer.MIN_VALUE;
         shouldRender = false;
     }
-    
+
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V"))
-    private void redirectChatBackground(DrawContext context, int x1, int y1, int x2, int y2, int color)
-    {
+    private void redirectChatBackground(DrawContext context, int x1, int y1, int x2, int y2, int color) {
         minX = Math.min(minX, x1 + CHAT_MARGIN_LEFT);
         minY = Math.min(minY, y1);
         maxX = Math.max(maxX, x2 + CHAT_MARGIN_LEFT);
@@ -40,11 +40,11 @@ public class MixinChatHud {
         shouldRender = true;
         cachedContext = context;
     }
-    
+
     @Inject(method = "render", at = @At("TAIL"))
     private void onRenderEnd(CallbackInfo ci) {
         if (!shouldRender || cachedContext == null) return;
-        
+
         float radius = 3f;
         int width = maxX - minX;
         int height = maxY - minY;
@@ -53,7 +53,7 @@ public class MixinChatHud {
         float finalHeight = height + padding * 2;
         float currentX = minX - 4f + 6F;
         float currentY = minY - 4f;
-        
+
         NanoVGRenderer.INSTANCE.draw(vg -> {
             Color backgroundColor = new Color(18, 18, 18, 70);
             NanoVGHelper.drawRoundRectBloom(currentX, currentY, finalWidth, finalHeight, radius, backgroundColor);

@@ -3,11 +3,7 @@ package dev.sakura.manager;
 import dev.sakura.Sakura;
 import dev.sakura.command.CommandManager;
 import dev.sakura.config.ConfigManager;
-import dev.sakura.manager.impl.AccountManager;
-import dev.sakura.manager.impl.ChatAnimationUpdater;
-import dev.sakura.manager.impl.ExtrapolationManager;
-import dev.sakura.manager.impl.NotificationManager;
-import dev.sakura.manager.impl.RenderManager;
+import dev.sakura.manager.impl.*;
 import dev.sakura.module.ModuleManager;
 
 public class Managers {

@@ -60,7 +60,13 @@ public final class ReloadableShaderEffectManager implements ShaderEffectManager 
 
     public void reload(ResourceFactory shaderResources) {
         for (ResettableManagedShaderBase<?> ss : managedShaders) {
-            ss.initializeOrLog(shaderResources);
+            try {
+                ss.initializeOrLog(shaderResources);
+            } catch (Exception e) {
+                // Log the exception but continue loading other shaders
+                System.err.println("Failed to reload shader: " + ss.getLocation());
+                e.printStackTrace();
+            }
         }
     }
 

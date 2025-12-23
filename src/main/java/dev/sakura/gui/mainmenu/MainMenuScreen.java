@@ -55,7 +55,7 @@ public class MainMenuScreen extends Screen {
         if (initTime == 0) initTime = System.currentTimeMillis();
 
         WindowResizeCallback.EVENT.register(this::onWindowResized);
-        
+
         updateLayout();
         loadIcon();
     }
@@ -72,10 +72,10 @@ public class MainMenuScreen extends Screen {
         float scale = Math.min(scaleX, scaleY);
         scale = Math.max(MIN_SCALE, scale);
         int centerX = this.width / 2;
-        int startY = this.height / 2 - (int)(40 * scale);
-        int buttonWidth = (int)(200 * scale);
-        int buttonHeight = (int)(20 * scale);
-        int spacing = (int)(24 * scale);
+        int startY = this.height / 2 - (int) (40 * scale);
+        int buttonWidth = (int) (200 * scale);
+        int buttonHeight = (int) (20 * scale);
+        int spacing = (int) (24 * scale);
 
         buttonHeight = Math.max(buttonHeight, 16);
         buttonWidth = Math.max(buttonWidth, 120);
@@ -103,24 +103,24 @@ public class MainMenuScreen extends Screen {
                 !isMultiplayerDisabled()
         ));
 
-        int bottomY = startY + spacing * 3 + (int)(4 * scale);
+        int bottomY = startY + spacing * 3 + (int) (4 * scale);
 
         buttons.add(new MenuButton(
-                centerX - buttonWidth / 2 - (int)(2 * scale), bottomY,
+                centerX - buttonWidth / 2 - (int) (2 * scale), bottomY,
                 buttonWidth / 2, buttonHeight,
                 I18n.translate("menu.options"),
                 () -> mc.setScreen(new OptionsScreen(this, mc.options))
         ));
 
         buttons.add(new MenuButton(
-                centerX + (int)(2 * scale), bottomY,
+                centerX + (int) (2 * scale), bottomY,
                 buttonWidth / 2, buttonHeight,
                 I18n.translate("menu.quit"),
                 mc::scheduleStop
         ));
 
         buttons.add(new ShaderButton(
-                centerX - buttonWidth / 2, this.height - (int)(30 * scale),
+                centerX - buttonWidth / 2, this.height - (int) (30 * scale),
                 buttonWidth, buttonHeight
         ));
     }
@@ -362,10 +362,10 @@ public class MainMenuScreen extends Screen {
             NanoVGHelper.drawRoundRectOutlineScaled(x, y, width, height, 4, 1, borderColor, scale);
 
             float fontSize = Math.max(10f, Math.min(16f, height * 0.7f));
-            int font = FontLoader.regular((int)fontSize);
+            int font = FontLoader.regular((int) fontSize);
             float textWidth = NanoVGHelper.getTextWidth(text, font, fontSize);
             float textX = x + (width - textWidth) / 2f;
-            float textY = y + height / 2f + fontSize/3;
+            float textY = y + height / 2f + fontSize / 3;
 
             int textAlpha = enabled ? baseAlpha : (int) (baseAlpha * 0.6f);
             Color textColor = new Color(255, 255, 255, textAlpha);

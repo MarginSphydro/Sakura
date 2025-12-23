@@ -146,8 +146,8 @@ public class HotbarHud extends HudModule {
     private void renderBloom(DrawContext context) {
         if (!enableBloom.get()) return;
 
-        Color bloomColor = new Color(18, 18, 18, 70);;
-        
+        Color bloomColor = new Color(18, 18, 18, 70);
+
         NanoVGRenderer.INSTANCE.draw(vg -> {
             NanoVGHelper.drawRoundRectBloom(hotbarX, hotbarY, hotbarWidth, hotbarHeight, radius.get().floatValue(), bloomColor);
 

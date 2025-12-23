@@ -1,14 +1,14 @@
 package dev.sakura.module.impl.player;
 
+import dev.sakura.module.Category;
+import dev.sakura.module.Module;
+import dev.sakura.values.impl.BoolValue;
+import dev.sakura.values.impl.NumberValue;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
-import dev.sakura.module.Category;
-import dev.sakura.module.Module;
-import dev.sakura.values.impl.NumberValue;
-import dev.sakura.values.impl.BoolValue;
 
 import java.util.*;
 
