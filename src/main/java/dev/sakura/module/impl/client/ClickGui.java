@@ -35,7 +35,7 @@ public class ClickGui extends Module {
     public static Value<Double> blurStrength = new NumberValue<>("Blur Strength", 8.0, 1.0, 20.0, 0.5, () -> backgroundBlur.get());
 
     public static Value<Double> guiScale = new NumberValue<>("Gui Scale", 1.0, 0.5, 2.0, 0.05);
-    public static Value<Double> fontSize = new NumberValue<>("Font Size", 10.0, 6.0, 20.0, 0.5);
+    public static Value<Double> fontSize = new NumberValue<>("Font Size", 13.0, 6.0, 20.0, 0.5);
 
     public ClickGui() {
         super("ClickGui", Category.Client);
