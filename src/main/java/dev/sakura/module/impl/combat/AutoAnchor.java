@@ -24,19 +24,24 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
 
 public class AutoAnchor extends Module {
     public static AutoAnchor INSTANCE;
 
-    public enum Page { General, Rotate, Calc, Render }
-    public enum PlaceMode { Head, Feet, Both }
-    public enum SwitchMode { None, Normal, Silent, InvSilent }
+    public enum Page {General, Rotate, Calc, Render}
+
+    public enum PlaceMode {Head, Feet, Both}
+
+    public enum SwitchMode {None, Normal, Silent, InvSilent}
 
     private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
 
@@ -131,7 +136,8 @@ public class AutoAnchor extends Module {
 
         if (anchorSlot == -1 || glowstoneSlot == -1) return;
         if (usingPause.get() && mc.player.isUsingItem()) return;
-        if (switchMode.is(SwitchMode.None) && mc.player.getMainHandStack().getItem() != Blocks.RESPAWN_ANCHOR.asItem()) return;
+        if (switchMode.is(SwitchMode.None) && mc.player.getMainHandStack().getItem() != Blocks.RESPAWN_ANCHOR.asItem())
+            return;
 
         if (!delayTimer.hasReached(placeDelay.get())) return;
         delayTimer.reset();
@@ -240,9 +246,11 @@ public class AutoAnchor extends Module {
 
                     double selfDamage = DamageUtil.getAnchorDamage(pos, mc.player, terrainIgnore.get());
                     if (selfDamage > maxSelfDamage.get()) continue;
-                    if (noSuicide.get() && selfDamage > mc.player.getHealth() + mc.player.getAbsorptionAmount()) continue;
+                    if (noSuicide.get() && selfDamage > mc.player.getHealth() + mc.player.getAbsorptionAmount())
+                        continue;
 
-                    if (mc.player.getEyePos().squaredDistanceTo(pos.toCenterPos()) > range.get() * range.get()) continue;
+                    if (mc.player.getEyePos().squaredDistanceTo(pos.toCenterPos()) > range.get() * range.get())
+                        continue;
 
                     lastDamage = damage;
                     bestDamage = damage;
@@ -301,7 +309,7 @@ public class AutoAnchor extends Module {
         Direction side = getPlaceSide(pos);
         BlockPos clickPos;
         Direction clickDir;
-        
+
         if (side != null) {
             clickPos = pos.offset(side);
             clickDir = side.getOpposite();

@@ -61,7 +61,7 @@ public class MixinChatHud {
             NanoVGHelper.drawRoundRectBloom(currentX, currentY, finalWidth, finalHeight, radius, backgroundColor);
         });
     }
-    
+
     private float getGlobalRadius() {
         HudEditor hudEditor = Managers.MODULE.getModule(HudEditor.class);
         if (hudEditor != null) {

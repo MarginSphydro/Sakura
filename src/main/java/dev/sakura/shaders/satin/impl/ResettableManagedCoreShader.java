@@ -18,7 +18,7 @@
 package dev.sakura.shaders.satin.impl;
 
 import com.google.common.base.Preconditions;
-import com.mojang.logging.LogUtils;
+import dev.sakura.Sakura;
 import dev.sakura.shaders.satin.api.ManagedCoreShader;
 import dev.sakura.shaders.satin.api.uniform.SamplerUniform;
 import net.minecraft.client.MinecraftClient;
@@ -82,9 +82,6 @@ public final class ResettableManagedCoreShader extends ResettableManagedShaderBa
 
     @Override
     protected void logInitError(IOException e) {
-        LogUtils.getLogger().error("Could not create shader program {}", this.getLocation(), e);
-        // Add more visible error reporting
-        System.err.println("Shader compilation failed for " + this.getLocation());
-        e.printStackTrace();
+        Sakura.LOGGER.error("Could not create shader program {}", this.getLocation(), e);
     }
 }

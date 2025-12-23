@@ -69,7 +69,7 @@ public class MixinChatScreen {
             NanoVGHelper.drawRoundRectBloom(adjustedX1, animatedY1, width, height, radius, backgroundColor);
         });
     }
-    
+
     private float getGlobalRadius() {
         dev.sakura.module.impl.client.HudEditor hudEditor = Managers.MODULE.getModule(dev.sakura.module.impl.client.HudEditor.class);
         if (hudEditor != null) {

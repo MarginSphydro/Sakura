@@ -12,7 +12,7 @@ public class Particle {
     public float alpha;
     public float life;
     public float maxLife;
-    
+
     public Particle(float x, float y) {
         this.x = x;
         this.y = y;
@@ -26,14 +26,14 @@ public class Particle {
         this.velocityX = (float) (Math.cos(angle) * speed);
         this.velocityY = (float) (Math.sin(angle) * speed);
     }
-    
+
     public void update() {
         x += velocityX;
         y += velocityY;
         life -= 1.0f;
         alpha = life / maxLife;
     }
-    
+
     public boolean isAlive() {
         return life > 0;
     }

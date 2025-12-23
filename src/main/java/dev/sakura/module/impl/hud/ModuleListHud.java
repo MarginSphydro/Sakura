@@ -36,15 +36,15 @@ public class ModuleListHud extends HudModule {
     private float currentWidth = 0;
     private float currentHeight = 0;
     private float scrollOffset = 0;
-    
+
     private int iconImage = -1;
 
     private final BoolValue showIcon = new BoolValue("ShowIcon", true);
     private final NumberValue<Double> iconSize = new NumberValue<>("IconSize", 26.0, 16.0, 32.0, 2.0);
-    
+
     private float rotationAngle = 0.0f;
     private long lastUpdateTime = 0;
-    
+
     private List<Particle> particles = new ArrayList<>();
     private final BoolValue enableParticles = new BoolValue("Enable Particles", true);
     private final NumberValue<Double> rotationSpeed = new NumberValue<>("Rotation Speed", 1.0, 0.1, 5.0, 0.1);
@@ -94,7 +94,7 @@ public class ModuleListHud extends HudModule {
             float scaledHeight = currentHeight * hudScale.get().floatValue();
             NanoVGHelper.drawRect(x, y, scaledWidth, scaledHeight,
                     dragging ? new Color(ClickGui.color(0).getRed(), ClickGui.color(0).getGreen(), ClickGui.color(0).getBlue(), 80) : BACKGROUND_COLOR);
-            
+
             renderContent();
         });
     }
@@ -139,16 +139,16 @@ public class ModuleListHud extends HudModule {
         float speed = animationSpeed.get().floatValue();
         currentWidth += (targetWidth - currentWidth) * speed;
         currentHeight += (targetHeight - currentHeight) * speed;
-        
+
         if (alignRight.get() && !isHudEditorOpen()) {
             int screenWidth = mc.getWindow().getScaledWidth();
             int screenHeight = mc.getWindow().getScaledHeight();
-            
+
             if (Math.abs(currentWidth - oldWidth) > 0.1f || screenWidth != oldScreenWidth) {
                 x = screenWidth - (currentWidth * hudScale.get().floatValue());
                 if (x < 0) x = 0;
             }
-            
+
             if (screenHeight != oldScreenHeight) {
                 float scaledHeight = currentHeight * hudScale.get().floatValue();
                 if (y + scaledHeight > screenHeight) {
@@ -157,15 +157,15 @@ public class ModuleListHud extends HudModule {
                 }
             }
         }
-        
+
         this.width = currentWidth * hudScale.get().floatValue();
         this.height = currentHeight * hudScale.get().floatValue();
         updateScroll();
-        
+
         updateRotation();
-        
+
         updateParticles();
-        
+
         if (iconImage == -1 && showIcon.get()) {
             loadIcon();
         }
@@ -210,7 +210,7 @@ public class ModuleListHud extends HudModule {
         if (moduleEntries.isEmpty()) {
             targetWidth = 50;
             targetHeight = 20;
-            
+
             if (showIcon.get()) {
                 float iconRenderSize = iconSize.get().floatValue() * hudScale.get().floatValue();
                 targetHeight = (PADDING_Y * 2 + iconRenderSize + 4) * hudScale.get().floatValue();
@@ -221,12 +221,12 @@ public class ModuleListHud extends HudModule {
         float maxHeightValue = maxHeight.get().floatValue();
         float scale = hudScale.get().floatValue();
         float totalHeight = PADDING_Y * 2 * scale;
-        
+
         if (showIcon.get()) {
             float iconRenderSize = iconSize.get().floatValue() * scale;
             totalHeight += iconRenderSize + 4 * scale;
         }
-        
+
         float maxTextWidth = 0;
         int font = FontLoader.medium(10);
         for (ModuleEntry entry : moduleEntries) {
@@ -241,7 +241,7 @@ public class ModuleListHud extends HudModule {
         if (!moduleEntries.isEmpty()) {
             totalHeight -= itemSpacing.get().floatValue() * scale;
         }
-        
+
         if (showIcon.get()) {
             float iconRenderSize = iconSize.get().floatValue() * scale;
             int sakuraFont = FontLoader.bold(18);
@@ -249,7 +249,7 @@ public class ModuleListHud extends HudModule {
             float totalRequiredWidth = iconRenderSize + sakuraTextWidth + 4 * scale;
             maxTextWidth = Math.max(maxTextWidth, totalRequiredWidth);
         }
-        
+
         targetWidth = Math.min(maxTextWidth + PADDING_X * 2 * scale, maxWidthValue);
         targetHeight = Math.min(totalHeight, maxHeightValue);
     }
@@ -268,7 +268,7 @@ public class ModuleListHud extends HudModule {
         int screenHeight = mc.getWindow().getScaledHeight();
         float scaledWidth = currentWidth * hudScale.get().floatValue();
         float scaledHeight = currentHeight * hudScale.get().floatValue();
-        
+
         if (alignRight.get()) {
             x = screenWidth - scaledWidth;
             if (x < 0) x = 0;
@@ -280,7 +280,7 @@ public class ModuleListHud extends HudModule {
                 if (x < 0) x = 0;
             }
         }
-        
+
         if (y < 0) y = 0;
         float bottomEdge = y + scaledHeight;
         if (bottomEdge > screenHeight) {
@@ -292,51 +292,51 @@ public class ModuleListHud extends HudModule {
     private void renderContent() {
         long vg = NanoVGRenderer.INSTANCE.getContext();
         float scale = hudScale.get().floatValue();
-        
+
         float currentY = y + (PADDING_Y * scale) - (scrollOffset * scale);
-        
+
         if (showIcon.get() && iconImage != -1) {
             float iconRenderSize = iconSize.get().floatValue() * scale;
-            float iconX = alignRight.get() ? 
-                x + (currentWidth * scale) - iconRenderSize - (PADDING_X * scale) : 
-                x + (PADDING_X * scale);
+            float iconX = alignRight.get() ?
+                    x + (currentWidth * scale) - iconRenderSize - (PADDING_X * scale) :
+                    x + (PADDING_X * scale);
             float iconY = currentY;
-            
+
             float centerX = iconX + iconRenderSize / 2;
             float centerY = iconY + iconRenderSize / 2;
-            
+
             nvgSave(vg);
             nvgTranslate(vg, centerX, centerY);
             nvgRotate(vg, (float) Math.toRadians(rotationAngle));
             nvgTranslate(vg, -iconRenderSize / 2, -iconRenderSize / 2);
-            
+
             NVGPaint paint = NVGPaint.create();
             nvgImagePattern(vg, 0, 0, iconRenderSize, iconRenderSize, 0, iconImage, 1.0f, paint);
             nvgBeginPath(vg);
             nvgRect(vg, 0, 0, iconRenderSize, iconRenderSize);
             nvgFillPaint(vg, paint);
             nvgFill(vg);
-            
+
             nvgRestore(vg);
-            
+
             String sakuraText = "Sakura";
             int font = FontLoader.bold(18);
             float textWidth = NanoVGHelper.getTextWidth(sakuraText, font, 18 * scale);
             float textHeight = NanoVGHelper.getFontHeight(font, 18 * scale);
-            float textX = alignRight.get() ? 
-                x + (currentWidth * scale) - textWidth - iconRenderSize - (4 * scale) - (PADDING_X * scale) : 
-                iconX + iconRenderSize + (4 * scale);
+            float textX = alignRight.get() ?
+                    x + (currentWidth * scale) - textWidth - iconRenderSize - (4 * scale) - (PADDING_X * scale) :
+                    iconX + iconRenderSize + (4 * scale);
             float textY = currentY + iconRenderSize / 2 + textHeight / 4;
-            
+
             NanoVGHelper.drawGlowingString(sakuraText, textX, textY, font, 18 * scale, Color.WHITE, 3.0f * scale);
-            
+
             currentY += iconRenderSize + (4 * scale);
         }
-        
+
         if (enableParticles.get()) {
             renderParticles();
         }
-        
+
         int font = FontLoader.medium(10);
         for (ModuleEntry entry : moduleEntries) {
             if (currentY + (10 * scale) < y || currentY > y + (currentHeight * scale)) {
@@ -413,22 +413,22 @@ public class ModuleListHud extends HudModule {
 
     private void renderParticles() {
         long vg = NanoVGRenderer.INSTANCE.getContext();
-        
+
         for (Particle particle : particles) {
             if (particle.isAlive()) {
                 Color particleColor = new Color(
-                    particle.color.getRed(),
-                    particle.color.getGreen(),
-                    particle.color.getBlue(),
-                    (int) (particle.color.getAlpha() * particle.alpha)
+                        particle.color.getRed(),
+                        particle.color.getGreen(),
+                        particle.color.getBlue(),
+                        (int) (particle.color.getAlpha() * particle.alpha)
                 );
-                
+
                 nvgBeginPath(vg);
                 nvgCircle(vg, particle.x, particle.y, particle.size);
-                
+
                 nvgFillColor(vg, NanoVGHelper.nvgColor(particleColor));
                 nvgFill(vg);
-                
+
                 nvgBeginPath(vg);
                 nvgCircle(vg, particle.x, particle.y, particle.size * 1.5f);
                 nvgFillColor(vg, NanoVGHelper.nvgColor(new Color(255, 255, 255, (int) (50 * particle.alpha))));
@@ -436,12 +436,12 @@ public class ModuleListHud extends HudModule {
             }
         }
     }
-    
+
     private void updateRotation() {
         long currentTime = System.currentTimeMillis();
         long deltaTime = currentTime - lastUpdateTime;
         lastUpdateTime = currentTime;
-        
+
         rotationAngle += (deltaTime * 0.05f * rotationSpeed.get().floatValue()) % 360.0f;
         if (rotationAngle >= 360.0f) {
             rotationAngle -= 360.0f;
@@ -451,22 +451,22 @@ public class ModuleListHud extends HudModule {
     private void updateParticles() {
         if (enableParticles.get()) {
             particles.removeIf(particle -> !particle.isAlive());
-            
+
             if (particles.size() < particleCount.get()) {
                 if (showIcon.get() && iconImage != -1) {
                     float scale = hudScale.get().floatValue();
                     float iconRenderSize = iconSize.get().floatValue() * scale;
-                    float iconX = alignRight.get() ? 
-                        x + (currentWidth * scale) - iconRenderSize - (PADDING_X * scale) : 
-                        x + (PADDING_X * scale);
+                    float iconX = alignRight.get() ?
+                            x + (currentWidth * scale) - iconRenderSize - (PADDING_X * scale) :
+                            x + (PADDING_X * scale);
                     float iconY = y + (PADDING_Y * scale);
-                    
+
                     for (int i = particles.size(); i < particleCount.get(); i++) {
                         float angle = (float) (Math.random() * Math.PI * 2);
                         float distance = (float) (Math.random() * iconRenderSize * 0.8f);
                         float particleX = iconX + iconRenderSize / 2 + (float) Math.cos(angle) * distance;
                         float particleY = iconY + iconRenderSize / 2 + (float) Math.sin(angle) * distance;
-                        
+
                         Particle newParticle = new Particle(particleX, particleY);
                         newParticle.size = particleSize.get().floatValue();
                         float speed = particleSpeed.get().floatValue();
@@ -477,17 +477,17 @@ public class ModuleListHud extends HudModule {
                     }
                 }
             }
-            
+
             for (Particle particle : particles) {
                 particle.update();
             }
         }
     }
-    
+
     private void loadIcon() {
         iconImage = NanoVGHelper.loadTexture("/assets/sakura/icons/icon_32x32.png");
     }
-    
+
     @Override
     public void onDisable() {
         super.onDisable();
@@ -496,7 +496,7 @@ public class ModuleListHud extends HudModule {
             iconImage = -1;
         }
     }
-    
+
     private String getDisplayText(Module module) {
         String name = module.getName();
         String suffix = module.getSuffix();
@@ -514,7 +514,7 @@ public class ModuleListHud extends HudModule {
         }
         return moduleIconMap.get(module);
     }
-    
+
     private static class ModuleEntry {
         final Module module;
 
@@ -522,5 +522,5 @@ public class ModuleListHud extends HudModule {
             this.module = module;
         }
     }
-    
-    }
+
+}

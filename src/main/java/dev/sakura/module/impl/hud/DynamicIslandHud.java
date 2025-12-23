@@ -74,13 +74,17 @@ public class DynamicIslandHud extends HudModule {
         if (isHudEditorOpen()) return;
         this.currentContext = context;
         update();
-        renderBlur(context);
-        renderSideBlurs(context, phase == Phase.IDLE ? 0f :
-                phase == Phase.EXPANDING ? progress :
-                        phase == Phase.DISPLAY ? 1f :
-                                phase == Phase.COLLAPSE_1 ? 1f :
-                                        1f - progress);
-        NanoVGRenderer.INSTANCE.draw(vg -> renderContent());
+        NanoVGRenderer.INSTANCE.draw(vg -> {
+            NanoVGRenderer.INSTANCE.withRawCoords(() -> {
+                renderBlur(context);
+                renderSideBlurs(context, phase == Phase.IDLE ? 1f :
+                        phase == Phase.EXPANDING ? progress :
+                                phase == Phase.DISPLAY ? 1f :
+                                        phase == Phase.COLLAPSE_1 ? 1f :
+                                                1f - progress);
+            });
+            renderContent();
+        });
     }
 
     @Override
@@ -88,13 +92,15 @@ public class DynamicIslandHud extends HudModule {
         handleDrag(mouseX, mouseY);
         this.currentContext = context;
         update();
-        renderBlur(context);
-        renderSideBlurs(context, phase == Phase.IDLE ? 0f :
-                phase == Phase.EXPANDING ? progress :
-                        phase == Phase.DISPLAY ? 1f :
-                                phase == Phase.COLLAPSE_1 ? 1f :
-                                        1f - progress);
         NanoVGRenderer.INSTANCE.draw(vg -> {
+            NanoVGRenderer.INSTANCE.withRawCoords(() -> {
+                renderBlur(context);
+                renderSideBlurs(context, phase == Phase.IDLE ? 1f :
+                        phase == Phase.EXPANDING ? progress :
+                                phase == Phase.DISPLAY ? 1f :
+                                        phase == Phase.COLLAPSE_1 ? 1f :
+                                                1f - progress);
+            });
             renderContent();
             NanoVGHelper.drawRect(x, y, width, height,
                     dragging ? withAlpha(ClickGui.color(0), 80) : withAlpha(ClickGui.backgroundColor.get(), 50));
@@ -140,7 +146,7 @@ public class DynamicIslandHud extends HudModule {
     private void calculateState() {
         int screenWidth = mc.getWindow().getScaledWidth();
         long dt = elapsed();
-        
+
         if (currentToggle == null && toggleStartTime == -1L) {
             setPhase(Phase.IDLE, 0f, Size.BASE_W, Size.BASE_H, 1f);
         } else if (dt < Timing.EXPAND) {
@@ -154,13 +160,13 @@ public class DynamicIslandHud extends HudModule {
             setPhase(Phase.DISPLAY, p, targetExpandedWidth, Size.EXPANDED_H, 1f);
         } else if (dt < Timing.EXPAND + Timing.DISPLAY + Timing.COLLAPSE_1) {
             float p = easeOut((dt - Timing.EXPAND - Timing.DISPLAY) / (float) Timing.COLLAPSE_1);
-            setPhase(Phase.COLLAPSE_1, p, targetExpandedWidth, Size.EXPANDED_H, lerp(1f, 0f, p));
+            setPhase(Phase.COLLAPSE_1, p, targetExpandedWidth, Size.EXPANDED_H, 1f);
         } else {
             float p = easeOut((dt - Timing.EXPAND - Timing.DISPLAY - Timing.COLLAPSE_1) / (float) Timing.COLLAPSE_2);
             setPhase(Phase.COLLAPSE_2, p,
                     lerp(targetExpandedWidth, Size.BASE_W, p),
                     lerp(Size.EXPANDED_H, Size.BASE_H, p),
-                    lerp(0f, 0f, p));
+                    1f);
         }
 
         animX = (screenWidth - animW) / 2f;
@@ -204,7 +210,7 @@ public class DynamicIslandHud extends HudModule {
     private void renderSideBlurs(DrawContext context, float expandProgress) {
         if (!blur.get()) return;
 
-        float clampedBlurOpacity = Math.max(0f, Math.min(1f, blurOpacity));
+        float clampedBlurOpacity = Math.max(0f, Math.min(1f, blurOpacity * expandProgress));
         float timeBgX = animX - Size.ELEMENT_SPACING - Size.ELEMENT_WIDTH;
         Shader2DUtils.drawRoundedBlur(
                 context.getMatrices(), timeBgX, animY, Size.ELEMENT_WIDTH, animH, getRadius(),
