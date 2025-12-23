@@ -6,8 +6,11 @@ import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.Managers;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
+import dev.sakura.values.impl.NumberValue;
 
 public class HudEditor extends Module {
+
+    public final NumberValue<Double> globalCornerRadius = new NumberValue<>("GlobalCornerRadius", 6.0, 0.0, 20.0, 1.0);
 
     public HudEditor() {
         super("HudEditor", Category.Client);

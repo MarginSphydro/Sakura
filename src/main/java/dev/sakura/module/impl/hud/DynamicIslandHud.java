@@ -27,7 +27,7 @@ public class DynamicIslandHud extends HudModule {
     static final class Size {
         static final float BASE_W = 65, BASE_H = 19;
         static final float EXPANDED_W = 90, EXPANDED_H = 25;
-        static final float RADIUS = 6;
+        static final float RADIUS = 6; // Default radius, will be overridden by global value if available
         static final float ELEMENT_SPACING = 20;
         static final float ELEMENT_WIDTH = 50;
         static final float LOGO_FONT_SIZE = 12;
@@ -49,6 +49,7 @@ public class DynamicIslandHud extends HudModule {
 
     private final BoolValue blur = new BoolValue("Blur", true);
     private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 10.0, 1.0, 20.0, 0.5, blur::get);
+
 
     private static ToggleInfo currentToggle;
     private static ToggleInfo pendingToggle;
@@ -139,6 +140,7 @@ public class DynamicIslandHud extends HudModule {
     private void calculateState() {
         int screenWidth = mc.getWindow().getScaledWidth();
         long dt = elapsed();
+        
         if (currentToggle == null && toggleStartTime == -1L) {
             setPhase(Phase.IDLE, 0f, Size.BASE_W, Size.BASE_H, 1f);
         } else if (dt < Timing.EXPAND) {
@@ -168,6 +170,14 @@ public class DynamicIslandHud extends HudModule {
         this.x = animX;
     }
 
+    public float getRadius() {
+        HudEditor hudEditor = Managers.MODULE.getModule(HudEditor.class);
+        if (hudEditor != null) {
+            return hudEditor.globalCornerRadius.get().floatValue();
+        }
+        return Size.RADIUS;
+    }
+
     private void setPhase(Phase p, float prog, float w, float h, float blur) {
         this.phase = p;
         this.progress = prog;
@@ -186,7 +196,7 @@ public class DynamicIslandHud extends HudModule {
         if (!blur.get()) return;
         float clampedBlurOpacity = Math.max(0f, Math.min(1f, blurOpacity));
         Shader2DUtils.drawRoundedBlur(
-                context.getMatrices(), animX, animY, animW, animH, Size.RADIUS,
+                context.getMatrices(), animX, animY, animW, animH, getRadius(),
                 new Color(0, 0, 0, 0), blurStrength.get().floatValue(), clampedBlurOpacity
         );
     }
@@ -197,12 +207,12 @@ public class DynamicIslandHud extends HudModule {
         float clampedBlurOpacity = Math.max(0f, Math.min(1f, blurOpacity));
         float timeBgX = animX - Size.ELEMENT_SPACING - Size.ELEMENT_WIDTH;
         Shader2DUtils.drawRoundedBlur(
-                context.getMatrices(), timeBgX, animY, Size.ELEMENT_WIDTH, animH, Size.RADIUS,
+                context.getMatrices(), timeBgX, animY, Size.ELEMENT_WIDTH, animH, getRadius(),
                 new Color(0, 0, 0, 0), blurStrength.get().floatValue(), clampedBlurOpacity
         );
         float nameBgX = animX + animW + Size.ELEMENT_SPACING;
         Shader2DUtils.drawRoundedBlur(
-                context.getMatrices(), nameBgX, animY, Size.ELEMENT_WIDTH, animH, Size.RADIUS,
+                context.getMatrices(), nameBgX, animY, Size.ELEMENT_WIDTH, animH, getRadius(),
                 new Color(0, 0, 0, 0), blurStrength.get().floatValue(), clampedBlurOpacity
         );
     }
@@ -253,7 +263,7 @@ public class DynamicIslandHud extends HudModule {
     }
 
     private void drawBackground(Color color) {
-        NanoVGHelper.drawRoundRectBloom(animX, animY, animW, animH, Size.RADIUS, color);
+        NanoVGHelper.drawRoundRectBloom(animX, animY, animW, animH, getRadius(), color);
     }
 
     private void drawCenteredTitle() {
@@ -271,12 +281,12 @@ public class DynamicIslandHud extends HudModule {
         String time = LocalTime.now().format(TIME_FORMAT);
         float timeW = NanoVGHelper.getTextWidth(time, font, Size.INFO_FONT_SIZE);
         float timeBgX = animX - Size.ELEMENT_SPACING - Size.ELEMENT_WIDTH;
-        NanoVGHelper.drawRoundRectBloom(timeBgX, animY, Size.ELEMENT_WIDTH, animH, Size.RADIUS, bgColor);
+        NanoVGHelper.drawRoundRectBloom(timeBgX, animY, Size.ELEMENT_WIDTH, animH, getRadius(), bgColor);
         NanoVGHelper.drawString(time, timeBgX + (Size.ELEMENT_WIDTH - timeW) / 2, centerY, font, Size.INFO_FONT_SIZE, color);
         String username = "FPS:" + mc.getCurrentFps();
         float nameW = NanoVGHelper.getTextWidth(username, font, Size.INFO_FONT_SIZE);
         float nameBgX = animX + animW + Size.ELEMENT_SPACING;
-        NanoVGHelper.drawRoundRectBloom(nameBgX, animY, Size.ELEMENT_WIDTH, animH, Size.RADIUS, bgColor);
+        NanoVGHelper.drawRoundRectBloom(nameBgX, animY, Size.ELEMENT_WIDTH, animH, getRadius(), bgColor);
         NanoVGHelper.drawString(username, nameBgX + (Size.ELEMENT_WIDTH - nameW) / 2, centerY, font, Size.INFO_FONT_SIZE, color);
     }
 

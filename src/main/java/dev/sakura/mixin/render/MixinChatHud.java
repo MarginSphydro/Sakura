@@ -1,5 +1,7 @@
 package dev.sakura.mixin.render;
 
+import dev.sakura.manager.Managers;
+import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import net.minecraft.client.gui.DrawContext;
@@ -45,7 +47,7 @@ public class MixinChatHud {
     private void onRenderEnd(CallbackInfo ci) {
         if (!shouldRender || cachedContext == null) return;
 
-        float radius = 3f;
+        float radius = getGlobalRadius();
         int width = maxX - minX;
         int height = maxY - minY;
         float padding = 4f;
@@ -58,5 +60,13 @@ public class MixinChatHud {
             Color backgroundColor = new Color(18, 18, 18, 70);
             NanoVGHelper.drawRoundRectBloom(currentX, currentY, finalWidth, finalHeight, radius, backgroundColor);
         });
+    }
+    
+    private float getGlobalRadius() {
+        HudEditor hudEditor = Managers.MODULE.getModule(HudEditor.class);
+        if (hudEditor != null) {
+            return hudEditor.globalCornerRadius.get().floatValue();
+        }
+        return 3f;
     }
 }

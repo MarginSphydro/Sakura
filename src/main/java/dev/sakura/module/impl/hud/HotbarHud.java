@@ -17,6 +17,7 @@ public class HotbarHud extends HudModule {
 
     private final NumberValue<Double> scale = new NumberValue<>("Scale", 1.0, 0.5, 2.0, 0.05);
     private final NumberValue<Double> radius = new NumberValue<>("Radius", 6.0, 0.0, 15.0, 1.0);
+
     private final BoolValue enableBloom = new BoolValue("Bloom", true);
     private final NumberValue<Double> tension = new NumberValue<>("Tension", 0.25, 0.05, 0.5, 0.01);
     private final NumberValue<Double> friction = new NumberValue<>("Friction", 0.65, 0.3, 0.9, 0.01);
@@ -124,7 +125,7 @@ public class HotbarHud extends HudModule {
         slotSize = SLOT_SIZE * s;
         padding = PADDING * s;
         gap = GAP * s;
-        r = radius.get().floatValue() * s;
+        r = getRadius() * s;
 
         hotbarWidth = SLOT_COUNT * slotSize + (SLOT_COUNT - 1) * gap + padding * 2;
         hotbarHeight = slotSize + padding * 2;
@@ -143,17 +144,25 @@ public class HotbarHud extends HudModule {
         this.height = hotbarHeight;
     }
 
+    public float getRadius() {
+        dev.sakura.module.impl.client.HudEditor hudEditor = Managers.MODULE.getModule(dev.sakura.module.impl.client.HudEditor.class);
+        if (hudEditor != null) {
+            return hudEditor.globalCornerRadius.get().floatValue();
+        }
+        return radius.get().floatValue();
+    }
+
     private void renderBloom(DrawContext context) {
         if (!enableBloom.get()) return;
 
         Color bloomColor = new Color(18, 18, 18, 70);
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawRoundRectBloom(hotbarX, hotbarY, hotbarWidth, hotbarHeight, radius.get().floatValue(), bloomColor);
+            NanoVGHelper.drawRoundRectBloom(hotbarX, hotbarY, hotbarWidth, hotbarHeight, getRadius(), bloomColor);
 
             if (showHandSlots.get()) {
-                NanoVGHelper.drawRoundRectBloom(leftHandX, handSlotY, handSlotSize, handSlotSize, radius.get().floatValue(), bloomColor);
-                NanoVGHelper.drawRoundRectBloom(rightHandX, handSlotY, handSlotSize, handSlotSize, radius.get().floatValue(), bloomColor);
+                NanoVGHelper.drawRoundRectBloom(leftHandX, handSlotY, handSlotSize, handSlotSize, getRadius(), bloomColor);
+                NanoVGHelper.drawRoundRectBloom(rightHandX, handSlotY, handSlotSize, handSlotSize, getRadius(), bloomColor);
             }
         });
     }
@@ -162,11 +171,11 @@ public class HotbarHud extends HudModule {
         Color bg = new Color(18, 18, 18, 70);
         Color selector = selectorColor.get();
 
-        NanoVGHelper.drawRoundRect(hotbarX, hotbarY, hotbarWidth, hotbarHeight, r, bg);
+        NanoVGHelper.drawRoundRect(hotbarX, hotbarY, hotbarWidth, hotbarHeight, getRadius() * s, bg);
 
         if (showHandSlots.get()) {
-            NanoVGHelper.drawRoundRect(leftHandX, handSlotY, handSlotSize, handSlotSize, r, bg);
-            NanoVGHelper.drawRoundRect(rightHandX, handSlotY, handSlotSize, handSlotSize, r, bg);
+            NanoVGHelper.drawRoundRect(leftHandX, handSlotY, handSlotSize, handSlotSize, getRadius() * s, bg);
+            NanoVGHelper.drawRoundRect(rightHandX, handSlotY, handSlotSize, handSlotSize, getRadius() * s, bg);
         }
 
         float selectorCenterX = hotbarX + padding + animatedSlot * (slotSize + gap) + slotSize / 2f;

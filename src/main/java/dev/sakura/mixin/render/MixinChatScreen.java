@@ -39,7 +39,7 @@ public class MixinChatScreen {
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V", ordinal = 0))
     private void redirectInputBoxBackground(DrawContext context, int x1, int y1, int x2, int y2, int color) {
         int adjustedX1 = x1;
-        float radius = 3f;
+        float radius = getGlobalRadius();
         int width = 340;
         int height = y2 - y1;
 
@@ -69,6 +69,14 @@ public class MixinChatScreen {
             NanoVGHelper.drawRoundRectBloom(adjustedX1, animatedY1, width, height, radius, backgroundColor);
         });
     }
+    
+    private float getGlobalRadius() {
+        dev.sakura.module.impl.client.HudEditor hudEditor = Managers.MODULE.getModule(dev.sakura.module.impl.client.HudEditor.class);
+        if (hudEditor != null) {
+            return hudEditor.globalCornerRadius.get().floatValue();
+        }
+        return 3f;
+    }
 
     @Inject(method = "render", at = @At("RETURN"))
     private void onRenderPost(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
@@ -84,7 +92,7 @@ public class MixinChatScreen {
                     mc.getWindow().getScaledHeight() - 14 - PAD,
                     340,
                     12 + PAD * 2,
-                    3f,
+                    getGlobalRadius(),
                     0.6f,
                     SAKURA
             );

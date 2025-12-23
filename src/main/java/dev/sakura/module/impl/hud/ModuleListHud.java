@@ -52,6 +52,7 @@ public class ModuleListHud extends HudModule {
     private final NumberValue<Double> particleSize = new NumberValue<>("Particle Size", 2.0, 1.0, 5.0, 0.1, enableParticles::get);
     private final NumberValue<Double> particleSpeed = new NumberValue<>("Particle Speed", 1.0, 0.1, 3.0, 0.1, enableParticles::get);
 
+
     private static final float PADDING_X = 6f;
     private static final float PADDING_Y = 4f;
 
@@ -96,6 +97,14 @@ public class ModuleListHud extends HudModule {
             
             renderContent();
         });
+    }
+
+    public float getRadius() {
+        dev.sakura.module.impl.client.HudEditor hudEditor = Managers.MODULE.getModule(dev.sakura.module.impl.client.HudEditor.class);
+        if (hudEditor != null) {
+            return hudEditor.globalCornerRadius.get().floatValue();
+        }
+        return 6f;
     }
 
     @Override
@@ -373,7 +382,7 @@ public class ModuleListHud extends HudModule {
                     currentY - (3 * scale),
                     itemWidth - (showCategory.get() ? (ICON_BACKGROUND_WIDTH + CATEGORY_ICON_SPACING) * scale : 0) - (7 * scale),
                     itemHeight + (3 * scale),
-                    2 * scale,
+                    getRadius() * scale,
                     BACKGROUND_COLOR
             );
             if (showCategory.get()) {
@@ -382,7 +391,7 @@ public class ModuleListHud extends HudModule {
                         currentY - (3 * scale),
                         ICON_BACKGROUND_WIDTH * scale,
                         ICON_BACKGROUND_HEIGHT * scale,
-                        2 * scale,
+                        getRadius() * scale,
                         BACKGROUND_COLOR
                 );
                 float iconY = currentY + ((ICON_BACKGROUND_HEIGHT * scale) - iconHeight) / 2;
