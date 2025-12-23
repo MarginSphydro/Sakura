@@ -9,7 +9,6 @@ uniform float radius;
 uniform float Brightness;
 uniform float Quality;
 uniform vec4 color1;
-in vec2 texCoord;
 
 out vec4 fragColor;
 
@@ -33,17 +32,12 @@ vec4 blur() {
         }
     }
 
-    Color /= 80;
-    return mix(Color, color1, color1.a) * Brightness;
+    Color /= 81.0;
+    return (Color + color1);
 }
 
 void main() {
     vec2 halfSize = uSize / 2.0;
-    // 改进alpha计算以减少边缘闪烁
-    float sdf = roundedBoxSDF(gl_FragCoord.xy - uLocation - halfSize, halfSize, radius);
-    float smoothedAlpha = 1.0 - smoothstep(-1.0, 1.0, sdf);
-    vec4 blurredResult = blur();
-    // 确保最小alpha值以避免完全透明导致的闪烁
-    float finalAlpha = max(smoothedAlpha * Brightness, 0.01);
-    fragColor = vec4(blurredResult.rgb, finalAlpha);
+    float smoothedAlpha =  (1.0 - smoothstep(0.0, 1.0, roundedBoxSDF(gl_FragCoord.xy - uLocation - halfSize, halfSize, radius)));
+    fragColor = vec4(blur().rgb, smoothedAlpha * Brightness);
 }

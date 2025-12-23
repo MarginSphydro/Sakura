@@ -90,7 +90,7 @@ public class NotificationManager {
             float stringPosX = leftAligned ? x + padding * 1.5f : x + padding * 2.5f;
             float stringPosY = y + height * 0.5f + textHeight * 0.3f;
             NanoVGHelper.drawString(previewMessage, stringPosX, stringPosY, font, fontSize, Color.WHITE);
-        }, true);
+        });
 
         return new float[]{width, height};
     }

@@ -17,6 +17,7 @@
  */
 package dev.sakura.shaders.satin.impl;
 
+import dev.sakura.Sakura;
 import dev.sakura.shaders.WindowResizeCallback;
 import dev.sakura.shaders.satin.api.ManagedCoreShader;
 import dev.sakura.shaders.satin.api.ShaderEffectManager;
@@ -63,9 +64,7 @@ public final class ReloadableShaderEffectManager implements ShaderEffectManager 
             try {
                 ss.initializeOrLog(shaderResources);
             } catch (Exception e) {
-                // Log the exception but continue loading other shaders
-                System.err.println("Failed to reload shader: " + ss.getLocation());
-                e.printStackTrace();
+                Sakura.LOGGER.error("Failed to reload shader: {}", ss.getLocation(), e);
             }
         }
     }
