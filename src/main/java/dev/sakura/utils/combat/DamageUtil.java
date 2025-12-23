@@ -30,6 +30,14 @@ public class DamageUtil {
         return (float) explosionDamage(entity, box, pos, ignorePos, null, ignoreTerrain, 6);
     }
 
+    public static float calculateAnchorDamage(LivingEntity entity, BlockPos pos) {
+        return calculateAnchorDamage(entity, entity.getBoundingBox(), pos, null, false);
+    }
+
+    public static float calculateAnchorDamage(LivingEntity entity, Box box, BlockPos pos, BlockPos ignorePos, boolean ignoreTerrain) {
+        return (float) explosionDamage(entity, box, Vec3d.of(pos), ignorePos, null, ignoreTerrain, 5);
+    }
+
     private static double explosionDamage(LivingEntity entity, Box box, Vec3d pos, BlockPos ignorePos, BlockPos obbyPos, boolean ignoreTerrain, double strength) {
         if (box == null) return 0;
 
