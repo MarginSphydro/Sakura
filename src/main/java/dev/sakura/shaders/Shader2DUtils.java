@@ -20,40 +20,30 @@ public class Shader2DUtils {
     }
 
     public static void drawQuadBlur(MatrixStack matrices, float x, float y, float width, float height, float blurStrength, float blurOpacity) {
-        TransformedRegion region = calculateVisibleRegion(matrices, x, y, width, height);
-
         BufferBuilder bb = preShaderDraw(matrices, x - 10, y - 10, width + 20, height + 20);
-        BLUR_PROGRAM.setParameters(region.x, region.y, region.width, region.height, 0f, new Color(0, 0, 0, 0), blurStrength, blurOpacity);
+        BLUR_PROGRAM.setParameters(x, y, width, height, 0f, new Color(0, 0, 0, 0), blurStrength, blurOpacity);
         BLUR_PROGRAM.use();
-
+        
         BufferRenderer.drawWithGlobalProgram(bb.end());
         endRender();
     }
 
     public static void drawRoundedBlur(MatrixStack matrices, float x, float y, float width, float height, float radius, Color c1, float blurStrenth, float blurOpacity) {
         blurOpacity = Math.max(0f, Math.min(1f, blurOpacity));
-
-        TransformedRegion region = calculateVisibleRegion(matrices, x, y, width, height);
-
+        
         BufferBuilder bb = preShaderDraw(matrices, x - 10, y - 10, width + 20, height + 20);
-        BLUR_PROGRAM.setParameters(region.x, region.y, region.width, region.height, radius, c1, blurStrenth, blurOpacity);
+        BLUR_PROGRAM.setParameters(x, y, width, height, radius, c1, blurStrenth, blurOpacity);
         BLUR_PROGRAM.use();
-
+        
         BufferRenderer.drawWithGlobalProgram(bb.end());
         endRender();
     }
 
-    public static TransformedRegion calculateVisibleRegion(MatrixStack matrices, float x, float y, float width, float height) {
-        Matrix4f matrix = matrices.peek().getPositionMatrix();
-        Vector4f posStart = matrix.transform(new Vector4f(x, y, 0, 1.0F));
-        Vector4f posEnd = matrix.transform(new Vector4f(x + width, y + height, 0, 1.0F));
-
-        float absX = posStart.x;
-        float absY = posStart.y;
-        float absWidth = Math.abs(posEnd.x - posStart.x);
-        float absHeight = Math.abs(posEnd.y - posStart.y);
-
-        return new TransformedRegion(absX, absY, absWidth, absHeight);
+    public static void setRectanglePoints(BufferBuilder buffer, Matrix4f matrix, float x, float y, float x1, float y1) {
+        buffer.vertex(matrix, x, y, 0);
+        buffer.vertex(matrix, x, y1, 0);
+        buffer.vertex(matrix, x1, y1, 0);
+        buffer.vertex(matrix, x1, y, 0);
     }
 
     public static BufferBuilder preShaderDraw(MatrixStack matrices, float x, float y, float width, float height) {
@@ -62,13 +52,6 @@ public class Shader2DUtils {
         BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
         setRectanglePoints(buffer, matrix, x, y, x + width, y + height);
         return buffer;
-    }
-
-    public static void setRectanglePoints(BufferBuilder buffer, Matrix4f matrix, float x, float y, float x1, float y1) {
-        buffer.vertex(matrix, x, y, 0);
-        buffer.vertex(matrix, x, y1, 0);
-        buffer.vertex(matrix, x1, y1, 0);
-        buffer.vertex(matrix, x1, y, 0);
     }
 
     public static void beginRender() {
