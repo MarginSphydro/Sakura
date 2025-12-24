@@ -1,18 +1,21 @@
 package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
+import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.combat.CombatUtil;
 import dev.sakura.utils.combat.DamageUtil;
 import dev.sakura.utils.player.InvUtil;
+import dev.sakura.utils.render.Render3DUtil;
 import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.rotation.RotationUtil;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.utils.world.BlockUtil;
 import dev.sakura.values.impl.BoolValue;
+import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
@@ -27,6 +30,9 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+
+import java.awt.*;
 
 public class AnchorAura extends Module {
     private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
@@ -48,76 +54,108 @@ public class AnchorAura extends Module {
     private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, () -> page.is(Page.Rotate) && rotate.get());
     private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, () -> page.is(Page.Rotate) && rotate.get());
 
+    private final BoolValue render = new BoolValue("Render", true, () -> page.is(Page.Render));
+    private final ColorValue boxColor = new ColorValue("BoxColor", new Color(255, 255, 255, 255), () -> page.is(Page.Render) && render.get());
+    private final ColorValue fillColor = new ColorValue("FillColor", new Color(255, 255, 255, 50), () -> page.is(Page.Render) && render.get());
+
     public AnchorAura() {
         super("AnchorAura", Category.Combat);
     }
 
     public PlayerEntity lastTarget = null;
-    public BlockPos currentPos = null;
     public double lastDamage;
+    public BlockPos currentPos = null;
+    BlockPos tempPos = null;
 
     private final TimerUtil placeTimer = new TimerUtil();
     private final TimerUtil calcTimer = new TimerUtil();
     private boolean isRotating = false;
 
+    @Override
+    public void onDisable() {
+        currentPos = null;
+    }
+
+    @EventHandler
+    public void onRender3D(Render3DEvent event) {
+        if (currentPos != null) {
+            Render3DUtil.drawFilledBox(event.getMatrices(), new Box(currentPos), fillColor.get());
+            Render3DUtil.drawBoxOutline(event.getMatrices(), new Box(currentPos), boxColor.get().getRGB(), 1.5f);
+        }
+    }
+
     @EventHandler
     private void onTick(TickEvent.Pre event) {
         if (mc.world == null || mc.player == null) return;
+        update();
+        setSuffix(lastTarget != null && currentPos != null && lastDamage > 0.0 ? lastTarget.getName().getString() + ", " + lastDamage : null);
         isRotating = false;
         if (mc.player.isSneaking()) return;
         if (usingPause.get() && mc.player.isUsingItem()) return;
-        if (lastTarget != null && currentPos != null && lastDamage > 0.0) {
-            setSuffix(lastTarget.getName().getString() + ", " + lastDamage);
-        } else {
-            setSuffix(null);
-        }
-        if (calcTimer.hasTimeElapsed(updateDelay.get().longValue())) {
-            BlockPos tempPos = null;
-            double placeDamage = minDamage.get();
-            double breakDamage = breakMin.get();
-            boolean anchorFound = false;
-            for (PlayerEntity target : CombatUtil.getEnemies(targetRange.get())) {
-                for (BlockPos pos : BlockUtil.getSphere(placeRange.get().floatValue())) {
-                    double damage = DamageUtil.calculateAnchorDamage(target, pos);
-                    double selfDamage = DamageUtil.calculateAnchorDamage(mc.player, pos);
-                    if (selfDamage > maxSelfDamage.get()) continue;
-                    if (damage < minDamage.get()) continue;
-                    if ((damage = DamageUtil.calculateAnchorDamage(target, pos.up(2))) > minHeadDamage.get()) {
-                        lastTarget = target;
-                        lastDamage = damage;
-                        tempPos = pos;
-                        //break;
-                    }
-                    if (tempPos == null) {
-                        if ((damage = DamageUtil.calculateAnchorDamage(target, pos)) >= placeDamage) {
-                            lastTarget = target;
-                            lastDamage = damage;
-                            tempPos = pos;
-                            //break;
-                        }
-                        if ((damage = DamageUtil.calculateAnchorDamage(target, pos)) >= breakDamage) {
-                            if (damage >= minPrefer.get()) anchorFound = true;
-                            if (!anchorFound && damage < placeDamage) {
-                                continue;
-                            }
-                            lastTarget = target;
-                            lastDamage = damage;
-                            breakDamage = damage;
-                            tempPos = pos;
-                            //break;
-                        }
-                    }
-                }
-            }
-            currentPos = tempPos;
-            calcTimer.reset();
-        }
         if (currentPos != null) {
             doAnchor(currentPos);
         }
         if (!isRotating && rotate.get()) {
             RotationManager.setRotations(new Vector2f(mc.player.getYaw(), mc.player.getPitch()), rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
         }
+    }
+
+    private void update() {
+        if (calcTimer.hasReached(updateDelay.get())) {
+            double placeDamage = minDamage.get();
+            double breakDamage = breakMin.get();
+            boolean anchorFound = false;
+            tempPos = null;
+            calcTimer.reset();
+            if (tempPos == null) {
+                for (PlayerEntity target : CombatUtil.getEnemies(targetRange.get())) {
+                    BlockPos blockPos = target.getBlockPos().up(2);
+                    if (canPlace(blockPos) || mc.world.getBlockState(blockPos).getBlock() == Blocks.RESPAWN_ANCHOR) {
+                        double damage;
+                        if ((damage = DamageUtil.calculateAnchorDamage(target, blockPos)) > minHeadDamage.get()) {
+                            double selfDamage = DamageUtil.calculateAnchorDamage(mc.player, blockPos);
+                            if (selfDamage > maxSelfDamage.get()) continue;
+                            lastTarget = target;
+                            lastDamage = damage;
+                            tempPos = blockPos;
+                            //break;
+                        }
+                    }
+                    for (BlockPos pos : BlockUtil.getSphere(placeRange.get().floatValue())) {
+                        if (mc.world.getBlockState(pos).getBlock() != Blocks.RESPAWN_ANCHOR) {
+                            if (anchorFound) continue;
+                            if (!canPlace(pos)) continue;
+                            double damage;
+                            if ((damage = DamageUtil.calculateAnchorDamage(target, pos)) >= placeDamage) {
+                                double selfDamage = DamageUtil.calculateAnchorDamage(mc.player, pos);
+                                if (selfDamage > maxSelfDamage.get()) continue;
+                                lastTarget = target;
+                                lastDamage = damage;
+                                placeDamage = damage;
+                                tempPos = pos;
+                                //break;
+                            }
+                        } else {
+                            double damage;
+                            if ((damage = DamageUtil.calculateAnchorDamage(target, pos)) >= breakDamage) {
+                                double selfDamage = DamageUtil.calculateAnchorDamage(mc.player, pos);
+                                if (selfDamage > maxSelfDamage.get()) continue;
+                                if (damage >= minPrefer.get()) anchorFound = true;
+                                if (!anchorFound && damage < placeDamage) {
+                                    continue;
+                                }
+                                lastTarget = target;
+                                lastDamage = damage;
+                                breakDamage = damage;
+                                tempPos = pos;
+                                //break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        currentPos = tempPos;
     }
 
     private void doAnchor(BlockPos pos) {
@@ -139,12 +177,14 @@ public class AnchorAura extends Module {
     }
 
     private boolean canPlace(BlockPos pos) {
+        Direction side = BlockUtil.getPlaceSide(pos);
+        if (side == null) return false;
         Box box = new Box(pos);
         return mc.world.getOtherEntities(null, box, e -> e instanceof PlayerEntity).isEmpty();
     }
 
     private void place(BlockPos pos, int slot) {
-        if (placeTimer.hasTimeElapsed(placeDelay.get().longValue())) {
+        if (placeTimer.hasReached(placeDelay.get())) {
             Direction side = BlockUtil.getPlaceSide(pos);
             if (side == null) return;
             boolean switched = false;
@@ -186,6 +226,7 @@ public class AnchorAura extends Module {
     public enum Page {
         General,
         Calc,
-        Rotate
+        Rotate,
+        Render
     }
 }
