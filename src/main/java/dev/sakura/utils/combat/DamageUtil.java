@@ -42,7 +42,7 @@ public class DamageUtil {
     }
 
     public static float calculateAnchorDamage(LivingEntity entity, Box box, BlockPos pos, BlockPos ignorePos, boolean ignoreTerrain) {
-        return (float) explosionDamage(entity, box, Vec3d.of(pos), ignorePos, null, ignoreTerrain, 5);
+        return (float) explosionDamage(entity, box, Vec3d.ofCenter(pos), ignorePos, null, ignoreTerrain, 5);
     }
 
     private static double explosionDamage(LivingEntity entity, Box box, Vec3d pos, BlockPos ignorePos, BlockPos obbyPos, boolean ignoreTerrain, double strength) {

@@ -13,6 +13,7 @@ import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.utils.vector.Vector2f;
 import dev.sakura.utils.world.BlockUtil;
 import dev.sakura.values.impl.BoolValue;
+import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Blocks;
@@ -28,19 +29,24 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 
 public class AnchorAura extends Module {
-    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 8.0, 1.0, 12.0, 1.0);
-    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 1.0);
-    private final BoolValue usingPause = new BoolValue("Using Pause", true);
-    private final BoolValue inventorySwap = new BoolValue("Inventory Swap", true);
-    private final BoolValue swingHand = new BoolValue("Swing", true);
-    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 8.0, 0.0, 36.0, 0.1);
-    private final NumberValue<Double> minHeadDamage = new NumberValue<>("Min Head Damage", 8.0, 0.0, 36.0, 0.1);
-    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 36.0, 0.1);
-    private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", 0.0, 0.0, 1000.0, 1.0);
-    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", 300.0, 0.0, 1000.0, 1.0);
-    private final BoolValue rotate = new BoolValue("Rotate", true);
-    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, rotate::get);
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, rotate::get);
+    private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
+    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 8.0, 1.0, 12.0, 1.0, () -> page.is(Page.General));
+    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 1.0, () -> page.is(Page.General));
+    private final BoolValue usingPause = new BoolValue("Using Pause", true, () -> page.is(Page.General));
+    private final BoolValue inventorySwap = new BoolValue("Inventory Swap", true, () -> page.is(Page.General));
+    private final BoolValue swingHand = new BoolValue("Swing", true, () -> page.is(Page.General));
+    private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", 0.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
+    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", 300.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
+
+    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+    private final NumberValue<Double> breakMin = new NumberValue<>("Break Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+    private final NumberValue<Double> minHeadDamage = new NumberValue<>("Min Head Damage", 7.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+    private final NumberValue<Double> minPrefer = new NumberValue<>("Min Prefer Damage", 7.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+
+    private final BoolValue rotate = new BoolValue("Rotate", true, () -> page.is(Page.Rotate));
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, () -> page.is(Page.Rotate) && rotate.get());
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, () -> page.is(Page.Rotate) && rotate.get());
 
     public AnchorAura() {
         super("AnchorAura", Category.Combat);
@@ -62,9 +68,14 @@ public class AnchorAura extends Module {
         if (usingPause.get() && mc.player.isUsingItem()) return;
         if (lastTarget != null && currentPos != null && lastDamage > 0.0) {
             setSuffix(lastTarget.getName().getString() + ", " + lastDamage);
+        } else {
+            setSuffix(null);
         }
         if (calcTimer.hasTimeElapsed(updateDelay.get().longValue())) {
             BlockPos tempPos = null;
+            double placeDamage = minDamage.get();
+            double breakDamage = breakMin.get();
+            boolean anchorFound = false;
             for (PlayerEntity target : CombatUtil.getEnemies(targetRange.get())) {
                 for (BlockPos pos : BlockUtil.getSphere(placeRange.get().floatValue())) {
                     double damage = DamageUtil.calculateAnchorDamage(target, pos);
@@ -75,14 +86,25 @@ public class AnchorAura extends Module {
                         lastTarget = target;
                         lastDamage = damage;
                         tempPos = pos;
-                        break;
+                        //break;
                     }
                     if (tempPos == null) {
-                        if ((damage = DamageUtil.calculateAnchorDamage(target, pos)) >= minDamage.get()) {
+                        if ((damage = DamageUtil.calculateAnchorDamage(target, pos)) >= placeDamage) {
                             lastTarget = target;
                             lastDamage = damage;
                             tempPos = pos;
-                            break;
+                            //break;
+                        }
+                        if ((damage = DamageUtil.calculateAnchorDamage(target, pos)) >= breakDamage) {
+                            if (damage >= minPrefer.get()) anchorFound = true;
+                            if (!anchorFound && damage < placeDamage) {
+                                continue;
+                            }
+                            lastTarget = target;
+                            lastDamage = damage;
+                            breakDamage = damage;
+                            tempPos = pos;
+                            //break;
                         }
                     }
                 }
@@ -159,5 +181,11 @@ public class AnchorAura extends Module {
             }
             placeTimer.reset();
         }
+    }
+
+    public enum Page {
+        General,
+        Calc,
+        Rotate
     }
 }
