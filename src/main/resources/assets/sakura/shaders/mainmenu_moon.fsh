@@ -107,11 +107,6 @@ vec4 render(vec2 uv) {
 void main() {
     vec2 fragCoord = gl_FragCoord.xy;
     vec2 uv = fragCoord.xy / resolution.xy * 2. - 1.;
-        
-    if (abs(EPS + uv.y) >= .7) { 
-        fragColor = vec4(0,0,0,1);
-        return;
-    }
     
     vec4 res = render(uv);
     

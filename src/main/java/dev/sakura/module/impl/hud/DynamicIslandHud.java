@@ -9,8 +9,8 @@ import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.utils.animations.Easing;
+import dev.sakura.utils.render.Shader2DUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 import net.minecraft.client.gui.DrawContext;
@@ -45,7 +45,13 @@ public class DynamicIslandHud extends HudModule {
 
     }
 
-    private enum Phase {IDLE, EXPANDING, DISPLAY, COLLAPSE_1, COLLAPSE_2}
+    private enum Phase {
+        IDLE,
+        EXPANDING,
+        DISPLAY,
+        COLLAPSE_1,
+        COLLAPSE_2
+    }
 
     private final BoolValue blur = new BoolValue("Blur", true);
     private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 10.0, 1.0, 20.0, 0.5, blur::get);
@@ -70,60 +76,13 @@ public class DynamicIslandHud extends HudModule {
     }
 
     @Override
-    public void renderInGame(DrawContext context) {
-        if (isHudEditorOpen()) return;
-        this.currentContext = context;
-        update();
-        NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGRenderer.INSTANCE.withRawCoords(() -> {
-                renderBlur(context);
-                renderSideBlurs(context, phase == Phase.IDLE ? 1f :
-                        phase == Phase.EXPANDING ? progress :
-                                phase == Phase.DISPLAY ? 1f :
-                                        phase == Phase.COLLAPSE_1 ? 1f :
-                                                1f - progress);
-            });
-            renderContent();
-        });
-    }
-
-    @Override
-    public void renderInEditor(DrawContext context, float mouseX, float mouseY) {
-        handleDrag(mouseX, mouseY);
-        this.currentContext = context;
-        update();
-        NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGRenderer.INSTANCE.withRawCoords(() -> {
-                renderBlur(context);
-                renderSideBlurs(context, phase == Phase.IDLE ? 1f :
-                        phase == Phase.EXPANDING ? progress :
-                                phase == Phase.DISPLAY ? 1f :
-                                        phase == Phase.COLLAPSE_1 ? 1f :
-                                                1f - progress);
-            });
-            renderContent();
-            NanoVGHelper.drawRect(x, y, width, height,
-                    dragging ? withAlpha(ClickGui.color(0), 80) : withAlpha(ClickGui.backgroundColor.get(), 50));
-        });
-    }
-
-    @Override
     public void onRenderContent() {
-    }
-
-    private boolean isHudEditorOpen() {
-        HudEditor editor = Managers.MODULE.getModule(HudEditor.class);
-        return editor != null && editor.isEnabled();
-    }
-
-    private void handleDrag(float mouseX, float mouseY) {
-        if (!dragging) return;
-        int sw = mc.getWindow().getScaledWidth();
-        int sh = mc.getWindow().getScaledHeight();
-        x = clamp(mouseX - dragX, 0, sw - width);
-        y = clamp(mouseY - dragY, 0, sh - height);
-        relativeX = x / sw;
-        relativeY = y / sh;
+        update();
+        NanoVGRenderer.INSTANCE.withRawCoords(() -> {
+            renderBlur(currentContext);
+            renderSideBlurs(currentContext, 1f);
+            NanoVGRenderer.INSTANCE.draw(vg -> renderContent(), true);
+        });
     }
 
     private void update() {
@@ -201,7 +160,7 @@ public class DynamicIslandHud extends HudModule {
     private void renderBlur(DrawContext context) {
         if (!blur.get()) return;
         float clampedBlurOpacity = Math.max(0f, Math.min(1f, blurOpacity));
-        Shader2DUtils.drawRoundedBlur(
+        Shader2DUtil.drawRoundedBlur(
                 context.getMatrices(), animX, animY, animW, animH, getRadius(),
                 new Color(0, 0, 0, 0), blurStrength.get().floatValue(), clampedBlurOpacity
         );
@@ -212,12 +171,12 @@ public class DynamicIslandHud extends HudModule {
 
         float clampedBlurOpacity = Math.max(0f, Math.min(1f, blurOpacity * expandProgress));
         float timeBgX = animX - Size.ELEMENT_SPACING - Size.ELEMENT_WIDTH;
-        Shader2DUtils.drawRoundedBlur(
+        Shader2DUtil.drawRoundedBlur(
                 context.getMatrices(), timeBgX, animY, Size.ELEMENT_WIDTH, animH, getRadius(),
                 new Color(0, 0, 0, 0), blurStrength.get().floatValue(), clampedBlurOpacity
         );
         float nameBgX = animX + animW + Size.ELEMENT_SPACING;
-        Shader2DUtils.drawRoundedBlur(
+        Shader2DUtil.drawRoundedBlur(
                 context.getMatrices(), nameBgX, animY, Size.ELEMENT_WIDTH, animH, getRadius(),
                 new Color(0, 0, 0, 0), blurStrength.get().floatValue(), clampedBlurOpacity
         );

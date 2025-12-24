@@ -3,8 +3,7 @@ package dev.sakura;
 import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.Managers;
-import dev.sakura.manager.impl.RotationManager;
-import dev.sakura.shaders.Shader2DUtils;
+import dev.sakura.utils.render.Shader2DUtil;
 import meteordevelopment.orbit.EventBus;
 import meteordevelopment.orbit.IEventBus;
 import net.minecraft.client.MinecraftClient;
@@ -114,10 +113,7 @@ public class Sakura {
         HUDEDITOR = new HudEditorScreen();
 
         // 初始化Shaders
-        Shader2DUtils.init();
-
-        // 注册陀螺经理
-        Sakura.EVENT_BUS.subscribe(new RotationManager());
+        Shader2DUtil.init();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOGGER.info("正在保存配置并且关闭游戏!");

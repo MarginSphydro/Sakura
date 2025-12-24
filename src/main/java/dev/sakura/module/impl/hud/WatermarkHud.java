@@ -6,7 +6,7 @@ import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.shaders.Shader2DUtils;
+import dev.sakura.utils.render.Shader2DUtil;
 import dev.sakura.values.Value;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
@@ -37,7 +37,7 @@ public class WatermarkHud extends HudModule {
         this.height = fontH + 10 * s;
 
         if (backgroundBlur.get()) {
-            NanoVGRenderer.INSTANCE.withRawCoords(() -> Shader2DUtils.drawRoundedBlur(getMatrix(), x, y, width, height, 4f * s, new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f));
+            NanoVGRenderer.INSTANCE.withRawCoords(() -> Shader2DUtil.drawRoundedBlur(getMatrix(), x, y, width, height, 4f * s, new Color(0, 0, 0, 0), blurStrength.get().floatValue(), 1.0f));
         }
 
         NanoVGHelper.drawRoundRectBloom(x, y, width, height, 4 * s, backgroundColor.get());

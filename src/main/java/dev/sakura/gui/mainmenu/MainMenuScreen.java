@@ -4,9 +4,9 @@ import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.MainMenuShader;
-import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.shaders.SplashShader;
 import dev.sakura.shaders.WindowResizeCallback;
+import dev.sakura.utils.render.Shader2DUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -199,7 +199,7 @@ public class MainMenuScreen extends Screen {
             float scaledW = button.width * buttonScale;
             float scaledH = button.height * buttonScale;
 
-            Shader2DUtils.drawRoundedBlur(context.getMatrices(), scaledX, scaledY, scaledW, scaledH, 4 * buttonScale, new Color(0, 0, 0, 0), 20f, finalAlpha);
+            Shader2DUtil.drawRoundedBlur(context.getMatrices(), scaledX, scaledY, scaledW, scaledH, 4 * buttonScale, new Color(0, 0, 0, 0), 20f, finalAlpha);
         }
     }
 

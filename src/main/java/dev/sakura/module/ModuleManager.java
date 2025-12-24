@@ -81,7 +81,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new Hat());
             manager.tryLoad(() -> new JumpCircles());
             manager.tryLoad(() -> new XRay());
-            manager.tryLoad(() -> new NameTag());
+            manager.tryLoad(() -> new NameTags());
             manager.tryLoad(() -> new Glow());
             manager.tryLoad(() -> new TotemParticles());
 
@@ -97,7 +97,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new MSHud());
             manager.tryLoad(() -> new DynamicIslandHud());
             manager.tryLoad(() -> new KeyStrokesHud());
-            manager.tryLoad(() -> new Notify());
+            manager.tryLoad(() -> new NotifyHud());
             manager.tryLoad(() -> new HotbarHud());
             manager.tryLoad(() -> new ModuleListHud()); // 新增的模块列表HUD
         }

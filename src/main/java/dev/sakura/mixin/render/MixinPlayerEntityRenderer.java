@@ -1,6 +1,6 @@
 package dev.sakura.mixin.render;
 
-import dev.sakura.module.impl.render.NameTag;
+import dev.sakura.module.impl.render.NameTags;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
@@ -16,7 +16,7 @@ public abstract class MixinPlayerEntityRenderer {
 
     @Inject(method = "renderLabelIfPresent(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At("HEAD"), cancellable = true)
     private void onRenderLabel(PlayerEntityRenderState state, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        if (NameTag.INSTANCE != null && NameTag.INSTANCE.isEnabled()) {
+        if (NameTags.INSTANCE != null && NameTags.INSTANCE.isEnabled()) {
             ci.cancel();
         }
     }

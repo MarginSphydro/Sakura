@@ -7,8 +7,8 @@ import dev.sakura.module.HudModule;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.utils.animations.Easing;
+import dev.sakura.utils.render.Shader2DUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
@@ -22,9 +22,8 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Notify extends HudModule {
-
-    public static Notify INSTANCE;
+public class NotifyHud extends HudModule {
+    public static NotifyHud INSTANCE;
 
     private final BoolValue totemPop = new BoolValue("TotemPop", true);
     private final BoolValue selfPop = new BoolValue("SelfPop", true, totemPop::get);
@@ -35,7 +34,7 @@ public class Notify extends HudModule {
     private final BoolValue blockWarning = new BoolValue("BlockWarning", true);
     private final NumberValue<Integer> blockThreshold = new NumberValue<>("BlockThreshold", 20, 5, 64, 1, blockWarning::get);
     private final BoolValue blur = new BoolValue("Blur", true);
-    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 8.0, 1.0, 20.0, 0.5, blur::get);
+    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 4.0, 1.0, 20.0, 0.5, blur::get);
 
     private final List<NotifyEntry> notifications = new CopyOnWriteArrayList<>();
     private final Map<UUID, Integer> popCounts = new HashMap<>();
@@ -46,10 +45,12 @@ public class Notify extends HudModule {
     private boolean hasDied = false;
     private int lastDeathMessageIndex = -1;
 
+    // 这么强？！
     private static final String[] DEATH_MESSAGES = {
             "别灰心，打回去！",
             "一定是操作失误了吧？",
-            "呜呜呜一定是参数不够强！"
+            "呜呜呜一定是参数不够强！",
+            "对面肯定是Hachimi用户！"
     };
     private static final Random RANDOM = new Random();
 
@@ -59,9 +60,9 @@ public class Notify extends HudModule {
     private static final float RADIUS = 8f;
     private static final float PROGRESS_HEIGHT = 2.5f;
     private static final long DURATION = 2000L;
-    private static final long SLIDE_DURATION = 350L;
+    private static final long SLIDE_DURATION = 300L;
 
-    public Notify() {
+    public NotifyHud() {
         super("Notify", -210, -58);
         this.width = NOTIFICATION_WIDTH;
         this.height = NOTIFICATION_HEIGHT;
@@ -232,11 +233,38 @@ public class Notify extends HudModule {
         int screenHeight = mc.getWindow().getScaledHeight();
         float baseX = screenWidth - PADDING - NOTIFICATION_WIDTH;
         float baseY = screenHeight - PADDING - NOTIFICATION_HEIGHT;
-        float currentY = baseY;
 
         this.x = baseX;
         this.y = baseY;
 
+        if (blur.get()) {
+            NanoVGRenderer.INSTANCE.withRawCoords(() -> {
+                float currentY = baseY;
+                for (int i = notifications.size() - 1; i >= 0; i--) {
+                    NotifyEntry entry = notifications.get(i);
+                    float slideOffset = entry.getSlideOffset();
+                    float alpha = entry.getAlpha();
+
+                    if (alpha > 0.01f) {
+                        float notifyX = screenWidth - PADDING - slideOffset;
+                        if (alpha > 0.1f) {
+                            Shader2DUtil.drawRoundedBlur(
+                                    getMatrix(),
+                                    notifyX, currentY,
+                                    NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT,
+                                    RADIUS,
+                                    new Color(0, 0, 0, 0),
+                                    blurStrength.get().floatValue() * alpha,
+                                    alpha
+                            );
+                        }
+                        currentY -= (NOTIFICATION_HEIGHT + PADDING) * alpha;
+                    }
+                }
+            });
+        }
+
+        float currentY = baseY;
         for (int i = notifications.size() - 1; i >= 0; i--) {
             NotifyEntry entry = notifications.get(i);
             float slideOffset = entry.getSlideOffset();
@@ -244,31 +272,17 @@ public class Notify extends HudModule {
 
             if (alpha > 0.01f) {
                 float notifyX = screenWidth - PADDING - slideOffset;
-                renderNotification(entry, notifyX, currentY, alpha);
+                renderContent(entry, notifyX, currentY, alpha);
                 currentY -= (NOTIFICATION_HEIGHT + PADDING) * alpha;
             }
         }
     }
 
-    private void renderNotification(NotifyEntry entry, float x, float y, float alpha) {
+    private void renderContent(NotifyEntry entry, float x, float y, float alpha) {
         int textAlpha = (int) (255 * alpha);
         int bgAlpha = (int) (200 * alpha);
 
         float iconAreaWidth = NOTIFICATION_WIDTH / 4f;
-
-        if (blur.get() && alpha > 0.1f) {
-            NanoVGRenderer.INSTANCE.withRawCoords(() ->
-                    Shader2DUtils.drawRoundedBlur(
-                            getMatrix(),
-                            x, y,
-                            NOTIFICATION_WIDTH, NOTIFICATION_HEIGHT,
-                            RADIUS,
-                            new Color(0, 0, 0, 0),
-                            blurStrength.get().floatValue() * alpha,
-                            alpha
-                    )
-            );
-        }
 
         Color bgColor = new Color(20, 20, 25, bgAlpha);
         Color iconBgColor = getIconBgColor(entry.type, alpha);

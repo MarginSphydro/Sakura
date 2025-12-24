@@ -14,6 +14,7 @@ public class Managers {
     public static ConfigManager CONFIG;
     public static CommandManager COMMAND;
     public static RenderManager RENDER;
+    public static RotationManager ROTATION;
     public static ExtrapolationManager EXTRAPOLATION;
     public static ChatAnimationUpdater CHAT_ANIMATION;
 
@@ -25,6 +26,7 @@ public class Managers {
         CONFIG = new ConfigManager();
         COMMAND = new CommandManager();
         RENDER = new RenderManager();
+        ROTATION = new RotationManager();
         EXTRAPOLATION = new ExtrapolationManager();
         CHAT_ANIMATION = new ChatAnimationUpdater();
 

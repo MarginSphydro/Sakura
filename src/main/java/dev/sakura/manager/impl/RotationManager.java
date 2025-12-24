@@ -1,5 +1,6 @@
 package dev.sakura.manager.impl;
 
+import dev.sakura.Sakura;
 import dev.sakura.events.input.MoveInputEvent;
 import dev.sakura.events.player.*;
 import dev.sakura.events.type.EventType;
@@ -37,6 +38,10 @@ public class RotationManager {
     private static int ticksExisted;
 
     private static int priority;
+
+    public RotationManager() {
+        Sakura.EVENT_BUS.subscribe(this);
+    }
 
     // 婆罗门这一块
     public enum Priority {

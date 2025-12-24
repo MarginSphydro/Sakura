@@ -1,7 +1,7 @@
 package dev.sakura.nanovg.util;
 
 import dev.sakura.nanovg.NanoVGRenderer;
-import dev.sakura.shaders.Shader2DUtils;
+import dev.sakura.utils.render.Shader2DUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.nanovg.NVGColor;
@@ -430,8 +430,7 @@ public class NanoVGHelper {
         nvgEndFrame(vg);
 
         // 应用背景模糊着色器
-        MatrixStack matrices = new MatrixStack();
-        Shader2DUtils.drawRoundedBlur(matrices, x, y, w, h, 0f, new Color(255, 255, 255, 50), blurRadius, 0.8f);
+        Shader2DUtil.drawRoundedBlur(new MatrixStack(), x, y, w, h, 0f, new Color(255, 255, 255, 50), blurRadius, 0.8f);
 
         // 重新开始 NanoVG 帧
         int width = mc.getWindow().getWidth();
