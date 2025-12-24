@@ -226,10 +226,7 @@ public class CrystalAura extends Module {
                     currentRenderPos.getX() + 0.5 + width, currentRenderPos.getY() + up, currentRenderPos.getZ() + 0.5 + width
             );
 
-            final Color finalSColor = sColor;
-            final Color finalLColor = lColor;
-
-            Render3DUtil.drawFullBox(event.getMatrices(), box, finalSColor, finalLColor);
+            Render3DUtil.drawFullBox(event.getMatrices(), box, sColor, lColor);
 
             if (renderDamageText.get()) {
                 Vec3d center = new Vec3d(

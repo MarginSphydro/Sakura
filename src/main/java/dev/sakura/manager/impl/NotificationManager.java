@@ -3,8 +3,8 @@ package dev.sakura.manager.impl;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.utils.animations.Easing;
+import dev.sakura.utils.render.Shader2DUtil;
 import net.minecraft.client.util.math.MatrixStack;
 
 import java.awt.*;
@@ -77,7 +77,7 @@ public class NotificationManager {
         float width = Math.min(Math.max(minWidth, textWidth), maxWidth);
 
         if (blur) {
-            Shader2DUtils.drawRoundedBlur(matrices, x, y, width, height, 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
+            Shader2DUtil.drawRoundedBlur(matrices, x, y, width, height, 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
         }
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
@@ -102,7 +102,7 @@ public class NotificationManager {
                 Notification notification = notifications.get(i);
                 float[] bounds = notification.getBounds(x, y + offsetY, maxWidth, leftAligned);
                 if (bounds != null) {
-                    Shader2DUtils.drawRoundedBlur(matrices, bounds[0], bounds[1], bounds[2], bounds[3], 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
+                    Shader2DUtil.drawRoundedBlur(matrices, bounds[0], bounds[1], bounds[2], bounds[3], 0, new Color(0, 0, 0, 0), blurStrength, 1.0f);
                     offsetY += bounds[3] + 4.0f;
                 }
             }

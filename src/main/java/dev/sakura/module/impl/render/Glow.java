@@ -4,7 +4,7 @@ import dev.sakura.events.render.Render2DEvent;
 import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.shaders.Shader2DUtils;
+import dev.sakura.utils.render.Shader2DUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.NumberValue;
@@ -115,7 +115,7 @@ public class Glow extends Module {
                     (int) (c.getAlpha() * intensity)
             );
 
-            Shader2DUtils.drawRoundedBlur(matrices,
+            Shader2DUtil.drawRoundedBlur(matrices,
                     data.x, data.y, data.width, data.height,
                     Math.min(data.width, data.height) * 0.15f,
                     tintColor,

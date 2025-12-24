@@ -14,13 +14,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.List;
 
 import static dev.sakura.Sakura.mc;
+import static org.lwjgl.nanovg.NanoVG.*;
 
 public class Render3DUtil {
     private static final BufferAllocator allocator = new BufferAllocator(786432);
@@ -292,38 +292,67 @@ public class Render3DUtil {
     }
 
     public static void drawText(String text, @NotNull Vec3d pos, double offX, double offY, double textOffset, @NotNull Color color) {
-        Vec3d screenPos = worldToScreen(pos.add(offX, offY, 0));
+        drawText(text, pos, offX, offY, textOffset, color, -1);
+    }
+
+    public static void drawText(String text, @NotNull Vec3d pos, double offX, double offY, double textOffset, @NotNull Color color, float scale) {
+        Vec3d screenPos = worldToScreen(pos.add(offX, offY, 0), scale);
         if (screenPos != null) {
-            NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawCenteredString(text, (float) screenPos.x + (float) textOffset, (float) screenPos.y, FontLoader.medium(12), 12, color));
+            float finalScale = (float) screenPos.z;
+            if (scale == -1) {
+                finalScale *= 5.0f;
+                finalScale = Math.max(finalScale, 0.5f);
+            }
+
+            float s = finalScale;
+
+            NanoVGRenderer.INSTANCE.draw(vg -> {
+                nvgSave(vg);
+                nvgTranslate(vg, (float) screenPos.x, (float) screenPos.y);
+                nvgScale(vg, s, s);
+                nvgTranslate(vg, -(float) screenPos.x, -(float) screenPos.y);
+                NanoVGHelper.drawCenteredString(text, (float) screenPos.x + (float) textOffset, (float) screenPos.y, FontLoader.medium(12), 12, color);
+                nvgRestore(vg);
+            });
         }
     }
 
-    private static Vec3d worldToScreen(Vec3d pos) {
-        Camera camera = mc.gameRenderer.getCamera();
+    public static Vec3d worldToScreen(Vec3d vec) {
+        return worldToScreen(vec, -1);
+    }
+
+    public static Vec3d worldToScreen(Vec3d vec, float scale) {
+        var camera = mc.gameRenderer.getCamera();
         int width = mc.getWindow().getScaledWidth();
         int height = mc.getWindow().getScaledHeight();
 
-        Vec3d vec = pos.subtract(camera.getPos());
-        Vector3f v = vec.toVector3f();
+        Vec3d camPos = camera.getPos();
+        Vector3f camLook = camera.getHorizontalPlane();
+        Vector3f camUp = camera.getVerticalPlane();
+        Vector3f camLeft = new Vector3f();
+        camLook.cross(camUp, camLeft);
+        camLeft.normalize();
 
-        Quaternionf cameraRotation = camera.getRotation();
-        Quaternionf viewRotation = new Quaternionf(cameraRotation).conjugate();
-        v.rotate(viewRotation);
+        float dx = (float) (vec.x - camPos.x);
+        float dy = (float) (vec.y - camPos.y);
+        float dz = (float) (vec.z - camPos.z);
 
-        if (v.z > 0) return null;
+        Vector3f toPos = new Vector3f(dx, dy, dz);
 
-        float fov = mc.gameRenderer.getFov(camera, mc.getRenderTickCounter().getTickDelta(true), true);
+        float dotLook = toPos.dot(camLook);
+        if (dotLook <= 0.01f) return null;
+
+        float dotUp = toPos.dot(camUp);
+        float dotLeft = toPos.dot(camLeft);
+
+        float fov = mc.options.getFov().getValue().floatValue();
         float aspectRatio = (float) width / height;
-
         float tanHalfFov = (float) Math.tan(Math.toRadians(fov / 2.0));
 
-        float z = -v.z;
-        float x_ndc = v.x / z / (aspectRatio * tanHalfFov);
-        float y_ndc = v.y / z / tanHalfFov;
+        float screenX = width / 2f + (dotLeft / dotLook) / (tanHalfFov * aspectRatio) * (width / 2f);
+        float screenY = height / 2f - (dotUp / dotLook) / tanHalfFov * (height / 2f);
 
-        float screenX = (x_ndc + 1) * width / 2f;
-        float screenY = (1 - y_ndc) * height / 2f;
-
-        return new Vec3d(screenX, screenY, z);
+        double scaleFactor = (scale == -1) ? (1.0 / dotLook) : scale;
+        return new Vec3d(screenX, screenY, scaleFactor);
     }
 }

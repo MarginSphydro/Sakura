@@ -5,7 +5,7 @@ import dev.sakura.events.client.TickEvent;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.module.impl.hud.Notify;
+import dev.sakura.module.impl.hud.NotifyHud;
 import dev.sakura.utils.client.ChatUtil;
 import dev.sakura.utils.combat.CombatUtil;
 import dev.sakura.utils.entity.EntityUtil;
@@ -117,8 +117,8 @@ public class Burrow extends Module {
         if (mc.player == null || mc.world == null) return;
 
         int blockCount = countBlocks();
-        if (Notify.INSTANCE != null && Notify.INSTANCE.isEnabled()) {
-            Notify.INSTANCE.updateBlockWarning(blockCount);
+        if (NotifyHud.INSTANCE != null && NotifyHud.INSTANCE.isEnabled()) {
+            NotifyHud.INSTANCE.updateBlockWarning(blockCount);
         }
 
         if (EntityUtil.isInWeb(mc.player)) {

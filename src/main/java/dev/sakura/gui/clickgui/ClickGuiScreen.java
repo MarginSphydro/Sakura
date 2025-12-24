@@ -6,10 +6,10 @@ import dev.sakura.module.Category;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.utils.animations.Animation;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.EaseOutSine;
+import dev.sakura.utils.render.Shader2DUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -67,7 +67,7 @@ public class ClickGuiScreen extends Screen {
         // 应用背景模糊在NanoVG绘制之外
         if (ClickGui.backgroundBlur.get()) {
             float blurStrength = ClickGui.blurStrength.get().floatValue();
-            Shader2DUtils.drawQuadBlur(
+            Shader2DUtil.drawQuadBlur(
                     guiGraphics.getMatrices(),
                     0, 0,
                     mc.getWindow().getScaledWidth(), mc.getWindow().getScaledHeight(),

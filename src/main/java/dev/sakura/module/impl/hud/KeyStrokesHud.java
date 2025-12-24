@@ -6,11 +6,11 @@ import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.shaders.Shader2DUtils;
 import dev.sakura.utils.animations.Animation;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.DecelerateAnimation;
 import dev.sakura.utils.color.ColorUtil;
+import dev.sakura.utils.render.Shader2DUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 import net.minecraft.client.gui.DrawContext;
@@ -103,23 +103,23 @@ public class KeyStrokesHud extends HudModule {
 
         float blurValue = blurStrength.get().floatValue();
 
-        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+        Shader2DUtil.drawRoundedBlur(context.getMatrices(),
                 x + width / 2f - size / 2f, y, size, size, radius,
                 new Color(0, 0, 0, 0), blurValue, 1.0f);
 
-        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+        Shader2DUtil.drawRoundedBlur(context.getMatrices(),
                 x, y + increment, size, size, radius,
                 new Color(0, 0, 0, 0), blurValue, 1.0f);
 
-        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+        Shader2DUtil.drawRoundedBlur(context.getMatrices(),
                 x + increment, y + increment, size, size, radius,
                 new Color(0, 0, 0, 0), blurValue, 1.0f);
 
-        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+        Shader2DUtil.drawRoundedBlur(context.getMatrices(),
                 x + increment * 2, y + increment, size, size, radius,
                 new Color(0, 0, 0, 0), blurValue, 1.0f);
 
-        Shader2DUtils.drawRoundedBlur(context.getMatrices(),
+        Shader2DUtil.drawRoundedBlur(context.getMatrices(),
                 x, y + increment * 2, width, size, radius,
                 new Color(0, 0, 0, 0), blurValue, 1.0f);
     }

@@ -6,7 +6,7 @@ import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.module.impl.hud.Notify;
+import dev.sakura.module.impl.hud.NotifyHud;
 import dev.sakura.utils.player.FindItemResult;
 import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.rotation.MovementFix;
@@ -84,8 +84,8 @@ public class Surround extends Module {
         if (mc.player == null || mc.world == null) return;
 
         int blockCount = countBlocks();
-        if (Notify.INSTANCE != null && Notify.INSTANCE.isEnabled()) {
-            Notify.INSTANCE.updateBlockWarning(blockCount);
+        if (NotifyHud.INSTANCE != null && NotifyHud.INSTANCE.isEnabled()) {
+            NotifyHud.INSTANCE.updateBlockWarning(blockCount);
         }
 
         BlockPos currentPos = BlockPos.ofFloored(mc.player.getPos());

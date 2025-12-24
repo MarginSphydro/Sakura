@@ -19,6 +19,11 @@ public class ClickGui extends Module {
         Fade, Rainbow, Astolfo, Dynamic, Tenacity, Static, Double
     }
 
+    public static Value<Double> guiScale = new NumberValue<>("Gui Scale", 1.0, 0.5, 2.0, 0.05);
+    public static Value<Double> fontSize = new NumberValue<>("Font Size", 11.0, 6.0, 20.0, 0.5);
+
+    public static Value<Color> backgroundColor = new ColorValue("Background Color", new Color(28, 28, 28));
+    public static Value<Color> expandedBackgroundColor = new ColorValue("Expanded Background", new Color(20, 20, 20));
     public static EnumValue<ColorMode> colorMode = new EnumValue<>("Color Mode", ColorMode.Tenacity);
     public static Value<Color> mainColor = new ColorValue("Main Color", new Color(255, 183, 197), () -> !colorMode.is(ColorMode.Rainbow));
     public static Value<Color> secondColor = new ColorValue("Second Color", new Color(255, 133, 161), () -> colorMode.is(ColorMode.Tenacity) || colorMode.is(ColorMode.Double));
@@ -28,14 +33,9 @@ public class ClickGui extends Module {
     public static final Value<Double> fadeSpeed = new NumberValue<>("Fade Speed", 5.0, 1.0, 10.0, 0.5, () -> colorMode.is(ColorMode.Fade));
     public static final Value<Double> astolfoSaturation = new NumberValue<>("Saturation", 0.8, 0.0, 1.0, 0.05, () -> colorMode.is(ColorMode.Astolfo));
     public static final Value<Double> astolfoBrightness = new NumberValue<>("Brightness", 1.0, 0.0, 1.0, 0.05, () -> colorMode.is(ColorMode.Astolfo));
-    public static Value<Color> backgroundColor = new ColorValue("Background Color", new Color(28, 28, 28));
-    public static Value<Color> expandedBackgroundColor = new ColorValue("Expanded Background", new Color(20, 20, 20));
 
     public static Value<Boolean> backgroundBlur = new BoolValue("Background Blur", true);
     public static Value<Double> blurStrength = new NumberValue<>("Blur Strength", 8.0, 1.0, 20.0, 0.5, () -> backgroundBlur.get());
-
-    public static Value<Double> guiScale = new NumberValue<>("Gui Scale", 1.0, 0.5, 2.0, 0.05);
-    public static Value<Double> fontSize = new NumberValue<>("Font Size", 13.0, 6.0, 20.0, 0.5);
 
     public ClickGui() {
         super("ClickGui", Category.Client);
