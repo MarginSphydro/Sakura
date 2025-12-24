@@ -24,9 +24,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 
-//todo: 未完成
 public class AnchorAura extends Module {
     private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 8.0, 1.0, 12.0, 1.0);
     private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 1.0);
@@ -34,9 +34,10 @@ public class AnchorAura extends Module {
     private final BoolValue inventorySwap = new BoolValue("Inventory Swap", true);
     private final BoolValue swingHand = new BoolValue("Swing", true);
     private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 8.0, 0.0, 36.0, 0.1);
+    private final NumberValue<Double> minHeadDamage = new NumberValue<>("Min Head Damage", 8.0, 0.0, 36.0, 0.1);
     private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 36.0, 0.1);
-    private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", 50.0, 0.0, 1000.0, 1.0);
-    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", 50.0, 0.0, 1000.0, 1.0);
+    private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", 0.0, 0.0, 1000.0, 1.0);
+    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", 300.0, 0.0, 1000.0, 1.0);
     private final BoolValue rotate = new BoolValue("Rotate", true);
     private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, rotate::get);
     private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, rotate::get);
@@ -45,31 +46,52 @@ public class AnchorAura extends Module {
         super("AnchorAura", Category.Combat);
     }
 
+    public PlayerEntity lastTarget = null;
+    public BlockPos currentPos = null;
+    public double lastDamage;
+
     private final TimerUtil placeTimer = new TimerUtil();
-    private final TimerUtil updateDelayTimer = new TimerUtil();
-    private BlockPos tempPos = null;
+    private final TimerUtil calcTimer = new TimerUtil();
     private boolean isRotating = false;
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
         if (mc.world == null || mc.player == null) return;
         isRotating = false;
+        if (mc.player.isSneaking()) return;
         if (usingPause.get() && mc.player.isUsingItem()) return;
-        if (updateDelayTimer.hasTimeElapsed(updateDelay.get().longValue())) {
-            tempPos = null;
+        if (lastTarget != null && currentPos != null && lastDamage > 0.0) {
+            setSuffix(lastTarget.getName().getString() + ", " + lastDamage);
+        }
+        if (calcTimer.hasTimeElapsed(updateDelay.get().longValue())) {
+            BlockPos tempPos = null;
             for (PlayerEntity target : CombatUtil.getEnemies(targetRange.get())) {
                 for (BlockPos pos : BlockUtil.getSphere(placeRange.get().floatValue())) {
                     double damage = DamageUtil.calculateAnchorDamage(target, pos);
                     double selfDamage = DamageUtil.calculateAnchorDamage(mc.player, pos);
                     if (selfDamage > maxSelfDamage.get()) continue;
                     if (damage < minDamage.get()) continue;
-                    tempPos = pos;
-                    updateDelayTimer.reset();
+                    if ((damage = DamageUtil.calculateAnchorDamage(target, pos.up(2))) > minHeadDamage.get()) {
+                        lastTarget = target;
+                        lastDamage = damage;
+                        tempPos = pos;
+                        break;
+                    }
+                    if (tempPos == null) {
+                        if ((damage = DamageUtil.calculateAnchorDamage(target, pos)) >= minDamage.get()) {
+                            lastTarget = target;
+                            lastDamage = damage;
+                            tempPos = pos;
+                            break;
+                        }
+                    }
                 }
             }
+            currentPos = tempPos;
+            calcTimer.reset();
         }
-        if (tempPos != null) {
-            doAnchor(tempPos);
+        if (currentPos != null) {
+            doAnchor(currentPos);
         }
         if (!isRotating && rotate.get()) {
             RotationManager.setRotations(new Vector2f(mc.player.getYaw(), mc.player.getPitch()), rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
@@ -81,6 +103,7 @@ public class AnchorAura extends Module {
         int glowstone = inventorySwap.get() ? InvUtil.find(Items.GLOWSTONE).slot() : InvUtil.findInHotbar(Items.GLOWSTONE).slot();
         int oldSlot = mc.player.getInventory().selectedSlot;
         if (anchor == -1 || glowstone == -1) return;
+        if (!canPlace(pos)) return;
         if (mc.world.getBlockState(pos).isAir() || mc.world.getBlockState(pos).isReplaceable()) {
             place(pos, anchor);
         } else if (mc.world.getBlockState(pos).getBlock() == Blocks.RESPAWN_ANCHOR) {
@@ -91,6 +114,11 @@ public class AnchorAura extends Module {
             }
         }
         if (!inventorySwap.get()) InvUtil.swap(oldSlot, false);
+    }
+
+    private boolean canPlace(BlockPos pos) {
+        Box box = new Box(pos);
+        return mc.world.getOtherEntities(null, box, e -> e instanceof PlayerEntity).isEmpty();
     }
 
     private void place(BlockPos pos, int slot) {
