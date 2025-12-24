@@ -22,6 +22,8 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.util.ActionResult;
@@ -161,6 +163,7 @@ public class AnchorAura extends Module {
     private void doAnchor(BlockPos pos) {
         int anchor = inventorySwap.get() ? InvUtil.find(Items.RESPAWN_ANCHOR).slot() : InvUtil.findInHotbar(Items.RESPAWN_ANCHOR).slot();
         int glowstone = inventorySwap.get() ? InvUtil.find(Items.GLOWSTONE).slot() : InvUtil.findInHotbar(Items.GLOWSTONE).slot();
+        int unBlock = inventorySwap.get() ? anchor : InvUtil.find(itemStack -> !(itemStack.getItem() instanceof BlockItem)).slot();
         int oldSlot = mc.player.getInventory().selectedSlot;
         if (anchor == -1 || glowstone == -1) return;
         if (!canPlace(pos)) return;
@@ -170,7 +173,7 @@ public class AnchorAura extends Module {
             if (mc.world.getBlockState(pos).get(RespawnAnchorBlock.CHARGES) == 0) {
                 place(pos, glowstone);
             } else {
-                place(pos, anchor);
+                place(pos, unBlock);
             }
         }
         if (!inventorySwap.get()) InvUtil.swap(oldSlot, false);
