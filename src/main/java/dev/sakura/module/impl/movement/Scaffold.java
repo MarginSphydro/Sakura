@@ -42,7 +42,7 @@ public class Scaffold extends Module {
     private final BoolValue moveFix = new BoolValue("Movement Fix", true);
     private final BoolValue render = new BoolValue("Render", true);
     private final BoolValue shrink = new BoolValue("Shrink", true, render::get);
-    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 183, 197, 100), render::get);
+    private final ColorValue sideColor = new ColorValue("Fill Color", new Color(255, 183, 197, 100), render::get);
     private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 105, 180), render::get);
 
     private int yLevel;

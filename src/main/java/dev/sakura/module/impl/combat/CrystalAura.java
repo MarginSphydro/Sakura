@@ -94,7 +94,7 @@ public class CrystalAura extends Module {
     private final NumberValue<Double> animationExponent = new NumberValue<>("Animation Exp", 3.0, 0.1, 10.0, 0.1, () -> page.is(Page.Render) && render.get());
     private final BoolValue smoothBox = new BoolValue("Smooth Box", true, () -> page.is(Page.Render) && render.get());
     private final BoolValue breathing = new BoolValue("Breathing", true, () -> page.is(Page.Render) && render.get());
-    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 192, 203, 50), () -> page.is(Page.Render) && render.get());
+    private final ColorValue sideColor = new ColorValue("Fill Color", new Color(255, 192, 203, 50), () -> page.is(Page.Render) && render.get());
     private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 192, 203, 255), () -> page.is(Page.Render) && render.get());
     private final BoolValue extrapolation = new BoolValue("Extrapolation", true, () -> page.is(Page.Render));
     private final NumberValue<Integer> extrapolationTicks = new NumberValue<>("Extra Ticks", 0, 0, 20, 1, () -> page.is(Page.Render) && extrapolation.get());
