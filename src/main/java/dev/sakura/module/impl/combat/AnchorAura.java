@@ -198,7 +198,7 @@ public class AnchorAura extends Module {
                     InvUtil.swap(slot, true);
                     switched = true;
                 } else {
-                    switched = InvUtil.invSwitch(slot);
+                    switched = InvUtil.invSwap(slot);
                     usedInvSwitch = true;
                 }
             } else {
