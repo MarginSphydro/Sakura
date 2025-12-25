@@ -12,7 +12,6 @@
   },
   "client": [
     "MixinMain",
-    "accessor.IAbstractBlockSettings",
     "accessor.IAccessorBundlePacket",
     "accessor.IChatInputSuggestor",
     "accessor.IClientPlayerEntity",
@@ -60,6 +59,8 @@
   ],
   "mixins": [
     "accessor.IEntityTrackingSection",
+    "accessor.IEntityVelocityUpdateS2CPacket",
+    "accessor.IExplosionS2CPacket",
     "accessor.IPlayerMoveC2SPacket"
   ]
 }

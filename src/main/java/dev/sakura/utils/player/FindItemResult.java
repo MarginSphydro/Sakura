@@ -16,7 +16,7 @@ public record FindItemResult(int slot, int count) {
         if (slot == mc.player.getInventory().selectedSlot) {
             return Hand.MAIN_HAND;
         }
-        return null;
+        return Hand.MAIN_HAND;
     }
 
     public boolean isMainHand() {

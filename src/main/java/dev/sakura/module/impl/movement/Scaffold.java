@@ -3,7 +3,6 @@ package dev.sakura.module.impl.movement;
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.player.StrafeEvent;
 import dev.sakura.manager.Managers;
-import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -15,6 +14,7 @@ import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.rotation.RaytraceUtil;
 import dev.sakura.utils.rotation.RotationUtil;
 import dev.sakura.utils.vector.Vector2f;
+import dev.sakura.utils.world.BlockUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.EnumValue;
@@ -26,10 +26,14 @@ import net.minecraft.block.FallingBlock;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
 
 import java.awt.*;
+
+import static dev.sakura.Sakura.mc;
 
 public class Scaffold extends Module {
     private final EnumValue<SwapMode> swapMode = new EnumValue<>("Swap Mode", SwapMode.Silent);
@@ -99,6 +103,10 @@ public class Scaffold extends Module {
             RotationManager.setRotations(getRotation(blockCache), rotationSpeed.get(), movementFix, RotationManager.Priority.High);
             place();
         }
+
+        if (swapMode.is(SwapMode.Silent)) {
+            InvUtil.swapBack();
+        }
     }
 
     @EventHandler
@@ -131,13 +139,20 @@ public class Scaffold extends Module {
 
         if (hasRotated) {
             BlockPos targetPos = blockCache.position.offset(blockCache.facing);
-            if (!PlaceManager.isReplaceable(targetPos)) return;
+            if (!mc.world.getBlockState(targetPos).isReplaceable()) return;
             if (!mc.world.getOtherEntities(null, new Box(targetPos)).isEmpty()) return;
 
-            PlaceManager.placeBlock(
-                    new BlockHitResult(getVec3(blockCache.position, blockCache.facing), blockCache.facing, blockCache.position, false),
-                    item, swingHand.get(), swapMode.is(SwapMode.Silent)
-            );
+            int slot = item.isOffhand() ? mc.player.getInventory().selectedSlot : item.slot();
+
+            //todo:加settings
+            InvUtil.swap(slot, swapMode.is(SwapMode.Silent));
+
+            ActionResult result = mc.interactionManager.interactBlock(mc.player, item.getHand(), new BlockHitResult(getVec3(blockCache.position, blockCache.facing), blockCache.facing, blockCache.position, false));
+
+            if (result.isAccepted()) {
+                if (swingHand.get()) mc.player.swingHand(item.getHand());
+                else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(item.getHand()));
+            }
 
             if (render.get()) {
                 Managers.RENDER.add(targetPos, sideColor.get(), lineColor.get(), 1000, shrink.get());

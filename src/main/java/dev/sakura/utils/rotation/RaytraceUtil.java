@@ -156,7 +156,7 @@ public class RaytraceUtil {
         BlockHitResult hitResult = mc.world.raycast(new RaycastContext(
                 cameraPos,
                 reachVec,
-                RaycastContext.ShapeType.OUTLINE,
+                RaycastContext.ShapeType.COLLIDER,
                 RaycastContext.FluidHandling.NONE,
                 mc.player
         ));
