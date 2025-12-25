@@ -1,6 +1,7 @@
 package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
+import dev.sakura.events.player.PlayerTickEvent;
 import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
@@ -109,20 +110,20 @@ public class AnchorAura extends Module {
             boolean anchorFound = false;
             tempPos = null;
             calcTimer.reset();
-            if (tempPos == null) {
-                for (PlayerEntity target : CombatUtil.getEnemies(targetRange.get())) {
-                    BlockPos blockPos = target.getBlockPos().up(2);
-                    if (canPlace(blockPos) || mc.world.getBlockState(blockPos).getBlock() == Blocks.RESPAWN_ANCHOR) {
-                        double damage;
-                        if ((damage = DamageUtil.calculateAnchorDamage(target, blockPos)) > minHeadDamage.get()) {
-                            double selfDamage = DamageUtil.calculateAnchorDamage(mc.player, blockPos);
-                            if (selfDamage > maxSelfDamage.get()) continue;
-                            lastTarget = target;
-                            lastDamage = damage;
-                            tempPos = blockPos;
-                            //break;
-                        }
+            for (PlayerEntity target : CombatUtil.getEnemies(targetRange.get())) {
+                BlockPos blockPos = target.getBlockPos().up(2);
+                if (canPlace(blockPos) || mc.world.getBlockState(blockPos).getBlock() == Blocks.RESPAWN_ANCHOR) {
+                    double damage;
+                    if ((damage = DamageUtil.calculateAnchorDamage(target, blockPos)) > minHeadDamage.get()) {
+                        double selfDamage = DamageUtil.calculateAnchorDamage(mc.player, blockPos);
+                        if (selfDamage > maxSelfDamage.get()) continue;
+                        lastTarget = target;
+                        lastDamage = damage;
+                        tempPos = blockPos;
+                        //break;
                     }
+                }
+                if (tempPos == null) {
                     for (BlockPos pos : BlockUtil.getSphere(placeRange.get().floatValue())) {
                         if (mc.world.getBlockState(pos).getBlock() != Blocks.RESPAWN_ANCHOR) {
                             if (anchorFound) continue;
@@ -163,9 +164,9 @@ public class AnchorAura extends Module {
     private void doAnchor(BlockPos pos) {
         int anchor = inventorySwap.get() ? InvUtil.find(Items.RESPAWN_ANCHOR).slot() : InvUtil.findInHotbar(Items.RESPAWN_ANCHOR).slot();
         int glowstone = inventorySwap.get() ? InvUtil.find(Items.GLOWSTONE).slot() : InvUtil.findInHotbar(Items.GLOWSTONE).slot();
-        int unBlock = inventorySwap.get() ? anchor : InvUtil.find(itemStack -> !(itemStack.getItem() instanceof BlockItem)).slot();
+        int unBlock = inventorySwap.get() ? anchor : InvUtil.findInHotbar(itemStack -> !(itemStack.getItem() instanceof BlockItem)).slot();
         int oldSlot = mc.player.getInventory().selectedSlot;
-        if (anchor == -1 || glowstone == -1) return;
+        if (anchor == -1 || glowstone == -1 || unBlock == -1) return;
         if (!canPlace(pos)) return;
         if (mc.world.getBlockState(pos).isAir() || mc.world.getBlockState(pos).isReplaceable()) {
             place(pos, anchor);
@@ -208,7 +209,7 @@ public class AnchorAura extends Module {
                 RotationManager.setRotations(RotationUtil.calculate(pos.offset(side)), rotationSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
                 isRotating = true;
             }
-            BlockHitResult hitResult = new BlockHitResult(pos.toCenterPos(), Direction.UP, pos, false);
+            BlockHitResult hitResult = new BlockHitResult(pos.toCenterPos(), side, pos, false);
             ActionResult actionResult = mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, hitResult);
             if (actionResult.isAccepted()) {
                 if (swingHand.get()) mc.player.swingHand(Hand.MAIN_HAND, true);
