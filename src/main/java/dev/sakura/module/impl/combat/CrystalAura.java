@@ -399,6 +399,10 @@ public class CrystalAura extends Module {
         return crystals.isEmpty() ? null : crystals.getFirst();
     }
 
+    public PlayerEntity getCurrentTarget() {
+        return getTarget();
+    }
+
     private PlayerEntity getTarget() {
         PlayerEntity target = null;
         double distance = targetRange.get();

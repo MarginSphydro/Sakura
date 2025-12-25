@@ -70,6 +70,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new PacketEat());
             manager.tryLoad(() -> new InventorySort());
             manager.tryLoad(() -> new AutoArmor());
+            manager.tryLoad(() -> new Blink());
 
             // Render
             manager.tryLoad(() -> new CameraClip());
@@ -100,6 +101,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new NotifyHud());
             manager.tryLoad(() -> new HotbarHud());
             manager.tryLoad(() -> new ModuleListHud()); // 新增的模块列表HUD
+            manager.tryLoad(() -> new TargetHud());
         }
     }
 

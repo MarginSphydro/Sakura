@@ -180,6 +180,10 @@ public class KillAura extends Module {
         pendingAttack = false;
     }
 
+    public Entity getCurrentTarget() {
+        return currentTarget;
+    }
+
     @EventHandler
     public void onPacket(PacketEvent event) {
         if (mc.player == null) return;
