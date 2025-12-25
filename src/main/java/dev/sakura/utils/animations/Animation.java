@@ -54,7 +54,7 @@ public abstract class Animation {
     }
 
     public boolean isDone() {
-        return timerUtil.hasTimeElapsed(duration);
+        return timerUtil.hasReached(duration);
     }
 
     public void changeDirection() {

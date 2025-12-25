@@ -74,9 +74,9 @@ public class CrystalAura extends Module {
     private final BoolValue rotate = new BoolValue("Rotate", true, () -> page.is(Page.Timing));
     private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
     private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
-    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 0, 0, 750, 1, () -> page.is(Page.Timing));
-    private final NumberValue<Integer> attackDelay = new NumberValue<>("Attack Delay", 0, 0, 750, 1, () -> page.is(Page.Timing));
-    private final NumberValue<Integer> forcePlaceDelay = new NumberValue<>("Force Place Delay", 0, 0, 750, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 0, 0, 15, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> attackDelay = new NumberValue<>("Attack Delay", 0, 0, 15, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> forcePlaceDelay = new NumberValue<>("Force Place Delay", 0, 0, 15, 1, () -> page.is(Page.Timing));
 
     private final BoolValue place = new BoolValue("Place", true, () -> page.is(Page.Place));
     private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Place));
@@ -92,7 +92,7 @@ public class CrystalAura extends Module {
     private final EnumValue<FadeMode> fadeMode = new EnumValue<>("Fade Mode", FadeMode.Normal, () -> page.is(Page.Render) && render.get());
     private final NumberValue<Double> animationSpeed = new NumberValue<>("Animation Speed", 5.0, 0.1, 20.0, 0.1, () -> page.is(Page.Render) && render.get());
     private final NumberValue<Double> animationExponent = new NumberValue<>("Animation Exp", 3.0, 0.1, 10.0, 0.1, () -> page.is(Page.Render) && render.get());
-    private final BoolValue smoothBox = new BoolValue("Smooth Box", true, () -> page.is(Page.Render) && render.get());
+    private final BoolValue smoothBox = new BoolValue("Smooth Box", false, () -> page.is(Page.Render) && render.get());
     private final BoolValue breathing = new BoolValue("Breathing", true, () -> page.is(Page.Render) && render.get());
     private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 192, 203, 50), () -> page.is(Page.Render) && render.get());
     private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 192, 203, 255), () -> page.is(Page.Render) && render.get());
@@ -146,11 +146,11 @@ public class CrystalAura extends Module {
 
         FindItemResult result = autoSwitch.is(SwitchMode.InvSilent) ? InvUtil.find(Items.END_CRYSTAL) : InvUtil.findInHotbar(Items.END_CRYSTAL);
 
-        if (attack.get() && breakTimer.hasTimeElapsed(getAttackDelay(target))) {
+        if (attack.get() && breakTimer.delay(getAttackDelay(target))) {
             doBreak(target, result);
         }
 
-        if (place.get() && placeTimer.hasTimeElapsed(placeDelay.get().longValue())) {
+        if (place.get() && placeTimer.delay(placeDelay.get().floatValue())) {
             doPlace(target, result);
         }
 
@@ -258,14 +258,14 @@ public class CrystalAura extends Module {
             if (mc.player.distanceTo(crystal) > breakRange.get()) continue;
             if (!crystal.isAlive()) continue;
 
-            float damage = calculateDamage(target, crystal.getPos());
+            float targetDamage = calculateDamage(target, crystal.getPos());
             float selfDamage = calculateDamage(mc.player, crystal.getPos());
 
             if (selfDamage > maxSelfDamage.get()) continue;
-            if (damage < getMinDamage(target)) continue;
+            if (targetDamage < getMinDamage(target)) continue;
 
-            if (damage > bestDamage) {
-                bestDamage = damage;
+            if (targetDamage > bestDamage) {
+                bestDamage = targetDamage;
                 bestCrystal = crystal;
             }
         }
@@ -319,7 +319,7 @@ public class CrystalAura extends Module {
 
         if (bestPos != null) {
             if (blockingCrystal != null) {
-                if (breakTimer.hasTimeElapsed(getAttackDelay(target))) {
+                if (breakTimer.delay(getAttackDelay(target))) {
                     if (rotate.get()) {
                         Vector2f rotation = RotationUtil.calculate(blockingCrystal.getPos());
                         RotationManager.setRotations(rotation, rotationSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
@@ -341,26 +341,12 @@ public class CrystalAura extends Module {
 
             int slot = result.slot();
             boolean switched = false;
-            boolean usedInvSwitch = false;
 
-            if (mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL && !result.isOffhand()) {
-                if (autoSwitch.is(SwitchMode.None)) return;
-
+            if (mc.player.getMainHandStack().getItem() != Items.END_CRYSTAL && !autoSwitch.is(SwitchMode.None)) {
                 switch (autoSwitch.get()) {
-                    case Silent -> {
-                        InvUtil.swap(slot, true);
-                        switched = true;
-                    }
-                    case InvSilent -> {
-                        if (slot < 9) {
-                            InvUtil.swap(slot, true);
-                            switched = true;
-                        } else {
-                            switched = InvUtil.invSwitch(slot);
-                            usedInvSwitch = true;
-                        }
-                    }
-                    default -> InvUtil.swap(slot, false);
+                    case Silent -> switched = InvUtil.swap(slot, true);
+                    case InvSilent -> switched = InvUtil.invSwap(slot);
+                    case Normal -> InvUtil.swap(slot, false);
                 }
             }
 
@@ -371,7 +357,7 @@ public class CrystalAura extends Module {
             }
 
             BlockHitResult hitResult = new BlockHitResult(bestPos.toCenterPos().add(0, 1, 0), Direction.UP, bestPos, false);
-            Hand hand = result.getHand() == null ? Hand.MAIN_HAND : result.getHand();
+            Hand hand = result.getHand();
             ActionResult actionResult = mc.interactionManager.interactBlock(mc.player, hand, hitResult);
 
             if (actionResult.isAccepted()) {
@@ -386,10 +372,7 @@ public class CrystalAura extends Module {
             if (switched) {
                 switch (autoSwitch.get()) {
                     case Silent -> InvUtil.swapBack();
-                    case InvSilent -> {
-                        if (usedInvSwitch) InvUtil.invSwapBack();
-                        else InvUtil.swapBack();
-                    }
+                    case InvSilent -> InvUtil.invSwapBack();
                 }
             }
         }
@@ -451,11 +434,11 @@ public class CrystalAura extends Module {
         return DamageUtil.calculateCrystalDamage(entity, crystalPos);
     }
 
-    private long getAttackDelay(PlayerEntity target) {
+    private float getAttackDelay(PlayerEntity target) {
         if (target != null && (target.getHealth() + target.getAbsorptionAmount() <= forcePlaceHealth.get())) {
-            return forcePlaceDelay.get().longValue();
+            return forcePlaceDelay.get().floatValue();
         }
-        return attackDelay.get().longValue();
+        return attackDelay.get().floatValue();
     }
 
     private double getMinDamage(PlayerEntity target) {

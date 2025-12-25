@@ -154,26 +154,22 @@ public class RotationUtil {
             yaw = lastYaw + move.x;
             pitch = lastPitch + move.y;
 
-            // Minecraft.getDebugFPS() -> mc.getCurrentFps() in some versions or mixin access
-            // Using a safe fallback or standard method
-            for (int i = 1; i <= (int) (mc.getCurrentFps() / 20f + Math.random() * 10); ++i) {
-                if (Math.abs(move.x) + Math.abs(move.y) > 0.0001) {
-                    yaw += (Math.random() - 0.5) / 1000;
-                    pitch -= Math.random() / 200;
-                }
-
-                /*
-                 * Fixing GCD
-                 */
-                final Vector2f rotations = new Vector2f(yaw, pitch);
-                final Vector2f fixedRotations = RotationUtil.applySensitivityPatch(rotations);
-
-                /*
-                 * Setting rotations
-                 */
-                yaw = MathHelper.wrapDegrees(fixedRotations.x);
-                pitch = Math.max(-90, Math.min(90, fixedRotations.y));
+            if (Math.abs(move.x) + Math.abs(move.y) > 0.0001) {
+                yaw += (Math.random() - 0.5) / 1000;
+                pitch -= Math.random() / 200;
             }
+
+            /*
+             * Fixing GCD
+             */
+            final Vector2f rotations = new Vector2f(yaw, pitch);
+            final Vector2f fixedRotations = RotationUtil.applySensitivityPatch(rotations);
+
+            /*
+             * Setting rotations
+             */
+            yaw = MathHelper.wrapDegrees(fixedRotations.x);
+            pitch = Math.max(-90, Math.min(90, fixedRotations.y));
         }
 
         return new Vector2f(yaw, pitch);

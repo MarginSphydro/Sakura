@@ -30,7 +30,7 @@ public class AutoWeb extends Module {
     }
 
     private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 8.0, 1.0, 12.0, 1.0);
-    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 50, 0, 1000, 1);
+    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 1, 0, 20, 1);
     private final BoolValue face = new BoolValue("Place on Face", true);
     private final BoolValue feet = new BoolValue("Place on Feet", true);
     private final BoolValue down = new BoolValue("Place on Down", false);
@@ -47,12 +47,13 @@ public class AutoWeb extends Module {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         if (mc.world == null || mc.player == null) return;
+
         isRotating = false;
         for (PlayerEntity target : CombatUtil.getEnemies(targetRange.get())) {
             if (target == null) {
                 return;
             }
-            if (placeTimer.hasTimeElapsed(placeDelay.get().longValue())) {
+            if (placeTimer.delay(placeDelay.get().floatValue())) {
                 for (double x : new double[]{0, offset.get(), -offset.get()}) {
                     for (double z : new double[]{0, offset.get(), -offset.get()}) {
                         BlockPos pos = BlockPos.ofFloored(target.getX() + x, target.getY(), target.getZ() + z);

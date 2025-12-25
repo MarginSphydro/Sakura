@@ -73,6 +73,8 @@ public class RotationManager {
      * This method must be called on Pre Update Event to work correctly
      */
     public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, final Function<Vector2f, Boolean> raycast, Priority priority) {
+        if (rotations == null || Double.isNaN(rotations.x) || Double.isNaN(rotations.y) || Double.isInfinite(rotations.x) || Double.isInfinite(rotations.y))
+            return;
         if (active && priority.priority < RotationManager.priority) return;
 
         RotationManager.targetRotations = rotations;
@@ -93,23 +95,32 @@ public class RotationManager {
             if (raycast != null && (Math.abs(targetYaw - rotations.x) > 5 || Math.abs(targetPitch - rotations.y) > 5)) {
                 final Vector2f trueTargetRotations = new Vector2f(targetRotations.x, targetRotations.y);
 
-                double speed = /*Math.min(*/(Math.random() * Math.random() * Math.random()) * 20/*, MoveUtil.speed() * 30)*/;
+                double speed = (Math.random() * Math.random() * Math.random()) * 20;
                 randomAngle += (float) ((20 + (float) (Math.random() - 0.5) * (Math.random() * Math.random() * Math.random() * 360)) * (mc.player.age / 10 % 2 == 0 ? -1 : 1));
+
+                if (Float.isNaN(randomAngle) || Float.isInfinite(randomAngle)) randomAngle = 0;
 
                 offset.x = ((float) (offset.x + -MathHelper.sin((float) Math.toRadians(randomAngle)) * speed));
                 offset.y = ((float) (offset.y + MathHelper.cos((float) Math.toRadians(randomAngle)) * speed));
+
+                if (Float.isNaN(offset.x) || Float.isInfinite(offset.x)) offset.x = 0;
+                if (Float.isNaN(offset.y) || Float.isInfinite(offset.y)) offset.y = 0;
 
                 targetYaw += offset.x;
                 targetPitch += offset.y;
 
                 if (!raycast.apply(new Vector2f(targetYaw, targetPitch))) {
                     randomAngle = (float) Math.toDegrees(Math.atan2(trueTargetRotations.x - targetYaw, targetPitch - trueTargetRotations.y)) - 180;
+                    if (Float.isNaN(randomAngle)) randomAngle = 0;
 
                     targetYaw -= offset.x;
                     targetPitch -= offset.y;
 
                     offset.x = ((float) (offset.x + -MathHelper.sin((float) Math.toRadians(randomAngle)) * speed));
                     offset.y = ((float) (offset.y + MathHelper.cos((float) Math.toRadians(randomAngle)) * speed));
+
+                    if (Float.isNaN(offset.x) || Float.isInfinite(offset.x)) offset.x = 0;
+                    if (Float.isNaN(offset.y) || Float.isInfinite(offset.y)) offset.y = 0;
 
                     targetYaw = targetYaw + offset.x;
                     targetPitch = targetPitch + offset.y;
@@ -127,6 +138,8 @@ public class RotationManager {
             rotations = RotationUtil.smooth(new Vector2f(targetYaw, targetPitch),
                     rotationSpeed + Math.random());
 
+            if (Float.isNaN(rotations.x) || Float.isInfinite(rotations.x)) rotations.x = mc.player.getYaw();
+            if (Float.isNaN(rotations.y) || Float.isInfinite(rotations.y)) rotations.y = mc.player.getPitch();
         }
 
         smoothed = true;
@@ -226,8 +239,12 @@ public class RotationManager {
     public void onPreMotion(MotionEvent event) {
         if (event.getType() == EventType.PRE) {
             if (active && rotations != null) {
-                final float yaw = rotations.x;
-                final float pitch = rotations.y;
+                float yaw = rotations.x;
+                float pitch = rotations.y;
+
+                if (Float.isNaN(yaw) || Float.isInfinite(yaw)) yaw = mc.player.getYaw();
+                if (Float.isNaN(pitch) || Float.isInfinite(pitch)) pitch = mc.player.getPitch();
+                pitch = MathHelper.clamp(pitch, -90.0f, 90.0f);
 
                 event.setYaw(yaw);
                 event.setPitch(pitch);
@@ -263,11 +280,14 @@ public class RotationManager {
 //    }
 
     private void correctDisabledRotations() {
+        if (mc.player == null || lastRotations == null) return;
         final Vector2f rotations = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
         final Vector2f fixedRotations = RotationUtil.resetRotation(RotationUtil.applySensitivityPatch(rotations, lastRotations));
 
-        mc.player.setYaw(fixedRotations.x);
-        mc.player.setPitch(fixedRotations.y);
+        if (fixedRotations != null && !Float.isNaN(fixedRotations.x) && !Float.isNaN(fixedRotations.y)) {
+            mc.player.setYaw(fixedRotations.x);
+            mc.player.setPitch(MathHelper.clamp(fixedRotations.y, -90.0f, 90.0f));
+        }
     }
 
     public static void setRenderRotation(float yaw, float pitch) {

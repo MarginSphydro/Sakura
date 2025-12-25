@@ -4,7 +4,6 @@ import dev.sakura.events.client.TickEvent;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.utils.entity.EntityUtil;
 import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.vector.Vector2f;
@@ -64,15 +63,13 @@ public class AutoPearl extends Module {
             if (mc.player.getMainHandStack().getItem() == Items.ENDER_PEARL) {
                 mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, mc.player.getYaw(), mc.player.getPitch()));
             } else if (inventorySwap.get() && (pearl = InvUtil.find(Items.ENDER_PEARL).slot()) != -1) {
-                InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(pearl);
+                InvUtil.invSwap(pearl);
                 mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, mc.player.getYaw(), mc.player.getPitch()));
-                InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(pearl);
-                EntityUtil.syncInventory();
+                InvUtil.swapBack();
             } else if ((pearl = InvUtil.findInHotbar(Items.ENDER_PEARL).slot()) != -1) {
-                int old = mc.player.getInventory().selectedSlot;
                 InvUtil.swap(pearl, false);
                 mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, mc.player.getYaw(), mc.player.getPitch()));
-                InvUtil.swap(old, false);
+                InvUtil.swapBack();
             }
 
             throwing = false;
@@ -106,10 +103,9 @@ public class AutoPearl extends Module {
         if (mc.player.getMainHandStack().getItem() == Items.ENDER_PEARL) {
             mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, yaw, pitch));
         } else if (inventorySwap.get() && (pearl = InvUtil.find(Items.ENDER_PEARL).slot()) != -1) {
-            InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(pearl);
+            InvUtil.invSwap(pearl);
             mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND, 0, yaw, pitch));
-            InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(pearl);
-            EntityUtil.syncInventory();
+            InvUtil.invSwapBack();
         } else if ((pearl = InvUtil.findInHotbar(Items.ENDER_PEARL).slot()) != -1) {
             int old = mc.player.getInventory().selectedSlot;
             InvUtil.swap(pearl, false);

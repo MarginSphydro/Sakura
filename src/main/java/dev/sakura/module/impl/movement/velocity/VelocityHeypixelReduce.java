@@ -2,7 +2,6 @@ package dev.sakura.module.impl.movement.velocity;
 
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.module.impl.movement.Velocity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.util.Hand;

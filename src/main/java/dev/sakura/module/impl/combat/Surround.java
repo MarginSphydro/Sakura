@@ -37,8 +37,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.sakura.Sakura.mc;
-
 public class Surround extends Module {
     private final NumberValue<Integer> delay = new NumberValue<>("Delay", 0, 0, 10, 1);
     private final NumberValue<Integer> blocksPerTick = new NumberValue<>("Blocks Per Tick", 4, 1, 10, 1);

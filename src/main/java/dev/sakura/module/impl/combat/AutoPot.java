@@ -31,7 +31,7 @@ public class AutoPot extends Module {
 
     private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
 
-    private final NumberValue<Double> delay = new NumberValue<>("Delay", 5.0, 0.0, 10.0, 0.5,
+    private final NumberValue<Integer> delay = new NumberValue<>("Delay", 100, 0, 200, 1,
             () -> page.is(Page.General));
     private final BoolValue usingPause = new BoolValue("UsingPause", true,
             () -> page.is(Page.General));
@@ -144,7 +144,7 @@ public class AutoPot extends Module {
 
     private void tryThrowPotion(StatusEffect targetEffect) {
         throwing = checkThrow(targetEffect);
-        if (throwing && delayTimer.hasReached(delay.get() * 1000)) {
+        if (throwing && delayTimer.delay(delay.get().floatValue())) {
             throwPotion(targetEffect);
         }
     }
@@ -152,17 +152,16 @@ public class AutoPot extends Module {
     public void throwPotion(StatusEffect targetEffect) {
         if (mc.player == null || mc.interactionManager == null) return;
 
-        int oldSlot = mc.player.getInventory().selectedSlot;
-        int newSlot;
-
         lastYaw = mc.player.getYaw();
         lastPitch = mc.player.getPitch();
 
+        int newSlot;
+
         if (inventory.get() && (newSlot = findPotionInventorySlot(targetEffect)) != -1) {
             sendLookPacket(lastYaw, pitch.get().floatValue());
-            InvUtil.quickSwap().fromId(oldSlot).to(newSlot);
+            InvUtil.invSwap(newSlot);
             useItem();
-            InvUtil.quickSwap().fromId(oldSlot).to(newSlot);
+            InvUtil.invSwapBack();
             mc.player.getInventory().updateItems();
             if (snapBack.get()) {
                 sendLookPacket(lastYaw, lastPitch);
@@ -172,7 +171,7 @@ public class AutoPot extends Module {
             sendLookPacket(lastYaw, pitch.get().floatValue());
             InvUtil.swap(newSlot, false);
             useItem();
-            InvUtil.swap(oldSlot, false);
+            InvUtil.swapBack();
             if (snapBack.get()) {
                 sendLookPacket(lastYaw, lastPitch);
             }

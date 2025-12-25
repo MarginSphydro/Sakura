@@ -14,6 +14,7 @@ import dev.sakura.utils.render.Shader2DUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
+import meteordevelopment.orbit.EventPriority;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.DiffuseLighting;
@@ -81,7 +82,7 @@ public class NameTags extends Module {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onRender2D(Render2DEvent event) {
         if (mc.player == null || mc.world == null) return;
 

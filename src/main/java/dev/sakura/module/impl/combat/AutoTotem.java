@@ -65,7 +65,7 @@ public class AutoTotem extends Module {
 
         setSuffix(String.valueOf(countTotems()));
 
-        if (mainhandTotem.get() && mainhandSwapTimer.hasReached(200)) {
+        if (mainhandTotem.get() && mainhandSwapTimer.delay(4.0f)) {
             handleMainhandTotem();
         } else {
             totemInMainhand = false;

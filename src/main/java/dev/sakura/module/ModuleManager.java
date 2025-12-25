@@ -17,6 +17,7 @@ import dev.sakura.module.impl.player.*;
 import dev.sakura.module.impl.render.*;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
+import meteordevelopment.orbit.EventPriority;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -227,7 +228,7 @@ public class ModuleManager {
                 .collect(Collectors.toList());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onRender2D(Render2DEvent event) {
         for (HudModule module : getAllHudModules()) {
             if (module.isState()) {
