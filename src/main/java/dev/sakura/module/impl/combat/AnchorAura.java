@@ -45,7 +45,7 @@ public class AnchorAura extends Module {
     private final BoolValue inventorySwap = new BoolValue("Inventory Swap", true, () -> page.is(Page.General));
     private final BoolValue swingHand = new BoolValue("Swing", true, () -> page.is(Page.General));
     private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", 0.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
-    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", 300.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
+    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", 50.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
 
     private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
     private final NumberValue<Double> breakMin = new NumberValue<>("Break Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
@@ -81,7 +81,7 @@ public class AnchorAura extends Module {
 
     @EventHandler
     public void onRender3D(Render3DEvent event) {
-        if (currentPos != null) {
+        if (currentPos != null && render.get()) {
             Render3DUtil.drawFilledBox(event.getMatrices(), new Box(currentPos), fillColor.get());
             Render3DUtil.drawBoxOutline(event.getMatrices(), new Box(currentPos), boxColor.get().getRGB(), 1.5f);
         }
