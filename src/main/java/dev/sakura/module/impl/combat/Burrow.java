@@ -128,10 +128,10 @@ public class Burrow extends Module {
         if (usingPause.get() && mc.player.isUsingItem()) {
             return;
         }
-        if (!webTimer.hasReached(webTime.get())) {
+        if (!webTimer.delay(webTime.get().floatValue())) {
             return;
         }
-        if (!disable.get() && !timer.hasReached(delay.get())) {
+        if (!disable.get() && !timer.delay(delay.get().floatValue())) {
             return;
         }
         if (!mc.player.isOnGround()) {
@@ -265,7 +265,6 @@ public class Burrow extends Module {
         }
         if (inventory.get()) {
             doSwap(block);
-            EntityUtil.syncInventory();
         } else {
             doSwap(oldSlot);
         }
@@ -347,7 +346,7 @@ public class Burrow extends Module {
 
     private void doSwap(int slot) {
         if (inventory.get()) {
-            InvUtil.quickSwap().fromId(mc.player.getInventory().selectedSlot).toId(slot);
+            InvUtil.invSwap(slot);
         } else {
             InvUtil.swap(slot, false);
         }

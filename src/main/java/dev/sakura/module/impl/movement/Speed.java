@@ -76,7 +76,7 @@ public class Speed extends Module {
                     double vel = Math.sqrt(packet.getVelocityX() * packet.getVelocityX() +
                             packet.getVelocityZ() * packet.getVelocityZ()) / 8000.0;
 
-                    lastExp = expTimer.hasReached(cooldown.get()) ? vel : (vel - lastExp);
+                    lastExp = expTimer.delay(cooldown.get().floatValue()) ? vel : (vel - lastExp);
 
                     if (lastExp > 0) {
                         expTimer.reset();
@@ -150,7 +150,7 @@ public class Speed extends Module {
 
         if (mode.get() == Mode.GrimCollide) return;
 
-        if (!lagTimer.hasReached(lagTime.get())) return;
+        if (!lagTimer.delay(lagTime.get().floatValue())) return;
 
         double baseSpeed = MovementUtil.getBaseSpeed(slowness.get(), speed.get());
 

@@ -17,6 +17,7 @@ import dev.sakura.module.impl.player.*;
 import dev.sakura.module.impl.render.*;
 import dev.sakura.values.Value;
 import meteordevelopment.orbit.EventHandler;
+import meteordevelopment.orbit.EventPriority;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -69,6 +70,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new PacketEat());
             manager.tryLoad(() -> new InventorySort());
             manager.tryLoad(() -> new AutoArmor());
+            manager.tryLoad(() -> new Blink());
 
             // Render
             manager.tryLoad(() -> new CameraClip());
@@ -99,6 +101,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new NotifyHud());
             manager.tryLoad(() -> new HotbarHud());
             manager.tryLoad(() -> new ModuleListHud()); // 新增的模块列表HUD
+            manager.tryLoad(() -> new TargetHud());
         }
     }
 
@@ -227,7 +230,7 @@ public class ModuleManager {
                 .collect(Collectors.toList());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onRender2D(Render2DEvent event) {
         for (HudModule module : getAllHudModules()) {
             if (module.isState()) {

@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
@@ -12,14 +11,12 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
-import org.jetbrains.annotations.Range;
 
 import java.util.function.Predicate;
 
 import static dev.sakura.Sakura.mc;
 
 public class InvUtil {
-    private static final Action ACTION = new Action();
     public static int previousSlot = -1;
     public static int[] invSlots;
 
@@ -78,8 +75,6 @@ public class InvUtil {
             return false;
         });
     }
-
-    // Finding items
 
     public static FindItemResult findEmpty() {
         return find(ItemStack::isEmpty);
@@ -155,8 +150,6 @@ public class InvUtil {
         return new FindItemResult(slot, 1);
     }
 
-    // Interactions
-
     public static boolean swap(int slot, boolean swapBack) {
         if (slot == SlotUtil.OFFHAND) return true;
         if (slot < 0 || slot > 8) return false;
@@ -176,7 +169,7 @@ public class InvUtil {
         return return_;
     }
 
-    public static boolean invSwitch(int slot) {
+    public static boolean invSwap(int slot) {
         if (slot >= 0) {
             ScreenHandler handler = mc.player.currentScreenHandler;
             Int2ObjectArrayMap<ItemStack> stack = new Int2ObjectArrayMap<>();
@@ -207,190 +200,8 @@ public class InvUtil {
         mc.interactionManager.syncSelectedSlot();
     }
 
-    public static Action move() {
-        ACTION.type = SlotActionType.PICKUP;
-        ACTION.two = true;
-        return ACTION;
-    }
-
-    public static Action click() {
-        ACTION.type = SlotActionType.PICKUP;
-        return ACTION;
-    }
-
-    public static Action quickSwap() {
-        ACTION.type = SlotActionType.SWAP;
-        return ACTION;
-    }
-
-    public static Action shiftClick() {
-        ACTION.type = SlotActionType.QUICK_MOVE;
-        return ACTION;
-    }
-
-    public static Action drop() {
-        ACTION.type = SlotActionType.THROW;
-        ACTION.data = 1;
-        return ACTION;
-    }
-
-    public static Action dropOne() {
-        ACTION.type = SlotActionType.THROW;
-        ACTION.data = 0;
-        return ACTION;
-    }
-
     public static void dropHand() {
         if (!mc.player.currentScreenHandler.getCursorStack().isEmpty())
             mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, ScreenHandler.EMPTY_SPACE_SLOT_INDEX, 0, SlotActionType.PICKUP, mc.player);
-    }
-
-    public static class Action {
-        private SlotActionType type = null;
-        private boolean two = false;
-        private int from = -1;
-        private int to = -1;
-        private int data = 0;
-
-        private boolean isRecursive = false;
-
-        private Action() {
-        }
-
-        // From
-
-        public Action fromId(int id) {
-            from = id;
-            return this;
-        }
-
-        /**
-         * @param index The index of one of the slots within the inventory
-         */
-        public Action from(int index) {
-            return fromId(SlotUtil.indexToId(index));
-        }
-
-        public Action fromHotbar(@Range(from = 0, to = 8) int i) {
-            return from(SlotUtil.HOTBAR_START + i);
-        }
-
-        public Action fromOffhand() {
-            return from(SlotUtil.OFFHAND);
-        }
-
-        public Action fromMain(@Range(from = 0, to = 26) int i) {
-            return from(SlotUtil.MAIN_START + i);
-        }
-
-        /**
-         * @param i The entity slot id of one of the four humanoid armor pieces, as defined in {@link EquipmentSlot}
-         */
-        public Action fromArmor(int i) {
-            return from(SlotUtil.ARMOR_START + (3 - i));
-        }
-
-        // To
-
-        public void toId(int id) {
-            to = id;
-            run();
-        }
-
-        /**
-         * @param index The index of one of the slots within the inventory
-         */
-        public void to(int index) {
-            toId(SlotUtil.indexToId(index));
-        }
-
-        public void toHotbar(@Range(from = 0, to = 8) int i) {
-            to(SlotUtil.HOTBAR_START + i);
-        }
-
-        public void toOffhand() {
-            to(SlotUtil.OFFHAND);
-        }
-
-        public void toMain(@Range(from = 0, to = 26) int i) {
-            to(SlotUtil.MAIN_START + i);
-        }
-
-        /**
-         * @param i The entity slot id of one of the four humanoid armor pieces, as defined in {@link EquipmentSlot}
-         */
-        public void toArmor(int i) {
-            to(SlotUtil.ARMOR_START + (3 - i));
-        }
-
-        // Slot
-
-        public void slotId(int id) {
-            from = to = id;
-            run();
-        }
-
-        /**
-         * @param index The index of one of the slots within the inventory
-         */
-        public void slot(int index) {
-            slotId(SlotUtil.indexToId(index));
-        }
-
-        public void slotHotbar(@Range(from = 0, to = 8) int i) {
-            slot(SlotUtil.HOTBAR_START + i);
-        }
-
-        public void slotOffhand() {
-            slot(SlotUtil.OFFHAND);
-        }
-
-        public void slotMain(@Range(from = 0, to = 26) int i) {
-            slot(SlotUtil.MAIN_START + i);
-        }
-
-        /**
-         * @param i The entity slot id of one of the four humanoid armor pieces, as defined in {@link EquipmentSlot}
-         */
-        public void slotArmor(int i) {
-            slot(SlotUtil.ARMOR_START + (3 - i));
-        }
-
-        // Other
-
-        private void run() {
-            boolean hadEmptyCursor = mc.player.currentScreenHandler.getCursorStack().isEmpty();
-
-            if (type == SlotActionType.SWAP) {
-                data = from;
-                from = to;
-            }
-
-            if (type != null && from != -1 && to != -1) {
-                click(from);
-                if (two) click(to);
-            }
-
-            SlotActionType preType = type;
-            boolean preTwo = two;
-            int preFrom = from;
-            int preTo = to;
-
-            type = null;
-            two = false;
-            from = -1;
-            to = -1;
-            data = 0;
-
-            if (!isRecursive && hadEmptyCursor && preType == SlotActionType.PICKUP && preTwo && (preFrom != -1 && preTo != -1) && !mc.player.currentScreenHandler.getCursorStack().isEmpty()) {
-                isRecursive = true;
-                InvUtil.click().slotId(preFrom);
-                isRecursive = false;
-            }
-        }
-
-        private void click(int id) {
-            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, id, data, type, mc.player);
-        }
     }
 }

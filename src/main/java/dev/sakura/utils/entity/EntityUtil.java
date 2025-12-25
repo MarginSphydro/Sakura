@@ -88,9 +88,4 @@ public class EntityUtil {
         return mc.world.getBlockState(pos).getBlock() == Blocks.COBWEB ||
                 mc.world.getBlockState(pos.up()).getBlock() == Blocks.COBWEB;
     }
-
-    public static void syncInventory() {
-        if (mc.player == null || mc.interactionManager == null) return;
-        mc.player.getInventory().updateItems();
-    }
 }

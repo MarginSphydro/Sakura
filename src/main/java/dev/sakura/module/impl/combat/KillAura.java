@@ -180,6 +180,10 @@ public class KillAura extends Module {
         pendingAttack = false;
     }
 
+    public Entity getCurrentTarget() {
+        return currentTarget;
+    }
+
     @EventHandler
     public void onPacket(PacketEvent event) {
         if (mc.player == null) return;
@@ -241,7 +245,7 @@ public class KillAura extends Module {
         currentTarget = target;
         setSuffix(target.getName().getString());
 
-        if (!swapTimer.hasReached(swapPenalty.get() * 50.0)) {
+        if (!swapTimer.delay(swapPenalty.get().floatValue())) {
             return;
         }
 
@@ -298,7 +302,7 @@ public class KillAura extends Module {
                 double configuredDelay = (attackSpeed.get() * 50.0) + randomDelayMs;
                 double threshold = 1000.0 - configuredDelay;
                 if (threshold < 0.0) threshold = 0.0;
-                if (!attackTimer.hasReached(threshold)) return;
+                if (!attackTimer.delay((float) (threshold / 50.0))) return;
             }
         }
 

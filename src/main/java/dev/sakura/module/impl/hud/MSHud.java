@@ -30,7 +30,7 @@ public class MSHud extends HudModule {
     public void onRenderContent() {
         float s = hudScale.get().floatValue();
 
-        if (timer.hasReached(delay.get() * 1000)) {
+        if (timer.delay(delay.get().floatValue())) {
             cachedPing = getPing();
             timer.reset();
         }

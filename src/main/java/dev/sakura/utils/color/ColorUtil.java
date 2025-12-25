@@ -159,4 +159,18 @@ public class ColorUtil {
             return 0xffffffff;
         }
     }
+
+    public static Color interpolateColor(Color color1, Color color2, float fraction) {
+        fraction = Math.max(0f, Math.min(1f, fraction));
+        int red = (int) (color1.getRed() + (color2.getRed() - color1.getRed()) * fraction);
+        int green = (int) (color1.getGreen() + (color2.getGreen() - color1.getGreen()) * fraction);
+        int blue = (int) (color1.getBlue() + (color2.getBlue() - color1.getBlue()) * fraction);
+        int alpha = (int) (color1.getAlpha() + (color2.getAlpha() - color1.getAlpha()) * fraction);
+        return new Color(
+                Math.max(0, Math.min(255, red)),
+                Math.max(0, Math.min(255, green)),
+                Math.max(0, Math.min(255, blue)),
+                Math.max(0, Math.min(255, alpha))
+        );
+    }
 }

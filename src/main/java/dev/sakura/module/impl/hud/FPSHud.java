@@ -20,7 +20,7 @@ public class FPSHud extends HudModule {
     public enum RainbowMode {OFF, STATIC_HUE, GRADIENT_HUE, GRADIENT}
 
     private final Value<Double> hudScale = new NumberValue<>("Scale", 1.0, 0.5, 3.0, 0.1);
-    private final Value<Double> delay = new NumberValue<>("Delay", 0.5, 0.0, 2.0, 0.1);
+    private final Value<Integer> delay = new NumberValue<>("Delay", 10, 0, 40, 1);
     private final Value<Color> colorConfig = new ColorValue("Color", new Color(255, 255, 255));
     private final Value<RainbowMode> rainbowModeConfig = new EnumValue<>("Rainbow", RainbowMode.OFF);
     private final Value<Color> gradientColorConfig = new ColorValue("Gradient Color", Color.WHITE, () -> rainbowModeConfig.get() == RainbowMode.GRADIENT);
@@ -46,7 +46,7 @@ public class FPSHud extends HudModule {
     public void onRenderContent() {
         float s = hudScale.get().floatValue();
 
-        if (timer.hasReached(delay.get() * 1000)) {
+        if (timer.delay(delay.get().floatValue())) {
             cachedFps = FrameRateCounter.INSTANCE.getFps();
             timer.reset();
         }

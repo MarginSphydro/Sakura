@@ -2,8 +2,6 @@ package dev.sakura.utils.player;
 
 import net.minecraft.util.Hand;
 
-import static dev.sakura.Sakura.mc;
-
 public record FindItemResult(int slot, int count) {
     public boolean found() {
         return slot != -1;
@@ -13,9 +11,9 @@ public record FindItemResult(int slot, int count) {
         if (slot == SlotUtil.OFFHAND) {
             return Hand.OFF_HAND;
         }
-        if (slot == mc.player.getInventory().selectedSlot) {
+        /*if (slot == mc.player.getInventory().selectedSlot) {
             return Hand.MAIN_HAND;
-        }
+        }*/
         return Hand.MAIN_HAND;
     }
 

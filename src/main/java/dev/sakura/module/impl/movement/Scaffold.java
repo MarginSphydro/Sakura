@@ -14,7 +14,6 @@ import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.rotation.RaytraceUtil;
 import dev.sakura.utils.rotation.RotationUtil;
 import dev.sakura.utils.vector.Vector2f;
-import dev.sakura.utils.world.BlockUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.EnumValue;
@@ -32,8 +31,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
 
 import java.awt.*;
-
-import static dev.sakura.Sakura.mc;
 
 public class Scaffold extends Module {
     private final EnumValue<SwapMode> swapMode = new EnumValue<>("Swap Mode", SwapMode.Silent);
@@ -216,7 +213,7 @@ public class Scaffold extends Module {
     }
 
     public Vector2f getRotation(BlockCache blockCache) {
-        Vector2f calculate = RotationUtil.calculate(blockCache.position.toCenterPos());
+        Vector2f calculate = RotationUtil.calculate(getVec3(blockCache.position, blockCache.facing));
         Vector2f reverseYaw = new Vector2f(MathHelper.wrapDegrees(mc.player.getYaw() - 180), calculate.y);
         boolean hasRotated = RaytraceUtil.overBlock(reverseYaw, blockCache.facing, blockCache.position, false);
         if (hasRotated) return reverseYaw;
