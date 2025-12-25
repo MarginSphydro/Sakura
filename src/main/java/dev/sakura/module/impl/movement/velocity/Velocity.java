@@ -1,13 +1,10 @@
-package dev.sakura.module.impl.movement;
+package dev.sakura.module.impl.movement.velocity;
 
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.type.EventType;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.module.impl.movement.velocity.VelocityCancel;
-import dev.sakura.module.impl.movement.velocity.VelocityHeypixelReduce;
-import dev.sakura.module.impl.movement.velocity.VelocityNormal;
 import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;

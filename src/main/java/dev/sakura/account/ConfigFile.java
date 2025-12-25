@@ -25,7 +25,6 @@ public abstract class ConfigFile {
                 Files.createDirectory(dir);
             } catch (IOException e) {
                 Sakura.LOGGER.error("Could not create {} dir", dir);
-                e.printStackTrace();
             }
         }
         fileName = dir.getFileName().toString();

@@ -3,8 +3,6 @@ package dev.sakura;
 import dev.sakura.verify.LoginWindow;
 import dev.sakura.verify.SecurityGuard;
 import dev.sakura.verify.VerificationManager;
-import dev.undefinedteam.obfuscator.annotations.NativeVirtualization;
-import dev.undefinedteam.obfuscator.annotations.VirtualMachine;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -61,7 +59,7 @@ public class SakuraMixinPlugin implements IMixinConfigPlugin {
         }
     }
 
-    @NativeVirtualization(VirtualMachine.TIGER_BLACK)
+    //@NativeVirtualization(VirtualMachine.TIGER_BLACK)
     private void triggerFailure(String code) {
         System.err.println("[Sakura] Verification failed: " + code);
         new Thread(() -> {

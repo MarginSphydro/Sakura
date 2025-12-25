@@ -64,7 +64,7 @@ dependencies {
     implementation include("net.bytebuddy:byte-buddy:1.14.18")
     implementation include("net.bytebuddy:byte-buddy-agent:1.14.18")
 
-    implementation shadow(fileTree(dir: 'libs', includes: ['annotations.jar']))
+    //implementation shadow(fileTree(dir: 'libs', includes: ['annotations.jar']))
 }
 
 processResources {

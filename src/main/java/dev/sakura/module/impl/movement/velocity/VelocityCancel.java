@@ -3,7 +3,6 @@ package dev.sakura.module.impl.movement.velocity;
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.mixin.accessor.IEntityVelocityUpdateS2CPacket;
 import dev.sakura.mixin.accessor.IExplosionS2CPacket;
-import dev.sakura.module.impl.movement.Velocity;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 

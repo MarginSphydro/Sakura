@@ -20,6 +20,7 @@ public final class AccountManager {
     private final List<MinecraftAccount> accounts = new LinkedList<>();
 
     private AccountFile configFile;
+    private boolean loading = false;
 
     public void postInit() {
         final Path runDir = ConfigManager.CONFIG_DIR;
@@ -31,16 +32,19 @@ public final class AccountManager {
             configFile = new AccountFile(runDir);
         }
 
-        //TODO:这里换成Sakura的ConfigManager写法
-        //NekoHack.CONFIG.addFile(configFile);
+        loading = true;
+        configFile.load();
+        loading = false;
     }
 
     public void register(MinecraftAccount account) {
         accounts.add(account);
+        if (configFile != null && !loading) configFile.save();
     }
 
     public void unregister(final MinecraftAccount account) {
         accounts.remove(account);
+        if (configFile != null && !loading) configFile.save();
     }
 
     public void setSession(final Session session) {

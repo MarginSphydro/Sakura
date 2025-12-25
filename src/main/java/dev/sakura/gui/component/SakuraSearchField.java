@@ -1,0 +1,72 @@
+package dev.sakura.gui.component;
+
+import dev.sakura.gui.theme.SakuraTheme;
+import dev.sakura.nanovg.NanoVGRenderer;
+import dev.sakura.nanovg.font.FontLoader;
+import dev.sakura.nanovg.util.NanoVGHelper;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.text.Text;
+import org.lwjgl.nanovg.NanoVG;
+
+public class SakuraSearchField extends TextFieldWidget {
+
+    private String placeholderText = "Search...";
+
+    public SakuraSearchField(TextRenderer textRenderer, int x, int y, int width, int height, Text message) {
+        super(textRenderer, x, y, width, height, message);
+        this.setDrawsBackground(false);
+    }
+
+    public void setPlaceholderText(String text) {
+        this.placeholderText = text;
+        this.setPlaceholder(Text.of(text));
+    }
+
+    @Override
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        NanoVGRenderer.INSTANCE.draw(vg -> {
+            // Background
+            NanoVG.nvgBeginPath(vg);
+            NanoVG.nvgRoundedRect(vg, getX(), getY(), getWidth(), getHeight(), SakuraTheme.ROUNDING);
+            NanoVG.nvgFillColor(vg, SakuraTheme.color(SakuraTheme.INPUT_BG));
+            NanoVG.nvgFill(vg);
+
+            // Border
+            if (isFocused()) {
+                NanoVG.nvgStrokeColor(vg, SakuraTheme.color(SakuraTheme.BUTTON_BORDER));
+            } else {
+                NanoVG.nvgStrokeColor(vg, SakuraTheme.color(SakuraTheme.BUTTON_BORDER, 0.5f));
+            }
+            NanoVG.nvgStrokeWidth(vg, 1.0f);
+            NanoVG.nvgStroke(vg);
+
+            // Clip content
+            NanoVG.nvgScissor(vg, getX() + 2, getY(), getWidth() - 4, getHeight());
+
+            // Text
+            String text = getText();
+            if (text.isEmpty() && !isFocused()) {
+                NanoVGHelper.drawText(placeholderText, getX() + 5, getY() + getHeight() / 2f,
+                        FontLoader.regular(16), 16, NanoVG.NVG_ALIGN_LEFT | NanoVG.NVG_ALIGN_MIDDLE, SakuraTheme.TEXT_SECONDARY);
+            } else {
+                NanoVGHelper.drawText(text, getX() + 5, getY() + getHeight() / 2f,
+                        FontLoader.regular(16), 16, NanoVG.NVG_ALIGN_LEFT | NanoVG.NVG_ALIGN_MIDDLE, SakuraTheme.TEXT);
+
+                // Simple Cursor
+                if (isFocused() && (System.currentTimeMillis() / 500) % 2 == 0) {
+                    float textWidth = NanoVGHelper.getTextWidth(text, FontLoader.regular(16), 16);
+                    NanoVG.nvgBeginPath(vg);
+                    NanoVG.nvgMoveTo(vg, getX() + 5 + textWidth + 1, getY() + 4);
+                    NanoVG.nvgLineTo(vg, getX() + 5 + textWidth + 1, getY() + getHeight() - 4);
+                    NanoVG.nvgStrokeColor(vg, SakuraTheme.color(SakuraTheme.TEXT));
+                    NanoVG.nvgStrokeWidth(vg, 1.0f);
+                    NanoVG.nvgStroke(vg);
+                }
+            }
+
+            NanoVG.nvgResetScissor(vg);
+        });
+    }
+}

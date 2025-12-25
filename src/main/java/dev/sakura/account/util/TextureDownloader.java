@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import static dev.sakura.Sakura.mc;
 
 public final class TextureDownloader {
-
     private final CloseableHttpClient client = HttpClients.createDefault();
 
     private final Map<String, Identifier> cache = new ConcurrentHashMap<>();
@@ -32,11 +31,13 @@ public final class TextureDownloader {
             try (CloseableHttpResponse response = client.execute(request)) {
                 final InputStream stream = response.getEntity().getContent();
                 final NativeImage image = NativeImage.read(stream);
-                //TODO: todo
-                /*final Identifier textureIdentifier = mc.getTextureManager().registerDynamicTexture(id,
-                        new NativeImageBackedTexture(image));*/
+                mc.execute(() -> {
+                    final Identifier textureIdentifier = Identifier.of("sakura", "dynamic/" + id);
+                    mc.getTextureManager().registerTexture(textureIdentifier,
+                            new net.minecraft.client.texture.NativeImageBackedTexture(image));
+                    cache.put(id, textureIdentifier);
+                });
 
-                //cache.put(id, textureIdentifier);
             } catch (IOException e) {
                 e.printStackTrace();
 

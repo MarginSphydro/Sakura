@@ -1,5 +1,6 @@
 package dev.sakura.gui.mainmenu;
 
+import dev.sakura.gui.account.AccountSelectorScreen;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -12,7 +13,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
-import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.Text;
@@ -98,9 +98,8 @@ public class MainMenuScreen extends Screen {
         buttons.add(new MenuButton(
                 centerX - buttonWidth / 2, startY + spacing * 2,
                 buttonWidth, buttonHeight,
-                I18n.translate("menu.online"),
-                () -> mc.setScreen(new RealmsMainScreen(this)),
-                !isMultiplayerDisabled()
+                "Alt Manager",
+                () -> mc.setScreen(new AccountSelectorScreen(this))
         ));
 
         int bottomY = startY + spacing * 3 + (int) (4 * scale);

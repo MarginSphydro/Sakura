@@ -2,6 +2,7 @@ package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.render.Render3DEvent;
+import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -96,7 +97,7 @@ public class AnchorAura extends Module {
             doAnchor(currentPos);
         }
         if (!isRotating && rotate.get()) {
-            RotationManager.setRotations(new Vector2f(mc.player.getYaw(), mc.player.getPitch()), rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+            Managers.ROTATION.setRotations(new Vector2f(mc.player.getYaw(), mc.player.getPitch()), rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
         }
     }
 
@@ -203,7 +204,7 @@ public class AnchorAura extends Module {
                 switched = true;
             }
             if (rotate.get()) {
-                RotationManager.setRotations(RotationUtil.calculate(pos.offset(side)), rotationSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+                Managers.ROTATION.setRotations(RotationUtil.calculate(pos.offset(side)), rotationSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
                 isRotating = true;
             }
             BlockHitResult hitResult = new BlockHitResult(pos.toCenterPos(), side, pos, false);

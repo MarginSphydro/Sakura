@@ -4,15 +4,21 @@ import dev.sakura.account.type.MinecraftAccount;
 import dev.sakura.account.type.impl.CrackedAccount;
 import dev.sakura.account.type.impl.MicrosoftAccount;
 import dev.sakura.account.util.TextureDownloader;
+import dev.sakura.gui.theme.SakuraTheme;
 import dev.sakura.manager.Managers;
+import dev.sakura.nanovg.NanoVGRenderer;
+import dev.sakura.nanovg.font.FontLoader;
+import dev.sakura.nanovg.util.NanoVGHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.session.Session;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.lwjgl.nanovg.NanoVG;
 
-import static dev.sakura.Sakura.mc;
+import java.awt.*;
+
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 public class AccountEntry extends AlwaysSelectedEntryListWidget.Entry<AccountEntry> {
@@ -27,9 +33,7 @@ public class AccountEntry extends AlwaysSelectedEntryListWidget.Entry<AccountEnt
 
     @Override
     public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-        context.drawTextWithShadow(mc.textRenderer,
-                Text.of(account.username()),
-                x + 20, y + (entryHeight / 2) - (mc.textRenderer.fontHeight / 2), hovered ? 0x55ff55 : -1);
+        // Render Avatar using Vanilla
         if (account instanceof CrackedAccount || (account instanceof MicrosoftAccount msa && msa.getUsernameOrNull() != null)) {
             final String id = "face_" + account.username().toLowerCase();
             if (!FACE_DOWNLOADER.exists(id)) {
@@ -37,19 +41,28 @@ public class AccountEntry extends AlwaysSelectedEntryListWidget.Entry<AccountEnt
                     FACE_DOWNLOADER.downloadTexture(id,
                             "https://minotar.net/helm/" + account.username() + "/15", false);
                 }
-                return;
-            }
-            final Identifier texture = FACE_DOWNLOADER.get(id);
-            if (texture != null) {
-                context.drawTexture(RenderLayer::getGuiTextured, texture, x + 2, y + 2, 0, 0, 15, 15, 15, 15);
+            } else {
+                final Identifier texture = FACE_DOWNLOADER.get(id);
+                if (texture != null) {
+                    int avatarY = y + (entryHeight - 16) / 2;
+                    context.drawTexture(RenderLayer::getGuiTextured, texture, x + 4, avatarY, 0f, 0f, 16, 16, 16, 16);
+                }
             }
         }
+
+        // Render Text using NanoVG
+        NanoVGRenderer.INSTANCE.draw(vg -> {
+            Color color = hovered ? SakuraTheme.PRIMARY_HOVER : SakuraTheme.TEXT;
+            float fontSize = 18f;
+            float textX = x + 24;
+
+            NanoVGHelper.drawText(account.username(), textX, y + entryHeight / 2f, FontLoader.regular(fontSize), fontSize, NanoVG.NVG_ALIGN_LEFT | NanoVG.NVG_ALIGN_MIDDLE, color);
+        });
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW_MOUSE_BUTTON_1) {
-            // fuck this game
             final long time = System.currentTimeMillis() - lastClickTime;
             if (time > 0L && time < 500L) {
                 final Session session = account.login();

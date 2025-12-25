@@ -6,6 +6,7 @@ import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.player.MotionEvent;
 import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.events.type.EventType;
+import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -273,7 +274,7 @@ public class KillAura extends Module {
                 }
             }
 
-            RotationManager.setRotations(desired, 100, dev.sakura.utils.rotation.MovementFix.NORMAL, RotationManager.Priority.Medium);
+            Managers.ROTATION.setRotations(desired, 100, dev.sakura.utils.rotation.MovementFix.NORMAL, RotationManager.Priority.Medium);
             if (!silentRotate.get()) {
                 mc.player.setYaw(desired.x);
                 mc.player.setPitch(desired.y);

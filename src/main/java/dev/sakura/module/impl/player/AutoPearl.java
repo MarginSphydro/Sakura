@@ -1,6 +1,7 @@
 package dev.sakura.module.impl.player;
 
 import dev.sakura.events.client.TickEvent;
+import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -75,7 +76,7 @@ public class AutoPearl extends Module {
             throwing = false;
             setState(false);
         } else {
-            RotationManager.setRotations(
+            Managers.ROTATION.setRotations(
                     new Vector2f(mc.player.getYaw(), mc.player.getPitch()),
                     rotationSpeed.get() * 10,
                     MovementFix.NORMAL,

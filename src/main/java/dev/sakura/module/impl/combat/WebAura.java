@@ -1,6 +1,7 @@
 package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
+import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -24,9 +25,14 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class AutoWeb extends Module {
-    public AutoWeb() {
-        super("AutoWeb", Category.Combat);
+public class WebAura extends Module {
+    public WebAura() {
+        super("WebAura", Category.Combat);
+    }
+
+    public enum SwitchMode {
+        Normal,
+        Silent
     }
 
     private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 8.0, 1.0, 12.0, 1.0);
@@ -71,7 +77,7 @@ public class AutoWeb extends Module {
             }
         }
         if (!isRotating && rotate.get()) {
-            RotationManager.setRotations(new Vector2f(mc.player.getYaw(), mc.player.getPitch()), rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+            Managers.ROTATION.setRotations(new Vector2f(mc.player.getYaw(), mc.player.getPitch()), rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
         }
     }
 
@@ -92,7 +98,7 @@ public class AutoWeb extends Module {
             }
         }
         if (rotate.get()) {
-            RotationManager.setRotations(RotationUtil.calculate(pos.toCenterPos()), rotationSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+            Managers.ROTATION.setRotations(RotationUtil.calculate(pos.toCenterPos()), rotationSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
             isRotating = true;
         }
         BlockHitResult hitResult = new BlockHitResult(pos.toCenterPos(), Direction.UP, pos, false);
@@ -105,10 +111,5 @@ public class AutoWeb extends Module {
             InvUtil.swapBack();
         }
         placeTimer.reset();
-    }
-
-    public enum SwitchMode {
-        Normal,
-        Silent
     }
 }

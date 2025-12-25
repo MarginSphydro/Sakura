@@ -2,6 +2,7 @@ package dev.sakura.module.impl.combat;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.client.TickEvent;
+import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -244,7 +245,7 @@ public class Burrow extends Module {
         timer.reset();
         doSwap(block);
         if (this.rotate.get() == RotateMode.Bypass) {
-            RotationManager.setRotations(new Vector2f(RotationManager.getYaw(), 89.98f), 10f, MovementFix.NORMAL, RotationManager.Priority.Highest);
+            Managers.ROTATION.setRotations(new Vector2f(RotationManager.getYaw(), 89.98f), 10f, MovementFix.NORMAL, RotationManager.Priority.Highest);
         }
         placeBlock(playerPos, rotateFlag);
         placeBlock(pos1, rotateFlag);

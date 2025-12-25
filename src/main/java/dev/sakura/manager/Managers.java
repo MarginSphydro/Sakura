@@ -22,6 +22,7 @@ public class Managers {
         if (initialized) return;
 
         ACCOUNT = new AccountManager();
+        ACCOUNT.postInit();
         MODULE = new ModuleManager();
         CONFIG = new ConfigManager();
         COMMAND = new CommandManager();

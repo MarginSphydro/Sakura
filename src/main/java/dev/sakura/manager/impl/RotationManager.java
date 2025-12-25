@@ -61,18 +61,18 @@ public class RotationManager {
     /*
      * This method must be called on Pre Update Event to work correctly
      */
-    public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement) {
+    public void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement) {
         setRotations(rotations, rotationSpeed, correctMovement, null, Priority.Lowest);
     }
 
-    public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, Priority priority) {
+    public void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, Priority priority) {
         setRotations(rotations, rotationSpeed, correctMovement, null, priority);
     }
 
     /*
      * This method must be called on Pre Update Event to work correctly
      */
-    public static void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, final Function<Vector2f, Boolean> raycast, Priority priority) {
+    public void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement, final Function<Vector2f, Boolean> raycast, Priority priority) {
         if (rotations == null || Double.isNaN(rotations.x) || Double.isNaN(rotations.y) || Double.isInfinite(rotations.x) || Double.isInfinite(rotations.y))
             return;
         if (active && priority.priority < RotationManager.priority) return;
@@ -87,7 +87,7 @@ public class RotationManager {
         smooth();
     }
 
-    public static void smooth() {
+    private void smooth() {
         if (!smoothed) {
             float targetYaw = targetRotations.x;
             float targetPitch = targetRotations.y;
@@ -143,11 +143,6 @@ public class RotationManager {
         }
 
         smoothed = true;
-
-        /*
-         * Updating MouseOver
-         */
-//        mc.entityRenderer.getMouseOver(1);
     }
 
     public static boolean isSmoothed() {
@@ -182,7 +177,7 @@ public class RotationManager {
     }
 
     @EventHandler
-    public void onPlayerTick(PlayerTickEvent event) {
+    private void onPlayerTick(PlayerTickEvent event) {
         if (!active || rotations == null || lastRotations == null || targetRotations == null || lastServerRotations == null) {
             rotations = lastRotations = targetRotations = lastServerRotations = new Vector2f(mc.player.getYaw(), mc.player.getPitch());
         }
@@ -203,7 +198,7 @@ public class RotationManager {
     }
 
     @EventHandler
-    public void onMoveInput(MoveInputEvent event) {
+    private void onMoveInput(MoveInputEvent event) {
         if (active && correctMovement == MovementFix.NORMAL && rotations != null) {
             /*
              * Calculating movement fix
@@ -214,7 +209,7 @@ public class RotationManager {
     }
 
     @EventHandler
-    public void onRaytrace(RayTraceEvent event) {
+    private void onRaytrace(RayTraceEvent event) {
         if (active && rotations != null) {
             event.setYaw(rotations.x);
             event.setPitch(rotations.y);
@@ -222,21 +217,21 @@ public class RotationManager {
     }
 
     @EventHandler
-    public void onStrafe(StrafeEvent event) {
+    private void onStrafe(StrafeEvent event) {
         if (active && (correctMovement == MovementFix.NORMAL || correctMovement == MovementFix.TRADITIONAL) && rotations != null) {
             event.setYaw(rotations.x);
         }
     }
 
     @EventHandler
-    public void onJump(JumpEvent event) {
+    private void onJump(JumpEvent event) {
         if (active && (correctMovement == MovementFix.NORMAL || correctMovement == MovementFix.TRADITIONAL || correctMovement == MovementFix.BACKWARDS_SPRINT) && rotations != null) {
             event.setYaw(rotations.x);
         }
     }
 
     @EventHandler
-    public void onPreMotion(MotionEvent event) {
+    private void onMotion(MotionEvent event) {
         if (event.getType() == EventType.PRE) {
             if (active && rotations != null) {
                 float yaw = rotations.x;
@@ -290,7 +285,7 @@ public class RotationManager {
         }
     }
 
-    public static void setRenderRotation(float yaw, float pitch) {
+    public void setRenderRotation(float yaw, float pitch) {
         if (mc.player == null) return;
 
         if (mc.player.age != ticksExisted) {
@@ -305,7 +300,7 @@ public class RotationManager {
         rotationYawHead = yaw;
     }
 
-    private static float getRenderYawOffset(float yaw, float offsetIn) {
+    private float getRenderYawOffset(float yaw, float offsetIn) {
         float result = offsetIn;
         float offset;
 
@@ -343,6 +338,19 @@ public class RotationManager {
         return result;
     }
 
+    public void lookAt(Vec3d target, double speed) {
+        lookAt(target, speed, Priority.Lowest);
+    }
+
+    public void lookAt(Vec3d target, double speed, Priority priority) {
+        Vector2f rotation = RotationUtil.calculate(target);
+        setRotations(rotation, speed, MovementFix.NORMAL, priority);
+    }
+
+    public boolean isLookingAt(BlockPos pos, Direction side) {
+        return RaytraceUtil.overBlock(getRotation(), side, pos, false);
+    }
+
     public static float getRenderPitch() {
         return renderPitch;
     }
@@ -365,18 +373,5 @@ public class RotationManager {
 
     public static float getPrevRenderYawOffset() {
         return prevRenderYawOffset;
-    }
-
-    public static void lookAt(Vec3d target, double speed) {
-        lookAt(target, speed, Priority.Lowest);
-    }
-
-    public static void lookAt(Vec3d target, double speed, Priority priority) {
-        Vector2f rotation = RotationUtil.calculate(target);
-        setRotations(rotation, speed, MovementFix.NORMAL, priority);
-    }
-
-    public static boolean isLookingAt(BlockPos pos, Direction side) {
-        return RaytraceUtil.overBlock(getRotation(), side, pos, false);
     }
 }

@@ -13,6 +13,7 @@ import dev.sakura.module.impl.client.StringTest;
 import dev.sakura.module.impl.combat.*;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.*;
+import dev.sakura.module.impl.movement.velocity.Velocity;
 import dev.sakura.module.impl.player.*;
 import dev.sakura.module.impl.render.*;
 import dev.sakura.values.Value;
@@ -43,15 +44,15 @@ public class ModuleManager {
     private static class ManualLoader {
         static void load(ModuleManager manager) {
             // Combat
-            manager.tryLoad(() -> new KillAura());
+            manager.tryLoad(() -> new AnchorAura());
             manager.tryLoad(() -> new AutoPot());
-            manager.tryLoad(() -> new Burrow());
-            manager.tryLoad(() -> new CrystalAura());
-            manager.tryLoad(() -> new Surround());
             manager.tryLoad(() -> new Velocity());
             manager.tryLoad(() -> new AutoTotem());
-            manager.tryLoad(() -> new AutoWeb());
-            manager.tryLoad(() -> new AnchorAura());
+            manager.tryLoad(() -> new CrystalAura());
+            manager.tryLoad(() -> new Burrow());
+            manager.tryLoad(() -> new KillAura());
+            manager.tryLoad(() -> new Surround());
+            manager.tryLoad(() -> new WebAura());
 
             // Movement
             manager.tryLoad(() -> new AutoSprint());
@@ -74,7 +75,6 @@ public class ModuleManager {
 
             // Render
             manager.tryLoad(() -> new CameraClip());
-            //TODO: manager.tryLoad(() -> new EnvParticles());
             manager.tryLoad(() -> new Fullbright());
             manager.tryLoad(() -> new NoRender());
             manager.tryLoad(() -> new SwingAnimation());
