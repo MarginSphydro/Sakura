@@ -1,7 +1,6 @@
 package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
-import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
@@ -12,6 +11,7 @@ import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.rotation.RotationUtil;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.utils.vector.Vector2f;
+import dev.sakura.utils.world.BlockUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
@@ -75,7 +75,7 @@ public class AutoWeb extends Module {
     }
 
     private void place(BlockPos pos) {
-        if (PlaceManager.solid(pos)) {
+        if (BlockUtil.solid(pos)) {
             return;
         }
         FindItemResult result = InvUtil.findInHotbar(Items.COBWEB);

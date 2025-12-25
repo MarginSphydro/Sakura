@@ -1,6 +1,6 @@
 package dev.sakura.utils.world;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.util.Hand;
@@ -71,5 +71,21 @@ public class BlockUtil {
         } else {
             mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, hitResult);
         }
+    }
+
+    public static Direction calcSide(BlockPos pos) {
+        for (Direction side : Direction.values()) {
+            BlockPos neighbor = pos.offset(side);
+            if (!mc.world.getBlockState(neighbor).isReplaceable() && solid(neighbor)) {
+                return side;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    public static boolean solid(BlockPos blockPos) {
+        Block block = mc.world.getBlockState(blockPos).getBlock();
+        return !(block instanceof AbstractFireBlock || block instanceof FluidBlock || block instanceof AirBlock);
     }
 }

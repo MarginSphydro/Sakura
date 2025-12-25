@@ -9,15 +9,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 
+import static dev.sakura.Sakura.mc;
+
 /**
  * @Author：jiuxian_baka
  * @Date：2025/12/21 03:55
  * @Filename：Normal
  */
 public class VelocityHeypixelReduce {
-
-    private static final MinecraftClient mc = MinecraftClient.getInstance();
-
 
     public static void onPacket(Velocity velocity, PacketEvent event) {
         if (event.getPacket() instanceof EntityVelocityUpdateS2CPacket packet && packet.getEntityId() == mc.player.getId()) {

@@ -2,17 +2,18 @@ package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.manager.Managers;
-import dev.sakura.manager.impl.PlaceManager;
 import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.hud.NotifyHud;
+import dev.sakura.utils.entity.EntityUtil;
 import dev.sakura.utils.player.FindItemResult;
 import dev.sakura.utils.player.InvUtil;
 import dev.sakura.utils.rotation.MovementFix;
 import dev.sakura.utils.rotation.RaytraceUtil;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.utils.vector.Vector2f;
+import dev.sakura.utils.world.BlockUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.NumberValue;
@@ -24,7 +25,10 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
@@ -32,6 +36,8 @@ import net.minecraft.util.math.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static dev.sakura.Sakura.mc;
 
 public class Surround extends Module {
     private final NumberValue<Integer> delay = new NumberValue<>("Delay", 0, 0, 10, 1);
@@ -47,6 +53,7 @@ public class Surround extends Module {
     private final BoolValue floor = new BoolValue("Floor", true);
     private final BoolValue attack = new BoolValue("Attack", true);
     private final BoolValue render = new BoolValue("Render", true);
+    private final BoolValue swingHand = new BoolValue("Swing Hand", true);
     private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 183, 197, 100), render::get);
     private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 105, 180), render::get);
 
@@ -115,7 +122,7 @@ public class Surround extends Module {
 
         List<BlockPos> targets = new ArrayList<>(supportPositions);
         targets.addAll(surroundBlocks);
-        targets.removeIf(blockPos -> !PlaceManager.isReplaceable(blockPos));
+        targets.removeIf(blockPos -> !mc.world.getBlockState(blockPos).isReplaceable());
 
         if (targets.isEmpty()) {
             if (rotate.get()) {
@@ -235,16 +242,16 @@ public class Surround extends Module {
     }
 
     private void addSupport(BlockPos pos) {
-        if (!PlaceManager.isReplaceable(pos)) return;
-        if (PlaceManager.calcSide(pos) != null) return;
+        if (!mc.world.getBlockState(pos).isReplaceable()) return;
+        if (BlockUtil.calcSide(pos) != null) return;
 
         for (Direction dir : Direction.values()) {
             if (dir == Direction.UP) continue;
             BlockPos neighbor = pos.offset(dir);
 
             if (surroundBlocks.contains(neighbor) || insideBlocks.contains(neighbor)) continue;
-            if (!PlaceManager.isReplaceable(neighbor)) continue;
-            if (PlaceManager.calcSide(neighbor) == null) continue;
+            if (!mc.world.getBlockState(neighbor).isReplaceable()) continue;
+            if (BlockUtil.calcSide(neighbor) == null) continue;
 
             supportPositions.add(neighbor);
             return;
@@ -252,7 +259,7 @@ public class Surround extends Module {
     }
 
     private int tryPlace(BlockPos pos, FindItemResult result) {
-        if (!PlaceManager.isReplaceable(pos)) return 0;
+        if (!mc.world.getBlockState(pos).isReplaceable()) return 0;
 
         if (attack.get()) {
             for (Entity entity : mc.world.getOtherEntities(null, new Box(pos))) {
@@ -262,7 +269,7 @@ public class Surround extends Module {
             }
         }
 
-        if (!mc.world.getOtherEntities(null, new Box(pos)).isEmpty()) return 0;
+        if (EntityUtil.intersectsWithEntity(new Box(pos), entity -> true)) return 0;
 
         PlaceData data = getPlaceData(pos);
         if (data == null) return 0;
@@ -274,12 +281,24 @@ public class Surround extends Module {
             }
         }
 
+        int slot = result.isOffhand() ? mc.player.getInventory().selectedSlot : result.slot();
+        Hand hand = result.getHand();
+
+        InvUtil.swap(slot, true);
+
         BlockHitResult hitResult = new BlockHitResult(data.hitVec, data.mian, data.lingju, false);
-        PlaceManager.placeBlock(hitResult, result, true, true);
+        ActionResult r = mc.interactionManager.interactBlock(mc.player, result.getHand(), hitResult);
+
+        if (r.isAccepted()) {
+            if (swingHand.get()) mc.player.swingHand(hand);
+            else mc.getNetworkHandler().sendPacket(new HandSwingC2SPacket(hand));
+        }
 
         if (render.get()) {
             Managers.RENDER.add(pos, sideColor.get(), lineColor.get(), 1000);
         }
+
+        InvUtil.swapBack();
 
         return 1;
     }
@@ -287,7 +306,7 @@ public class Surround extends Module {
     private PlaceData getPlaceData(BlockPos pos) {
         for (Direction dir : Direction.values()) {
             BlockPos neighbor = pos.offset(dir);
-            if (!PlaceManager.solid(neighbor)) continue;
+            if (!BlockUtil.solid(neighbor)) continue;
 
             Direction side = dir.getOpposite();
             Vec3d hitVec = Vec3d.ofCenter(neighbor).add(side.getOffsetX() * 0.5, side.getOffsetY() * 0.5, side.getOffsetZ() * 0.5);
