@@ -1,6 +1,7 @@
 package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
+import dev.sakura.events.player.PlayerTickEvent;
 import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.RotationManager;
@@ -24,6 +25,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.util.ActionResult;
@@ -32,6 +34,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
@@ -42,8 +45,8 @@ public class AnchorAura extends Module {
     private final BoolValue usingPause = new BoolValue("Using Pause", true, () -> page.is(Page.General));
     private final BoolValue inventorySwap = new BoolValue("Inventory Swap", true, () -> page.is(Page.General));
     private final BoolValue swingHand = new BoolValue("Swing", true, () -> page.is(Page.General));
-    private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", 0.0, 0.0, 20.0, 1.0, () -> page.is(Page.General));
-    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", 6.0, 0.0, 20.0, 1.0, () -> page.is(Page.General));
+    private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", 0.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
+    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", 50.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
 
     private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
     private final NumberValue<Double> breakMin = new NumberValue<>("Break Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
@@ -79,7 +82,7 @@ public class AnchorAura extends Module {
 
     @EventHandler
     public void onRender3D(Render3DEvent event) {
-        if (currentPos != null) {
+        if (currentPos != null && render.get()) {
             Render3DUtil.drawFilledBox(event.getMatrices(), new Box(currentPos), fillColor.get());
             Render3DUtil.drawBoxOutline(event.getMatrices(), new Box(currentPos), boxColor.get().getRGB(), 1.5f);
         }
@@ -102,7 +105,7 @@ public class AnchorAura extends Module {
     }
 
     private void update() {
-        if (calcTimer.delay(updateDelay.get().floatValue())) {
+        if (calcTimer.hasReached(updateDelay.get())) {
             double placeDamage = minDamage.get();
             double breakDamage = breakMin.get();
             boolean anchorFound = false;
@@ -186,7 +189,7 @@ public class AnchorAura extends Module {
     }
 
     private void place(BlockPos pos, int slot) {
-        if (placeTimer.delay(placeDelay.get().floatValue())) {
+        if (placeTimer.hasReached(placeDelay.get())) {
             Direction side = BlockUtil.getPlaceSide(pos);
             if (side == null) return;
             boolean switched = false;

@@ -22,13 +22,6 @@ import java.util.Objects;
 import static dev.sakura.Sakura.mc;
 
 public class DamageUtil {
-
-    public static double getAnchorDamage(BlockPos anchorPos, LivingEntity target, boolean terrainIgnore) {
-        if (target == null || mc.world == null) return 0;
-        Vec3d explosionPos = Vec3d.ofCenter(anchorPos);
-        return explosionDamage(target, target.getBoundingBox(), explosionPos, anchorPos, null, terrainIgnore, 5);
-    }
-
     public static float calculateCrystalDamage(LivingEntity entity, Vec3d pos) {
         return calculateCrystalDamage(entity, entity.getBoundingBox(), pos, null, false);
     }
@@ -38,7 +31,7 @@ public class DamageUtil {
     }
 
     public static float calculateAnchorDamage(LivingEntity entity, BlockPos pos) {
-        return calculateAnchorDamage(entity, entity.getBoundingBox(), pos, null, false);
+        return calculateAnchorDamage(entity, entity.getBoundingBox(), pos, pos, false);
     }
 
     public static float calculateAnchorDamage(LivingEntity entity, Box box, BlockPos pos, BlockPos ignorePos, boolean ignoreTerrain) {
