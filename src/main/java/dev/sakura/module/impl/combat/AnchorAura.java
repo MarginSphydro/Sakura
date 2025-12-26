@@ -60,7 +60,7 @@ public class AnchorAura extends Module {
     private final ColorValue fillColor = new ColorValue("FillColor", new Color(255, 255, 255, 50), () -> page.is(Page.Render) && render.get());
 
     public AnchorAura() {
-        super("AnchorAura", Category.Combat);
+        super("AnchorAura", "重生锚光环", Category.Combat);
     }
 
     public PlayerEntity lastTarget = null;

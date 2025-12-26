@@ -35,7 +35,7 @@ public class SwingAnimation extends Module {
     private final Value<Boolean> interpolationConfig = new BoolValue("NoInterpolation", false, () -> limbSwing.get());
 
     public SwingAnimation() {
-        super("SwingAnimation", Category.Render);
+        super("SwingAnimation", "挥手动画", Category.Render);
     }
 
     @Override

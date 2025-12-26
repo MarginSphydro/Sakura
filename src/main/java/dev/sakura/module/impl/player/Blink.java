@@ -29,7 +29,7 @@ public class Blink extends Module {
     private final NumberValue<Double> factor = new NumberValue<>("Factor", 1.0, 0.0, 10.0, 0.1, pulse::get);
 
     public Blink() {
-        super("Blink", Category.Player);
+        super("Blink", "瞬移", Category.Player);
     }
 
     @Override

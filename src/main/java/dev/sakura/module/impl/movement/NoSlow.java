@@ -34,7 +34,7 @@ public class NoSlow extends Module {
     public final BoolValue sneak = new BoolValue("Sneaking", false);
 
     public NoSlow() {
-        super("NoSlow", Category.Movement);
+        super("NoSlow", "无减速", Category.Movement);
     }
 
     public boolean cancelDisabler = false;

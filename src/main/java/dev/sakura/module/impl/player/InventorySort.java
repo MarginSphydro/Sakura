@@ -18,7 +18,7 @@ public class InventorySort extends Module {
     private int delay = 0;
 
     public InventorySort() {
-        super("InventorySort", Category.Player);
+        super("InventorySort", "背包整理", Category.Player);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!isEnabled()) return;

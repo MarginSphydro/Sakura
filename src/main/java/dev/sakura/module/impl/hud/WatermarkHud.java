@@ -21,7 +21,7 @@ public class WatermarkHud extends HudModule {
     private final Value<Double> blurStrength = new NumberValue<>("Blur Strength", 8.0, 1.0, 20.0, 0.5, backgroundBlur::get);
 
     public WatermarkHud() {
-        super("Watermark", 10, 10);
+        super("Watermark", "水印", 10, 10);
     }
 
     @Override

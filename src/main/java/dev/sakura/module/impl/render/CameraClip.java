@@ -15,7 +15,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class CameraClip extends Module {
     public CameraClip() {
-        super("CameraClip", Category.Render);
+        super("CameraClip", "动态相机", Category.Render);
     }
 
     private enum Mode {
@@ -24,7 +24,7 @@ public class CameraClip extends Module {
     }
 
     public final Value<Boolean> disableFirstPers = new BoolValue("NoFirst", true);
-    private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.NORMAL);
+    private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.ACTION);
     private final Value<Double> distance = new NumberValue<>("Distance", 3.5, 1.0, 20.0, 0.5, () -> mode.is(Mode.NORMAL));
     private final Value<Double> speed = new NumberValue<>("Speed", 10.0, 1.0, 50.0, 0.5, () -> mode.is(Mode.NORMAL));
     private final Value<Double> actionDistance = new NumberValue<>("ActionDistance", 4.0, 0.5, 20.0, 0.5, () -> mode.is(Mode.ACTION));

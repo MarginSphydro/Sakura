@@ -46,7 +46,7 @@ public class Speed extends Module {
     private boolean boost;
 
     public Speed() {
-        super("Speed", Category.Movement);
+        super("Speed", "速度", Category.Movement);
         INSTANCE = this;
     }
 

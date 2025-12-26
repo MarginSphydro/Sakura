@@ -17,7 +17,7 @@ public class MSHud extends HudModule {
     private final TimerUtil timer = new TimerUtil();
 
     public MSHud() {
-        super("MS", 10, 60);
+        super("MS", "延迟显示", 10, 60);
     }
 
     @Override

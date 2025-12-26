@@ -93,7 +93,7 @@ public class HudModuleComponent implements IComponent {
             }
 
             float textFontSize = fontSize * 0.75f;
-            NanoVGHelper.drawString(hudModule.getName(), x + 4 * guiScale, y + 11 * guiScale, FontLoader.regular(textFontSize), textFontSize, Color.WHITE);
+            NanoVGHelper.drawString(hudModule.getDisplayName(), x + 4 * guiScale, y + 11 * guiScale, FontLoader.regular(textFontSize), textFontSize, Color.WHITE);
         });
 
         float componentYOffset = scaledModuleHeight;

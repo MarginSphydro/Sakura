@@ -35,7 +35,7 @@ public class AutoArmor extends Module {
     private final BoolValue guiSort = new BoolValue("SortInGUI", false);
 
     public AutoArmor() {
-        super("AutoArmor", Category.Player);
+        super("AutoArmor", "自动装甲", Category.Player);
 
         armorPieces[0] = boots;
         armorPieces[1] = leggings;

@@ -24,7 +24,7 @@ public class NotificationHud extends HudModule {
     private final Value<Double> blurStrength = new NumberValue<>("BlurStrength", 8.0, 1.0, 20.0, 0.5, backgroundBlur::get);
 
     public NotificationHud() {
-        super("Notification", 10, 10);
+        super("Notification", "通知", 10, 10);
     }
 
     @Override

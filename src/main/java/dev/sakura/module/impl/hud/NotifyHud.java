@@ -63,7 +63,7 @@ public class NotifyHud extends HudModule {
     private static final long SLIDE_DURATION = 300L;
 
     public NotifyHud() {
-        super("Notify", -210, -58);
+        super("Notify", "提示", -210, -58);
         this.width = NOTIFICATION_WIDTH;
         this.height = NOTIFICATION_HEIGHT;
         INSTANCE = this;

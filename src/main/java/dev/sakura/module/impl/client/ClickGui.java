@@ -19,8 +19,13 @@ public class ClickGui extends Module {
         Fade, Rainbow, Astolfo, Dynamic, Tenacity, Static, Double
     }
 
+    public enum Language {
+        Chinese, English
+    }
+
     public static Value<Double> guiScale = new NumberValue<>("Gui Scale", 1.0, 0.5, 2.0, 0.05);
     public static Value<Double> fontSize = new NumberValue<>("Font Size", 11.0, 6.0, 20.0, 0.5);
+    public static EnumValue<Language> language = new EnumValue<>("Language", Language.English);
 
     public static Value<Color> backgroundColor = new ColorValue("Background Color", new Color(28, 28, 28));
     public static Value<Color> expandedBackgroundColor = new ColorValue("Expanded Background", new Color(20, 20, 20));
@@ -38,7 +43,7 @@ public class ClickGui extends Module {
     public static Value<Double> blurStrength = new NumberValue<>("Blur Strength", 8.0, 1.0, 20.0, 0.5, () -> backgroundBlur.get());
 
     public ClickGui() {
-        super("ClickGui", Category.Client);
+        super("ClickGui", "点击GUI", Category.Client);
         setKey(GLFW.GLFW_KEY_RIGHT_SHIFT);
     }
 

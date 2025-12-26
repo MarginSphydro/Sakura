@@ -24,7 +24,7 @@ public class Velocity extends Module {
     public double velocityZ;
 
     public Velocity() {
-        super("Velocity", Category.Movement);
+        super("Velocity", "反击退", Category.Movement);
     }
 
     private enum VelocityMode {

@@ -18,7 +18,7 @@ public class ToggleCommand extends Command {
                         .executes(c -> {
                             Module module = ModuleArgumentType.getModule(c, "module");
                             module.toggle();
-                            ChatUtil.addChatMessage(module.getName() + " is now " +
+                            ChatUtil.addChatMessage(module.getEnglishName() + " is now " +
                                     (module.isEnabled() ? "§aenabled" : "§cdisabled") + "§f.");
                             return 1;
                         }))

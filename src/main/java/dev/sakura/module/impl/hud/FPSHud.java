@@ -33,7 +33,7 @@ public class FPSHud extends HudModule {
     private final TimerUtil timer = new TimerUtil();
 
     public FPSHud() {
-        super("FPS", 10, 40);
+        super("FPS", "FPS显示", 10, 40);
     }
 
     @Override

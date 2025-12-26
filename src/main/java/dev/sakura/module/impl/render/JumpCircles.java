@@ -47,7 +47,7 @@ public class JumpCircles extends Module {
     private boolean wasOnGround = true;
 
     public JumpCircles() {
-        super("JumpCircles", Category.Render);
+        super("JumpCircles", "跳跃光圈", Category.Render);
     }
 
     @Override

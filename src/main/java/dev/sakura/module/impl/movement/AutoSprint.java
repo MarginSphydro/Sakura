@@ -20,7 +20,7 @@ public class AutoSprint extends Module {
     }
 
     public AutoSprint() {
-        super("AutoSprint", Category.Movement);
+        super("AutoSprint", "自动疾跑", Category.Movement);
     }
 
     public final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Strict);

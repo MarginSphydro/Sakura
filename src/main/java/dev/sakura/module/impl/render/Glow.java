@@ -36,7 +36,7 @@ public class Glow extends Module {
     private final List<PlayerScreenData> playerScreenPositions = new ArrayList<>();
 
     public Glow() {
-        super("Glow", Category.Render);
+        super("Glow", "发光", Category.Render);
         INSTANCE = this;
     }
 

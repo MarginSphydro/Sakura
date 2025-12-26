@@ -74,7 +74,7 @@ public class Burrow extends Module {
     private final List<BlockPos> placePos = new ArrayList<>();
 
     public Burrow() {
-        super("Burrow", Category.Combat);
+        super("Burrow", "卡方块", Category.Combat);
         INSTANCE = this;
     }
 

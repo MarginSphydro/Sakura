@@ -27,7 +27,7 @@ public class AutoPearl extends Module {
     public static boolean throwing = false;
 
     public AutoPearl() {
-        super("AutoPearl", Category.Player);
+        super("AutoPearl", "自动珍珠", Category.Player);
         INSTANCE = this;
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.util.Hand;
 public class ViewModel extends Module {
 
     public ViewModel() {
-        super("ViewModel", Category.Render);
+        super("ViewModel", "手持物品", Category.Render);
     }
 
     public final NumberValue<Double> scaleMainX = new NumberValue<>("Scale Main X", 1.0, 0.1, 5.0, 0.01);

@@ -1,6 +1,7 @@
 package dev.sakura.module;
 
 import dev.sakura.Sakura;
+import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.module.impl.hud.DynamicIslandHud;
 import dev.sakura.utils.animations.Animation;
 import dev.sakura.utils.animations.Direction;
@@ -17,7 +18,8 @@ public class Module {
         Toggle, Hold
     }
 
-    private final String name;
+    private final String englishName;
+    private final String chineseName;
     private boolean state;
     private final Category category;
     private String suffix = "";
@@ -29,8 +31,9 @@ public class Module {
 
     protected final MinecraftClient mc;
 
-    public Module(String name, Category category) {
-        this.name = name;
+    public Module(String englishName, String chineseName, Category category) {
+        this.englishName = englishName;
+        this.chineseName = chineseName;
         this.category = category;
         this.mc = MinecraftClient.getInstance();
         this.hidden = new BoolValue("Hidden", false);
@@ -84,7 +87,7 @@ public class Module {
 
     public void reset() {
         setState(false);
-        if (!name.equalsIgnoreCase("ClickGui")) {
+        if (!englishName.equalsIgnoreCase("ClickGui")) {
             setKey(-1);
         }
         setBindMode(BindMode.Toggle);
@@ -93,8 +96,19 @@ public class Module {
         }
     }
 
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        if (ClickGui.language.get() == ClickGui.Language.Chinese) {
+            return chineseName == null ? englishName : chineseName;
+        }
+        return englishName;
+    }
+
+    public String getEnglishName() {
+        return englishName;
+    }
+
+    public String getChineseName() {
+        return chineseName;
     }
 
     public boolean isState() {

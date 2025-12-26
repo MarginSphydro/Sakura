@@ -27,7 +27,7 @@ public class ResetCommand extends Command {
                                 .executes(c -> {
                                     Module module = ModuleArgumentType.getModule(c, "module");
                                     module.reset();
-                                    ChatUtil.addChatMessage("§a已重置模块 " + module.getName() + " 为默认值。");
+                                    ChatUtil.addChatMessage("§a已重置模块 " + module.getEnglishName() + " 为默认值。");
                                     return 1;
                                 })))
                 .executes(c -> {

@@ -42,7 +42,7 @@ public class AutoTotem extends Module {
     private boolean totemInMainhand;
 
     public AutoTotem() {
-        super("AutoTotem", Category.Combat);
+        super("AutoTotem", "自动图腾", Category.Combat);
         INSTANCE = this;
     }
 

@@ -130,7 +130,7 @@ public class ModuleManager {
 
     public Module getModule(String name) {
         for (Module module : modules.values()) {
-            if (module.getName().equalsIgnoreCase(name)) {
+            if (module.getEnglishName().equalsIgnoreCase(name)) {
                 return module;
             }
         }
@@ -144,7 +144,7 @@ public class ModuleManager {
     public List<Module> getModsByCategory(Category m) {
         return modules.values().stream()
                 .filter(module -> module.getCategory() == m)
-                .sorted(Comparator.comparing(Module::getName))
+                .sorted(Comparator.comparing(Module::getEnglishName))
                 .collect(Collectors.toList());
     }
 
@@ -204,7 +204,14 @@ public class ModuleManager {
     }
 
     private void sendToggleNotification(Module module, boolean enabling, String suffix, boolean playSound) {
-        NotificationManager.send(module.hashCode(), "§7" + module.getName() + (enabling ? "§a enabled" : "§c disabled") + suffix, 3000L);
+        String name = module.getDisplayName();
+        String status;
+        if (ClickGui.language.get() == ClickGui.Language.Chinese) {
+            status = enabling ? "§a 已开启" : "§c 已关闭";
+        } else {
+            status = enabling ? "§a enabled" : "§c disabled";
+        }
+        NotificationManager.send(module.hashCode(), "§7" + name + status + suffix, 3000L);
         if (playSound) {
             SoundManager.playSound(enabling ? SoundManager.ENABLE : SoundManager.DISABLE);
         }

@@ -29,7 +29,7 @@ public class BindCommand extends Command {
 
                                             if (keyName.equalsIgnoreCase("none")) {
                                                 module.setKey(InputUtil.UNKNOWN_KEY.getCode());
-                                                ChatUtil.addChatMessage("Unbound " + module.getName() + ".");
+                                                ChatUtil.addChatMessage("Unbound " + module.getEnglishName() + ".");
                                                 Sakura.CONFIG.saveDefaultConfig();
                                                 return 1;
                                             }
@@ -48,7 +48,7 @@ public class BindCommand extends Command {
 
                                             module.setKey(key.getCode());
                                             module.setBindMode(bindMode);
-                                            ChatUtil.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + bindMode.name() + ").");
+                                            ChatUtil.addChatMessage("Bound " + module.getEnglishName() + " to " + keyName.toUpperCase() + " (" + bindMode.name() + ").");
                                             Sakura.CONFIG.saveDefaultConfig();
                                             return 1;
                                         }))
@@ -58,7 +58,7 @@ public class BindCommand extends Command {
 
                                     if (keyName.equalsIgnoreCase("none")) {
                                         module.setKey(InputUtil.UNKNOWN_KEY.getCode());
-                                        ChatUtil.addChatMessage("Unbound " + module.getName() + ".");
+                                        ChatUtil.addChatMessage("Unbound " + module.getEnglishName() + ".");
                                         Sakura.CONFIG.saveDefaultConfig();
                                         return 1;
                                     }
@@ -70,7 +70,7 @@ public class BindCommand extends Command {
                                     }
 
                                     module.setKey(key.getCode());
-                                    ChatUtil.addChatMessage("Bound " + module.getName() + " to " + keyName.toUpperCase() + " (" + module.getBindMode().name() + ").");
+                                    ChatUtil.addChatMessage("Bound " + module.getEnglishName() + " to " + keyName.toUpperCase() + " (" + module.getBindMode().name() + ").");
                                     Sakura.CONFIG.saveDefaultConfig();
                                     return 1;
                                 }))

@@ -41,7 +41,7 @@ public class Hat extends Module {
     private double lastSize;
 
     public Hat() {
-        super("Hat", Category.Render);
+        super("Hat", "帽子", Category.Render);
     }
 
     private void computeChineseHatPoints(int points, double radius) {

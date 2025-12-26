@@ -61,7 +61,7 @@ public class AutoPot extends Module {
     private float lastYaw, lastPitch;
 
     public AutoPot() {
-        super("AutoPot", Category.Combat);
+        super("AutoPot", "自动药水", Category.Combat);
         INSTANCE = this;
     }
 

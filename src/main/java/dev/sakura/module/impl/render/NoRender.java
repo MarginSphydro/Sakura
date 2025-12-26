@@ -34,7 +34,7 @@ public class NoRender extends Module {
     public final BoolValue noExplosionParticles = new BoolValue("No Explosion Particles", false);
 
     public NoRender() {
-        super("NoRender", Category.Render);
+        super("NoRender", "不渲染", Category.Render);
     }
 
     public boolean noPortalOverlay() {

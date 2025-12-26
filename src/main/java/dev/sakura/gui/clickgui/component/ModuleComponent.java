@@ -95,7 +95,7 @@ public class ModuleComponent implements IComponent {
                         ColorUtil.applyOpacity(ClickGui.expandedBackgroundColor.get(), (float) (0.3f * openAnimation.getOutput())));
             }
 
-            NanoVGHelper.drawString(module.getName(), x + 4 * scale, y + 11 * scale, FontLoader.regular(baseFontSize * 0.75f), baseFontSize * 0.75f, Color.WHITE);
+            NanoVGHelper.drawString(module.getDisplayName(), x + 4 * scale, y + 11 * scale, FontLoader.regular(baseFontSize * 0.75f), baseFontSize * 0.75f, Color.WHITE);
 
             float boxWidth = 18 * scale;
             float boxHeight = 8 * scale;

@@ -67,7 +67,7 @@ public class ModuleListHud extends HudModule {
     private static final java.util.Random RANDOM = new java.util.Random();
 
     public ModuleListHud() {
-        super("ModuleList", 10, 10);
+        super("ModuleList", "功能列表", 10, 10);
         this.currentWidth = 50;
         this.currentHeight = 20;
         this.width = currentWidth;
@@ -343,7 +343,7 @@ public class ModuleListHud extends HudModule {
                 currentY += ((10 + itemSpacing.get().floatValue()) * scale);
                 continue;
             }
-            String moduleName = entry.module.getName();
+            String moduleName = entry.module.getEnglishName();
             String suffix = entry.module.getSuffix();
             float moduleNameWidth = NanoVGHelper.getTextWidth(moduleName, font, 10 * scale);
             float suffixWidth = NanoVGHelper.getTextWidth(suffix, font, 10 * scale);
@@ -498,7 +498,7 @@ public class ModuleListHud extends HudModule {
     }
 
     private String getDisplayText(Module module) {
-        String name = module.getName();
+        String name = module.getDisplayName();
         String suffix = module.getSuffix();
         return name + (suffix.isEmpty() ? "" : " " + suffix);
     }

@@ -41,7 +41,7 @@ public class HotbarHud extends HudModule {
     private float slotSize, padding, gap, r, s;
 
     public HotbarHud() {
-        super("HotbarHud", 0, 0);
+        super("HotbarHud", "物品栏", 0, 0);
     }
 
     @Override

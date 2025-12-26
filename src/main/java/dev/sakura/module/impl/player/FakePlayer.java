@@ -28,7 +28,7 @@ import java.util.UUID;
 
 public class FakePlayer extends Module {
     public FakePlayer() {
-        super("FakePlayer", Category.Player);
+        super("FakePlayer", "假人", Category.Player);
     }
 
     private final StringValue name = new StringValue("Name", "BC_zxy");

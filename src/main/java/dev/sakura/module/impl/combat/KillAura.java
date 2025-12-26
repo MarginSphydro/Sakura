@@ -120,7 +120,7 @@ public class KillAura extends Module {
     private static float circleStep;
 
     public KillAura() {
-        super("KillAura", Category.Combat);
+        super("KillAura", "杀戮光环", Category.Combat);
     }
 
     @Override

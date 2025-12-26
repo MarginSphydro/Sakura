@@ -41,7 +41,7 @@ import java.util.List;
 
 public class CrystalAura extends Module {
     public CrystalAura() {
-        super("CrystalAura", Category.Combat);
+        super("CrystalAura", "水晶光环", Category.Combat);
     }
 
     public enum Page {

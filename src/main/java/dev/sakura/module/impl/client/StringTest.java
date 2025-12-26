@@ -6,7 +6,7 @@ import dev.sakura.values.impl.StringValue;
 
 public class StringTest extends Module {
     public StringTest() {
-        super("StringTest", Category.Client);
+        super("StringTest", "字符串测试", Category.Client);
     }
 
     private final StringValue test = new StringValue("Nihao", "Yes");

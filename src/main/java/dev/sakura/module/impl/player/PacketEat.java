@@ -10,7 +10,7 @@ import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 
 public class PacketEat extends Module {
     public PacketEat() {
-        super("PacketEat", Category.Player);
+        super("PacketEat", "发包吃物品", Category.Player);
     }
 
     @EventHandler

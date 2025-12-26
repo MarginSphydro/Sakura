@@ -11,7 +11,7 @@ import java.awt.*;
 
 public class TotemParticles extends Module {
     public TotemParticles() {
-        super("TotemParticles", Category.Render);
+        super("TotemParticles", "图腾粒子", Category.Render);
     }
 
     public enum ColorMode {

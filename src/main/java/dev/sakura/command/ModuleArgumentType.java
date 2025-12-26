@@ -37,7 +37,7 @@ public class ModuleArgumentType implements ArgumentType<Module> {
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context,
                                                               final SuggestionsBuilder builder) {
         return CommandSource.suggestMatching(
-                Sakura.MODULES.getAllModules().stream().map(Module::getName),
+                Sakura.MODULES.getAllModules().stream().map(Module::getEnglishName),
                 builder
         );
     }
@@ -45,7 +45,7 @@ public class ModuleArgumentType implements ArgumentType<Module> {
     @Override
     public Collection<String> getExamples() {
         return Sakura.MODULES.getAllModules().stream()
-                .map(Module::getName)
+                .map(Module::getEnglishName)
                 .limit(10)
                 .toList();
     }

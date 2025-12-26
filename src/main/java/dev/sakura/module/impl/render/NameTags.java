@@ -53,7 +53,7 @@ public class NameTags extends Module {
     private final Map<UUID, Integer> popCounts = new HashMap<>();
 
     public NameTags() {
-        super("NameTags", Category.Render);
+        super("NameTags", "名牌显示", Category.Render);
         INSTANCE = this;
     }
 

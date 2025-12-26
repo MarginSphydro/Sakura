@@ -62,7 +62,7 @@ public class Surround extends Module {
     private final List<BlockPos> supportPositions = new ArrayList<>();
 
     public Surround() {
-        super("Surround", Category.Combat);
+        super("Surround", "自动围脚", Category.Combat);
     }
 
     @Override

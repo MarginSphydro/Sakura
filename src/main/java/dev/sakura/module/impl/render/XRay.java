@@ -13,8 +13,7 @@ import java.util.Set;
 
 public class XRay extends Module {
     public XRay() {
-        super("XRay", Category.Render);
-
+        super("XRay", "透视", Category.Render);
         initOreMap();
     }
 

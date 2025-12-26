@@ -16,7 +16,7 @@ public class Fullbright extends Module {
     }
 
     public Fullbright() {
-        super("Fullbright", Category.Render);
+        super("Fullbright", "夜视", Category.Render);
     }
 
     public final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Gamma);

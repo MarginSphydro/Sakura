@@ -68,7 +68,7 @@ public class TargetHud extends HudModule {
     private static final Identifier TARGET1_TEX = Identifier.of("sakura", "textures/particles/target1.png");
 
     public TargetHud() {
-        super("TargetHud", 100, 100);
+        super("TargetHud", "目标显示", 100, 100);
         this.width = HUD_WIDTH;
         this.height = HUD_HEIGHT;
     }

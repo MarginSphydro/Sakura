@@ -27,7 +27,7 @@ import net.minecraft.util.math.Direction;
 
 public class WebAura extends Module {
     public WebAura() {
-        super("WebAura", Category.Combat);
+        super("WebAura", "蜘蛛网光环", Category.Combat);
     }
 
     public enum SwitchMode {

@@ -221,7 +221,7 @@ public class ConfigManager {
 
     private void saveModule(Module module) {
         try {
-            Path moduleFile = MODULES_DIR.resolve(module.getName() + ".json");
+            Path moduleFile = MODULES_DIR.resolve(module.getEnglishName() + ".json");
             JsonObject moduleObject = new JsonObject();
 
             moduleObject.addProperty("enabled", module.isEnabled());
@@ -245,7 +245,7 @@ public class ConfigManager {
                 GSON.toJson(moduleObject, writer);
             }
         } catch (IOException e) {
-            Sakura.LOGGER.error("Failed to save module {}: {}", module.getName(), e.getMessage());
+            Sakura.LOGGER.error("Failed to save module {}: {}", module.getEnglishName(), e.getMessage());
         }
     }
 
@@ -307,7 +307,7 @@ public class ConfigManager {
                 }
             }
         } catch (IOException e) {
-            Sakura.LOGGER.error("Failed to load module {}: {}", module.getName(), e.getMessage());
+            Sakura.LOGGER.error("Failed to load module {}: {}", module.getEnglishName(), e.getMessage());
         }
     }
 

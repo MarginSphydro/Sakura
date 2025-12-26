@@ -31,7 +31,7 @@ public class Step extends Module {
     private float savedTimer = 1.0f;
 
     public Step() {
-        super("Step", Category.Movement);
+        super("Step", "自动跳跃", Category.Movement);
         INSTANCE = this;
     }
 

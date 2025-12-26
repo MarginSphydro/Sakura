@@ -41,8 +41,8 @@ public abstract class HudModule extends Module {
     private final float defaultX;
     private final float defaultY;
 
-    public HudModule(String name, float defaultX, float defaultY) {
-        super(name, null);
+    public HudModule(String englishName, String chineseName, float defaultX, float defaultY) {
+        super(englishName, chineseName, null);
         this.defaultX = defaultX;
         this.defaultY = defaultY;
         this.x = defaultX;

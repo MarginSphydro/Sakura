@@ -16,7 +16,7 @@ public class NoFall extends Module {
     private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Packet);
 
     public NoFall() {
-        super("NoFall", Category.Movement);
+        super("NoFall", "无摔落", Category.Movement);
     }
 
     @Override

@@ -10,7 +10,7 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 
 public class NoRotate extends Module {
     public NoRotate() {
-        super("NoRotate", Category.Player);
+        super("NoRotate", "防强制旋转", Category.Player);
     }
 
     @EventHandler

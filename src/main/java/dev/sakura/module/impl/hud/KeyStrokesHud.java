@@ -39,7 +39,7 @@ public class KeyStrokesHud extends HudModule {
     private float offset, size, increment, radius;
 
     public KeyStrokesHud() {
-        super("KeyStrokes", 10, 100);
+        super("KeyStrokes", "按键显示", 10, 100);
     }
 
     @Override

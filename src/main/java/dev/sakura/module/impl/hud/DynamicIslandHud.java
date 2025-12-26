@@ -67,11 +67,13 @@ public class DynamicIslandHud extends HudModule {
     private float animX, animY, animW, animH;
 
     public DynamicIslandHud() {
-        super("DynamicIsland", 0, 3);
+        super("DynamicIsland", "灵动岛", 0, 0);
+        this.width = Size.BASE_W;
+        this.height = Size.BASE_H;
     }
 
     public static void onModuleToggle(Module module, boolean enabled) {
-        pendingToggle = new ToggleInfo(module.getName(), enabled);
+        pendingToggle = new ToggleInfo(module.getEnglishName(), enabled);
     }
 
     @Override

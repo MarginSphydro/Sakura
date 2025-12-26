@@ -51,7 +51,7 @@ public class Scaffold extends Module {
     private int airTicks;
 
     public Scaffold() {
-        super("Scaffold", Category.Movement);
+        super("Scaffold", "自动搭路", Category.Movement);
     }
 
     public static Vec3d getVec3(BlockPos pos, Direction face) {

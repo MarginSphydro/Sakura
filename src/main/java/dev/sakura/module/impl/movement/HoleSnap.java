@@ -44,7 +44,7 @@ public class HoleSnap extends Module {
     private boolean resetMove;
 
     public HoleSnap() {
-        super("HoleSnap", Category.Movement);
+        super("HoleSnap", "进坑", Category.Movement);
     }
 
     @Override
