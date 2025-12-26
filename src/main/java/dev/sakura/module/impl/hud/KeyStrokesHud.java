@@ -23,7 +23,10 @@ import static org.lwjgl.nanovg.NanoVG.*;
 public class KeyStrokesHud extends HudModule {
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 <<<<<<< HEAD
     private final NumberValue<Double> offsetValue = new NumberValue<>("Offset", 3.0, 2.5, 10.0, 0.5);
     private final NumberValue<Double> sizeValue = new NumberValue<>("Size", 25.0, 15.0, 35.0, 1.0);
@@ -36,6 +39,9 @@ public class KeyStrokesHud extends HudModule {
     private final NumberValue<Double> refractionStrength = new NumberValue<>("Refraction", 30.0, 5.0, 80.0, 1.0, () -> liquidGlass.get());
     private final NumberValue<Double> edgeWidth = new NumberValue<>("EdgeWidth", 10.0, 4.0, 30.0, 0.5, () -> liquidGlass.get());
 =======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     private final NumberValue<Double> offsetValue = new NumberValue<>("Offset", "偏移", 3.0, 2.5, 10.0, 0.5);
     private final NumberValue<Double> sizeValue = new NumberValue<>("Size", "大小", 25.0, 15.0, 35.0, 1.0);
@@ -45,6 +51,10 @@ public class KeyStrokesHud extends HudModule {
     private final BoolValue blur = new BoolValue("Blur", "模糊", false);
     private final NumberValue<Double> blurStrength = new NumberValue<>("Blur Strength", "模糊强度", 8.0, 1.0, 20.0, 0.5, blur::get);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+>>>>>>> baf5f2ea9dbdcde0eda197a5275c80055e9004a5
+>>>>>>> Stashed changes
 =======
 >>>>>>> baf5f2ea9dbdcde0eda197a5275c80055e9004a5
 >>>>>>> Stashed changes
