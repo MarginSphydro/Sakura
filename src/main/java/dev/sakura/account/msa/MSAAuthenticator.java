@@ -49,8 +49,7 @@ import java.util.stream.Collectors;
 
 public final class MSAAuthenticator {
     private static final Logger LOGGER = LogManager.getLogger("MSA-Authenticator");
-    private static final CloseableHttpClient HTTP_CLIENT = HttpClientBuilder
-            .create()
+    private static final CloseableHttpClient HTTP_CLIENT = HttpClientBuilder.create()
             .setRedirectStrategy(new LaxRedirectStrategy())
             .disableAuthCaching()
             .disableCookieManagement()
@@ -90,7 +89,7 @@ public final class MSAAuthenticator {
     public void loginWithBrowser(final BrowserLoginCallback callback)
             throws IOException, URISyntaxException, MSAAuthException {
         if (!serverOpen || localServer == null) {
-            // TODO: Auto close server if no interaction in a minute or so
+            // TODO: 如果一分钟左右没有交互，自动关闭服务器
             localServer = HttpServer.create();
             localServer.createContext("/login", (ctx) ->
             {
@@ -191,7 +190,7 @@ public final class MSAAuthenticator {
             final String content = EntityUtils.toString(response.getEntity());
             final OAuthResult result = new OAuthResult();
 
-            // Find these pieces of information - we cannot go on to login without them
+            // 查找这些信息片段 - 没有它们我们无法继续登录
             Matcher matcher = SFTT_TAG_PATTERN.matcher(content);
             if (matcher.find()) {
                 result.setSfttTag(matcher.group(1));
@@ -220,7 +219,6 @@ public final class MSAAuthenticator {
         httpPost.setHeader("Cookie", result.getCookie());
         httpPost.setHeader("Content-Type", contentTypeRaw);
 
-        // Encode our email & password and add to our request as a query
         String encodedEmail = URLEncoder.encode(email);
         String encodedPassword = URLEncoder.encode(password);
         httpPost.setEntity(new StringEntity(
@@ -238,15 +236,12 @@ public final class MSAAuthenticator {
                 final String query = redirectLocations.get(redirectLocations.size() - 1)
                         .toString().split("#")[1];
                 for (final String param : query.split("&")) {
-                    // Key,Value
+                    // 键,值
                     final String[] parameter = param.split("=");
                     if (parameter[0].equals("access_token")) {
                         return parameter[1];
                     }
                 }
-
-                // We could throw an MSA exception here, but we want to give the user a bit more
-                // verbose reasoning as to why they may not be able to log in.
             } else {
                 throw new MSAAuthException("Failed to get valid response from Microsoft");
             }
@@ -359,7 +354,7 @@ public final class MSAAuthenticator {
     private void writeToWebpage(final String message, final HttpExchange ext) throws IOException {
         final byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
         ext.sendResponseHeaders(200, message.length());
-        // Write to the output stream (this will allow the user to see the message)
+        // 写入输出流（这将允许用户看到消息）
         final OutputStream outputStream = ext.getResponseBody();
         outputStream.write(bytes, 0, bytes.length);
         outputStream.close();

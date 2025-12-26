@@ -23,7 +23,7 @@ public class CameraClip extends Module {
         ACTION
     }
 
-    private final Value<Boolean> disableFirstPers = new BoolValue("NoFirst", true);
+    public final Value<Boolean> disableFirstPers = new BoolValue("NoFirst", true);
     private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.NORMAL);
     private final Value<Double> distance = new NumberValue<>("Distance", 3.5, 1.0, 20.0, 0.5, () -> mode.is(Mode.NORMAL));
     private final Value<Double> speed = new NumberValue<>("Speed", 10.0, 1.0, 50.0, 0.5, () -> mode.is(Mode.NORMAL));
@@ -158,17 +158,5 @@ public class CameraClip extends Module {
 
     public boolean shouldModifyCamera() {
         return isEnabled() && mode.is(Mode.ACTION) && !isFirstPerson();
-    }
-
-    public int getKey() {
-        return this.key;
-    }
-
-    public void setKey(int key) {
-        this.key = key;
-    }
-
-    public boolean getDisableFirstPers() {
-        return disableFirstPers.get();
     }
 }

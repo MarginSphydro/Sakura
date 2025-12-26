@@ -1,7 +1,7 @@
 package dev.sakura.gui.clickgui;
 
+import dev.sakura.Sakura;
 import dev.sakura.gui.clickgui.panel.CategoryPanel;
-import dev.sakura.manager.Managers;
 import dev.sakura.module.Category;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
@@ -116,7 +116,7 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public void close() {
-        Managers.MODULE.getModule(ClickGui.class).setState(false);
+        Sakura.MODULES.getModule(ClickGui.class).setState(false);
     }
 
     @Override

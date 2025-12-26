@@ -2,7 +2,6 @@ package dev.sakura.mixin.render;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.client.ChatMessageEvent;
-import dev.sakura.manager.Managers;
 import dev.sakura.mixin.accessor.IChatInputSuggestor;
 import dev.sakura.mixin.accessor.ISuggestionWindow;
 import dev.sakura.nanovg.NanoVGRenderer;
@@ -71,7 +70,7 @@ public class MixinChatScreen {
     }
 
     private float getGlobalRadius() {
-        dev.sakura.module.impl.client.HudEditor hudEditor = Managers.MODULE.getModule(dev.sakura.module.impl.client.HudEditor.class);
+        dev.sakura.module.impl.client.HudEditor hudEditor = Sakura.MODULES.getModule(dev.sakura.module.impl.client.HudEditor.class);
         if (hudEditor != null) {
             return hudEditor.globalCornerRadius.get().floatValue();
         }
@@ -80,7 +79,7 @@ public class MixinChatScreen {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void onRenderPost(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (chatField == null || !chatField.getText().startsWith(Managers.COMMAND.getPrefix())) return;
+        if (chatField == null || !chatField.getText().startsWith(Sakura.COMMAND.getPrefix())) return;
         NanoVGRenderer.INSTANCE.draw(vg -> {
             final float PAD = 0.5F;
             final Color SAKURA = new Color(255, 183, 197, (int) (255 * inputAlpha));

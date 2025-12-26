@@ -4,20 +4,13 @@ import dev.sakura.account.type.MinecraftAccount;
 import dev.sakura.account.type.impl.CrackedAccount;
 import dev.sakura.account.type.impl.MicrosoftAccount;
 import dev.sakura.account.util.TextureDownloader;
-import dev.sakura.gui.theme.SakuraTheme;
 import dev.sakura.manager.Managers;
-import dev.sakura.nanovg.NanoVGRenderer;
-import dev.sakura.nanovg.font.FontLoader;
-import dev.sakura.nanovg.util.NanoVGHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.session.Session;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.lwjgl.nanovg.NanoVG;
-
-import java.awt.*;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
@@ -33,7 +26,7 @@ public class AccountEntry extends AlwaysSelectedEntryListWidget.Entry<AccountEnt
 
     @Override
     public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-        // Render Avatar using Vanilla
+        // 使用原生渲染头像
         if (account instanceof CrackedAccount || (account instanceof MicrosoftAccount msa && msa.getUsernameOrNull() != null)) {
             final String id = "face_" + account.username().toLowerCase();
             if (!FACE_DOWNLOADER.exists(id)) {
@@ -49,15 +42,6 @@ public class AccountEntry extends AlwaysSelectedEntryListWidget.Entry<AccountEnt
                 }
             }
         }
-
-        // Render Text using NanoVG
-        NanoVGRenderer.INSTANCE.draw(vg -> {
-            Color color = hovered ? SakuraTheme.PRIMARY_HOVER : SakuraTheme.TEXT;
-            float fontSize = 18f;
-            float textX = x + 24;
-
-            NanoVGHelper.drawText(account.username(), textX, y + entryHeight / 2f, FontLoader.regular(fontSize), fontSize, NanoVG.NVG_ALIGN_LEFT | NanoVG.NVG_ALIGN_MIDDLE, color);
-        });
     }
 
     @Override

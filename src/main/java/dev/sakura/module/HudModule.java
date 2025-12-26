@@ -2,7 +2,7 @@ package dev.sakura.module;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -81,7 +81,7 @@ public abstract class HudModule extends Module {
     }
 
     public void renderInGame(DrawContext context) {
-        HudEditor hudEditor = Managers.MODULE.getModule(HudEditor.class);
+        HudEditor hudEditor = Sakura.MODULES.getModule(HudEditor.class);
         if (hudEditor != null && hudEditor.isEnabled()) {
             return;
         }

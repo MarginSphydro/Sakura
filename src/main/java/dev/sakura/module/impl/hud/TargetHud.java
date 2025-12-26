@@ -1,8 +1,8 @@
 package dev.sakura.module.impl.hud;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.sakura.Sakura;
 import dev.sakura.events.render.Render3DEvent;
-import dev.sakura.manager.Managers;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.impl.combat.CrystalAura;
 import dev.sakura.module.impl.combat.KillAura;
@@ -81,7 +81,7 @@ public class TargetHud extends HudModule {
     }
 
     private LivingEntity getCurrentTarget() {
-        KillAura killAura = Managers.MODULE.getModule(KillAura.class);
+        KillAura killAura = Sakura.MODULES.getModule(KillAura.class);
         if (killAura != null && killAura.isEnabled()) {
             Entity target = killAura.getCurrentTarget();
             if (target instanceof LivingEntity living) {
@@ -89,7 +89,7 @@ public class TargetHud extends HudModule {
             }
         }
 
-        CrystalAura crystalAura = Managers.MODULE.getModule(CrystalAura.class);
+        CrystalAura crystalAura = Sakura.MODULES.getModule(CrystalAura.class);
         if (crystalAura != null && crystalAura.isEnabled()) {
             PlayerEntity target = crystalAura.getCurrentTarget();
             if (target != null) {

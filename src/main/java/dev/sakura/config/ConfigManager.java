@@ -2,6 +2,9 @@ package dev.sakura.config;
 
 import com.google.gson.*;
 import dev.sakura.Sakura;
+import dev.sakura.account.type.MinecraftAccount;
+import dev.sakura.account.type.impl.CrackedAccount;
+import dev.sakura.account.type.impl.MicrosoftAccount;
 import dev.sakura.gui.clickgui.panel.CategoryPanel;
 import dev.sakura.gui.hud.HudPanel;
 import dev.sakura.manager.Managers;
@@ -10,6 +13,8 @@ import dev.sakura.module.Module;
 import dev.sakura.values.Value;
 import dev.sakura.values.impl.*;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -18,7 +23,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 public class ConfigManager {
@@ -26,12 +34,17 @@ public class ConfigManager {
     public static final Path CONFIG_DIR = Paths.get("sakura-config");
     private static final Path MODULES_DIR = CONFIG_DIR.resolve("modules");
     private static final Path CLICKGUI_FILE = CONFIG_DIR.resolve("clickgui.json");
+    private static final Path ACCOUNTS_FILE = CONFIG_DIR.resolve("accounts.json");
+    private static final Path ENCRYPTED_ACCOUNTS_FILE = CONFIG_DIR.resolve("accounts_enc.json");
+
+    private String currentPassword = null;
 
     public ConfigManager() {
         createConfigDir();
 
         loadModules();
         loadClickGui();
+        loadAccounts();
     }
 
     private void createConfigDir() {
@@ -50,10 +63,158 @@ public class ConfigManager {
     public void saveDefaultConfig() {
         saveModules();
         saveClickGui();
+        saveAccounts();
+    }
+
+    public void saveAccounts() {
+        try {
+            JsonArray array = new JsonArray();
+            for (final MinecraftAccount account : Managers.ACCOUNT.getAccounts()) {
+                try {
+                    array.add(account.toJSON());
+                } catch (RuntimeException e) {
+                    Sakura.LOGGER.error(e.getMessage());
+                }
+            }
+
+            String jsonString = GSON.toJson(array);
+
+            if (currentPassword != null) {
+                // 加密保存
+                try {
+                    String encrypted = encrypt(jsonString, currentPassword);
+                    Files.writeString(ENCRYPTED_ACCOUNTS_FILE, encrypted, StandardCharsets.UTF_8);
+
+                    // 如果存在明文文件则删除
+                    if (Files.exists(ACCOUNTS_FILE)) {
+                        Files.delete(ACCOUNTS_FILE);
+                    }
+                } catch (Exception e) {
+                    Sakura.LOGGER.error("Failed to encrypt accounts: {}", e.getMessage());
+                }
+            } else {
+                // 明文保存
+                try (Writer writer = new OutputStreamWriter(
+                        new FileOutputStream(ACCOUNTS_FILE.toFile()), StandardCharsets.UTF_8)) {
+                    writer.write(jsonString);
+                }
+
+                // 如果存在加密文件则删除
+                if (Files.exists(ENCRYPTED_ACCOUNTS_FILE)) {
+                    Files.delete(ENCRYPTED_ACCOUNTS_FILE);
+                }
+            }
+        } catch (IOException e) {
+            Sakura.LOGGER.error("Failed to save accounts: {}", e.getMessage());
+        }
+    }
+
+    public void loadAccounts() {
+        try {
+            String content = null;
+
+            if (Files.exists(ENCRYPTED_ACCOUNTS_FILE)) {
+                if (currentPassword != null) {
+                    try {
+                        String encrypted = Files.readString(ENCRYPTED_ACCOUNTS_FILE, StandardCharsets.UTF_8);
+                        content = decrypt(encrypted, currentPassword);
+                    } catch (Exception e) {
+                        Sakura.LOGGER.error("Failed to decrypt accounts: {}", e.getMessage());
+                        return;
+                    }
+                } else {
+                    Sakura.LOGGER.info("Encrypted accounts file found, waiting for password.");
+                    return;
+                }
+            } else if (Files.exists(ACCOUNTS_FILE)) {
+                content = Files.readString(ACCOUNTS_FILE, StandardCharsets.UTF_8);
+            }
+
+            if (content == null) return;
+
+            JsonArray json = JsonParser.parseString(content).getAsJsonArray();
+
+            Managers.ACCOUNT.getAccounts().clear();
+            for (JsonElement element : json) {
+                if (!(element instanceof JsonObject object)) {
+                    continue;
+                }
+
+                MinecraftAccount account = null;
+                if (object.has("email") && object.has("password")) {
+                    account = new MicrosoftAccount(object.get("email").getAsString(),
+                            object.get("password").getAsString());
+                    if (object.has("username")) {
+                        ((MicrosoftAccount) account).setUsername(object.get("username").getAsString());
+                    }
+                } else if (object.has("token")) {
+                    if (!object.has("username")) {
+                        Sakura.LOGGER.error("Browser account does not have a username set?");
+                        continue;
+                    }
+                    account = new MicrosoftAccount(object.get("token").getAsString());
+                    ((MicrosoftAccount) account).setUsername(object.get("username").getAsString());
+                } else {
+                    if (object.has("username")) {
+                        account = new CrackedAccount(object.get("username").getAsString());
+                    }
+                }
+
+                if (account != null) {
+                    Managers.ACCOUNT.register(account, false);
+                } else {
+                    Sakura.LOGGER.error("Could not parse account JSON.\nRaw: {}", object.toString());
+                }
+            }
+        } catch (IOException | IllegalStateException e) {
+            Sakura.LOGGER.error("Failed to load accounts: {}", e.getMessage());
+        }
+    }
+
+    public void setEncryptionPassword(String password) {
+        this.currentPassword = password;
+        if (password != null) {
+            if (Files.exists(ENCRYPTED_ACCOUNTS_FILE) && Managers.ACCOUNT.getAccounts().isEmpty()) {
+                loadAccounts();
+            } else {
+                saveAccounts();
+            }
+        } else {
+            saveAccounts();
+        }
+    }
+
+    public boolean isEncrypted() {
+        return Files.exists(ENCRYPTED_ACCOUNTS_FILE) || currentPassword != null;
+    }
+
+    private static String encrypt(String data, String password) throws Exception {
+        SecretKeySpec key = generateKey(password);
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encrypted = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encrypted);
+    }
+
+    private static String decrypt(String encryptedData, String password) throws Exception {
+        SecretKeySpec key = generateKey(password);
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] decoded = Base64.getDecoder().decode(encryptedData);
+        byte[] decrypted = cipher.doFinal(decoded);
+        return new String(decrypted, StandardCharsets.UTF_8);
+    }
+
+    private static SecretKeySpec generateKey(String password) throws Exception {
+        MessageDigest sha = MessageDigest.getInstance("SHA-256");
+        byte[] key = password.getBytes(StandardCharsets.UTF_8);
+        key = sha.digest(key);
+        key = Arrays.copyOf(key, 16);
+        return new SecretKeySpec(key, "AES");
     }
 
     private void saveModules() {
-        for (Module module : Managers.MODULE.getAllModules()) {
+        for (Module module : Sakura.MODULES.getAllModules()) {
             saveModule(module);
         }
     }
@@ -97,7 +258,7 @@ public class ConfigManager {
                     .forEach(path -> {
                         String moduleName = path.getFileName().toString();
                         moduleName = moduleName.substring(0, moduleName.length() - 5);
-                        Module module = Managers.MODULE.getModule(moduleName);
+                        Module module = Sakura.MODULES.getModule(moduleName);
                         if (module != null) {
                             loadModule(module, path);
                         }

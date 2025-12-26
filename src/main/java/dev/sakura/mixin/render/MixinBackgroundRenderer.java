@@ -1,7 +1,7 @@
 package dev.sakura.mixin.render;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.impl.render.NoRender;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Fog;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public class MixinBackgroundRenderer {
     @ModifyReturnValue(method = "applyFog", at = @At("RETURN"))
     private static Fog onApplyFog(Fog original) {
-        NoRender noRender = Managers.MODULE.getModule(NoRender.class);
+        NoRender noRender = Sakura.MODULES.getModule(NoRender.class);
         if (noRender.noFog() || noRender.noBlindness() || noRender.noDarkness()) {
             return Fog.DUMMY;
         }

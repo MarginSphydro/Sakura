@@ -1,8 +1,11 @@
 package dev.sakura;
 
+import dev.sakura.command.CommandManager;
+import dev.sakura.config.ConfigManager;
 import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.Managers;
+import dev.sakura.module.ModuleManager;
 import dev.sakura.utils.render.Shader2DUtil;
 import meteordevelopment.orbit.EventBus;
 import meteordevelopment.orbit.IEventBus;
@@ -90,6 +93,9 @@ public class Sakura {
 
     public static MinecraftClient mc;
 
+    public static ModuleManager MODULES;
+    public static ConfigManager CONFIG;
+    public static CommandManager COMMAND;
     public static ClickGuiScreen CLICKGUI;
     public static HudEditorScreen HUDEDITOR;
 
@@ -106,6 +112,15 @@ public class Sakura {
         // 初始化Managers
         Managers.init();
 
+        // 初始化Modules
+        MODULES = new ModuleManager();
+
+        // 初始化配置文件系统
+        CONFIG = new ConfigManager();
+
+        // 初始化Command系统
+        COMMAND = new CommandManager();
+
         // 初始化ClickGui
         CLICKGUI = new ClickGuiScreen();
 
@@ -117,7 +132,7 @@ public class Sakura {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOGGER.info("正在保存配置并且关闭游戏!");
-            Managers.CONFIG.saveDefaultConfig();
+            CONFIG.saveDefaultConfig();
         }));
 
         LOGGER.info("初始化完成!");

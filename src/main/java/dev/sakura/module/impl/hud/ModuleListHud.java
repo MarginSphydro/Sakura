@@ -1,6 +1,6 @@
 package dev.sakura.module.impl.hud;
 
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;
@@ -100,7 +100,7 @@ public class ModuleListHud extends HudModule {
     }
 
     public float getRadius() {
-        dev.sakura.module.impl.client.HudEditor hudEditor = Managers.MODULE.getModule(dev.sakura.module.impl.client.HudEditor.class);
+        dev.sakura.module.impl.client.HudEditor hudEditor = Sakura.MODULES.getModule(dev.sakura.module.impl.client.HudEditor.class);
         if (hudEditor != null) {
             return hudEditor.globalCornerRadius.get().floatValue();
         }
@@ -112,7 +112,7 @@ public class ModuleListHud extends HudModule {
     }
 
     private boolean isHudEditorOpen() {
-        dev.sakura.module.impl.client.HudEditor editor = Managers.MODULE.getModule(dev.sakura.module.impl.client.HudEditor.class);
+        dev.sakura.module.impl.client.HudEditor editor = Sakura.MODULES.getModule(dev.sakura.module.impl.client.HudEditor.class);
         return editor != null && editor.isEnabled();
     }
 
@@ -175,7 +175,7 @@ public class ModuleListHud extends HudModule {
 
     private void updateModuleList() {
         moduleEntries.clear();
-        List<Module> enabledModules = Managers.MODULE.getAllModules().stream()
+        List<Module> enabledModules = Sakura.MODULES.getAllModules().stream()
                 .filter(Module::isEnabled)
                 .filter(module -> !module.isHidden())
                 .filter(module -> !hideHudModules.get() || !(module instanceof HudModule))

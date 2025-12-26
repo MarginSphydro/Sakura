@@ -1,6 +1,7 @@
 package dev.sakura.gui.account;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.sakura.Sakura;
 import dev.sakura.gui.component.SakuraButton;
 import dev.sakura.gui.component.SakuraTextField;
 import dev.sakura.gui.theme.SakuraTheme;
@@ -37,30 +38,62 @@ public final class AccountEncryptionScreen extends Screen {
 
         float panelWidth = 300;
         float panelHeight = 260; // Reduced from 320 to 260
+        // 从 320 减少到 260
         float panelX = (width - panelWidth) / 2;
         float panelY = (height - panelHeight) / 2;
 
         float inputWidth = 200;
         float inputX = panelX + (panelWidth - inputWidth) / 2;
-        
+
+        // 背景面板
+        addDrawable((context, mouseX, mouseY, delta) -> {
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.disableDepthTest();
+            RenderSystem.disableCull();
+
+            NanoVGRenderer.INSTANCE.draw(vg -> {
+                // 阴影
+                NVGPaint shadowPaint = NanoVG.nvgBoxGradient(vg, panelX, panelY + 2, panelWidth, panelHeight, SakuraTheme.ROUNDING, 20, SakuraTheme.color(0, 0, 0, 128), SakuraTheme.color(0, 0, 0, 0), NVGPaint.create());
+                NanoVG.nvgBeginPath(vg);
+                NanoVG.nvgRect(vg, panelX - 20, panelY - 20, panelWidth + 40, panelHeight + 40);
+                NanoVG.nvgFillPaint(vg, shadowPaint);
+                NanoVG.nvgFill(vg);
+
+                // 面板主体
+                NanoVG.nvgBeginPath(vg);
+                NanoVG.nvgRoundedRect(vg, panelX, panelY, panelWidth, panelHeight, SakuraTheme.ROUNDING);
+                NanoVG.nvgFillColor(vg, SakuraTheme.color(SakuraTheme.PANEL_BG));
+                NanoVG.nvgFill(vg);
+
+                // 边框
+                NanoVG.nvgBeginPath(vg);
+                NanoVG.nvgRoundedRect(vg, panelX, panelY, panelWidth, panelHeight, SakuraTheme.ROUNDING);
+                NanoVG.nvgStrokeColor(vg, SakuraTheme.color(SakuraTheme.PRIMARY, 0.3f));
+                NanoVG.nvgStrokeWidth(vg, 1.0f);
+                NanoVG.nvgStroke(vg);
+            });
+        });
+
         float startY = panelY + 60;
 
-        // Password Field
-        addDrawableChild(passwordTextField = new SakuraTextField(client.textRenderer, (int)inputX, (int)startY, (int)inputWidth, 24, Text.of("")));
+        // 密码输入框
+        addDrawableChild(passwordTextField = new SakuraTextField(client.textRenderer, (int) inputX, (int) startY, (int) inputWidth, 24, Text.of("")));
         passwordTextField.setPlaceholder("Enter Password...");
         passwordTextField.setPasswordMode(true);
 
-        float buttonY = panelY + panelHeight - 65; // Adjusted button Y
-        float buttonSpacing = 28; // Slightly tighter spacing
+        float buttonY = panelY + panelHeight - 65;
+        float buttonSpacing = 28;
 
-        addDrawableChild(new SakuraButton((int)inputX, (int)buttonY, (int)inputWidth, 24, "Encrypt", (action) ->
+        addDrawableChild(new SakuraButton((int) inputX, (int) buttonY, (int) inputWidth, 24, "Encrypt", (action) ->
         {
             if (isPasswordSecure(passwordTextField.getText())) {
-                // TODO: Implement encryption logic
+                Sakura.CONFIG.setEncryptionPassword(passwordTextField.getText());
+                client.setScreen(parent);
             }
         }));
-        
-        addDrawableChild(new SakuraButton((int)inputX, (int)(buttonY + buttonSpacing), (int)inputWidth, 24, "Go Back", (action) -> client.setScreen(parent)));
+
+        addDrawableChild(new SakuraButton((int) inputX, (int) (buttonY + buttonSpacing), (int) inputWidth, 24, "Go Back", (action) -> client.setScreen(parent)));
     }
 
     @Override
@@ -68,13 +101,10 @@ public final class AccountEncryptionScreen extends Screen {
         Shader2DUtil.drawQuadBlur(context.getMatrices(), 0, 0, width, height, 10, 0.5f);
 
         float panelWidth = 300;
-        float panelHeight = 260; // Consistent reduced height
+        float panelHeight = 260;
+        // 保持一致的缩减高度
         float panelX = (width - panelWidth) / 2;
         float panelY = (height - panelHeight) / 2;
-
-        // Force Vanilla Render (Backup Layer)
-        context.fill((int)panelX, (int)panelY, (int)(panelX + panelWidth), (int)(panelY + panelHeight), 0xE5FFFFFF);
-        context.drawBorder((int)panelX, (int)panelY, (int)panelWidth, (int)panelHeight, 0xFFE0E0E0);
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -83,77 +113,56 @@ public final class AccountEncryptionScreen extends Screen {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVG.nvgResetScissor(vg);
-
-            // Shadow
-            NVGPaint shadowPaint = NanoVG.nvgBoxGradient(vg, panelX, panelY + 2, panelWidth, panelHeight, SakuraTheme.ROUNDING, 20,
-                    SakuraTheme.color(0, 0, 0, 128), SakuraTheme.color(0, 0, 0, 0), NVGPaint.create());
-            NanoVG.nvgBeginPath(vg);
-            NanoVG.nvgRect(vg, panelX - 20, panelY - 20, panelWidth + 40, panelHeight + 40);
-            NanoVG.nvgFillPaint(vg, shadowPaint);
-            NanoVG.nvgFill(vg);
-
-            // Panel Body
-            NanoVG.nvgBeginPath(vg);
-            NanoVG.nvgRoundedRect(vg, panelX, panelY, panelWidth, panelHeight, SakuraTheme.ROUNDING);
-            NanoVG.nvgFillColor(vg, SakuraTheme.color(SakuraTheme.PANEL_BG));
-            NanoVG.nvgFill(vg);
-
-            // Border
-            NanoVG.nvgStrokeColor(vg, SakuraTheme.color(SakuraTheme.PRIMARY, 0.3f));
-            NanoVG.nvgStrokeWidth(vg, 1.0f);
-            NanoVG.nvgStroke(vg);
-
-            // Title
+            // 标题
             NanoVGHelper.drawText("Encrypt Accounts (" + Managers.ACCOUNT.getAccounts().size() + ")", width / 2f, panelY + 25, FontLoader.regular(24), 24, NanoVG.NVG_ALIGN_CENTER | NanoVG.NVG_ALIGN_MIDDLE, Color.BLACK);
 
-            // Validation Indicator
+            // 验证指示器
             Color statusColor = isPasswordSecure(passwordTextField.getText()) ? Color.GREEN : Color.RED;
             NanoVGHelper.drawText("*", passwordTextField.getX() - 10, passwordTextField.getY() + (passwordTextField.getHeight() / 2f), FontLoader.regular(18), 18, NanoVG.NVG_ALIGN_RIGHT | NanoVG.NVG_ALIGN_MIDDLE, statusColor);
 
-            // Requirements List - Tighter Layout
+            // 要求列表 - 更紧凑的布局
             float reqY = passwordTextField.getY() + passwordTextField.getHeight() + 10; // Reduced gap from 15 to 10
+            // 间距从 15 减少到 10
             NanoVGHelper.drawText("Minimum Requirements:", passwordTextField.getX(), reqY, FontLoader.regular(15), 15, NanoVG.NVG_ALIGN_LEFT | NanoVG.NVG_ALIGN_TOP, Color.BLACK);
 
-            reqY += 18; // Reduced gap from 20 to 18
+            reqY += 18; // 间距从 20 减少到 18
             String password = passwordTextField.getText();
-            
-            // Check each requirement for coloring
+
+            // 检查每个要求以进行着色
             boolean len = password.length() >= 8;
             boolean special = false;
             boolean number = false;
             boolean upper = false;
-            
+
             for (char c : password.toCharArray()) {
                 if (SPECIAL_CHARACTERS.indexOf(c) != -1) special = true;
                 if (Character.isDigit(c)) number = true;
                 if (Character.isUpperCase(c)) upper = true;
             }
 
-            // Draw requirements in 2 columns to save space
             float col1X = passwordTextField.getX() + 10;
-            float col2X = passwordTextField.getX() + 110; // Second column start
-            
+            float col2X = passwordTextField.getX() + 110;
+
             drawRequirement(REQUIREMENTS[0], len, col1X, reqY, vg);
-            drawRequirement(REQUIREMENTS[2], number, col1X, reqY + 16, vg); // Tighter spacing 16 vs 18
-            
+            drawRequirement(REQUIREMENTS[2], number, col1X, reqY + 16, vg);
+
             drawRequirement(REQUIREMENTS[1], special, col2X, reqY, vg);
             drawRequirement(REQUIREMENTS[3], upper, col2X, reqY + 16, vg);
         });
 
         super.render(context, mouseX, mouseY, delta);
     }
-    
+
     private void drawRequirement(String text, boolean met, float x, float y, long vg) {
         Color color = met ? new Color(0, 150, 0) : new Color(150, 0, 0);
-        
-        // Bullet point
+
+        // 项目符号点
         NanoVG.nvgBeginPath(vg);
         NanoVG.nvgCircle(vg, x - 5, y + 8, 2);
         NanoVG.nvgFillColor(vg, SakuraTheme.color(color));
         NanoVG.nvgFill(vg);
-        
-        // Smaller font size for compact list
+
+        // 用于紧凑列表的较小字体大小
         NanoVGHelper.drawText(text, x, y, FontLoader.regular(14), 14, NanoVG.NVG_ALIGN_LEFT | NanoVG.NVG_ALIGN_TOP, SakuraTheme.TEXT_SECONDARY);
     }
 
@@ -180,7 +189,7 @@ public final class AccountEncryptionScreen extends Screen {
         }
         return hasUppercase && hasNumber && hasSpecial;
     }
-    
+
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW_KEY_ESCAPE) {

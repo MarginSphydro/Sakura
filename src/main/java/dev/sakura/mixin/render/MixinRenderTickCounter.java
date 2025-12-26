@@ -2,7 +2,6 @@ package dev.sakura.mixin.render;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.client.TimerEvent;
-import dev.sakura.manager.Managers;
 import dev.sakura.module.impl.player.TimerModule;
 import net.minecraft.client.render.RenderTickCounter;
 import org.objectweb.asm.Opcodes;
@@ -21,7 +20,7 @@ public class MixinRenderTickCounter {
     public void onBeginRenderTick(long long_1, CallbackInfoReturnable<Integer> cir) {
         TimerEvent event = new TimerEvent();
         Sakura.EVENT_BUS.post(event);
-        TimerModule timer = Managers.MODULE.getModule(TimerModule.class);
+        TimerModule timer = Sakura.MODULES.getModule(TimerModule.class);
         if (!event.isCancelled()) {
             if (event.isModified()) {
                 lastFrameDuration *= event.get();

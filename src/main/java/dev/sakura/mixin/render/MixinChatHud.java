@@ -1,6 +1,6 @@
 package dev.sakura.mixin.render;
 
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -63,7 +63,7 @@ public class MixinChatHud {
     }
 
     private float getGlobalRadius() {
-        HudEditor hudEditor = Managers.MODULE.getModule(HudEditor.class);
+        HudEditor hudEditor = Sakura.MODULES.getModule(HudEditor.class);
         if (hudEditor != null) {
             return hudEditor.globalCornerRadius.get().floatValue();
         }

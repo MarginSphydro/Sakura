@@ -1,7 +1,6 @@
 package dev.sakura.module.impl.combat;
 
 import dev.sakura.events.client.TickEvent;
-import dev.sakura.events.player.PlayerTickEvent;
 import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.manager.Managers;
 import dev.sakura.manager.impl.RotationManager;
@@ -25,7 +24,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.util.ActionResult;
@@ -34,7 +32,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 

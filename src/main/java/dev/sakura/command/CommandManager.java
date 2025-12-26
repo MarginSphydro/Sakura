@@ -8,7 +8,6 @@ import dev.sakura.events.client.ChatMessageEvent;
 import dev.sakura.events.client.SuggestChatEvent;
 import dev.sakura.events.misc.KeyAction;
 import dev.sakura.events.misc.KeyEvent;
-import dev.sakura.manager.Managers;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -33,7 +32,7 @@ public class CommandManager {
     public CommandManager() {
         Sakura.EVENT_BUS.subscribe(this);
 
-        String savedPrefix = Managers.CONFIG.loadPrefix();
+        String savedPrefix = Sakura.CONFIG.loadPrefix();
         if (savedPrefix != null && !savedPrefix.isEmpty()) {
             this.prefix = savedPrefix;
             this.prefixKey = getPrefixKey(savedPrefix);

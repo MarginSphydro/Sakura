@@ -15,6 +15,7 @@ public class SakuraTheme {
     public static final Color BUTTON_BG = new Color(245, 245, 245);
     public static final Color BUTTON_BORDER = new Color(200, 200, 200);
     public static final Color INPUT_BG = new Color(240, 240, 240);
+    public static final Color INPUT_BORDER = new Color(200, 200, 200);
     public static final Color SELECTION = new Color(0, 0, 0, 20); // Light Gray Selection
 
     public static final float ROUNDING = 4.0f;

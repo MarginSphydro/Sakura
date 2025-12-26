@@ -11,7 +11,7 @@ public final class MicrosoftAccount implements MinecraftAccount {
     private String accessToken, username;
 
     /**
-     * Create a MicrosoftAccount instance using a previously saved access token
+     * 使用先前保存的访问令牌创建 MicrosoftAccount 实例
      *
      * @param accessToken the access token
      * @throws RuntimeException if access token is null or empty
@@ -25,7 +25,7 @@ public final class MicrosoftAccount implements MinecraftAccount {
     }
 
     /**
-     * Creates a MicrosoftAccount instance using login credentials
+     * 使用登录凭据创建 MicrosoftAccount 实例
      *
      * @param email    the microsoft email
      * @param password the account password
@@ -70,7 +70,7 @@ public final class MicrosoftAccount implements MinecraftAccount {
     @Override
     public JsonObject toJSON() {
         final JsonObject object = MinecraftAccount.super.toJSON();
-        // If we have an access token, we have a browser account
+        // 如果我们有访问令牌，则表示这是一个浏览器账户
         if (accessToken != null) {
             object.addProperty("token", accessToken);
         } else {

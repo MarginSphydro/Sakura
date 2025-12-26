@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
 
@@ -66,6 +66,6 @@ public abstract class Command {
 
     public String getUsage() {
         LiteralArgumentBuilder<CommandSource> builder = builders.getFirst();
-        return Managers.COMMAND.getDispatcher().getAllUsage(builder.build(), Managers.COMMAND.getSource(), false)[0];
+        return Sakura.COMMAND.getDispatcher().getAllUsage(builder.build(), Sakura.COMMAND.getSource(), false)[0];
     }
 }

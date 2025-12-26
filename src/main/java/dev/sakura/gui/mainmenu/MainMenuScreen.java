@@ -16,6 +16,7 @@ import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.Text;
+import org.lwjgl.nanovg.NanoVG;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -165,6 +166,14 @@ public class MainMenuScreen extends Screen {
         NanoVGRenderer.INSTANCE.draw(vg -> {
             renderIcon(finalTransitionProgress);
             renderButtons(mouseX, mouseY, finalTransitionProgress);
+
+            // Render logged in user
+            if (mc.getSession() != null) {
+                String loggedInText = "Logged in as: " + mc.getSession().getUsername();
+                NanoVGHelper.drawText(loggedInText, this.width - 5, 5, FontLoader.regular(18), 18,
+                        NanoVG.NVG_ALIGN_RIGHT | NanoVG.NVG_ALIGN_TOP, new Color(255, 255, 255, (int) (255 * finalTransitionProgress)));
+            }
+
             //renderVersionText(finalTransitionProgress);
             //renderCopyright(finalTransitionProgress);
         });

@@ -1,6 +1,6 @@
 package dev.sakura.module.impl.hud;
 
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
@@ -55,7 +55,7 @@ public class HotbarHud extends HudModule {
 
     @Override
     public void renderInGame(DrawContext context) {
-        HudEditor editor = Managers.MODULE.getModule(HudEditor.class);
+        HudEditor editor = Sakura.MODULES.getModule(HudEditor.class);
         if (editor != null && editor.isEnabled()) return;
 
         this.currentContext = context;
@@ -145,7 +145,7 @@ public class HotbarHud extends HudModule {
     }
 
     public float getRadius() {
-        dev.sakura.module.impl.client.HudEditor hudEditor = Managers.MODULE.getModule(dev.sakura.module.impl.client.HudEditor.class);
+        dev.sakura.module.impl.client.HudEditor hudEditor = Sakura.MODULES.getModule(dev.sakura.module.impl.client.HudEditor.class);
         if (hudEditor != null) {
             return hudEditor.globalCornerRadius.get().floatValue();
         }

@@ -1,6 +1,6 @@
 package dev.sakura.module.impl.hud;
 
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
@@ -44,7 +44,7 @@ public class KeyStrokesHud extends HudModule {
 
     @Override
     public void renderInGame(DrawContext context) {
-        HudEditor editor = Managers.MODULE.getModule(HudEditor.class);
+        HudEditor editor = Sakura.MODULES.getModule(HudEditor.class);
         if (editor != null && editor.isEnabled()) return;
 
         this.currentContext = context;

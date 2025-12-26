@@ -1,6 +1,6 @@
 package dev.sakura.mixin.render;
 
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.impl.render.NoRender;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.BossBarHud;
@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinBossBarHud {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void onRender(DrawContext context, CallbackInfo ci) {
-        if (Managers.MODULE.getModule(NoRender.class).noBossBar()) ci.cancel();
+        if (Sakura.MODULES.getModule(NoRender.class).noBossBar()) ci.cancel();
     }
 }

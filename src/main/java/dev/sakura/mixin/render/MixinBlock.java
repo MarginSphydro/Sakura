@@ -1,6 +1,6 @@
 package dev.sakura.mixin.render;
 
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.impl.render.XRay;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinBlock {
     @Inject(method = "shouldDrawSide", at = @At("HEAD"), cancellable = true)
     private static void onShouldDrawSide(BlockState state, BlockState neighborState, Direction side, CallbackInfoReturnable<Boolean> cir) {
-        XRay xray = Managers.MODULE.getModule(XRay.class);
+        XRay xray = Sakura.MODULES.getModule(XRay.class);
         if (xray.isEnabled()) {
             cir.setReturnValue(xray.shouldRender(state.getBlock()));
         }

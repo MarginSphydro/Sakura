@@ -1,6 +1,6 @@
 package dev.sakura.module.impl.hud;
 
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
 import dev.sakura.nanovg.font.FontLoader;
@@ -67,7 +67,7 @@ public class FPSHud extends HudModule {
     }
 
     private int calculateColor() {
-        long offset = Managers.MODULE.getAllModules().stream()
+        long offset = Sakura.MODULES.getAllModules().stream()
                 .filter(Module::isEnabled)
                 .count();
 

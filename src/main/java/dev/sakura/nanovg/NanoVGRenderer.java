@@ -29,7 +29,8 @@ public class NanoVGRenderer {
 
     public void initNanoVG() {
         if (!initialized) {
-            vg = nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+            // Remove NVG_STENCIL_STROKES as it can cause issues if the framebuffer doesn't have a stencil attachment
+            vg = nvgCreate(NVG_ANTIALIAS);
             if (vg == 0L) {
                 throw new RuntimeException("无法初始化NanoVG");
             }

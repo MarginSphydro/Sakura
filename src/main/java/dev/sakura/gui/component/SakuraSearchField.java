@@ -10,6 +10,8 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import org.lwjgl.nanovg.NanoVG;
 
+import java.awt.*;
+
 public class SakuraSearchField extends TextFieldWidget {
 
     private String placeholderText = "Search...";
@@ -28,19 +30,16 @@ public class SakuraSearchField extends TextFieldWidget {
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         NanoVGRenderer.INSTANCE.draw(vg -> {
             // Background
-            NanoVG.nvgBeginPath(vg);
-            NanoVG.nvgRoundedRect(vg, getX(), getY(), getWidth(), getHeight(), SakuraTheme.ROUNDING);
-            NanoVG.nvgFillColor(vg, SakuraTheme.color(SakuraTheme.INPUT_BG));
-            NanoVG.nvgFill(vg);
+            NanoVGHelper.drawRoundRect(getX(), getY(), getWidth(), getHeight(), SakuraTheme.ROUNDING, SakuraTheme.INPUT_BG);
 
             // Border
-            if (isFocused()) {
-                NanoVG.nvgStrokeColor(vg, SakuraTheme.color(SakuraTheme.BUTTON_BORDER));
-            } else {
-                NanoVG.nvgStrokeColor(vg, SakuraTheme.color(SakuraTheme.BUTTON_BORDER, 0.5f));
-            }
-            NanoVG.nvgStrokeWidth(vg, 1.0f);
-            NanoVG.nvgStroke(vg);
+            Color borderColor = isFocused() ? SakuraTheme.INPUT_BORDER : new Color(
+                    SakuraTheme.INPUT_BORDER.getRed(),
+                    SakuraTheme.INPUT_BORDER.getGreen(),
+                    SakuraTheme.INPUT_BORDER.getBlue(),
+                    128 // 0.5 * 255
+            );
+            NanoVGHelper.drawRoundRectOutline(getX(), getY(), getWidth(), getHeight(), SakuraTheme.ROUNDING, 1.0f, borderColor);
 
             // Clip content
             NanoVG.nvgScissor(vg, getX() + 2, getY(), getWidth() - 4, getHeight());

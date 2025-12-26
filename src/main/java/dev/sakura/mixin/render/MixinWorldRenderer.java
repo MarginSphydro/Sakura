@@ -3,7 +3,6 @@ package dev.sakura.mixin.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.sakura.Sakura;
 import dev.sakura.events.render.Render3DEvent;
-import dev.sakura.manager.Managers;
 import dev.sakura.module.impl.render.NoRender;
 import dev.sakura.utils.render.MSAAFramebuffer;
 import net.minecraft.client.render.*;
@@ -33,7 +32,7 @@ public class MixinWorldRenderer {
 
     @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
     private void onRenderWeather(FrameGraphBuilder frameGraphBuilder, Vec3d pos, float tickDelta, Fog fog, CallbackInfo ci) {
-        NoRender noRender = Managers.MODULE.getModule(NoRender.class);
+        NoRender noRender = Sakura.MODULES.getModule(NoRender.class);
         if (noRender.noWeather()) ci.cancel();
     }
 }

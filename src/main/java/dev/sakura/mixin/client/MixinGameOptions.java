@@ -1,6 +1,6 @@
 package dev.sakura.mixin.client;
 
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.module.impl.render.CameraClip;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Perspective;
@@ -17,9 +17,9 @@ public class MixinGameOptions {
 
     @Inject(method = "setPerspective", at = @At("HEAD"), cancellable = true)
     private void onSetPerspective(Perspective perspective, CallbackInfo ci) {
-        CameraClip cameraClip = Managers.MODULE.getModule(CameraClip.class);
+        CameraClip cameraClip = Sakura.MODULES.getModule(CameraClip.class);
 
-        if (cameraClip.isEnabled() && cameraClip.getDisableFirstPers()) {
+        if (cameraClip.isEnabled() && cameraClip.disableFirstPers.get()) {
             if (perspective == Perspective.THIRD_PERSON_FRONT) {
                 if (this.perspective == Perspective.FIRST_PERSON) {
                     this.perspective = Perspective.THIRD_PERSON_BACK;

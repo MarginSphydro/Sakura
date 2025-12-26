@@ -1,6 +1,6 @@
 package dev.sakura.mixin.render;
 
-import dev.sakura.manager.Managers;
+import dev.sakura.Sakura;
 import dev.sakura.mixin.accessor.IParticle;
 import dev.sakura.module.impl.render.NoRender;
 import dev.sakura.module.impl.render.TotemParticles;
@@ -22,7 +22,7 @@ public abstract class MixinParticleManager {
 
     @Inject(method = "addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)Lnet/minecraft/client/particle/Particle;", at = @At("HEAD"), cancellable = true)
     private void onAddParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ, CallbackInfoReturnable<Particle> cir) {
-        NoRender noRender = Managers.MODULE.getModule(NoRender.class);
+        NoRender noRender = Sakura.MODULES.getModule(NoRender.class);
         if (noRender != null && noRender.noExplosionParticles()) {
             if (parameters.getType() == ParticleTypes.EXPLOSION ||
                     parameters.getType() == ParticleTypes.EXPLOSION_EMITTER ||
@@ -32,7 +32,7 @@ public abstract class MixinParticleManager {
             }
         }
 
-        TotemParticles totemParticles = Managers.MODULE.getModule(TotemParticles.class);
+        TotemParticles totemParticles = Sakura.MODULES.getModule(TotemParticles.class);
         if (totemParticles != null && totemParticles.isEnabled() && totemParticles.isNoRender()) {
             if (parameters.getType() == ParticleTypes.TOTEM_OF_UNDYING) {
                 cir.setReturnValue(null);
@@ -45,7 +45,7 @@ public abstract class MixinParticleManager {
         Particle particle = cir.getReturnValue();
         if (particle == null) return;
 
-        TotemParticles totemParticles = Managers.MODULE.getModule(TotemParticles.class);
+        TotemParticles totemParticles = Sakura.MODULES.getModule(TotemParticles.class);
         if (totemParticles != null && totemParticles.isEnabled() && !totemParticles.isNoRender()) {
             if (parameters.getType() == ParticleTypes.TOTEM_OF_UNDYING) {
                 Color color = totemParticles.getNextColor();
@@ -59,7 +59,7 @@ public abstract class MixinParticleManager {
 
     @Inject(method = "addEmitter(Lnet/minecraft/entity/Entity;Lnet/minecraft/particle/ParticleEffect;I)V", at = @At("HEAD"), cancellable = true)
     private void onAddEmitter(Entity entity, ParticleEffect parameters, int maxAge, CallbackInfo ci) {
-        TotemParticles totemParticles = Managers.MODULE.getModule(TotemParticles.class);
+        TotemParticles totemParticles = Sakura.MODULES.getModule(TotemParticles.class);
         if (totemParticles != null && totemParticles.isEnabled()) {
             if (parameters.getType() == ParticleTypes.TOTEM_OF_UNDYING) {
                 if (totemParticles.isNoRender()) {
@@ -73,7 +73,7 @@ public abstract class MixinParticleManager {
 
     @Inject(method = "addEmitter(Lnet/minecraft/entity/Entity;Lnet/minecraft/particle/ParticleEffect;)V", at = @At("HEAD"), cancellable = true)
     private void onAddEmitterNoAge(Entity entity, ParticleEffect parameters, CallbackInfo ci) {
-        TotemParticles totemParticles = Managers.MODULE.getModule(TotemParticles.class);
+        TotemParticles totemParticles = Sakura.MODULES.getModule(TotemParticles.class);
         if (totemParticles != null && totemParticles.isEnabled()) {
             if (parameters.getType() == ParticleTypes.TOTEM_OF_UNDYING) {
                 if (totemParticles.isNoRender()) {

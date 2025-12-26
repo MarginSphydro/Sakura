@@ -1,7 +1,6 @@
 package dev.sakura.module.impl.hud;
 
 import dev.sakura.Sakura;
-import dev.sakura.manager.Managers;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;
@@ -136,7 +135,7 @@ public class DynamicIslandHud extends HudModule {
     }
 
     public float getRadius() {
-        HudEditor hudEditor = Managers.MODULE.getModule(HudEditor.class);
+        HudEditor hudEditor = Sakura.MODULES.getModule(HudEditor.class);
         if (hudEditor != null) {
             return hudEditor.globalCornerRadius.get().floatValue();
         }
