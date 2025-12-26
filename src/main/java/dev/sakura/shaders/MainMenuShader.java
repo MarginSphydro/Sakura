@@ -273,6 +273,7 @@ public class MainMenuShader {
         MAIN_MENU("mainmenu.fsh", "主菜单"),
         //SAKURA1("mainmenu_sakura1.fsh", "樱花效果 1"),
         SAKURA("mainmenu_sakura2.fsh", "樱花效果"),
+        CUTE("mainmenucute.fsh", "可爱效果"),
         //SAKURA3("mainmenu_sakura3.fsh", "樱花效果 3"),
         SEA("mainmenu_sea.fsh", "海洋效果"),
         TOKYO("mainmenu_tokyo.fsh", "东京夜景"),

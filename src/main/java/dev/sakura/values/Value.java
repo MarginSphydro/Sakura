@@ -1,7 +1,6 @@
 package dev.sakura.values;
 
 import dev.sakura.module.impl.client.ClickGui;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class Value<V> {
     protected final Dependency dependency;
