@@ -3,6 +3,7 @@ package dev.sakura.module;
 import dev.sakura.Sakura;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.module.impl.hud.DynamicIslandHud;
+import dev.sakura.module.impl.hud.ModuleListHud;
 import dev.sakura.utils.animations.Animation;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.DecelerateAnimation;
@@ -75,6 +76,7 @@ public class Module {
         if (this.state != state) {
             this.state = state;
             DynamicIslandHud.onModuleToggle(this, state);
+            ModuleListHud.onModuleToggle(this, state);
             if (state) {
                 Sakura.EVENT_BUS.subscribe(this);
                 onEnable();
