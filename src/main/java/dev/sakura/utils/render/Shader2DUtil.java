@@ -2,7 +2,6 @@ package dev.sakura.utils.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.sakura.shaders.BlurProgram;
-import dev.sakura.shaders.LiquidGlassProgram;
 import dev.sakura.shaders.MainMenuProgram;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -14,13 +13,11 @@ public class Shader2DUtil {
     public static MainMenuProgram MAIN_MENU_PROGRAM;
     //public static ArcShader ARC_PROGRAM;
     public static BlurProgram BLUR_PROGRAM;
-    public static LiquidGlassProgram LIQUID_GLASS_PROGRAM;
 
     public static void init() {
-        //ARC_PROGRAM = new ArcShader();
         MAIN_MENU_PROGRAM = new MainMenuProgram();
+        //ARC_PROGRAM = new ArcShader();
         BLUR_PROGRAM = new BlurProgram();
-        LIQUID_GLASS_PROGRAM = new LiquidGlassProgram();
     }
 
     public static void drawQuadBlur(MatrixStack matrices, float x, float y, float width, float height, float blurStrength, float blurOpacity) {
@@ -39,21 +36,6 @@ public class Shader2DUtil {
         BufferBuilder bb = preShaderDraw(matrices, x - 10, y - 10, width + 20, height + 20);
         BLUR_PROGRAM.setParameters(x, y, width, height, radius, c1, blurStrenth, blurOpacity);
         BLUR_PROGRAM.use();
-
-        BufferRenderer.drawWithGlobalProgram(bb.end());
-        endRender();
-    }
-
-    public static void drawLiquidGlass(MatrixStack matrices, float x, float y, float width, float height, float radius) {
-        drawLiquidGlass(matrices, x, y, width, height, radius, 6f, 30f, 10f, 1.05f, 0.92f);
-    }
-
-    public static void drawLiquidGlass(MatrixStack matrices, float x, float y, float width, float height,
-                                       float radius, float blur, float refraction, float edge, float bright, float sat) {
-        float padding = Math.max(30, edge * 3);
-        BufferBuilder bb = preShaderDraw(matrices, x - padding, y - padding, width + padding * 2, height + padding * 2);
-        LIQUID_GLASS_PROGRAM.setParameters(x, y, width, height, radius, blur, refraction, edge, bright, sat);
-        LIQUID_GLASS_PROGRAM.use();
 
         BufferRenderer.drawWithGlobalProgram(bb.end());
         endRender();
