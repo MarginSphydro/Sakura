@@ -42,7 +42,7 @@ public class MultiBoolValueComponent extends Component {
         int font = FontLoader.regular(titleFontSize);
         float fontHeight = NanoVGHelper.getFontHeight(font, titleFontSize);
 
-        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, titleFontSize, WHITE));
+        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getDisplayName(), getX(), getY(), font, titleFontSize, WHITE));
 
         for (BoolValue boolValue : setting.getValues()) {
             float off = NanoVGHelper.getTextWidth(boolValue.getName(), font, titleFontSize) + 4 * scale;

@@ -23,15 +23,15 @@ public class CameraClip extends Module {
         ACTION
     }
 
-    public final Value<Boolean> disableFirstPers = new BoolValue("NoFirst", true);
-    private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.ACTION);
-    private final Value<Double> distance = new NumberValue<>("Distance", 3.5, 1.0, 20.0, 0.5, () -> mode.is(Mode.NORMAL));
-    private final Value<Double> speed = new NumberValue<>("Speed", 10.0, 1.0, 50.0, 0.5, () -> mode.is(Mode.NORMAL));
-    private final Value<Double> actionDistance = new NumberValue<>("ActionDistance", 4.0, 0.5, 20.0, 0.5, () -> mode.is(Mode.ACTION));
-    private final Value<Double> smoothness = new NumberValue<>("Smoothness", 0.3, 0.1, 0.95, 0.01, () -> mode.is(Mode.ACTION));
-    private final Value<Double> maxDistance = new NumberValue<>("MaxDistance", 20.0, 5.0, 50.0, 0.5, () -> mode.is(Mode.ACTION));
-    private final Value<Double> rotationSmoothness = new NumberValue<>("RotationSmoothness", 0.15, 0.01, 0.5, 0.01, () -> mode.is(Mode.ACTION));
-    private final Value<Double> rotationOffset = new NumberValue<>("RotationOffset", 2.0, 0.0, 10.0, 0.1, () -> mode.is(Mode.ACTION));
+    public final Value<Boolean> disableFirstPers = new BoolValue("NoFirst", "禁止第一人称", true);
+    private final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.ACTION);
+    private final Value<Double> distance = new NumberValue<>("Distance", "距离", 3.5, 1.0, 20.0, 0.5, () -> mode.is(Mode.NORMAL));
+    private final Value<Double> speed = new NumberValue<>("Speed", "速度", 10.0, 1.0, 50.0, 0.5, () -> mode.is(Mode.NORMAL));
+    private final Value<Double> actionDistance = new NumberValue<>("ActionDistance", "动作距离", 4.0, 0.5, 20.0, 0.5, () -> mode.is(Mode.ACTION));
+    private final Value<Double> smoothness = new NumberValue<>("Smoothness", "平滑度", 0.3, 0.1, 0.95, 0.01, () -> mode.is(Mode.ACTION));
+    private final Value<Double> maxDistance = new NumberValue<>("MaxDistance", "最大距离", 20.0, 5.0, 50.0, 0.5, () -> mode.is(Mode.ACTION));
+    private final Value<Double> rotationSmoothness = new NumberValue<>("RotationSmoothness", "旋转平滑", 0.15, 0.01, 0.5, 0.01, () -> mode.is(Mode.ACTION));
+    private final Value<Double> rotationOffset = new NumberValue<>("RotationOffset", "旋转偏移", 2.0, 0.0, 10.0, 0.1, () -> mode.is(Mode.ACTION));
 
     private Vec3d cameraPos;
     private int key = GLFW.GLFW_KEY_F6;

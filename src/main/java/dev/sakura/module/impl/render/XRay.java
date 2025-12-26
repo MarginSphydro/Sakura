@@ -17,17 +17,17 @@ public class XRay extends Module {
         initOreMap();
     }
 
-    private final BoolValue coal = new BoolValue("Coal", false);
-    private final BoolValue iron = new BoolValue("Iron", true);
-    private final BoolValue gold = new BoolValue("Gold", true);
-    private final BoolValue redstone = new BoolValue("Redstone", true);
-    private final BoolValue lapis = new BoolValue("Lapis", true);
-    private final BoolValue diamond = new BoolValue("Diamond", true);
-    private final BoolValue emerald = new BoolValue("Emerald", true);
-    private final BoolValue copper = new BoolValue("Copper", true);
-    private final BoolValue netherite = new BoolValue("Netherite", true);
-    private final BoolValue netherGold = new BoolValue("NetherGold", true);
-    private final BoolValue netherQuartz = new BoolValue("NetherQuartz", false);
+    private final BoolValue coal = new BoolValue("Coal", "煤矿", false);
+    private final BoolValue iron = new BoolValue("Iron", "铁矿", true);
+    private final BoolValue gold = new BoolValue("Gold", "金矿", true);
+    private final BoolValue redstone = new BoolValue("Redstone", "红石", true);
+    private final BoolValue lapis = new BoolValue("Lapis", "青金石", true);
+    private final BoolValue diamond = new BoolValue("Diamond", "钻石", true);
+    private final BoolValue emerald = new BoolValue("Emerald", "绿宝石", true);
+    private final BoolValue copper = new BoolValue("Copper", "铜矿", true);
+    private final BoolValue netherite = new BoolValue("Netherite", "下界合金", true);
+    private final BoolValue netherGold = new BoolValue("NetherGold", "下界金矿", true);
+    private final BoolValue netherQuartz = new BoolValue("NetherQuartz", "下界石英", false);
 
     private final Map<Block, BoolValue> oreMap = new HashMap<>();
 

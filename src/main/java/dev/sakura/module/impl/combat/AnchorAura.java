@@ -36,28 +36,28 @@ import net.minecraft.util.math.Direction;
 import java.awt.*;
 
 public class AnchorAura extends Module {
-    private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
-    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 8.0, 1.0, 12.0, 1.0, () -> page.is(Page.General));
-    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 1.0, () -> page.is(Page.General));
-    private final BoolValue usingPause = new BoolValue("Using Pause", true, () -> page.is(Page.General));
-    private final BoolValue inventorySwap = new BoolValue("Inventory Swap", true, () -> page.is(Page.General));
-    private final BoolValue swingHand = new BoolValue("Swing", true, () -> page.is(Page.General));
-    private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", 0.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
-    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", 50.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
+    private final EnumValue<Page> page = new EnumValue<>("Page", "页面", Page.General);
+    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", "目标范围", 8.0, 1.0, 12.0, 1.0, () -> page.is(Page.General));
+    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", "放置范围", 5.0, 1.0, 6.0, 1.0, () -> page.is(Page.General));
+    private final BoolValue usingPause = new BoolValue("Using Pause", "使用暂停", true, () -> page.is(Page.General));
+    private final BoolValue inventorySwap = new BoolValue("Inventory Swap", "背包切换", true, () -> page.is(Page.General));
+    private final BoolValue swingHand = new BoolValue("Swing", "挥手", true, () -> page.is(Page.General));
+    private final NumberValue<Double> placeDelay = new NumberValue<>("Place Delay", "放置延迟", 0.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
+    private final NumberValue<Double> updateDelay = new NumberValue<>("Update Delay", "更新延迟", 50.0, 0.0, 1000.0, 1.0, () -> page.is(Page.General));
 
-    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
-    private final NumberValue<Double> breakMin = new NumberValue<>("Break Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
-    private final NumberValue<Double> minHeadDamage = new NumberValue<>("Min Head Damage", 7.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
-    private final NumberValue<Double> minPrefer = new NumberValue<>("Min Prefer Damage", 7.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
-    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", "最小伤害", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+    private final NumberValue<Double> breakMin = new NumberValue<>("Break Min Damage", "最小破坏伤害", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+    private final NumberValue<Double> minHeadDamage = new NumberValue<>("Min Head Damage", "最小头部伤害", 7.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+    private final NumberValue<Double> minPrefer = new NumberValue<>("Min Prefer Damage", "最小偏好伤害", 7.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
+    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", "最大自伤", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.Calc));
 
-    private final BoolValue rotate = new BoolValue("Rotate", true, () -> page.is(Page.Rotate));
-    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, () -> page.is(Page.Rotate) && rotate.get());
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, () -> page.is(Page.Rotate) && rotate.get());
+    private final BoolValue rotate = new BoolValue("Rotate", "旋转", true, () -> page.is(Page.Rotate));
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 10, 0, 10, 1, () -> page.is(Page.Rotate) && rotate.get());
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", "回转速度", 10, 0, 10, 1, () -> page.is(Page.Rotate) && rotate.get());
 
-    private final BoolValue render = new BoolValue("Render", true, () -> page.is(Page.Render));
-    private final ColorValue boxColor = new ColorValue("BoxColor", new Color(255, 255, 255, 255), () -> page.is(Page.Render) && render.get());
-    private final ColorValue fillColor = new ColorValue("FillColor", new Color(255, 255, 255, 50), () -> page.is(Page.Render) && render.get());
+    private final BoolValue render = new BoolValue("Render", "渲染", true, () -> page.is(Page.Render));
+    private final ColorValue boxColor = new ColorValue("BoxColor", "方块颜色", new Color(255, 255, 255, 255), () -> page.is(Page.Render) && render.get());
+    private final ColorValue fillColor = new ColorValue("FillColor", "填充颜色", new Color(255, 255, 255, 50), () -> page.is(Page.Render) && render.get());
 
     public AnchorAura() {
         super("AnchorAura", "重生锚光环", Category.Combat);

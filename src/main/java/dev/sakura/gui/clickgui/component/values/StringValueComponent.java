@@ -37,8 +37,7 @@ public class StringValueComponent extends Component {
         }
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(),
-                    FontLoader.regular(titleFontSize), titleFontSize, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(setting.getDisplayName(), getX(), getY(), FontLoader.regular(titleFontSize), titleFontSize, new Color(255, 255, 255, 255));
 
             float inputWidth = getWidth();
             float inputX = getX();

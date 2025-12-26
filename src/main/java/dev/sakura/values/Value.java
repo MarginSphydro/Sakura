@@ -1,13 +1,18 @@
 package dev.sakura.values;
 
+import dev.sakura.module.impl.client.ClickGui;
+import org.jetbrains.annotations.Nullable;
+
 public abstract class Value<V> {
     protected final Dependency dependency;
     protected V value;
     protected V defaultValue;
     protected final String name;
+    protected final String chineseName;
 
-    public Value(String name, Dependency dependency) {
+    public Value(String name, String chineseName, Dependency dependency) {
         this.name = name;
+        this.chineseName = chineseName;
         this.dependency = dependency;
     }
 
@@ -19,12 +24,8 @@ public abstract class Value<V> {
         return defaultValue;
     }
 
-    public Value(String name, String description) {
-        this(name, () -> true);
-    }
-
-    public Value(String name) {
-        this(name, () -> true);
+    public Value(String name, String chineseName) {
+        this(name, chineseName, () -> true);
     }
 
     public V get() {
@@ -37,6 +38,17 @@ public abstract class Value<V> {
 
     public String getName() {
         return name;
+    }
+
+    public String getDisplayName() {
+        if (ClickGui.language.get() == ClickGui.Language.Chinese) {
+            return chineseName == null ? name : chineseName;
+        }
+        return name;
+    }
+
+    public String getChineseName() {
+        return chineseName;
     }
 
     public boolean isAvailable() {

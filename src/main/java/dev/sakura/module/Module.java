@@ -10,6 +10,7 @@ import dev.sakura.utils.animations.impl.DecelerateAnimation;
 import dev.sakura.values.Value;
 import dev.sakura.values.impl.BoolValue;
 import net.minecraft.client.MinecraftClient;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class Module {
         this.chineseName = chineseName;
         this.category = category;
         this.mc = MinecraftClient.getInstance();
-        this.hidden = new BoolValue("Hidden", false);
+        this.hidden = new BoolValue("Hidden", "隐藏", false);
         this.values.add(this.hidden);
     }
 

@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class MultiBoolValue extends Value {
+public class MultiBoolValue extends Value<List<BoolValue>> {
     public List<BoolValue> options;
     public int index;
 
-    public MultiBoolValue(String name, Dependency dependency, List<BoolValue> options) {
-        super(name, dependency);
+    public MultiBoolValue(String name, String chineseName, Dependency dependency, List<BoolValue> options) {
+        super(name, chineseName, dependency);
         this.options = options;
         index = options.size();
     }
 
-    public MultiBoolValue(String name, List<BoolValue> options) {
-        super(name);
+    public MultiBoolValue(String name, String chineseName, List<BoolValue> options) {
+        super(name, chineseName);
         this.options = options;
         index = options.size();
     }

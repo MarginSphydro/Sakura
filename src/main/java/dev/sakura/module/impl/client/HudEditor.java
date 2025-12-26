@@ -9,7 +9,7 @@ import dev.sakura.values.impl.NumberValue;
 
 public class HudEditor extends Module {
 
-    public final NumberValue<Double> globalCornerRadius = new NumberValue<>("GlobalCornerRadius", 6.0, 0.0, 20.0, 1.0);
+    public final NumberValue<Double> globalCornerRadius = new NumberValue<>("GlobalCornerRadius", "全局圆角半径", 6.0, 0.0, 20.0, 1.0);
 
     public HudEditor() {
         super("HudEditor", "自定义界面", Category.Client);

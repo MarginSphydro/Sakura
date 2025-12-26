@@ -32,16 +32,16 @@ public class JumpCircles extends Module {
         Custom, Client, Rainbow
     }
 
-    private final NumberValue<Integer> maxTime = new NumberValue<>("Max Time", 3000, 1000, 8000, 100);
-    private final NumberValue<Double> radius = new NumberValue<>("Radius", 2.0, 0.5, 5.0, 0.1);
-    private final NumberValue<Integer> segments = new NumberValue<>("Segments", 60, 20, 120, 5);
-    private final EnumValue<ColorMode> colorMode = new EnumValue<>("Color Mode", ColorMode.Client);
-    private final ColorValue circleColor = new ColorValue("Circle Color", new Color(255, 100, 255, 200), () -> colorMode.is(ColorMode.Custom));
-    private final BoolValue fade = new BoolValue("Fade Effect", true);
-    private final BoolValue glow = new BoolValue("Glow", true);
-    private final NumberValue<Integer> glowLayers = new NumberValue<>("Glow Layers", 5, 1, 10, 1, glow::get);
-    private final BoolValue rotate = new BoolValue("Rotate", true);
-    private final NumberValue<Double> rotateSpeed = new NumberValue<>("Rotate Speed", 2.0, 0.5, 10.0, 0.5, rotate::get);
+    private final NumberValue<Integer> maxTime = new NumberValue<>("Max Time", "最大时间", 3000, 1000, 8000, 100);
+    private final NumberValue<Double> radius = new NumberValue<>("Radius", "半径", 2.0, 0.5, 5.0, 0.1);
+    private final NumberValue<Integer> segments = new NumberValue<>("Segments", "分段数", 60, 20, 120, 5);
+    private final EnumValue<ColorMode> colorMode = new EnumValue<>("Color Mode", "颜色模式", ColorMode.Client);
+    private final ColorValue circleColor = new ColorValue("Circle Color", "光圈颜色", new Color(255, 100, 255, 200), () -> colorMode.is(ColorMode.Custom));
+    private final BoolValue fade = new BoolValue("Fade Effect", "淡出效果", true);
+    private final BoolValue glow = new BoolValue("Glow", "发光", true);
+    private final NumberValue<Integer> glowLayers = new NumberValue<>("Glow Layers", "发光层数", 5, 1, 10, 1, glow::get);
+    private final BoolValue rotate = new BoolValue("Rotate", "旋转", true);
+    private final NumberValue<Double> rotateSpeed = new NumberValue<>("Rotate Speed", "旋转速度", 2.0, 0.5, 10.0, 0.5, rotate::get);
 
     private final List<JumpCircle> circles = new ArrayList<>();
     private boolean wasOnGround = true;

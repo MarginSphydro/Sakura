@@ -23,18 +23,18 @@ import net.minecraft.util.math.Box;
 public class Speed extends Module {
     public static Speed INSTANCE;
 
-    private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Strafe);
-    private final BoolValue inWater = new BoolValue("InWater", false, () -> mode.get() != Mode.GrimCollide);
-    private final BoolValue airStop = new BoolValue("AirStop", false, () -> mode.get() != Mode.GrimCollide);
-    private final BoolValue jump = new BoolValue("Jump", true, () -> mode.get() == Mode.Strafe);
-    private final NumberValue<Double> speed = new NumberValue<>("Speed", 0.2873, 0.1, 1.0, 0.01, () -> mode.get() == Mode.Strafe);
-    private final BoolValue velocityBoost = new BoolValue("VelocityBoost", true, () -> mode.get() == Mode.Strafe);
-    private final NumberValue<Double> hFactor = new NumberValue<>("H-Factor", 1.0, 0.0, 5.0, 0.1, () -> mode.get() == Mode.Strafe);
-    private final NumberValue<Double> vFactor = new NumberValue<>("V-Factor", 1.0, 0.0, 5.0, 0.1, () -> mode.get() == Mode.Strafe);
-    private final NumberValue<Integer> cooldown = new NumberValue<>("Cooldown", 1000, 0, 5000, 100, () -> mode.get() == Mode.Strafe);
-    private final BoolValue slowness = new BoolValue("Slowness", false, () -> mode.get() == Mode.Strafe);
-    private final NumberValue<Double> collideSpeed = new NumberValue<>("CollideSpeed", 0.08, 0.01, 0.15, 0.01, () -> mode.get() == Mode.GrimCollide);
-    private final NumberValue<Integer> lagTime = new NumberValue<>("LagTime", 500, 0, 1000, 50);
+    private final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Strafe);
+    private final BoolValue inWater = new BoolValue("InWater", "水中启用", false, () -> mode.get() != Mode.GrimCollide);
+    private final BoolValue airStop = new BoolValue("AirStop", "空中停止", false, () -> mode.get() != Mode.GrimCollide);
+    private final BoolValue jump = new BoolValue("Jump", "跳跃", true, () -> mode.get() == Mode.Strafe);
+    private final NumberValue<Double> speed = new NumberValue<>("Speed", "速度", 0.2873, 0.1, 1.0, 0.01, () -> mode.get() == Mode.Strafe);
+    private final BoolValue velocityBoost = new BoolValue("VelocityBoost", "速度增强", true, () -> mode.get() == Mode.Strafe);
+    private final NumberValue<Double> hFactor = new NumberValue<>("H-Factor", "水平因子", 1.0, 0.0, 5.0, 0.1, () -> mode.get() == Mode.Strafe);
+    private final NumberValue<Double> vFactor = new NumberValue<>("V-Factor", "垂直因子", 1.0, 0.0, 5.0, 0.1, () -> mode.get() == Mode.Strafe);
+    private final NumberValue<Integer> cooldown = new NumberValue<>("Cooldown", "冷却", 1000, 0, 5000, 100, () -> mode.get() == Mode.Strafe);
+    private final BoolValue slowness = new BoolValue("Slowness", "缓慢", false, () -> mode.get() == Mode.Strafe);
+    private final NumberValue<Double> collideSpeed = new NumberValue<>("CollideSpeed", "碰撞速度", 0.08, 0.01, 0.15, 0.01, () -> mode.get() == Mode.GrimCollide);
+    private final NumberValue<Integer> lagTime = new NumberValue<>("LagTime", "滞后时间", 500, 0, 1000, 50);
 
     private final TimerUtil expTimer = new TimerUtil();
     private final TimerUtil lagTimer = new TimerUtil();

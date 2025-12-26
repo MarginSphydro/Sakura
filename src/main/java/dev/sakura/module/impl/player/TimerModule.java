@@ -9,7 +9,7 @@ public class TimerModule extends Module {
         super("Timer", "变速", Category.Player);
     }
 
-    public final NumberValue<Double> speed = new NumberValue<>("Speed", 1.0, 0.1, 5.0, 0.1);
+    public final NumberValue<Double> speed = new NumberValue<>("Speed", "速度", 1.0, 0.1, 5.0, 0.1);
 
     public float getTimerSpeed() {
         if (isEnabled()) {

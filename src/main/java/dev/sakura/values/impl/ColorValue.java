@@ -15,19 +15,19 @@ public class ColorValue extends Value<Color> {
     public boolean expand;
     private final Color defaultColor;
 
-    public ColorValue(String name, Color defaultValue, boolean allowAlpha, Dependency dependency) {
-        super(name, dependency);
+    public ColorValue(String name, String chineseName, Color defaultValue, boolean allowAlpha, Dependency dependency) {
+        super(name, chineseName, dependency);
         this.allowAlpha = allowAlpha;
         this.defaultColor = defaultValue;
         set(defaultValue);
     }
 
-    public ColorValue(String name, Color defaultValue, Dependency dependency) {
-        this(name, defaultValue, true, dependency);
+    public ColorValue(String name, String chineseName, Color defaultValue, Dependency dependency) {
+        this(name, chineseName, defaultValue, true, dependency);
     }
 
-    public ColorValue(String name, Color defaultValue) {
-        this(name, defaultValue, true, () -> true);
+    public ColorValue(String name, String chineseName, Color defaultValue) {
+        this(name, chineseName, defaultValue, true, () -> true);
     }
 
     public Color get() {

@@ -20,11 +20,11 @@ public class TotemParticles extends Module {
         Rainbow
     }
 
-    private final BoolValue noRender = new BoolValue("No Render", false);
-    private final EnumValue<ColorMode> colorMode = new EnumValue<>("Color Mode", ColorMode.Gradient, () -> !noRender.get());
-    private final ColorValue color1 = new ColorValue("Color 1", new Color(255, 100, 100), () -> !noRender.get());
-    private final ColorValue color2 = new ColorValue("Color 2", new Color(100, 255, 255), () -> !noRender.get() && !colorMode.is(ColorMode.Static));
-    private final NumberValue<Double> rainbowSpeed = new NumberValue<>("Rainbow Speed", 5.0, 1.0, 20.0, 0.5, () -> !noRender.get() && colorMode.is(ColorMode.Rainbow));
+    private final BoolValue noRender = new BoolValue("No Render", "不渲染", false);
+    private final EnumValue<ColorMode> colorMode = new EnumValue<>("Color Mode", "颜色模式", ColorMode.Gradient, () -> !noRender.get());
+    private final ColorValue color1 = new ColorValue("Color 1", "颜色1", new Color(255, 100, 100), () -> !noRender.get());
+    private final ColorValue color2 = new ColorValue("Color 2", "颜色2", new Color(100, 255, 255), () -> !noRender.get() && !colorMode.is(ColorMode.Static));
+    private final NumberValue<Double> rainbowSpeed = new NumberValue<>("Rainbow Speed", "彩虹速度", 5.0, 1.0, 20.0, 0.5, () -> !noRender.get() && colorMode.is(ColorMode.Rainbow));
 
     private int particleIndex = 0;
 

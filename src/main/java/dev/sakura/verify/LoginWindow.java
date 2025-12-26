@@ -375,7 +375,7 @@ public class LoginWindow {
 
         // Try loading from resources
         try {
-            InputStream is = LoginWindow.class.getResourceAsStream("/assets/sakura/fonts/Kuriyama.ttf");
+            InputStream is = LoginWindow.class.getResourceAsStream("/assets/sakura/fonts/kuriyama.ttf");
             if (is != null) {
                 byte[] bytes = is.readAllBytes();
                 is.close();

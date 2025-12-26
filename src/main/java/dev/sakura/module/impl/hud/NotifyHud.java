@@ -25,16 +25,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class NotifyHud extends HudModule {
     public static NotifyHud INSTANCE;
 
-    private final BoolValue totemPop = new BoolValue("TotemPop", true);
-    private final BoolValue selfPop = new BoolValue("SelfPop", true, totemPop::get);
-    private final BoolValue enemyPop = new BoolValue("EnemyPop", true, totemPop::get);
-    private final BoolValue deathNotify = new BoolValue("DeathNotify", true);
-    private final BoolValue packetWarning = new BoolValue("PacketWarning", true);
-    private final NumberValue<Integer> packetThreshold = new NumberValue<>("PacketLimit", 20, 10, 50, 1, packetWarning::get);
-    private final BoolValue blockWarning = new BoolValue("BlockWarning", true);
-    private final NumberValue<Integer> blockThreshold = new NumberValue<>("BlockThreshold", 20, 5, 64, 1, blockWarning::get);
-    private final BoolValue blur = new BoolValue("Blur", true);
-    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 4.0, 1.0, 20.0, 0.5, blur::get);
+    private final BoolValue totemPop = new BoolValue("TotemPop", "图腾弹出", true);
+    private final BoolValue selfPop = new BoolValue("SelfPop", "自身弹出", true, totemPop::get);
+    private final BoolValue enemyPop = new BoolValue("EnemyPop", "敌人弹出", true, totemPop::get);
+    private final BoolValue deathNotify = new BoolValue("DeathNotify", "死亡通知", true);
+    private final BoolValue packetWarning = new BoolValue("PacketWarning", "发包警告", true);
+    private final NumberValue<Integer> packetThreshold = new NumberValue<>("PacketLimit", "发包限制", 20, 10, 50, 1, packetWarning::get);
+    private final BoolValue blockWarning = new BoolValue("BlockWarning", "方块警告", true);
+    private final NumberValue<Integer> blockThreshold = new NumberValue<>("BlockThreshold", "方块阈值", 20, 5, 64, 1, blockWarning::get);
+    private final BoolValue blur = new BoolValue("Blur", "模糊", true);
+    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", "模糊强度", 4.0, 1.0, 20.0, 0.5, blur::get);
 
     private final List<NotifyEntry> notifications = new CopyOnWriteArrayList<>();
     private final Map<UUID, Integer> popCounts = new HashMap<>();

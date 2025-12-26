@@ -9,6 +9,7 @@ import dev.sakura.nanovg.util.NanoVGHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
@@ -41,7 +42,7 @@ public abstract class HudModule extends Module {
     private final float defaultX;
     private final float defaultY;
 
-    public HudModule(String englishName, String chineseName, float defaultX, float defaultY) {
+    public HudModule(String englishName, @Nullable String chineseName, float defaultX, float defaultY) {
         super(englishName, chineseName, null);
         this.defaultX = defaultX;
         this.defaultY = defaultY;

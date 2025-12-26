@@ -25,13 +25,13 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class NoSlow extends Module {
-    public final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Vanilla);
-    public final BoolValue invFix = new BoolValue("Rotate Fix", false, () -> mode.get() == Mode.Meow);
-    public final BoolValue items = new BoolValue("Items", true);
-    public final BoolValue guiMove = new BoolValue("Inv Move", true);
-    public final BoolValue webs = new BoolValue("Webs", true);
-    public final BoolValue crawling = new BoolValue("Crawling", false);
-    public final BoolValue sneak = new BoolValue("Sneaking", false);
+    public final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Vanilla);
+    public final BoolValue invFix = new BoolValue("Rotate Fix", "旋转修复", false, () -> mode.get() == Mode.Meow);
+    public final BoolValue items = new BoolValue("Items", "物品", true);
+    public final BoolValue guiMove = new BoolValue("Inv Move", "背包移动", true);
+    public final BoolValue webs = new BoolValue("Webs", "蜘蛛网", true);
+    public final BoolValue crawling = new BoolValue("Crawling", "爬行", false);
+    public final BoolValue sneak = new BoolValue("Sneaking", "潜行", false);
 
     public NoSlow() {
         super("NoSlow", "无减速", Category.Movement);

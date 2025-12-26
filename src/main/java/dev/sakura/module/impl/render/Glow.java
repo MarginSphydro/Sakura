@@ -26,12 +26,12 @@ import java.util.List;
 public class Glow extends Module {
     public static Glow INSTANCE;
 
-    private final BoolValue players = new BoolValue("Players", true);
-    private final BoolValue self = new BoolValue("Self", false);
-    private final ColorValue color = new ColorValue("Color", new Color(255, 180, 220, 180));
-    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 12.0, 4.0, 25.0, 1.0);
-    private final NumberValue<Double> colorIntensity = new NumberValue<>("ColorIntensity", 0.4, 0.0, 1.0, 0.05);
-    private final BoolValue nativeGlow = new BoolValue("NativeGlow", true);
+    private final BoolValue players = new BoolValue("Players", "玩家", true);
+    private final BoolValue self = new BoolValue("Self", "自己", false);
+    private final ColorValue color = new ColorValue("Color", "颜色", new Color(255, 180, 220, 180));
+    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", "模糊强度", 12.0, 4.0, 25.0, 1.0);
+    private final NumberValue<Double> colorIntensity = new NumberValue<>("ColorIntensity", "颜色强度", 0.4, 0.0, 1.0, 0.05);
+    private final BoolValue nativeGlow = new BoolValue("NativeGlow", "原生发光", true);
 
     private final List<PlayerScreenData> playerScreenPositions = new ArrayList<>();
 

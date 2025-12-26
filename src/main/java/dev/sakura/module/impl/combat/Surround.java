@@ -38,22 +38,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Surround extends Module {
-    private final NumberValue<Integer> delay = new NumberValue<>("Delay", 0, 0, 10, 1);
-    private final NumberValue<Integer> blocksPerTick = new NumberValue<>("Blocks Per Tick", 4, 1, 10, 1);
-    private final BoolValue rotate = new BoolValue("Rotate", true);
-    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, rotate::get);
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", 10, 0, 10, 1, rotate::get);
-    private final BoolValue center = new BoolValue("Center", false);
-    private final BoolValue smartCenter = new BoolValue("Smart Center", true, center::get);
-    private final BoolValue phaseCenter = new BoolValue("Phase Friendly", true, center::get);
-    private final BoolValue extend = new BoolValue("Extend", true);
-    private final BoolValue support = new BoolValue("Support", true);
-    private final BoolValue floor = new BoolValue("Floor", true);
-    private final BoolValue attack = new BoolValue("Attack", true);
-    private final BoolValue render = new BoolValue("Render", true);
-    private final BoolValue swingHand = new BoolValue("Swing Hand", true);
-    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 183, 197, 100), render::get);
-    private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 105, 180), render::get);
+    private final NumberValue<Integer> delay = new NumberValue<>("Delay", "延迟", 0, 0, 10, 1);
+    private final NumberValue<Integer> blocksPerTick = new NumberValue<>("Blocks Per Tick", "每刻方块", 4, 1, 10, 1);
+    private final BoolValue rotate = new BoolValue("Rotate", "旋转", true);
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 10, 0, 10, 1, rotate::get);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", "回转速度", 10, 0, 10, 1, rotate::get);
+    private final BoolValue center = new BoolValue("Center", "中心", false);
+    private final BoolValue smartCenter = new BoolValue("Smart Center", "智能中心", true, center::get);
+    private final BoolValue phaseCenter = new BoolValue("Phase Friendly", "相位友好", true, center::get);
+    private final BoolValue extend = new BoolValue("Extend", "扩展", true);
+    private final BoolValue support = new BoolValue("Support", "支持", true);
+    private final BoolValue floor = new BoolValue("Floor", "地板", true);
+    private final BoolValue attack = new BoolValue("Attack", "攻击", true);
+    private final BoolValue render = new BoolValue("Render", "渲染", true);
+    private final BoolValue swingHand = new BoolValue("Swing Hand", "挥手", true);
+    private final ColorValue sideColor = new ColorValue("Side Color", "侧面颜色", new Color(255, 183, 197, 100), render::get);
+    private final ColorValue lineColor = new ColorValue("Line Color", "线条颜色", new Color(255, 105, 180), render::get);
 
     private boolean isCentered;
     private final TimerUtil timer = new TimerUtil();

@@ -15,10 +15,10 @@ import dev.sakura.values.impl.NumberValue;
 import java.awt.*;
 
 public class WatermarkHud extends HudModule {
-    private final Value<Double> hudScale = new NumberValue<>("Scale", 1.0, 0.5, 2.0, 0.1);
-    private final Value<Color> backgroundColor = new ColorValue("Background Color", new Color(0, 0, 0, 50));
-    private final Value<Boolean> backgroundBlur = new BoolValue("Background Blur", false);
-    private final Value<Double> blurStrength = new NumberValue<>("Blur Strength", 8.0, 1.0, 20.0, 0.5, backgroundBlur::get);
+    private final Value<Double> hudScale = new NumberValue<>("Scale", "缩放", 1.0, 0.5, 2.0, 0.1);
+    private final Value<Color> backgroundColor = new ColorValue("Background Color", "背景颜色", new Color(0, 0, 0, 50));
+    private final Value<Boolean> backgroundBlur = new BoolValue("Background Blur", "背景模糊", false);
+    private final Value<Double> blurStrength = new NumberValue<>("Blur Strength", "模糊强度", 8.0, 1.0, 20.0, 0.5, backgroundBlur::get);
 
     public WatermarkHud() {
         super("Watermark", "水印", 10, 10);

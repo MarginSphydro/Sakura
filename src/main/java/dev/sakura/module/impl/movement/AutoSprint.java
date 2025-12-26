@@ -23,11 +23,11 @@ public class AutoSprint extends Module {
         super("AutoSprint", "自动疾跑", Category.Movement);
     }
 
-    public final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Strict);
-    public final BoolValue keepSprint = new BoolValue("Keep Sprint", false);
-    public final BoolValue unsprintOnHit = new BoolValue("Unsprint On Hit", false);
-    public final BoolValue unsprintInWater = new BoolValue("Unsprint In Water", true, () -> mode.is(Mode.Rage));
-    public final BoolValue permaSprint = new BoolValue("Sprint While Stationary", true, () -> mode.is(Mode.Rage));
+    public final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Strict);
+    public final BoolValue keepSprint = new BoolValue("Keep Sprint", "保持疾跑", false);
+    public final BoolValue unsprintOnHit = new BoolValue("Unsprint On Hit", "攻击时停止疾跑", false);
+    public final BoolValue unsprintInWater = new BoolValue("Unsprint In Water", "水中停止疾跑", true, () -> mode.is(Mode.Rage));
+    public final BoolValue permaSprint = new BoolValue("Sprint While Stationary", "静止时疾跑", true, () -> mode.is(Mode.Rage));
 
     @EventHandler(priority = EventPriority.HIGH)
     private void onTickMovement(TickEvent.Post event) {

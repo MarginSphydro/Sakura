@@ -5,33 +5,32 @@ import dev.sakura.module.Module;
 import dev.sakura.values.impl.BoolValue;
 
 public class NoRender extends Module {
-
     // Overlay
-    public final BoolValue noPortalOverlay = new BoolValue("No Portal Overlay", false);
-    public final BoolValue noSpyglassOverlay = new BoolValue("No Spyglass Overlay", false);
-    public final BoolValue noNausea = new BoolValue("No Nausea", false);
-    public final BoolValue noPumpkinOverlay = new BoolValue("No Pumpkin Overlay", false);
-    public final BoolValue noPowderedSnowOverlay = new BoolValue("No Powdered Snow Overlay", false);
-    public final BoolValue noFireOverlay = new BoolValue("No Fire Overlay", false);
-    public final BoolValue noLiquidOverlay = new BoolValue("No Liquid Overlay", false);
-    public final BoolValue noInWallOverlay = new BoolValue("No In Wall Overlay", false);
-    public final BoolValue noVignette = new BoolValue("No Vignette", false);
-    public final BoolValue noTotemAnimation = new BoolValue("No Totem Animation", false);
+    public final BoolValue noPortalOverlay = new BoolValue("No Portal Overlay", "无传送门效果", false);
+    public final BoolValue noSpyglassOverlay = new BoolValue("No Spyglass Overlay", "无望远镜效果", false);
+    public final BoolValue noNausea = new BoolValue("No Nausea", "无反胃效果", false);
+    public final BoolValue noPumpkinOverlay = new BoolValue("No Pumpkin Overlay", "无南瓜头效果", false);
+    public final BoolValue noPowderedSnowOverlay = new BoolValue("No Powdered Snow Overlay", "无细雪效果", false);
+    public final BoolValue noFireOverlay = new BoolValue("No Fire Overlay", "无火焰效果", false);
+    public final BoolValue noLiquidOverlay = new BoolValue("No Liquid Overlay", "无液体效果", false);
+    public final BoolValue noInWallOverlay = new BoolValue("No In Wall Overlay", "无窒息效果", false);
+    public final BoolValue noVignette = new BoolValue("No Vignette", "无晕影效果", false);
+    public final BoolValue noTotemAnimation = new BoolValue("No Totem Animation", "无图腾动画", false);
 
     // HUD
-    public final BoolValue noBossBar = new BoolValue("No Boss Bar", false);
-    public final BoolValue noScoreboard = new BoolValue("No Scoreboard", false);
-    public final BoolValue noCrosshair = new BoolValue("No Crosshair", false);
-    public final BoolValue noTitle = new BoolValue("No Title", false);
-    public final BoolValue noHeldItemName = new BoolValue("No Held Item Name", false);
-    public final BoolValue noPotionIcons = new BoolValue("No Potion Icons", false);
+    public final BoolValue noBossBar = new BoolValue("No Boss Bar", "无Boss条", false);
+    public final BoolValue noScoreboard = new BoolValue("No Scoreboard", "无计分板", false);
+    public final BoolValue noCrosshair = new BoolValue("No Crosshair", "无准星", false);
+    public final BoolValue noTitle = new BoolValue("No Title", "无标题", false);
+    public final BoolValue noHeldItemName = new BoolValue("No Held Item Name", "无手持物品名", false);
+    public final BoolValue noPotionIcons = new BoolValue("No Potion Icons", "无药水图标", false);
 
     // World
-    public final BoolValue noWeather = new BoolValue("No Weather", false);
-    public final BoolValue noFog = new BoolValue("No Fog", false);
-    public final BoolValue noBlindness = new BoolValue("No Blindness", false);
-    public final BoolValue noDarkness = new BoolValue("No Darkness", false);
-    public final BoolValue noExplosionParticles = new BoolValue("No Explosion Particles", false);
+    public final BoolValue noWeather = new BoolValue("No Weather", "无天气", false);
+    public final BoolValue noFog = new BoolValue("No Fog", "无迷雾", false);
+    public final BoolValue noBlindness = new BoolValue("No Blindness", "无失明", false);
+    public final BoolValue noDarkness = new BoolValue("No Darkness", "无黑暗", false);
+    public final BoolValue noExplosionParticles = new BoolValue("No Explosion Particles", "无爆炸粒子", false);
 
     public NoRender() {
         super("NoRender", "不渲染", Category.Render);

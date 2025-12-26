@@ -7,8 +7,8 @@ public class NumberValue<T extends Number> extends Value<T> {
     private final T max;
     private final T step;
 
-    public NumberValue(String name, T defaultValue, T min, T max, T step, Dependency dependency) {
-        super(name, dependency);
+    public NumberValue(String name, String chineseName, T defaultValue, T min, T max, T step, Dependency dependency) {
+        super(name, chineseName, dependency);
         this.value = defaultValue;
         this.defaultValue = defaultValue;
         this.min = min;
@@ -16,8 +16,8 @@ public class NumberValue<T extends Number> extends Value<T> {
         this.step = step;
     }
 
-    public NumberValue(String name, T defaultValue, T min, T max, T step) {
-        this(name, defaultValue, min, max, step, () -> true);
+    public NumberValue(String name, String chineseName, T defaultValue, T min, T max, T step) {
+        this(name, chineseName, defaultValue, min, max, step, () -> true);
     }
 
     @Override

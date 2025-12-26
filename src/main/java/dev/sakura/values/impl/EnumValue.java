@@ -6,24 +6,24 @@ public class EnumValue<E extends Enum<E>> extends Value<E> {
     private final E[] modes;
     private final Class<E> enumClass;
 
-    public EnumValue(String name, E defaultValue, Class<E> enumClass, Dependency dependency) {
-        super(name, dependency);
+    public EnumValue(String name, String chineseName, E defaultValue, Class<E> enumClass, Dependency dependency) {
+        super(name, chineseName, dependency);
         this.value = defaultValue;
         this.defaultValue = defaultValue;
         this.enumClass = enumClass;
         this.modes = enumClass.getEnumConstants();
     }
 
-    public EnumValue(String name, E defaultValue, Class<E> enumClass) {
-        this(name, defaultValue, enumClass, () -> true);
+    public EnumValue(String name, String chineseName, E defaultValue, Class<E> enumClass) {
+        this(name, chineseName, defaultValue, enumClass, () -> true);
     }
 
-    public EnumValue(String name, E defaultValue, Dependency dependency) {
-        this(name, defaultValue, defaultValue.getDeclaringClass(), dependency);
+    public EnumValue(String name, String chineseName, E defaultValue, Dependency dependency) {
+        this(name, chineseName, defaultValue, defaultValue.getDeclaringClass(), dependency);
     }
 
-    public EnumValue(String name, E defaultValue) {
-        this(name, defaultValue, () -> true);
+    public EnumValue(String name, String chineseName, E defaultValue) {
+        this(name, chineseName, defaultValue, () -> true);
     }
 
     public boolean is(E mode) {

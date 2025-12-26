@@ -52,8 +52,8 @@ public class DynamicIslandHud extends HudModule {
         COLLAPSE_2
     }
 
-    private final BoolValue blur = new BoolValue("Blur", true);
-    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 10.0, 1.0, 20.0, 0.5, blur::get);
+    private final BoolValue blur = new BoolValue("Blur", "背景模糊", true);
+    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", "模糊强度", 10.0, 1.0, 20.0, 0.5, blur::get);
 
 
     private static ToggleInfo currentToggle;

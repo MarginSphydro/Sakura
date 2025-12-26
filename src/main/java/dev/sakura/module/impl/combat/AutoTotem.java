@@ -24,14 +24,14 @@ import net.minecraft.util.math.Vec3d;
 public class AutoTotem extends Module {
     public static AutoTotem INSTANCE;
 
-    private final EnumValue<OffhandItem> item = new EnumValue<>("Item", OffhandItem.TOTEM);
-    private final NumberValue<Double> health = new NumberValue<>("Health", 14.0, 0.0, 20.0, 0.5);
-    private final BoolValue offhandGapple = new BoolValue("OffhandGapple", true);
-    private final BoolValue crapple = new BoolValue("Crapple", true, offhandGapple::get);
-    private final BoolValue lethal = new BoolValue("Lethal", false, () -> item.get() != OffhandItem.TOTEM);
-    private final BoolValue mainhandTotem = new BoolValue("MainhandTotem", false);
-    private final NumberValue<Integer> totemSlot = new NumberValue<>("TotemSlot", 1, 1, 9, 1, mainhandTotem::get);
-    private final BoolValue alternative = new BoolValue("Alternative", false);
+    private final EnumValue<OffhandItem> item = new EnumValue<>("Item", "物品", OffhandItem.TOTEM);
+    private final NumberValue<Double> health = new NumberValue<>("Health", "血量", 14.0, 0.0, 20.0, 0.5);
+    private final BoolValue offhandGapple = new BoolValue("OffhandGapple", "副手金苹果", true);
+    private final BoolValue crapple = new BoolValue("Crapple", "普通金苹果", true, offhandGapple::get);
+    private final BoolValue lethal = new BoolValue("Lethal", "致命保护", false, () -> item.get() != OffhandItem.TOTEM);
+    private final BoolValue mainhandTotem = new BoolValue("MainhandTotem", "主手图腾", false);
+    private final NumberValue<Integer> totemSlot = new NumberValue<>("TotemSlot", "图腾槽位", 1, 1, 9, 1, mainhandTotem::get);
+    private final BoolValue alternative = new BoolValue("Alternative", "替代模式", false);
 
     private int lastHotbarSlot = -1;
     private Item lastHotbarItem;

@@ -29,31 +29,31 @@ import net.minecraft.util.math.BlockPos;
 public class AutoPot extends Module {
     public static AutoPot INSTANCE;
 
-    private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
+    private final EnumValue<Page> page = new EnumValue<>("Page", "页面", Page.General);
 
-    private final NumberValue<Integer> delay = new NumberValue<>("Delay", 100, 0, 200, 1,
+    private final NumberValue<Integer> delay = new NumberValue<>("Delay", "延迟", 100, 0, 200, 1,
             () -> page.is(Page.General));
-    private final BoolValue usingPause = new BoolValue("UsingPause", true,
+    private final BoolValue usingPause = new BoolValue("UsingPause", "使用暂停", true,
             () -> page.is(Page.General));
-    private final BoolValue inventory = new BoolValue("InventorySwap", true,
+    private final BoolValue inventory = new BoolValue("InventorySwap", "背包切换", true,
             () -> page.is(Page.General));
-    private final BoolValue onlyGround = new BoolValue("OnlyGround", true,
+    private final BoolValue onlyGround = new BoolValue("OnlyGround", "仅地面", true,
             () -> page.is(Page.General));
-    private final BoolValue rangeCheck = new BoolValue("RangeCheck", false,
+    private final BoolValue rangeCheck = new BoolValue("RangeCheck", "范围检查", false,
             () -> page.is(Page.General));
-    private final NumberValue<Double> range = new NumberValue<>("Range", 15.0, 0.0, 50.0, 0.5,
+    private final NumberValue<Double> range = new NumberValue<>("Range", "范围", 15.0, 0.0, 50.0, 0.5,
             () -> page.is(Page.General) && rangeCheck.get());
-    private final NumberValue<Integer> pitch = new NumberValue<>("Pitch", 88, 75, 90, 1,
+    private final NumberValue<Integer> pitch = new NumberValue<>("Pitch", "俯仰角", 88, 75, 90, 1,
             () -> page.is(Page.General));
-    private final BoolValue snapBack = new BoolValue("SnapBack", true,
+    private final BoolValue snapBack = new BoolValue("SnapBack", "回转", true,
             () -> page.is(Page.General));
 
-    private final BoolValue speed = new BoolValue("Speed", true, () -> page.is(Page.Effects));
-    private final BoolValue resistance = new BoolValue("Turtlemaster", true, () -> page.is(Page.Effects));
-    private final BoolValue slowFalling = new BoolValue("SlowFalling", true, () -> page.is(Page.Effects));
-    private final BoolValue strength = new BoolValue("Strength", true, () -> page.is(Page.Effects));
-    private final BoolValue fireResistance = new BoolValue("FireResistance", false, () -> page.is(Page.Effects));
-    private final BoolValue regeneration = new BoolValue("Regeneration", false, () -> page.is(Page.Effects));
+    private final BoolValue speed = new BoolValue("Speed", "速度", true, () -> page.is(Page.Effects));
+    private final BoolValue resistance = new BoolValue("Turtlemaster", "神龟药水", true, () -> page.is(Page.Effects));
+    private final BoolValue slowFalling = new BoolValue("SlowFalling", "缓降", true, () -> page.is(Page.Effects));
+    private final BoolValue strength = new BoolValue("Strength", "力量", true, () -> page.is(Page.Effects));
+    private final BoolValue fireResistance = new BoolValue("FireResistance", "抗火", false, () -> page.is(Page.Effects));
+    private final BoolValue regeneration = new BoolValue("Regeneration", "再生", false, () -> page.is(Page.Effects));
 
     private final TimerUtil delayTimer = new TimerUtil();
 

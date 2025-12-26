@@ -37,7 +37,7 @@ public class EnumValueComponent extends Component {
         float fontHeight = NanoVGHelper.getFontHeight(font, fontSize);
         String currentMode = setting.get().name();
 
-        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getName(), getX(), getY(), font, fontSize, WHITE));
+        NanoVGRenderer.INSTANCE.draw(vg -> NanoVGHelper.drawString(setting.getDisplayName(), getX(), getY(), font, fontSize, WHITE));
 
         for (String text : setting.getModeNames()) {
             float off = NanoVGHelper.getTextWidth(text, font, fontSize) + 4 * scale;

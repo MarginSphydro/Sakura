@@ -57,52 +57,52 @@ import java.util.stream.StreamSupport;
 
 public class KillAura extends Module {
 
-    private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
+    private final EnumValue<Page> page = new EnumValue<>("Page", "页面", Page.General);
 
-    private final EnumValue<TargetMode> mode = new EnumValue<>("Mode", TargetMode.Switch, () -> page.is(Page.General));
-    private final EnumValue<Priority> priority = new EnumValue<>("Priority", Priority.Health, () -> page.is(Page.General));
+    private final EnumValue<TargetMode> mode = new EnumValue<>("Mode", "模式", TargetMode.Switch, () -> page.is(Page.General));
+    private final EnumValue<Priority> priority = new EnumValue<>("Priority", "优先", Priority.Health, () -> page.is(Page.General));
 
-    private final NumberValue<Double> searchRange = new NumberValue<>("EnemyRange", 5.0, 1.0, 10.0, 0.1, () -> page.is(Page.Targeting));
-    private final NumberValue<Double> range = new NumberValue<>("Range", 4.5, 1.0, 6.0, 0.1, () -> page.is(Page.Targeting));
-    private final NumberValue<Double> wallRange = new NumberValue<>("WallRange", 4.5, 0.0, 6.0, 0.1, () -> page.is(Page.Targeting));
-    private final BoolValue vanillaRange = new BoolValue("VanillaRange", false, () -> page.is(Page.Targeting));
-    private final NumberValue<Double> fov = new NumberValue<>("FOV", 180.0, 1.0, 180.0, 1.0, () -> page.is(Page.Targeting));
-    private final NumberValue<Integer> ticksExisted = new NumberValue<>("TicksExisted", 0, 0, 200, 1, () -> page.is(Page.Targeting));
-    private final BoolValue armorCheck = new BoolValue("ArmorCheck", false, () -> page.is(Page.Targeting));
+    private final NumberValue<Double> searchRange = new NumberValue<>("EnemyRange", "搜敌范围", 5.0, 1.0, 10.0, 0.1, () -> page.is(Page.Targeting));
+    private final NumberValue<Double> range = new NumberValue<>("Range", "攻击范围", 4.5, 1.0, 6.0, 0.1, () -> page.is(Page.Targeting));
+    private final NumberValue<Double> wallRange = new NumberValue<>("WallRange", "穿墙范围", 4.5, 0.0, 6.0, 0.1, () -> page.is(Page.Targeting));
+    private final BoolValue vanillaRange = new BoolValue("VanillaRange", "原版范围", false, () -> page.is(Page.Targeting));
+    private final NumberValue<Double> fov = new NumberValue<>("FOV", "视野", 180.0, 1.0, 180.0, 1.0, () -> page.is(Page.Targeting));
+    private final NumberValue<Integer> ticksExisted = new NumberValue<>("TicksExisted", "存在时间", 0, 0, 200, 1, () -> page.is(Page.Targeting));
+    private final BoolValue armorCheck = new BoolValue("ArmorCheck", "护甲检查", false, () -> page.is(Page.Targeting));
 
-    private final BoolValue players = new BoolValue("Players", true, () -> page.is(Page.Targeting));
-    private final BoolValue monsters = new BoolValue("Monsters", false, () -> page.is(Page.Targeting));
-    private final BoolValue neutrals = new BoolValue("Neutrals", false, () -> page.is(Page.Targeting));
-    private final BoolValue animals = new BoolValue("Animals", false, () -> page.is(Page.Targeting));
-    private final BoolValue invisibles = new BoolValue("Invisibles", true, () -> page.is(Page.Targeting));
+    private final BoolValue players = new BoolValue("Players", "玩家", true, () -> page.is(Page.Targeting));
+    private final BoolValue monsters = new BoolValue("Monsters", "怪物", false, () -> page.is(Page.Targeting));
+    private final BoolValue neutrals = new BoolValue("Neutrals", "中立生物", false, () -> page.is(Page.Targeting));
+    private final BoolValue animals = new BoolValue("Animals", "动物", false, () -> page.is(Page.Targeting));
+    private final BoolValue invisibles = new BoolValue("Invisibles", "隐身", true, () -> page.is(Page.Targeting));
 
-    private final BoolValue attackDelay = new BoolValue("AttackDelay", true, () -> page.is(Page.Attack));
-    private final NumberValue<Double> attackSpeed = new NumberValue<>("AttackSpeed", 20.0, 1.0, 20.0, 1.0, () -> page.is(Page.Attack) && !attackDelay.get());
-    private final NumberValue<Double> randomSpeed = new NumberValue<>("RandomSpeed", 0.0, 0.0, 10.0, 0.1, () -> page.is(Page.Attack) && !attackDelay.get());
-    private final NumberValue<Double> delay = new NumberValue<>("Delay", 0.89, 0.0, 1.0, 0.01, () -> page.is(Page.Attack) && attackDelay.get());
+    private final BoolValue attackDelay = new BoolValue("AttackDelay", "攻击延迟", true, () -> page.is(Page.Attack));
+    private final NumberValue<Double> attackSpeed = new NumberValue<>("AttackSpeed", "攻击速度", 20.0, 1.0, 20.0, 1.0, () -> page.is(Page.Attack) && !attackDelay.get());
+    private final NumberValue<Double> randomSpeed = new NumberValue<>("RandomSpeed", "随机速度", 0.0, 0.0, 10.0, 0.1, () -> page.is(Page.Attack) && !attackDelay.get());
+    private final NumberValue<Double> delay = new NumberValue<>("Delay", "延迟系数", 0.89, 0.0, 1.0, 0.01, () -> page.is(Page.Attack) && attackDelay.get());
 
-    private final BoolValue rotateEnabled = new BoolValue("Rotate", false, () -> page.is(Page.Rotation));
-    private final EnumValue<Rotate> rotate = new EnumValue<>("RotateMode", Rotate.Normal, () -> page.is(Page.Rotation) && rotateEnabled.get());
-    private final BoolValue silentRotate = new BoolValue("RotateSilent", false, () -> page.is(Page.Rotation) && rotateEnabled.get());
-    private final BoolValue yawStep = new BoolValue("YawStep", false, () -> page.is(Page.Rotation) && rotateEnabled.get());
-    private final NumberValue<Integer> yawStepLimit = new NumberValue<>("YawStep-Limit", 180, 1, 180, 1, () -> page.is(Page.Rotation) && rotateEnabled.get() && yawStep.get());
-    private final EnumValue<HitVector> hitVector = new EnumValue<>("HitVector", HitVector.Feet, () -> page.is(Page.Rotation));
+    private final BoolValue rotateEnabled = new BoolValue("Rotate", "旋转", false, () -> page.is(Page.Rotation));
+    private final EnumValue<Rotate> rotate = new EnumValue<>("RotateMode", "旋转模式", Rotate.Normal, () -> page.is(Page.Rotation) && rotateEnabled.get());
+    private final BoolValue silentRotate = new BoolValue("RotateSilent", "静默旋转", false, () -> page.is(Page.Rotation) && rotateEnabled.get());
+    private final BoolValue yawStep = new BoolValue("YawStep", "偏航步进", false, () -> page.is(Page.Rotation) && rotateEnabled.get());
+    private final NumberValue<Integer> yawStepLimit = new NumberValue<>("YawStep-Limit", "步进限制", 180, 1, 180, 1, () -> page.is(Page.Rotation) && rotateEnabled.get() && yawStep.get());
+    private final EnumValue<HitVector> hitVector = new EnumValue<>("HitVector", "打击向量", HitVector.Feet, () -> page.is(Page.Rotation));
 
-    private final NumberValue<Double> swapPenalty = new NumberValue<>("SwapPenalty", 0.0, 0.0, 10.0, 0.1, () -> page.is(Page.Swap));
-    private final EnumValue<Swap> swap = new EnumValue<>("Swap", Swap.Require, () -> page.is(Page.Swap));
+    private final NumberValue<Double> swapPenalty = new NumberValue<>("SwapPenalty", "切换惩罚", 0.0, 0.0, 10.0, 0.1, () -> page.is(Page.Swap));
+    private final EnumValue<Swap> swap = new EnumValue<>("Swap", "切换", Swap.Require, () -> page.is(Page.Swap));
 
-    private final EnumValue<Sprint> stopSprinting = new EnumValue<>("Sprinting", Sprint.None, () -> page.is(Page.Misc));
-    private final BoolValue stopShield = new BoolValue("StopShield", false, () -> page.is(Page.Misc));
-    private final BoolValue strictHit = new BoolValue("StrictHit", true, () -> page.is(Page.Misc));
-    private final BoolValue multitask = new BoolValue("Multitask", true, () -> page.is(Page.Misc));
-    private final BoolValue swing = new BoolValue("Swing", true, () -> page.is(Page.Misc));
+    private final EnumValue<Sprint> stopSprinting = new EnumValue<>("Sprinting", "疾跑控制", Sprint.None, () -> page.is(Page.Misc));
+    private final BoolValue stopShield = new BoolValue("StopShield", "停盾", false, () -> page.is(Page.Misc));
+    private final BoolValue strictHit = new BoolValue("StrictHit", "严格打击", true, () -> page.is(Page.Misc));
+    private final BoolValue multitask = new BoolValue("Multitask", "多任务", true, () -> page.is(Page.Misc));
+    private final BoolValue swing = new BoolValue("Swing", "挥手", true, () -> page.is(Page.Misc));
 
-    private final BoolValue render = new BoolValue("Render", true, () -> page.is(Page.Render));
-    private final EnumValue<ESPMode> espMode = new EnumValue<>("ESPMode", ESPMode.JELLO, () -> page.is(Page.Render) && render.get());
-    private final NumberValue<Double> radius = new NumberValue<>("Radius", 0.8, 0.1, 2.0, 0.05, () -> page.is(Page.Render) && render.get());
-    private final ColorValue lineColor = new ColorValue("LineColor", new Color(255, 255, 255, 233), () -> page.is(Page.Render) && render.get());
-    private final ColorValue sideColor = new ColorValue("SideColor", new Color(255, 255, 255, 23), () -> page.is(Page.Render) && render.get());
-    private final ColorValue renderColor = new ColorValue("Color", new Color(255, 0, 0, 100), () -> page.is(Page.Render) && render.get() && espMode.is(ESPMode.BOX));
+    private final BoolValue render = new BoolValue("Render", "渲染", true, () -> page.is(Page.Render));
+    private final EnumValue<ESPMode> espMode = new EnumValue<>("ESPMode", "ESP模式", ESPMode.JELLO, () -> page.is(Page.Render) && render.get());
+    private final NumberValue<Double> radius = new NumberValue<>("Radius", "半径", 0.8, 0.1, 2.0, 0.05, () -> page.is(Page.Render) && render.get());
+    private final ColorValue lineColor = new ColorValue("LineColor", "线条颜色", new Color(255, 255, 255, 233), () -> page.is(Page.Render) && render.get());
+    private final ColorValue sideColor = new ColorValue("SideColor", "侧面颜色", new Color(255, 255, 255, 23), () -> page.is(Page.Render) && render.get());
+    private final ColorValue renderColor = new ColorValue("Color", "颜色", new Color(255, 0, 0, 100), () -> page.is(Page.Render) && render.get() && espMode.is(ESPMode.BOX));
 
     private Entity currentTarget;
     private float attackCooldownTicks = 0f;

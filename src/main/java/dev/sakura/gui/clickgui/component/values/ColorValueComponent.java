@@ -62,7 +62,7 @@ public class ColorValueComponent extends Component {
         int b = currentColor.getBlue();
 
         NanoVGRenderer.INSTANCE.draw(canvas -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.regular(titleFontSize), titleFontSize, new Color(255, 255, 255, 255));
+            NanoVGHelper.drawString(setting.getDisplayName(), getX(), getY(), FontLoader.regular(titleFontSize), titleFontSize, new Color(255, 255, 255, 255));
 
             NanoVGHelper.drawCircle(getX() + getWidth() - 5 * scale, getY() - 3 * scale, 4 * scale, setting.get());
 

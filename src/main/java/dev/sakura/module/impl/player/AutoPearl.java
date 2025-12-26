@@ -18,10 +18,10 @@ import net.minecraft.util.Hand;
 public class AutoPearl extends Module {
     public static AutoPearl INSTANCE;
 
-    private final BoolValue inventorySwap = new BoolValue("InventorySwap", true);
-    private final BoolValue rotation = new BoolValue("Rotation", false);
-    private final NumberValue<Double> rotationSpeed = new NumberValue<>("RotationSpeed", 0.5, 0.0, 1.0, 0.01, rotation::get);
-    private final NumberValue<Double> fov = new NumberValue<>("Fov", 10.0, 0.0, 50.0, 1.0, rotation::get);
+    private final BoolValue inventorySwap = new BoolValue("InventorySwap", "背包切换", true);
+    private final BoolValue rotation = new BoolValue("Rotation", "旋转", false);
+    private final NumberValue<Double> rotationSpeed = new NumberValue<>("RotationSpeed", "旋转速度", 0.5, 0.0, 1.0, 0.01, rotation::get);
+    private final NumberValue<Double> fov = new NumberValue<>("Fov", "视场", 10.0, 0.0, 50.0, 1.0, rotation::get);
 
     private boolean shouldThrow = false;
     public static boolean throwing = false;

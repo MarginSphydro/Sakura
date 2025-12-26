@@ -31,11 +31,11 @@ public class FakePlayer extends Module {
         super("FakePlayer", "假人", Category.Player);
     }
 
-    private final StringValue name = new StringValue("Name", "BC_zxy");
-    private final BoolValue damage = new BoolValue("Damage", true);
-    private final BoolValue record = new BoolValue("Record", false);
-    private final BoolValue play = new BoolValue("Play", false);
-    private final BoolValue autoTotem = new BoolValue("AutoTotem", false);
+    private final StringValue name = new StringValue("Name", "名字", "BC_zxy");
+    private final BoolValue damage = new BoolValue("Damage", "伤害", true);
+    private final BoolValue record = new BoolValue("Record", "记录", false);
+    private final BoolValue play = new BoolValue("Play", "播放", false);
+    private final BoolValue autoTotem = new BoolValue("AutoTotem", "自动图腾", false);
 
     public static OtherClientPlayerEntity fakePlayer;
     private final List<PlayerState> positions = new ArrayList<>();

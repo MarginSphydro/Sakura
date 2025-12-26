@@ -26,6 +26,6 @@ public class FontLoader {
     }
 
     public static int cjk(float size) {
-        return FontManager.font("Kuriyama.ttf", size);
+        return FontManager.font("kuriyama.ttf", size);
     }
 }

@@ -11,13 +11,13 @@ import meteordevelopment.orbit.EventHandler;
 
 public class Velocity extends Module {
 
-    private final EnumValue<VelocityMode> mode = new EnumValue<>("Mode", VelocityMode.Cancel);
+    private final EnumValue<VelocityMode> mode = new EnumValue<>("Mode", "模式", VelocityMode.Cancel);
 
-    public final NumberValue<Integer> motionX = new NumberValue<>("MotionX", 100, 0, 100, 1, () -> mode.is(VelocityMode.Normal));
-    public final NumberValue<Integer> motionY = new NumberValue<>("MotionY", 100, 0, 100, 1, () -> mode.is(VelocityMode.Normal));
-    public final NumberValue<Integer> motionZ = new NumberValue<>("MotionZ", 100, 0, 100, 1, () -> mode.is(VelocityMode.Normal));
+    public final NumberValue<Integer> motionX = new NumberValue<>("MotionX", "水平X", 100, 0, 100, 1, () -> mode.is(VelocityMode.Normal));
+    public final NumberValue<Integer> motionY = new NumberValue<>("MotionY", "垂直Y", 100, 0, 100, 1, () -> mode.is(VelocityMode.Normal));
+    public final NumberValue<Integer> motionZ = new NumberValue<>("MotionZ", "水平Z", 100, 0, 100, 1, () -> mode.is(VelocityMode.Normal));
 
-    public final NumberValue<Integer> attackCount = new NumberValue<>("AttackCounts", 3, 1, 5, 1, () -> mode.is(VelocityMode.HeypixelReduce));
+    public final NumberValue<Integer> attackCount = new NumberValue<>("AttackCounts", "攻击次数", 3, 1, 5, 1, () -> mode.is(VelocityMode.HeypixelReduce));
     public boolean velocityInput;
     public double velocityX;
     public double velocityY;

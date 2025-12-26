@@ -15,16 +15,16 @@ import java.awt.*;
 
 public class HotbarHud extends HudModule {
 
-    private final NumberValue<Double> scale = new NumberValue<>("Scale", 1.0, 0.5, 2.0, 0.05);
-    private final NumberValue<Double> radius = new NumberValue<>("Radius", 6.0, 0.0, 15.0, 1.0);
+    private final NumberValue<Double> scale = new NumberValue<>("Scale", "缩放", 1.0, 0.5, 2.0, 0.05);
+    private final NumberValue<Double> radius = new NumberValue<>("Radius", "圆角半径", 6.0, 0.0, 15.0, 1.0);
 
-    private final BoolValue enableBloom = new BoolValue("Bloom", true);
-    private final NumberValue<Double> tension = new NumberValue<>("Tension", 0.25, 0.05, 0.5, 0.01);
-    private final NumberValue<Double> friction = new NumberValue<>("Friction", 0.65, 0.3, 0.9, 0.01);
+    private final BoolValue enableBloom = new BoolValue("Bloom", "光晕", true);
+    private final NumberValue<Double> tension = new NumberValue<>("Tension", "张力", 0.25, 0.05, 0.5, 0.01);
+    private final NumberValue<Double> friction = new NumberValue<>("Friction", "摩擦力", 0.65, 0.3, 0.9, 0.01);
 
-    private final ColorValue selectorColor = new ColorValue("SelectorColor", new Color(255, 255, 255, 160));
-    private final BoolValue showHandSlots = new BoolValue("ShowHandSlots", true);
-    private final BoolValue selectorGlow = new BoolValue("SelectorGlow", true);
+    private final ColorValue selectorColor = new ColorValue("SelectorColor", "选择器颜色", new Color(255, 255, 255, 160));
+    private final BoolValue showHandSlots = new BoolValue("ShowHandSlots", "显示手持物品", true);
+    private final BoolValue selectorGlow = new BoolValue("SelectorGlow", "选择器发光", true);
 
     private static final int SLOT_SIZE = 18;
     private static final int SLOT_COUNT = 9;

@@ -10,8 +10,8 @@ import dev.sakura.values.impl.NumberValue;
 import java.awt.*;
 
 public class MSHud extends HudModule {
-    private final Value<Double> hudScale = new NumberValue<>("Scale", 1.0, 0.5, 3.0, 0.1);
-    private final Value<Double> delay = new NumberValue<>("Delay", 0.5, 0.0, 2.0, 0.1);
+    private final Value<Double> hudScale = new NumberValue<>("Scale", "缩放", 1.0, 0.5, 3.0, 0.1);
+    private final Value<Double> delay = new NumberValue<>("Delay", "延迟", 0.5, 0.0, 2.0, 0.1);
 
     private int cachedPing;
     private final TimerUtil timer = new TimerUtil();

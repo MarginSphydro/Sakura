@@ -18,13 +18,13 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 public class Step extends Module {
     public static Step INSTANCE;
 
-    private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Vanilla);
-    private final NumberValue<Double> height = new NumberValue<>("Height", 1.0, 0.5, 4.0, 0.5);
-    private final BoolValue onlyMoving = new BoolValue("OnlyMoving", true);
-    private final BoolValue useTimer = new BoolValue("Timer", true, () -> mode.get() == Mode.NCP || mode.get() == Mode.OldNCP);
-    private final BoolValue fast = new BoolValue("Fast", true, () -> mode.get() == Mode.NCP && useTimer.get());
-    private final BoolValue inWebPause = new BoolValue("InWebPause", true);
-    private final BoolValue sneakingPause = new BoolValue("SneakingPause", true);
+    private final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Vanilla);
+    private final NumberValue<Double> height = new NumberValue<>("Height", "高度", 1.0, 0.5, 4.0, 0.5);
+    private final BoolValue onlyMoving = new BoolValue("OnlyMoving", "仅移动时", true);
+    private final BoolValue useTimer = new BoolValue("Timer", "计时器", true, () -> mode.get() == Mode.NCP || mode.get() == Mode.OldNCP);
+    private final BoolValue fast = new BoolValue("Fast", "快速", true, () -> mode.get() == Mode.NCP && useTimer.get());
+    private final BoolValue inWebPause = new BoolValue("InWebPause", "蛛网暂停", true);
+    private final BoolValue sneakingPause = new BoolValue("SneakingPause", "潜行暂停", true);
 
     private boolean timer;
     private int packets = 0;

@@ -37,18 +37,18 @@ import static org.lwjgl.nanovg.NanoVG.*;
 public class NameTags extends Module {
     public static NameTags INSTANCE;
 
-    private final NumberValue<Double> scaling = new NumberValue<>("Size", 4.0, 0.1, 10.0, 0.1);
-    private final NumberValue<Double> minScale = new NumberValue<>("MinSize", 0.5, 0.1, 5.0, 0.1);
-    private final BoolValue self = new BoolValue("Self", false);
-    private final BoolValue armor = new BoolValue("Armor", true);
-    private final BoolValue enchants = new BoolValue("Enchants", true, armor::get);
-    private final BoolValue durability = new BoolValue("Durability", true, armor::get);
-    private final BoolValue itemName = new BoolValue("ItemName", true);
-    private final BoolValue ping = new BoolValue("Ping", true);
-    private final BoolValue health = new BoolValue("Health", true);
-    private final BoolValue pops = new BoolValue("Pops", true);
-    private final BoolValue blur = new BoolValue("Blur", true);
-    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", 10.0, 1.0, 25.0, 0.5, blur::get);
+    private final NumberValue<Double> scaling = new NumberValue<>("Size", "大小", 4.0, 0.1, 10.0, 0.1);
+    private final NumberValue<Double> minScale = new NumberValue<>("MinSize", "最小大小", 0.5, 0.1, 5.0, 0.1);
+    private final BoolValue self = new BoolValue("Self", "自身", false);
+    private final BoolValue armor = new BoolValue("Armor", "装备", true);
+    private final BoolValue enchants = new BoolValue("Enchants", "附魔", true, armor::get);
+    private final BoolValue durability = new BoolValue("Durability", "耐久", true, armor::get);
+    private final BoolValue itemName = new BoolValue("ItemName", "物品名", true);
+    private final BoolValue ping = new BoolValue("Ping", "延迟", true);
+    private final BoolValue health = new BoolValue("Health", "血量", true);
+    private final BoolValue pops = new BoolValue("Pops", "图腾消耗", true);
+    private final BoolValue blur = new BoolValue("Blur", "模糊", true);
+    private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", "模糊强度", 10.0, 1.0, 25.0, 0.5, blur::get);
 
     private final Map<UUID, Integer> popCounts = new HashMap<>();
 

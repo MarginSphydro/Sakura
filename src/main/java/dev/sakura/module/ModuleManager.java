@@ -9,7 +9,6 @@ import dev.sakura.manager.impl.NotificationManager;
 import dev.sakura.manager.impl.SoundManager;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.module.impl.client.HudEditor;
-import dev.sakura.module.impl.client.StringTest;
 import dev.sakura.module.impl.combat.*;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.*;
@@ -89,7 +88,6 @@ public class ModuleManager {
             // Client
             manager.tryLoad(() -> new ClickGui());
             manager.tryLoad(() -> new HudEditor());
-            manager.tryLoad(() -> new StringTest());
 
             // HUD
             manager.tryLoad(() -> new FPSHud());

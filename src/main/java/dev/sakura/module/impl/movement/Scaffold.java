@@ -33,18 +33,18 @@ import net.minecraft.util.math.*;
 import java.awt.*;
 
 public class Scaffold extends Module {
-    private final EnumValue<SwapMode> swapMode = new EnumValue<>("Swap Mode", SwapMode.Silent);
-    private final BoolValue swingHand = new BoolValue("Swing Hand", true);
-    private final BoolValue telly = new BoolValue("Telly", false);
-    private final NumberValue<Integer> tellyTick = new NumberValue<>("Telly Tick", 1, 0, 8, 1, telly::get);
-    private final BoolValue keepY = new BoolValue("Keep Y", true, telly::get);
-    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1);
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", 10, 0, 10, 1, telly::get);
-    private final BoolValue moveFix = new BoolValue("Movement Fix", true);
-    private final BoolValue render = new BoolValue("Render", true);
-    private final BoolValue shrink = new BoolValue("Shrink", true, render::get);
-    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 183, 197, 100), render::get);
-    private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 105, 180), render::get);
+    private final EnumValue<SwapMode> swapMode = new EnumValue<>("Swap Mode", "切换模式", SwapMode.Silent);
+    private final BoolValue swingHand = new BoolValue("Swing Hand", "挥手", true);
+    private final BoolValue telly = new BoolValue("Telly", "Telly搭路", false);
+    private final NumberValue<Integer> tellyTick = new NumberValue<>("Telly Tick", "Telly延迟", 1, 0, 8, 1, telly::get);
+    private final BoolValue keepY = new BoolValue("Keep Y", "保持Y轴", true, telly::get);
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 10, 0, 10, 1);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", "回转速度", 10, 0, 10, 1, telly::get);
+    private final BoolValue moveFix = new BoolValue("Movement Fix", "移动修复", true);
+    private final BoolValue render = new BoolValue("Render", "渲染", true);
+    private final BoolValue shrink = new BoolValue("Shrink", "收缩", true, render::get);
+    private final ColorValue sideColor = new ColorValue("Side Color", "侧面颜色", new Color(255, 183, 197, 100), render::get);
+    private final ColorValue lineColor = new ColorValue("Line Color", "线条颜色", new Color(255, 105, 180), render::get);
 
     private int yLevel;
     private BlockCache blockCache;

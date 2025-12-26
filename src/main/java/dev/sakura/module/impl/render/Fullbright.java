@@ -19,7 +19,7 @@ public class Fullbright extends Module {
         super("Fullbright", "夜视", Category.Render);
     }
 
-    public final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Gamma);
+    public final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Gamma);
 
     @Override
     public void onEnable() {

@@ -19,15 +19,15 @@ import java.awt.*;
 public class FPSHud extends HudModule {
     public enum RainbowMode {OFF, STATIC_HUE, GRADIENT_HUE, GRADIENT}
 
-    private final Value<Double> hudScale = new NumberValue<>("Scale", 1.0, 0.5, 3.0, 0.1);
-    private final Value<Integer> delay = new NumberValue<>("Delay", 10, 0, 40, 1);
-    private final Value<Color> colorConfig = new ColorValue("Color", new Color(255, 255, 255));
-    private final Value<RainbowMode> rainbowModeConfig = new EnumValue<>("Rainbow", RainbowMode.OFF);
-    private final Value<Color> gradientColorConfig = new ColorValue("Gradient Color", Color.WHITE, () -> rainbowModeConfig.get() == RainbowMode.GRADIENT);
-    private final Value<Double> rainbowSpeedConfig = new NumberValue<>("Rainbow Speed", 5.0, 1.0, 20.0, 0.5, () -> rainbowModeConfig.get() != RainbowMode.OFF);
-    private final Value<Double> rainbowSaturationConfig = new NumberValue<>("Rainbow Saturation", 35.0, 0.0, 100.0, 1.0, this::isRainbowWithSaturation);
-    private final Value<Double> rainbowBrightnessConfig = new NumberValue<>("Rainbow Brightness", 100.0, 0.0, 100.0, 1.0, this::isRainbowWithSaturation);
-    private final Value<Double> rainbowDifferenceConfig = new NumberValue<>("Rainbow Difference", 40.0, 0.1, 100.0, 0.1, () -> rainbowModeConfig.get() != RainbowMode.OFF);
+    private final Value<Double> hudScale = new NumberValue<>("Scale", "缩放", 1.0, 0.5, 3.0, 0.1);
+    private final Value<Integer> delay = new NumberValue<>("Delay", "延迟", 10, 0, 40, 1);
+    private final Value<Color> colorConfig = new ColorValue("Color", "颜色", new Color(255, 255, 255));
+    private final Value<RainbowMode> rainbowModeConfig = new EnumValue<>("Rainbow", "彩虹模式", RainbowMode.OFF);
+    private final Value<Color> gradientColorConfig = new ColorValue("Gradient Color", "渐变颜色", Color.WHITE, () -> rainbowModeConfig.get() == RainbowMode.GRADIENT);
+    private final Value<Double> rainbowSpeedConfig = new NumberValue<>("Rainbow Speed", "彩虹速度", 5.0, 1.0, 20.0, 0.5, () -> rainbowModeConfig.get() != RainbowMode.OFF);
+    private final Value<Double> rainbowSaturationConfig = new NumberValue<>("Rainbow Saturation", "彩虹饱和度", 35.0, 0.0, 100.0, 1.0, this::isRainbowWithSaturation);
+    private final Value<Double> rainbowBrightnessConfig = new NumberValue<>("Rainbow Brightness", "彩虹亮度", 100.0, 0.0, 100.0, 1.0, this::isRainbowWithSaturation);
+    private final Value<Double> rainbowDifferenceConfig = new NumberValue<>("Rainbow Difference", "彩虹差异", 40.0, 0.1, 100.0, 0.1, () -> rainbowModeConfig.get() != RainbowMode.OFF);
 
     private int cachedFps;
     private final TimerUtil timer = new TimerUtil();

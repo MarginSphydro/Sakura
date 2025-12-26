@@ -24,15 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SwingAnimation extends Module {
-    private final Value<Boolean> noSwitchConfig = new BoolValue("NoSwitchAnimation", false);
-    private final Value<Boolean> oldSwingConfig = new BoolValue("OldSwingAnimation", false);
-    private final Value<Boolean> swingSpeedConfig = new BoolValue("SwingSpeed", false);
-    private final Value<Integer> swingFactorConfig = new NumberValue<>("SwingFactor", 6, 1, 20, 1, () -> swingSpeedConfig.get());
-    private final Value<Boolean> selfOnlyConfig = new BoolValue("SelfOnly", true, () -> false);
-    private final Value<Boolean> eatTransformConfig = new BoolValue("EatTransform", false);
-    private final Value<Double> eatTransformFactorConfig = new NumberValue<>("EatTransform-Factor", 1.0, 0.0, 1.0, 0.1, () -> eatTransformConfig.get());
-    private final Value<Boolean> limbSwing = new BoolValue("NoLimbSwing", false);
-    private final Value<Boolean> interpolationConfig = new BoolValue("NoInterpolation", false, () -> limbSwing.get());
+    private final Value<Boolean> noSwitchConfig = new BoolValue("NoSwitchAnimation", "无切换动画", false);
+    private final Value<Boolean> oldSwingConfig = new BoolValue("OldSwingAnimation", "旧版挥手", false);
+    private final Value<Boolean> swingSpeedConfig = new BoolValue("SwingSpeed", "挥手速度", false);
+    private final Value<Integer> swingFactorConfig = new NumberValue<>("SwingFactor", "挥手因子", 6, 1, 20, 1, () -> swingSpeedConfig.get());
+    private final Value<Boolean> selfOnlyConfig = new BoolValue("SelfOnly", "仅自己", true, () -> false);
+    private final Value<Boolean> eatTransformConfig = new BoolValue("EatTransform", "食用变换", false);
+    private final Value<Double> eatTransformFactorConfig = new NumberValue<>("EatTransform-Factor", "变换因子", 1.0, 0.0, 1.0, 0.1, () -> eatTransformConfig.get());
+    private final Value<Boolean> limbSwing = new BoolValue("NoLimbSwing", "无肢体摆动", false);
+    private final Value<Boolean> interpolationConfig = new BoolValue("NoInterpolation", "无插值", false, () -> limbSwing.get());
 
     public SwingAnimation() {
         super("SwingAnimation", "挥手动画", Category.Render);

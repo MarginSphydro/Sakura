@@ -33,7 +33,7 @@ public class BoolValueComponent extends Component {
         setHeight(scaledHeight);
         this.toggleAnimation.setDirection(setting.get() ? Direction.FORWARDS : Direction.BACKWARDS);
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getName(), getX(), getY(), FontLoader.regular(baseFontSize * 0.75f), baseFontSize * 0.75f, Color.WHITE);
+            NanoVGHelper.drawString(setting.getDisplayName(), getX(), getY(), FontLoader.regular(baseFontSize * 0.75f), baseFontSize * 0.75f, Color.WHITE);
             float toggleWidth = 15 * scale;
             float toggleHeight = 8 * scale;
             float toggleRadius = 4 * scale;

@@ -13,7 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 public class NoFall extends Module {
-    private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Packet);
+    private final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Packet);
 
     public NoFall() {
         super("NoFall", "无摔落", Category.Movement);

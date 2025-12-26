@@ -28,7 +28,7 @@ public class InventorySort extends Module {
     }
 
     private final NumberValue<Integer> sortDelay =
-            new NumberValue<>("SortDelay", 1, 0, 10, 1);
+            new NumberValue<>("SortDelay", "整理延迟", 1, 0, 10, 1);
 
 
     @Override
@@ -42,7 +42,7 @@ public class InventorySort extends Module {
     }
 
     private final BoolValue sortInGui =
-            new BoolValue("SortInGui", false);
+            new BoolValue("SortInGui", "GUI整理", false);
 
 
     private void tickSort() {

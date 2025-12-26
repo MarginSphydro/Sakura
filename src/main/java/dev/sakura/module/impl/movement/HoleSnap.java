@@ -27,15 +27,15 @@ import org.joml.Matrix4f;
 import java.awt.*;
 
 public class HoleSnap extends Module {
-    private final NumberValue<Double> range = new NumberValue<>("Range", 5.0, 1.0, 10.0, 0.5);
-    private final NumberValue<Integer> timeout = new NumberValue<>("Timeout", 40, 0, 100, 1);
-    private final BoolValue doubleHole = new BoolValue("DoubleHole", true);
-    private final BoolValue anyHole = new BoolValue("AnyHole", true);
-    private final BoolValue includeUp = new BoolValue("Up", true);
-    private final ColorValue color = new ColorValue("Color", new Color(255, 255, 255, 100));
-    private final NumberValue<Double> circleSize = new NumberValue<>("CircleSize", 1.0, 0.1, 2.5, 0.1);
-    private final BoolValue fade = new BoolValue("Fade", true);
-    private final NumberValue<Integer> segments = new NumberValue<>("Segments", 180, 30, 360, 10);
+    private final NumberValue<Double> range = new NumberValue<>("Range", "范围", 5.0, 1.0, 10.0, 0.5);
+    private final NumberValue<Integer> timeout = new NumberValue<>("Timeout", "超时", 40, 0, 100, 1);
+    private final BoolValue doubleHole = new BoolValue("DoubleHole", "双孔", true);
+    private final BoolValue anyHole = new BoolValue("AnyHole", "任意孔", true);
+    private final BoolValue includeUp = new BoolValue("Up", "包含上方", true);
+    private final ColorValue color = new ColorValue("Color", "颜色", new Color(255, 255, 255, 100));
+    private final NumberValue<Double> circleSize = new NumberValue<>("CircleSize", "圆环大小", 1.0, 0.1, 2.5, 0.1);
+    private final BoolValue fade = new BoolValue("Fade", "淡出", true);
+    private final NumberValue<Integer> segments = new NumberValue<>("Segments", "分段数", 180, 30, 360, 10);
 
     private BlockPos holePos;
     private Vec3d targetPos;

@@ -39,19 +39,19 @@ public class TargetHud extends HudModule {
         Custom
     }
 
-    private final BoolValue hudEnabled = new BoolValue("HUD", true);
-    private final BoolValue hudBlur = new BoolValue("Blur", true, hudEnabled::get);
-    private final NumberValue<Double> hudBlurStrength = new NumberValue<>("BlurStrength", 8.0, 1.0, 20.0, 0.5, () -> hudEnabled.get() && hudBlur.get());
-    private final ColorValue hudColor = new ColorValue("Background", new Color(30, 30, 30, 180), hudEnabled::get);
-    private final ColorValue hudAccentColor = new ColorValue("AccentColor", new Color(255, 100, 100, 255), hudEnabled::get);
+    private final BoolValue hudEnabled = new BoolValue("HUD", "面板", true);
+    private final BoolValue hudBlur = new BoolValue("Blur", "模糊", true, hudEnabled::get);
+    private final NumberValue<Double> hudBlurStrength = new NumberValue<>("BlurStrength", "模糊强度", 8.0, 1.0, 20.0, 0.5, () -> hudEnabled.get() && hudBlur.get());
+    private final ColorValue hudColor = new ColorValue("Background", "背景颜色", new Color(30, 30, 30, 180), hudEnabled::get);
+    private final ColorValue hudAccentColor = new ColorValue("AccentColor", "强调色", new Color(255, 100, 100, 255), hudEnabled::get);
 
-    private final BoolValue espEnabled = new BoolValue("ESP", true);
-    private final EnumValue<ColorMode> colorMode = new EnumValue<>("ESPMode", ColorMode.Rainbow, espEnabled::get);
-    private final ColorValue espColor1 = new ColorValue("ESPColor1", new Color(255, 0, 0, 255), () -> espEnabled.get() && colorMode.is(ColorMode.Custom));
-    private final ColorValue espColor2 = new ColorValue("ESPColor2", new Color(0, 255, 255, 255), () -> espEnabled.get() && colorMode.is(ColorMode.Custom));
-    private final NumberValue<Double> espSize = new NumberValue<>("ESPSize", 1.2, 0.5, 3.0, 0.1, espEnabled::get);
-    private final NumberValue<Double> rotationSpeed = new NumberValue<>("RotSpeed", 2.0, 0.5, 10.0, 0.1, espEnabled::get);
-    private final NumberValue<Double> waveSpeed = new NumberValue<>("WaveSpeed", 3.0, 0.5, 10.0, 0.1, () -> espEnabled.get() && colorMode.is(ColorMode.Wave));
+    private final BoolValue espEnabled = new BoolValue("ESP", "透视", true);
+    private final EnumValue<ColorMode> colorMode = new EnumValue<>("ESPMode", "透视模式", ColorMode.Rainbow, espEnabled::get);
+    private final ColorValue espColor1 = new ColorValue("ESPColor1", "透视颜色1", new Color(255, 0, 0, 255), () -> espEnabled.get() && colorMode.is(ColorMode.Custom));
+    private final ColorValue espColor2 = new ColorValue("ESPColor2", "透视颜色2", new Color(0, 255, 255, 255), () -> espEnabled.get() && colorMode.is(ColorMode.Custom));
+    private final NumberValue<Double> espSize = new NumberValue<>("ESPSize", "透视大小", 1.2, 0.5, 3.0, 0.1, espEnabled::get);
+    private final NumberValue<Double> rotationSpeed = new NumberValue<>("RotSpeed", "旋转速度", 2.0, 0.5, 10.0, 0.1, espEnabled::get);
+    private final NumberValue<Double> waveSpeed = new NumberValue<>("WaveSpeed", "波动速度", 3.0, 0.5, 10.0, 0.1, () -> espEnabled.get() && colorMode.is(ColorMode.Wave));
 
     private float rotation = 0f;
     private float animatedHealth = 0f;

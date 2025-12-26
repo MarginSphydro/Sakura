@@ -29,10 +29,10 @@ public class AutoArmor extends Module {
 
     // 新增整理速度选项
     private final NumberValue<Integer> delayTicksValue =
-            new NumberValue<>("delayTicks", 8, 1, 20, 1); // 默认 8 ticks，可调 1~20
+            new NumberValue<>("delayTicks", "延迟", 8, 1, 20, 1); // 默认 8 ticks，可调 1~20
 
     // 新增可选：是否在打开 GUI 时整理
-    private final BoolValue guiSort = new BoolValue("SortInGUI", false);
+    private final BoolValue guiSort = new BoolValue("SortInGUI", "GUI整理", false);
 
     public AutoArmor() {
         super("AutoArmor", "自动装甲", Category.Player);

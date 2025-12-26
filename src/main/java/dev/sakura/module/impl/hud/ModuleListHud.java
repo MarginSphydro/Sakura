@@ -24,15 +24,15 @@ import static org.lwjgl.nanovg.NanoVG.*;
 
 public class ModuleListHud extends HudModule {
 
-    private final NumberValue<Double> animationSpeed = new NumberValue<>("AnimationSpeed", 0.2, 0.05, 0.5, 0.05);
-    private final BoolValue showCategory = new BoolValue("ShowCategory", true);
-    private final NumberValue<Double> maxWidth = new NumberValue<>("MaxWidth", 150.0, 50.0, 300.0, 5.0);
-    private final NumberValue<Double> maxHeight = new NumberValue<>("MaxHeight", 200.0, 50.0, 500.0, 10.0);
-    private final BoolValue alignRight = new BoolValue("AlignRight", false);
-    private final BoolValue rainbowColor = new BoolValue("RainbowColor", false);
-    private final BoolValue hideHudModules = new BoolValue("HideHudModules", false);
-    private final NumberValue<Double> itemSpacing = new NumberValue<>("ItemSpacing", 7.0, 0.0, 10.0, 0.5);
-    private final NumberValue<Double> hudScale = new NumberValue<>("HudScale", 1.1, 0.5, 2.0, 0.1);
+    private final NumberValue<Double> animationSpeed = new NumberValue<>("AnimationSpeed", "动画速度", 0.2, 0.05, 0.5, 0.05);
+    private final BoolValue showCategory = new BoolValue("ShowCategory", "显示分类", true);
+    private final NumberValue<Double> maxWidth = new NumberValue<>("MaxWidth", "最大宽度", 150.0, 50.0, 300.0, 5.0);
+    private final NumberValue<Double> maxHeight = new NumberValue<>("MaxHeight", "最大高度", 200.0, 50.0, 500.0, 10.0);
+    private final BoolValue alignRight = new BoolValue("AlignRight", "右对齐", false);
+    private final BoolValue rainbowColor = new BoolValue("RainbowColor", "彩虹色", false);
+    private final BoolValue hideHudModules = new BoolValue("HideHudModules", "隐藏HUD模块", false);
+    private final NumberValue<Double> itemSpacing = new NumberValue<>("ItemSpacing", "项目间距", 7.0, 0.0, 10.0, 0.5);
+    private final NumberValue<Double> hudScale = new NumberValue<>("HudScale", "HUD缩放", 1.1, 0.5, 2.0, 0.1);
 
     private final List<ModuleEntry> moduleEntries = new ArrayList<>();
     private static ModuleListHud instance;
@@ -45,18 +45,18 @@ public class ModuleListHud extends HudModule {
 
     private int iconImage = -1;
 
-    private final BoolValue showIcon = new BoolValue("ShowIcon", true);
-    private final NumberValue<Double> iconSize = new NumberValue<>("IconSize", 26.0, 16.0, 32.0, 2.0);
+    private final BoolValue showIcon = new BoolValue("ShowIcon", "显示图标", true);
+    private final NumberValue<Double> iconSize = new NumberValue<>("IconSize", "图标大小", 26.0, 16.0, 32.0, 2.0);
 
     private float rotationAngle = 0.0f;
     private long lastUpdateTime = 0;
 
     private final List<Particle> particles = new ArrayList<>();
-    private final BoolValue enableParticles = new BoolValue("Enable Particles", true);
-    private final NumberValue<Double> rotationSpeed = new NumberValue<>("Rotation Speed", 1.0, 0.1, 5.0, 0.1);
-    private final NumberValue<Integer> particleCount = new NumberValue<>("Particle Count", 10, 0, 50, 1, enableParticles::get);
-    private final NumberValue<Double> particleSize = new NumberValue<>("Particle Size", 2.0, 1.0, 5.0, 0.1, enableParticles::get);
-    private final NumberValue<Double> particleSpeed = new NumberValue<>("Particle Speed", 1.0, 0.1, 3.0, 0.1, enableParticles::get);
+    private final BoolValue enableParticles = new BoolValue("Enable Particles", "启用粒子", true);
+    private final NumberValue<Double> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 1.0, 0.1, 5.0, 0.1);
+    private final NumberValue<Integer> particleCount = new NumberValue<>("Particle Count", "粒子数量", 10, 0, 50, 1, enableParticles::get);
+    private final NumberValue<Double> particleSize = new NumberValue<>("Particle Size", "粒子大小", 2.0, 1.0, 5.0, 0.1, enableParticles::get);
+    private final NumberValue<Double> particleSpeed = new NumberValue<>("Particle Speed", "粒子速度", 1.0, 0.1, 3.0, 0.1, enableParticles::get);
 
 
     private static final float PADDING_X = 6f;

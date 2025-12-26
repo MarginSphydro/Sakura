@@ -23,10 +23,10 @@ public class Blink extends Module {
     private OtherClientPlayerEntity fakePlayer;
     private boolean blinking;
 
-    private final BoolValue render = new BoolValue("Render", true);
-    private final BoolValue onlyMove = new BoolValue("OnlyMove", true);
-    private final BoolValue pulse = new BoolValue("Pulse", false);
-    private final NumberValue<Double> factor = new NumberValue<>("Factor", 1.0, 0.0, 10.0, 0.1, pulse::get);
+    private final BoolValue render = new BoolValue("Render", "渲染", true);
+    private final BoolValue onlyMove = new BoolValue("OnlyMove", "仅移动", true);
+    private final BoolValue pulse = new BoolValue("Pulse", "脉冲", false);
+    private final NumberValue<Double> factor = new NumberValue<>("Factor", "因子", 1.0, 0.0, 10.0, 0.1, pulse::get);
 
     public Blink() {
         super("Blink", "瞬移", Category.Player);

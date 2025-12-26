@@ -64,44 +64,44 @@ public class CrystalAura extends Module {
         Normal
     }
 
-    private final EnumValue<Page> page = new EnumValue<>("Page", Page.General);
+    private final EnumValue<Page> page = new EnumValue<>("Page", "页面", Page.General);
 
-    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 10.0, 1.0, 20.0, 0.1, () -> page.is(Page.General));
-    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
-    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
-    private final NumberValue<Double> forcePlaceHealth = new NumberValue<>("Force Place Health", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", "目标范围", 10.0, 1.0, 20.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", "最小伤害", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", "最大自伤", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
+    private final NumberValue<Double> forcePlaceHealth = new NumberValue<>("Force Place Health", "强放血量", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
 
-    private final BoolValue rotate = new BoolValue("Rotate", true, () -> page.is(Page.Timing));
-    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
-    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 0, 0, 15, 1, () -> page.is(Page.Timing));
-    private final NumberValue<Integer> attackDelay = new NumberValue<>("Attack Delay", 0, 0, 15, 1, () -> page.is(Page.Timing));
-    private final NumberValue<Integer> forcePlaceDelay = new NumberValue<>("Force Place Delay", 0, 0, 15, 1, () -> page.is(Page.Timing));
+    private final BoolValue rotate = new BoolValue("Rotate", "旋转", true, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", "回转速度", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
+    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", "放置延迟", 0, 0, 15, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> attackDelay = new NumberValue<>("Attack Delay", "攻击延迟", 0, 0, 15, 1, () -> page.is(Page.Timing));
+    private final NumberValue<Integer> forcePlaceDelay = new NumberValue<>("Force Place Delay", "强放延迟", 0, 0, 15, 1, () -> page.is(Page.Timing));
 
-    private final BoolValue place = new BoolValue("Place", true, () -> page.is(Page.Place));
-    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Place));
-    private final BoolValue houyuepingMode = new BoolValue("1.12 Place", false, () -> page.is(Page.Place));
-    private final BoolValue attack = new BoolValue("Attack", true, () -> page.is(Page.Place));
-    private final NumberValue<Double> breakRange = new NumberValue<>("Break Range", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Place));
-    private final EnumValue<SwitchMode> autoSwitch = new EnumValue<>("Switch", SwitchMode.Normal, () -> page.is(Page.Place));
-    private final BoolValue swingHand = new BoolValue("Place Swing", true, () -> page.is(Page.Place));
-    private final BoolValue attackSwing = new BoolValue("Attack Swing", true, () -> page.is(Page.Place));
+    private final BoolValue place = new BoolValue("Place", "放置", true, () -> page.is(Page.Place));
+    private final NumberValue<Double> placeRange = new NumberValue<>("Place Range", "放置范围", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Place));
+    private final BoolValue houyuepingMode = new BoolValue("1.12 Place", "1.12放置", false, () -> page.is(Page.Place));
+    private final BoolValue attack = new BoolValue("Attack", "攻击", true, () -> page.is(Page.Place));
+    private final NumberValue<Double> breakRange = new NumberValue<>("Break Range", "破坏范围", 5.0, 1.0, 6.0, 0.1, () -> page.is(Page.Place));
+    private final EnumValue<SwitchMode> autoSwitch = new EnumValue<>("Switch", "切换", SwitchMode.Normal, () -> page.is(Page.Place));
+    private final BoolValue swingHand = new BoolValue("Place Swing", "放置挥手", true, () -> page.is(Page.Place));
+    private final BoolValue attackSwing = new BoolValue("Attack Swing", "攻击挥手", true, () -> page.is(Page.Place));
 
-    private final BoolValue render = new BoolValue("Render", true, () -> page.is(Page.Render));
-    private final BoolValue renderDamageText = new BoolValue("Render Damage", false, () -> page.is(Page.Render) && render.get());
-    private final EnumValue<FadeMode> fadeMode = new EnumValue<>("Fade Mode", FadeMode.Normal, () -> page.is(Page.Render) && render.get());
-    private final NumberValue<Double> animationSpeed = new NumberValue<>("Animation Speed", 5.0, 0.1, 20.0, 0.1, () -> page.is(Page.Render) && render.get());
-    private final NumberValue<Double> animationExponent = new NumberValue<>("Animation Exp", 3.0, 0.1, 10.0, 0.1, () -> page.is(Page.Render) && render.get());
-    private final BoolValue smoothBox = new BoolValue("Smooth Box", false, () -> page.is(Page.Render) && render.get());
-    private final BoolValue breathing = new BoolValue("Breathing", true, () -> page.is(Page.Render) && render.get());
-    private final ColorValue sideColor = new ColorValue("Side Color", new Color(255, 192, 203, 50), () -> page.is(Page.Render) && render.get());
-    private final ColorValue lineColor = new ColorValue("Line Color", new Color(255, 192, 203, 255), () -> page.is(Page.Render) && render.get());
-    private final BoolValue extrapolation = new BoolValue("Extrapolation", true, () -> page.is(Page.Render));
-    private final NumberValue<Integer> extrapolationTicks = new NumberValue<>("Extra Ticks", 0, 0, 20, 1, () -> page.is(Page.Render) && extrapolation.get());
-    private final NumberValue<Integer> smooth = new NumberValue<>("Smooth", 1, 1, 10, 1, () -> page.is(Page.Render) && extrapolation.get());
-    private final BoolValue renderExtrapolation = new BoolValue("Render Extrapolation", true, () -> page.is(Page.Render) && render.get());
-    private final ColorValue extraSideColor = new ColorValue("Extra Side Color", new Color(135, 206, 235, 50), () -> page.is(Page.Render) && renderExtrapolation.get());
-    private final ColorValue extraLineColor = new ColorValue("Extra Line Color", new Color(135, 206, 235, 255), () -> page.is(Page.Render) && renderExtrapolation.get());
+    private final BoolValue render = new BoolValue("Render", "渲染", true, () -> page.is(Page.Render));
+    private final BoolValue renderDamageText = new BoolValue("Render Damage", "显示伤害", false, () -> page.is(Page.Render) && render.get());
+    private final EnumValue<FadeMode> fadeMode = new EnumValue<>("Fade Mode", "淡出模式", FadeMode.Normal, () -> page.is(Page.Render) && render.get());
+    private final NumberValue<Double> animationSpeed = new NumberValue<>("Animation Speed", "动画速度", 5.0, 0.1, 20.0, 0.1, () -> page.is(Page.Render) && render.get());
+    private final NumberValue<Double> animationExponent = new NumberValue<>("Animation Exp", "动画指数", 3.0, 0.1, 10.0, 0.1, () -> page.is(Page.Render) && render.get());
+    private final BoolValue smoothBox = new BoolValue("Smooth Box", "平滑方块", false, () -> page.is(Page.Render) && render.get());
+    private final BoolValue breathing = new BoolValue("Breathing", "呼吸效果", true, () -> page.is(Page.Render) && render.get());
+    private final ColorValue sideColor = new ColorValue("Side Color", "侧面颜色", new Color(255, 192, 203, 50), () -> page.is(Page.Render) && render.get());
+    private final ColorValue lineColor = new ColorValue("Line Color", "线条颜色", new Color(255, 192, 203, 255), () -> page.is(Page.Render) && render.get());
+    private final BoolValue extrapolation = new BoolValue("Extrapolation", "外推", true, () -> page.is(Page.Render));
+    private final NumberValue<Integer> extrapolationTicks = new NumberValue<>("Extra Ticks", "外推刻数", 0, 0, 20, 1, () -> page.is(Page.Render) && extrapolation.get());
+    private final NumberValue<Integer> smooth = new NumberValue<>("Smooth", "平滑度", 1, 1, 10, 1, () -> page.is(Page.Render) && extrapolation.get());
+    private final BoolValue renderExtrapolation = new BoolValue("Render Extrapolation", "渲染预测", true, () -> page.is(Page.Render) && render.get());
+    private final ColorValue extraSideColor = new ColorValue("Extra Side Color", "外推侧面颜色", new Color(135, 206, 235, 50), () -> page.is(Page.Render) && renderExtrapolation.get());
+    private final ColorValue extraLineColor = new ColorValue("Extra Line Color", "外推线条颜色", new Color(135, 206, 235, 255), () -> page.is(Page.Render) && renderExtrapolation.get());
 
     private final TimerUtil placeTimer = new TimerUtil();
     private final TimerUtil breakTimer = new TimerUtil();

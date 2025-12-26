@@ -22,13 +22,13 @@ import static org.lwjgl.nanovg.NanoVG.*;
 
 public class KeyStrokesHud extends HudModule {
 
-    private final NumberValue<Double> offsetValue = new NumberValue<>("Offset", 3.0, 2.5, 10.0, 0.5);
-    private final NumberValue<Double> sizeValue = new NumberValue<>("Size", 25.0, 15.0, 35.0, 1.0);
-    private final NumberValue<Double> radiusValue = new NumberValue<>("Radius", 4.0, 0.0, 10.0, 1.0);
-    private final NumberValue<Double> opacityValue = new NumberValue<>("Opacity", 0.5, 0.1, 1.0, 0.05);
-    private final BoolValue whiteMode = new BoolValue("White", true);
-    private final BoolValue blur = new BoolValue("Blur", false);
-    private final NumberValue<Double> blurStrength = new NumberValue<>("Blur Strength", 8.0, 1.0, 20.0, 0.5, blur::get);
+    private final NumberValue<Double> offsetValue = new NumberValue<>("Offset", "偏移", 3.0, 2.5, 10.0, 0.5);
+    private final NumberValue<Double> sizeValue = new NumberValue<>("Size", "大小", 25.0, 15.0, 35.0, 1.0);
+    private final NumberValue<Double> radiusValue = new NumberValue<>("Radius", "圆角", 4.0, 0.0, 10.0, 1.0);
+    private final NumberValue<Double> opacityValue = new NumberValue<>("Opacity", "透明度", 0.5, 0.1, 1.0, 0.05);
+    private final BoolValue whiteMode = new BoolValue("White", "白色模式", true);
+    private final BoolValue blur = new BoolValue("Blur", "模糊", false);
+    private final NumberValue<Double> blurStrength = new NumberValue<>("Blur Strength", "模糊强度", 8.0, 1.0, 20.0, 0.5, blur::get);
 
     private Button keyBindForward;
     private Button keyBindLeft;

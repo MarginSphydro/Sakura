@@ -35,17 +35,17 @@ public class WebAura extends Module {
         Silent
     }
 
-    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", 8.0, 1.0, 12.0, 1.0);
-    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", 1, 0, 20, 1);
-    private final BoolValue face = new BoolValue("Place on Face", true);
-    private final BoolValue feet = new BoolValue("Place on Feet", true);
-    private final BoolValue down = new BoolValue("Place on Down", false);
-    private final NumberValue<Double> offset = new NumberValue<>("Offset", 0.25, 0.0, 0.3, 0.01);
-    private final EnumValue<SwitchMode> autoSwitch = new EnumValue<>("Switch", SwitchMode.Normal);
-    private final BoolValue swingHand = new BoolValue("Swing", true);
-    private final BoolValue rotate = new BoolValue("Rotate", true);
-    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", 10, 0, 10, 1, rotate::get);
-    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", 10, 0, 10, 1, rotate::get);
+    private final NumberValue<Double> targetRange = new NumberValue<>("Target Range", "目标范围", 8.0, 1.0, 12.0, 1.0);
+    private final NumberValue<Integer> placeDelay = new NumberValue<>("Place Delay", "放置延迟", 1, 0, 20, 1);
+    private final BoolValue face = new BoolValue("Place on Face", "放置面部", true);
+    private final BoolValue feet = new BoolValue("Place on Feet", "放置脚部", true);
+    private final BoolValue down = new BoolValue("Place on Down", "放置下方", false);
+    private final NumberValue<Double> offset = new NumberValue<>("Offset", "偏移", 0.25, 0.0, 0.3, 0.01);
+    private final EnumValue<SwitchMode> autoSwitch = new EnumValue<>("Switch", "切换", SwitchMode.Normal);
+    private final BoolValue swingHand = new BoolValue("Swing", "挥手", true);
+    private final BoolValue rotate = new BoolValue("Rotate", "旋转", true);
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 10, 0, 10, 1, rotate::get);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", "回转速度", 10, 0, 10, 1, rotate::get);
 
     private final TimerUtil placeTimer = new TimerUtil();
     private boolean isRotating = false;

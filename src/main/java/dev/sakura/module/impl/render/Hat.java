@@ -28,13 +28,13 @@ public class Hat extends Module {
         Astolfo, Sexy, Fade, Dynamic
     }
 
-    private final EnumValue<Mode> mode = new EnumValue<>("Mode", Mode.Sexy);
-    private final NumberValue<Integer> points = new NumberValue<>("Points", 30, 3, 180, 1);
-    private final NumberValue<Double> size = new NumberValue<>("Size", 0.5, 0.1, 3.0, 0.1);
-    private final NumberValue<Double> offsetValue = new NumberValue<>("Offset", 2000.0, 0.0, 5000.0, 100.0);
-    private final ColorValue colorValue = new ColorValue("Color", new Color(255, 255, 255), () -> mode.is(Mode.Fade) || mode.is(Mode.Dynamic));
-    private final ColorValue secondColorValue = new ColorValue("Second Color", new Color(0, 0, 0), () -> mode.is(Mode.Fade));
-    private final BoolValue onlyThirdPerson = new BoolValue("Only Third Person", true);
+    private final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Sexy);
+    private final NumberValue<Integer> points = new NumberValue<>("Points", "点数", 30, 3, 180, 1);
+    private final NumberValue<Double> size = new NumberValue<>("Size", "大小", 0.5, 0.1, 3.0, 0.1);
+    private final NumberValue<Double> offsetValue = new NumberValue<>("Offset", "偏移", 2000.0, 0.0, 5000.0, 100.0);
+    private final ColorValue colorValue = new ColorValue("Color", "颜色", new Color(255, 255, 255), () -> mode.is(Mode.Fade) || mode.is(Mode.Dynamic));
+    private final ColorValue secondColorValue = new ColorValue("Second Color", "第二颜色", new Color(0, 0, 0), () -> mode.is(Mode.Fade));
+    private final BoolValue onlyThirdPerson = new BoolValue("Only Third Person", "仅第三人称", true);
 
     private final double[][] positions = new double[181][2];
     private int lastPoints;
