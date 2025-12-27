@@ -169,12 +169,12 @@ public class ShaderProgram {
             """;
 
     public static final String CUTE = """
-            #ifdef GL_ES
-            precision mediump float;
-            #endif
+            #version 150
             
             uniform float time;
             uniform vec2 resolution;
+            
+            out vec4 fragColor;
             
             vec3 hsv2rgb(vec3 c) {
                 vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
@@ -204,7 +204,7 @@ public class ShaderProgram {
             
                 vec3 col = hsv2rgb(vec3(range(c2, 0.85, 0.95), range(c3, 0.5, 0.55), range(c3, 1.0, 0.75)));
             
-                gl_FragColor = vec4(col, 1.0);
+                fragColor = vec4(col, 1.0);
             }
             
             """;
