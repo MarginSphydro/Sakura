@@ -1,12 +1,10 @@
 package dev.sakura.utils.player;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandler;
@@ -177,9 +175,9 @@ public class InvUtil {
 
             ScreenHandler handler = mc.player.currentScreenHandler;
             int selectedSlot = mc.player.getInventory().selectedSlot;
-            
+
             mc.interactionManager.clickSlot(handler.syncId, containerSlot, selectedSlot, SlotActionType.SWAP, mc.player);
-            
+
             invSlots = new int[]{containerSlot, selectedSlot};
             return true;
         }
@@ -189,8 +187,22 @@ public class InvUtil {
     public static void invSwapBack() {
         if (invSlots == null || invSlots.length < 2) return;
         ScreenHandler handler = mc.player.currentScreenHandler;
-        
+
         mc.interactionManager.clickSlot(handler.syncId, invSlots[0], invSlots[1], SlotActionType.SWAP, mc.player);
+    }
+
+    public static void moveItem(int fromIdx, int toIdx) {
+        int containerSlot = fromIdx;
+        if (fromIdx < 9) containerSlot += 36;
+        else if (fromIdx == 40) containerSlot = 45;
+
+        if (fromIdx < 9) {
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, toIdx, fromIdx, SlotActionType.SWAP, mc.player);
+        } else {
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, containerSlot, 0, SlotActionType.PICKUP, mc.player);
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, toIdx, 0, SlotActionType.PICKUP, mc.player);
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, containerSlot, 0, SlotActionType.PICKUP, mc.player);
+        }
     }
 
     public static void dropHand() {
