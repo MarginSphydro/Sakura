@@ -193,4 +193,76 @@ public class MovementUtil {
         event.setForward(closestForward);
         event.setStrafe(closestStrafe);
     }
+
+    public static double getMotionX() {
+        if (mc.player == null) return 0;
+        return mc.player.getVelocity().x;
+    }
+
+    public static double getMotionZ() {
+        if (mc.player == null) return 0;
+        return mc.player.getVelocity().z;
+    }
+
+    public static float getTickDelta() {
+        return mc.getRenderTickCounter().getTickDelta(true);
+    }
+
+    public static double[] directionSpeedKey(double speed) {
+        if (mc.player == null) return new double[]{0, 0};
+
+        float forward = (mc.options.forwardKey.isPressed() ? 1 : 0) + (mc.options.backKey.isPressed() ? -1 : 0);
+        float side = (mc.options.leftKey.isPressed() ? 1 : 0) + (mc.options.rightKey.isPressed() ? -1 : 0);
+        float yaw = mc.player.prevYaw + (mc.player.getYaw() - mc.player.prevYaw) * getTickDelta();
+
+        if (forward != 0.0f) {
+            if (side > 0.0f) {
+                yaw += ((forward > 0.0f) ? -45 : 45);
+            } else if (side < 0.0f) {
+                yaw += ((forward > 0.0f) ? 45 : -45);
+            }
+            side = 0.0f;
+            if (forward > 0.0f) {
+                forward = 1.0f;
+            } else if (forward < 0.0f) {
+                forward = -1.0f;
+            }
+        }
+
+        final double sin = Math.sin(Math.toRadians(yaw + 90.0f));
+        final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
+        final double posX = forward * speed * cos + side * speed * sin;
+        final double posZ = forward * speed * sin - side * speed * cos;
+
+        return new double[]{posX, posZ};
+    }
+
+    public static double[] directionSpeed(double speed) {
+        if (mc.player == null) return new double[]{0, 0};
+
+        float forward = mc.player.input.movementForward;
+        float side = mc.player.input.movementSideways;
+        float yaw = mc.player.prevYaw + (mc.player.getYaw() - mc.player.prevYaw) * getTickDelta();
+
+        if (forward != 0.0f) {
+            if (side > 0.0f) {
+                yaw += ((forward > 0.0f) ? -45 : 45);
+            } else if (side < 0.0f) {
+                yaw += ((forward > 0.0f) ? 45 : -45);
+            }
+            side = 0.0f;
+            if (forward > 0.0f) {
+                forward = 1.0f;
+            } else if (forward < 0.0f) {
+                forward = -1.0f;
+            }
+        }
+
+        final double sin = Math.sin(Math.toRadians(yaw + 90.0f));
+        final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
+        final double posX = forward * speed * cos + side * speed * sin;
+        final double posZ = forward * speed * sin - side * speed * cos;
+
+        return new double[]{posX, posZ};
+    }
 }

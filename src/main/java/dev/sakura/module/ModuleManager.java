@@ -61,6 +61,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new NoSlow());
             manager.tryLoad(() -> new HoleSnap());
             manager.tryLoad(() -> new Scaffold());
+            manager.tryLoad(() -> new ElytraFly());
 
 
             // Player
