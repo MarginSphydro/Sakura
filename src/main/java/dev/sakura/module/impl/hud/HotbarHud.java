@@ -145,11 +145,7 @@ public class HotbarHud extends HudModule {
     }
 
     public float getRadius() {
-        dev.sakura.module.impl.client.HudEditor hudEditor = Sakura.MODULES.getModule(dev.sakura.module.impl.client.HudEditor.class);
-        if (hudEditor != null) {
-            return hudEditor.globalCornerRadius.get().floatValue();
-        }
-        return radius.get().floatValue();
+            return radius.get().floatValue();
     }
 
     private void renderBloom(DrawContext context) {

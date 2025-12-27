@@ -2,7 +2,6 @@ package dev.sakura.utils.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.sakura.shaders.BlurProgram;
-import dev.sakura.shaders.MainMenuProgram;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
@@ -10,13 +9,9 @@ import org.joml.Matrix4f;
 import java.awt.*;
 
 public class Shader2DUtil {
-    public static MainMenuProgram MAIN_MENU_PROGRAM;
-    //public static ArcShader ARC_PROGRAM;
     public static BlurProgram BLUR_PROGRAM;
 
     public static void init() {
-        MAIN_MENU_PROGRAM = new MainMenuProgram();
-        //ARC_PROGRAM = new ArcShader();
         BLUR_PROGRAM = new BlurProgram();
     }
 

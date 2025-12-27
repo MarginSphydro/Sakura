@@ -1,12 +1,10 @@
 package dev.sakura.utils.player;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandler;
@@ -171,17 +169,16 @@ public class InvUtil {
 
     public static boolean invSwap(int slot) {
         if (slot >= 0) {
-            ScreenHandler handler = mc.player.currentScreenHandler;
-            Int2ObjectArrayMap<ItemStack> stack = new Int2ObjectArrayMap<>();
-            stack.put(slot, handler.getSlot(slot).getStack());
+            int containerSlot = slot;
+            if (slot < 9) containerSlot += 36;
+            else if (slot == 40) containerSlot = 45;
 
+            ScreenHandler handler = mc.player.currentScreenHandler;
             int selectedSlot = mc.player.getInventory().selectedSlot;
-            mc.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(handler.syncId,
-                    handler.getRevision(), slot,
-                    selectedSlot, SlotActionType.SWAP, handler.getSlot(slot).getStack(), stack)
-            );
-            mc.interactionManager.syncSelectedSlot();
-            invSlots = new int[]{slot, selectedSlot};
+
+            mc.interactionManager.clickSlot(handler.syncId, containerSlot, selectedSlot, SlotActionType.SWAP, mc.player);
+
+            invSlots = new int[]{containerSlot, selectedSlot};
             return true;
         }
         return false;
@@ -190,14 +187,22 @@ public class InvUtil {
     public static void invSwapBack() {
         if (invSlots == null || invSlots.length < 2) return;
         ScreenHandler handler = mc.player.currentScreenHandler;
-        Int2ObjectArrayMap<ItemStack> stack = new Int2ObjectArrayMap<>();
-        stack.put(invSlots[0], handler.getSlot(invSlots[0]).getStack());
 
-        mc.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(handler.syncId,
-                handler.getRevision(), invSlots[0],
-                invSlots[1], SlotActionType.SWAP, handler.getSlot(invSlots[0]).getStack().copy(), stack)
-        );
-        mc.interactionManager.syncSelectedSlot();
+        mc.interactionManager.clickSlot(handler.syncId, invSlots[0], invSlots[1], SlotActionType.SWAP, mc.player);
+    }
+
+    public static void moveItem(int fromIdx, int toIdx) {
+        int containerSlot = fromIdx;
+        if (fromIdx < 9) containerSlot += 36;
+        else if (fromIdx == 40) containerSlot = 45;
+
+        if (fromIdx < 9) {
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, toIdx, fromIdx, SlotActionType.SWAP, mc.player);
+        } else {
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, containerSlot, 0, SlotActionType.PICKUP, mc.player);
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, toIdx, 0, SlotActionType.PICKUP, mc.player);
+            mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, containerSlot, 0, SlotActionType.PICKUP, mc.player);
+        }
     }
 
     public static void dropHand() {

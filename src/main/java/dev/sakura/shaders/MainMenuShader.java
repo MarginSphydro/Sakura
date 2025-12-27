@@ -9,12 +9,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL20;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 import static dev.sakura.Sakura.mc;
 
@@ -45,7 +40,6 @@ public class MainMenuShader {
     private VertexBuffer vertexBuffer;
     private MainMenuShaderType currentShaderType;
     private boolean useAlternativeUniforms;
-    private VideoBackgroundRenderer videoRenderer;
 
     public MainMenuShader(MainMenuShaderType shaderType) {
         this.accumulatedTime = 0f;
@@ -88,11 +82,12 @@ public class MainMenuShader {
         VertexBuffer.unbind();
     }
 
+
     private int createShaderProgram(MainMenuShaderType shaderType) throws IOException {
         int program = GL20.glCreateProgram();
 
-        int vertexShader = createShader(shaderType.getVertexShaderPath(), GL20.GL_VERTEX_SHADER);
-        int fragmentShader = createShader(shaderType.getFragmentShaderPath(), GL20.GL_FRAGMENT_SHADER);
+        int vertexShader = createShader(ShaderProgram.PASSTHROUGH, GL20.GL_VERTEX_SHADER);
+        int fragmentShader = createShader(shaderType.getSource(), GL20.GL_FRAGMENT_SHADER);
 
         GL20.glAttachShader(program, vertexShader);
         GL20.glAttachShader(program, fragmentShader);
@@ -107,37 +102,25 @@ public class MainMenuShader {
         GL20.glDeleteShader(fragmentShader);
 
         GL20.glUseProgram(program);
-        if (shaderType == MainMenuShaderType.MAIN_MENU) {
-            this.timeUniform = GL20.glGetUniformLocation(program, "Time");
-            this.resolutionUniform = GL20.glGetUniformLocation(program, "uSize");
-            this.transitionUniform = -1; // 不支持
-            this.useAlternativeUniforms = true;
-        } else {
-            this.timeUniform = GL20.glGetUniformLocation(program, "time");
-            this.resolutionUniform = GL20.glGetUniformLocation(program, "resolution");
-            this.transitionUniform = GL20.glGetUniformLocation(program, "transition");
-            this.useAlternativeUniforms = false;
-        }
+
+        this.timeUniform = GL20.glGetUniformLocation(program, "time");
+        this.resolutionUniform = GL20.glGetUniformLocation(program, "resolution");
+        this.transitionUniform = GL20.glGetUniformLocation(program, "transition");
+        this.useAlternativeUniforms = false;
         GL20.glUseProgram(0);
 
         return program;
     }
 
-    private int createShader(String path, int shaderType) throws IOException {
-        InputStream stream = MainMenuShader.class.getResourceAsStream(path);
-        if (stream == null) {
-            throw new IOException("Shader file not found: " + path);
-        }
-
-        String source = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
-
+    private int createShader(String source, int shaderType) {
         int shader = GL20.glCreateShader(shaderType);
         GL20.glShaderSource(shader, source);
         GL20.glCompileShader(shader);
 
         int compiled = GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS);
         if (compiled == 0) {
-            throw new IllegalStateException("Failed to compile shader: " + path);
+            String log = GL20.glGetShaderInfoLog(shader);
+            throw new IllegalStateException("Failed to compile shader: " + log);
         }
 
         return shader;
@@ -159,12 +142,28 @@ public class MainMenuShader {
         float scaleFactor = (float) mc.getWindow().getScaleFactor();
         GL20.glUniform2f(this.resolutionUniform, width * scaleFactor, height * scaleFactor);
 
+        // Pass extra uniforms if needed, e.g. uSize for MAIN_MENU
+        int uSizeUniform = GL20.glGetUniformLocation(this.programId, "uSize");
+        if (uSizeUniform != -1) {
+            GL20.glUniform2f(uSizeUniform, width * scaleFactor, height * scaleFactor);
+        }
+
+        int TimeUniform = GL20.glGetUniformLocation(this.programId, "Time");
+        if (TimeUniform != -1) {
+            // Use same accumulated time but for "Time" uniform
+            // Note: accumulatedTime is updated below
+        }
+
         if (useAlternativeUniforms) {
             accumulatedTime += (float) (0.55 * AnimationUtil.deltaTime());
             GL20.glUniform1f(this.timeUniform, accumulatedTime);
         } else {
             accumulatedTime += (float) (1.0 * AnimationUtil.deltaTime());
             GL20.glUniform1f(this.timeUniform, accumulatedTime);
+        }
+
+        if (TimeUniform != -1) {
+            GL20.glUniform1f(TimeUniform, accumulatedTime);
         }
 
         // 设置过渡参数
@@ -200,27 +199,8 @@ public class MainMenuShader {
             this.programId = 0;
         }
 
-        if (this.videoRenderer != null) {
-            this.videoRenderer.cleanup();
-            this.videoRenderer = null;
-        }
-
         this.currentShaderType = newType;
 
-        // 初始化新着色器
-        /*if (newType == MainMenuShaderType.VIDEO) {
-            this.videoRenderer = new VideoBackgroundRenderer();
-        } else {
-            try {
-                this.accumulatedTime = (newType == MainMenuShaderType.MAIN_MENU) ? 10000f : 0f;
-                this.programId = createShaderProgram(newType);
-                if (this.vertexBuffer == null) {
-                    this.setupVertexBuffer();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
         try {
             this.accumulatedTime = 0f;
             this.programId = createShaderProgram(newType);
@@ -238,19 +218,11 @@ public class MainMenuShader {
 
     public void nextShader() {
         MainMenuShaderType next = currentShaderType.next();
-
-        while (next == MainMenuShaderType.MAIN_MENU || next == MainMenuShaderType.BSW) {
-            next = next.next();
-        }
         switchShaderType(next);
     }
 
     public void previousShader() {
         MainMenuShaderType prev = currentShaderType.previous();
-
-        while (prev == MainMenuShaderType.MAIN_MENU || prev == MainMenuShaderType.BSW) {
-            prev = prev.previous();
-        }
         switchShaderType(prev);
     }
 
@@ -263,39 +235,24 @@ public class MainMenuShader {
             this.vertexBuffer.close();
             this.vertexBuffer = null;
         }
-        if (this.videoRenderer != null) {
-            this.videoRenderer.cleanup();
-            this.videoRenderer = null;
-        }
     }
 
     public enum MainMenuShaderType {
-        MAIN_MENU("mainmenu.fsh", "主菜单"),
-        //SAKURA1("mainmenu_sakura1.fsh", "樱花效果 1"),
-        SAKURA("mainmenu_sakura2.fsh", "樱花效果"),
-        //SAKURA3("mainmenu_sakura3.fsh", "樱花效果 3"),
-        SEA("mainmenu_sea.fsh", "海洋效果"),
-        TOKYO("mainmenu_tokyo.fsh", "东京夜景"),
-        BSW("mainmenubsw.fsh", "流光波纹"),
-        MOON("mainmenu_moon.fsh", "月球飞行");
-        //JOURNEY("mainmenu_journey.fsh", "旅程效果"),
-        //DRIVE_HOME("mainmenu_drivehome.fsh", "驾车回家"),
-        //HEARTFELT("mainmenu_heartfelt.fsh", "爱心雨滴"), TODO:爱心雨滴依赖背景不然很丑
+        SAKURA(ShaderProgram.SAKURA, "樱花效果"),
+        CUTE(ShaderProgram.CUTE, "可爱效果"),
+        SEA(ShaderProgram.SEA, "海洋效果"),
+        MOON(ShaderProgram.MOON, "月球飞行");
 
-        private final String fragmentShaderPath;
+        private final String source;
         private final String displayName;
 
-        MainMenuShaderType(String fragmentShader, String displayName) {
-            this.fragmentShaderPath = "/assets/sakura/shaders/" + fragmentShader;
+        MainMenuShaderType(String source, String displayName) {
+            this.source = source;
             this.displayName = displayName;
         }
 
-        public String getFragmentShaderPath() {
-            return fragmentShaderPath;
-        }
-
-        public String getVertexShaderPath() {
-            return "/assets/sakura/shaders/mainmenu_passthrough.vsh";
+        public String getSource() {
+            return source;
         }
 
         public String getDisplayName() {

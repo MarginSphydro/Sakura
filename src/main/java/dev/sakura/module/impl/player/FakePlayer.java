@@ -31,7 +31,7 @@ public class FakePlayer extends Module {
         super("FakePlayer", "假人", Category.Player);
     }
 
-    private final StringValue name = new StringValue("Name", "名字", "BC_zxy");
+    private final StringValue name = new StringValue("Name", "名字", "Bot");
     private final BoolValue damage = new BoolValue("Damage", "伤害", true);
     private final BoolValue record = new BoolValue("Record", "记录", false);
     private final BoolValue play = new BoolValue("Play", "播放", false);

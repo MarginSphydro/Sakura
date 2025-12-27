@@ -8,12 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL20;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 import static dev.sakura.Sakura.mc;
 
@@ -77,11 +72,12 @@ public class SplashShader {
         VertexBuffer.unbind();
     }
 
+
     private int createShaderProgram() throws IOException {
         int program = GL20.glCreateProgram();
 
-        int vertexShader = createShader("/assets/sakura/shaders/mainmenu_passthrough.vsh", GL20.GL_VERTEX_SHADER);
-        int fragmentShader = createShader("/assets/sakura/shaders/splash_sakura.fsh", GL20.GL_FRAGMENT_SHADER);
+        int vertexShader = createShader(ShaderProgram.PASSTHROUGH, GL20.GL_VERTEX_SHADER);
+        int fragmentShader = createShader(ShaderProgram.SPLASH, GL20.GL_FRAGMENT_SHADER);
 
         GL20.glAttachShader(program, vertexShader);
         GL20.glAttachShader(program, fragmentShader);
@@ -106,15 +102,7 @@ public class SplashShader {
         return program;
     }
 
-    private int createShader(String path, int shaderType) throws IOException {
-        InputStream stream = SplashShader.class.getResourceAsStream(path);
-        if (stream == null) {
-            throw new IOException("Shader file not found: " + path);
-        }
-
-        String source = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))
-                .lines().collect(Collectors.joining("\n"));
-
+    private int createShader(String source, int shaderType) {
         int shader = GL20.glCreateShader(shaderType);
         GL20.glShaderSource(shader, source);
         GL20.glCompileShader(shader);
@@ -122,7 +110,7 @@ public class SplashShader {
         int compiled = GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS);
         if (compiled == 0) {
             String log = GL20.glGetShaderInfoLog(shader);
-            throw new IllegalStateException("Failed to compile shader: " + path + "\n" + log);
+            throw new IllegalStateException("Failed to compile shader: " + log);
         }
 
         return shader;

@@ -27,7 +27,7 @@ public class MixinScreen {
     public void renderPanoramaBackgroundHook(DrawContext context, float delta, CallbackInfo ci) {
         if (mc.world == null) {
             if (mainMenuShader == null) {
-                mainMenuShader = new MainMenuShader(MainMenuShader.MainMenuShaderType.MAIN_MENU);
+                mainMenuShader = new MainMenuShader(MainMenuShader.MainMenuShaderType.CUTE);
             }
             mainMenuShader.render(this.width, this.height);
             ci.cancel();

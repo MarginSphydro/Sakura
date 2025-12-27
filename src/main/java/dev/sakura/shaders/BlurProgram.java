@@ -19,14 +19,14 @@ import java.awt.*;
 import static dev.sakura.Sakura.mc;
 
 public class BlurProgram {
-    private Uniform2f uSize;
-    private Uniform2f uLocation;
-    private Uniform1f radius;
-    private Uniform2f inputResolution;
-    private Uniform1f brightness;
-    private Uniform1f quality;
-    private Uniform4f color1;
-    private SamplerUniform sampler;
+    private final Uniform2f uSize;
+    private final Uniform2f uLocation;
+    private final Uniform1f radius;
+    private final Uniform2f inputResolution;
+    private final Uniform1f brightness;
+    private final Uniform1f quality;
+    private final Uniform4f color1;
+    private final SamplerUniform sampler;
 
     private Framebuffer input;
 

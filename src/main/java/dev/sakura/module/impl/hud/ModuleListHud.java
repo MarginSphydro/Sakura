@@ -7,11 +7,10 @@ import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
-import dev.sakura.utils.animations.Animation;
 import dev.sakura.utils.animations.Direction;
-import dev.sakura.utils.animations.impl.DecelerateAnimation;
 import dev.sakura.utils.animations.impl.EaseInOutQuad;
 import dev.sakura.values.impl.BoolValue;
+import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.NumberValue;
 import net.minecraft.client.gui.DrawContext;
 import org.lwjgl.nanovg.NVGPaint;
@@ -23,7 +22,8 @@ import java.util.List;
 import static org.lwjgl.nanovg.NanoVG.*;
 
 public class ModuleListHud extends HudModule {
-
+    private final BoolValue enableBloom = new BoolValue("EnableBloom", "光晕", true);
+    private final NumberValue<Double> radius = new NumberValue<>("Radius", "圆角半径", 6.0, 0.0, 15.0, 1.0);
     private final NumberValue<Double> animationSpeed = new NumberValue<>("AnimationSpeed", "动画速度", 0.2, 0.05, 0.5, 0.05);
     private final BoolValue showCategory = new BoolValue("ShowCategory", "显示分类", true);
     private final NumberValue<Double> maxWidth = new NumberValue<>("MaxWidth", "最大宽度", 150.0, 50.0, 300.0, 5.0);
@@ -33,6 +33,9 @@ public class ModuleListHud extends HudModule {
     private final BoolValue hideHudModules = new BoolValue("HideHudModules", "隐藏HUD模块", false);
     private final NumberValue<Double> itemSpacing = new NumberValue<>("ItemSpacing", "项目间距", 7.0, 0.0, 10.0, 0.5);
     private final NumberValue<Double> hudScale = new NumberValue<>("HudScale", "HUD缩放", 1.1, 0.5, 2.0, 0.1);
+    private final NumberValue<Integer> suffixStyle = new NumberValue<>("SuffixStyle", "后缀符号", 0, 0, 3, 1);
+
+
 
     private final List<ModuleEntry> moduleEntries = new ArrayList<>();
     private static ModuleListHud instance;
@@ -44,9 +47,8 @@ public class ModuleListHud extends HudModule {
     private float scrollOffset = 0;
 
     private int iconImage = -1;
-
     private final BoolValue showIcon = new BoolValue("ShowIcon", "显示图标", true);
-    private final NumberValue<Double> iconSize = new NumberValue<>("IconSize", "图标大小", 26.0, 16.0, 32.0, 2.0);
+    // 图标大小固定为15
 
     private float rotationAngle = 0.0f;
     private long lastUpdateTime = 0;
@@ -81,7 +83,7 @@ public class ModuleListHud extends HudModule {
         this.lastUpdateTime = System.currentTimeMillis();
         instance = this;
     }
-    
+
     public static void onModuleToggle(Module module, boolean enabled) {
         if (instance != null && !module.isHidden() && (!instance.hideHudModules.get() || !(module instanceof HudModule))) {
             if (enabled) {
@@ -115,7 +117,7 @@ public class ModuleListHud extends HudModule {
         NanoVGRenderer.INSTANCE.draw(vg -> {
             float scaledWidth = currentWidth * hudScale.get().floatValue();
             float scaledHeight = currentHeight * hudScale.get().floatValue();
-            NanoVGHelper.drawRect(x, y, scaledWidth, scaledHeight,
+            NanoVGHelper.drawRect(x, y-5, scaledWidth, scaledHeight+4,
                     dragging ? new Color(ClickGui.color(0).getRed(), ClickGui.color(0).getGreen(), ClickGui.color(0).getBlue(), 80) : BACKGROUND_COLOR);
 
             renderContent();
@@ -123,11 +125,7 @@ public class ModuleListHud extends HudModule {
     }
 
     public float getRadius() {
-        dev.sakura.module.impl.client.HudEditor hudEditor = Sakura.MODULES.getModule(dev.sakura.module.impl.client.HudEditor.class);
-        if (hudEditor != null) {
-            return hudEditor.globalCornerRadius.get().floatValue();
-        }
-        return 6f;
+            return radius.get().floatValue();
     }
 
     @Override
@@ -237,8 +235,8 @@ public class ModuleListHud extends HudModule {
             targetHeight = 20;
 
             if (showIcon.get()) {
-                float iconRenderSize = iconSize.get().floatValue() * hudScale.get().floatValue();
-                targetHeight = (PADDING_Y * 2 + iconRenderSize + 4) * hudScale.get().floatValue();
+                float iconRenderSize = 13.0f * hudScale.get().floatValue();
+                targetHeight = (PADDING_Y * 2 + iconRenderSize + 4 - 2) * hudScale.get().floatValue();
             }
             return;
         }
@@ -248,17 +246,17 @@ public class ModuleListHud extends HudModule {
         float totalHeight = PADDING_Y * 2 * scale;
 
         if (showIcon.get()) {
-            float iconRenderSize = iconSize.get().floatValue() * scale;
+            float iconRenderSize = 13.0f * scale;
             totalHeight += iconRenderSize + 4 * scale;
         }
 
         float maxTextWidth = 0;
         int font = FontLoader.medium(10);
-        
+
         for (ModuleEntry entry : moduleEntries) {
             EaseInOutQuad animation = moduleAnimations.get(entry.module);
             double animationValue = animation != null ? animation.getOutput() : 1.0;
-            
+
             if (animationValue > 0.01) {
                 String text = getDisplayText(entry.module);
                 float textWidth = NanoVGHelper.getTextWidth(text, font, 10 * scale);
@@ -269,13 +267,13 @@ public class ModuleListHud extends HudModule {
                 totalHeight += (10 + itemSpacing.get().floatValue()) * scale;
             }
         }
-        
+
         if (!moduleEntries.isEmpty()) {
             long visibleModuleCount = moduleEntries.stream()
-                .map(entry -> moduleAnimations.get(entry.module))
-                .filter(animation -> animation != null && animation.getOutput() > 0.01)
-                .count();
-            
+                    .map(entry -> moduleAnimations.get(entry.module))
+                    .filter(animation -> animation != null && animation.getOutput() > 0.01)
+                    .count();
+
             if (visibleModuleCount == 0 && !moduleEntries.isEmpty()) {
                 for (ModuleEntry entry : moduleEntries) {
                     String text = getDisplayText(entry.module);
@@ -293,9 +291,9 @@ public class ModuleListHud extends HudModule {
         }
 
         if (showIcon.get()) {
-            float iconRenderSize = iconSize.get().floatValue() * scale;
-            int sakuraFont = FontLoader.bold(18);
-            float sakuraTextWidth = NanoVGHelper.getTextWidth("Sakura", sakuraFont, 18 * scale);
+            float iconRenderSize = 13.0f * scale;
+            int sakuraFont = FontLoader.bold(13);
+            float sakuraTextWidth = NanoVGHelper.getTextWidth("ModuleList", sakuraFont, 11 * scale);
             float totalRequiredWidth = iconRenderSize + sakuraTextWidth + 4 * scale;
             maxTextWidth = Math.max(maxTextWidth, totalRequiredWidth);
         }
@@ -346,14 +344,28 @@ public class ModuleListHud extends HudModule {
         float currentY = y + (PADDING_Y * scale) - (scrollOffset * scale);
 
         if (showIcon.get() && iconImage != -1) {
-            float iconRenderSize = iconSize.get().floatValue() * scale;
+            float iconRenderSize = 13.0f * scale;
             float iconX = alignRight.get() ?
                     x + (currentWidth * scale) - iconRenderSize - (PADDING_X * scale) :
                     x + (PADDING_X * scale);
-            float iconY = currentY;
+            float iconY = currentY - (2 * scale);
+            
+            // 添加纯黑背景
+            String sakuraText = "ModuleList";
+            int font = FontLoader.bold(11);
+            float textWidth = NanoVGHelper.getTextWidth(sakuraText, font, 11 * scale);
+            float textHeight = NanoVGHelper.getFontHeight(font, 11 * scale);
+            float totalWidth = iconRenderSize + textWidth + (4 * scale)+4;
+            float bgX = alignRight.get() ?
+                    x + (currentWidth * scale) - totalWidth - (PADDING_X * scale) :
+                    x + (PADDING_X * scale);
+            float bgY = currentY - (2 * scale) - (1.5f * scale);
+            float bgHeight = Math.max(iconRenderSize, textHeight) + (2 * scale);
+            
+            NanoVGHelper.drawRoundRect(bgX, bgY-1 - (1.5f * scale), totalWidth, bgHeight, getRadius(), new Color(0, 0, 0,180));
 
             float centerX = iconX + iconRenderSize / 2;
-            float centerY = iconY + iconRenderSize / 2;
+            float centerY = iconY + iconRenderSize / 2 - (3 * scale);
 
             nvgSave(vg);
             nvgTranslate(vg, centerX, centerY);
@@ -369,18 +381,15 @@ public class ModuleListHud extends HudModule {
 
             nvgRestore(vg);
 
-            String sakuraText = "Sakura";
-            int font = FontLoader.bold(18);
-            float textWidth = NanoVGHelper.getTextWidth(sakuraText, font, 18 * scale);
-            float textHeight = NanoVGHelper.getFontHeight(font, 18 * scale);
+
             float textX = alignRight.get() ?
                     x + (currentWidth * scale) - textWidth - iconRenderSize - (4 * scale) - (PADDING_X * scale) :
                     iconX + iconRenderSize + (4 * scale);
             float textY = currentY + iconRenderSize / 2 + textHeight / 4;
 
-            NanoVGHelper.drawGlowingString(sakuraText, textX, textY, font, 18 * scale, Color.WHITE, 3.0f * scale);
+            NanoVGHelper.drawGlowingString(sakuraText, textX, textY-1 - (3 * scale), font, 11 * scale, Color.WHITE, 3.0f * scale);
 
-            currentY += iconRenderSize + (4 * scale);
+            currentY += iconRenderSize + (4 * scale) - (2 * scale);
         }
 
         if (enableParticles.get()) {
@@ -391,21 +400,22 @@ public class ModuleListHud extends HudModule {
         for (ModuleEntry entry : moduleEntries) {
             EaseInOutQuad animation = moduleAnimations.get(entry.module);
             double animationValue = animation != null ? animation.getOutput() : 1.0;
-            
+
             if (animationValue < 0.01) {
                 currentY += ((10 + itemSpacing.get().floatValue()) * scale);
                 continue;
             }
-            
+
             if (currentY + (10 * scale) < y || currentY > y + (currentHeight * scale)) {
                 currentY += ((10 + itemSpacing.get().floatValue()) * scale);
                 continue;
             }
-            
+
             String moduleName = entry.module.getEnglishName();
             String suffix = entry.module.getSuffix();
+            String formattedSuffix = getFormattedSuffix(suffix);
             float moduleNameWidth = NanoVGHelper.getTextWidth(moduleName, font, 10 * scale);
-            float suffixWidth = NanoVGHelper.getTextWidth(suffix, font, 10 * scale);
+            float suffixWidth = NanoVGHelper.getTextWidth(formattedSuffix, font, 10 * scale);
             float textHeight = NanoVGHelper.getFontHeight(font, 10 * scale);
             float totalTextWidth = moduleNameWidth + (suffix.isEmpty() ? 0 : suffixWidth + (2 * scale));
             String categoryIcon = "";
@@ -434,49 +444,73 @@ public class ModuleListHud extends HudModule {
                 textX = alignRight.get() ? x + (currentWidth * scale) - (PADDING_X * scale) - moduleNameWidth - (suffix.isEmpty() ? 0 : suffixWidth + (2 * scale)) : itemX + (PADDING_X * scale);
             }
             float textY = currentY + textHeight / 2 + (2 * scale);
-            
+
             int alpha = (int) (BACKGROUND_COLOR.getAlpha() * animationValue);
             Color animatedBackgroundColor = new Color(
-                    BACKGROUND_COLOR.getRed(), 
-                    BACKGROUND_COLOR.getGreen(), 
-                    BACKGROUND_COLOR.getBlue(), 
+                    BACKGROUND_COLOR.getRed(),
+                    BACKGROUND_COLOR.getGreen(),
+                    BACKGROUND_COLOR.getBlue(),
                     alpha
             );
-            
+
             float animatedItemWidth = itemWidth * (float) animationValue;
             float animatedTextX = alignRight.get() ?
                     textX + (itemWidth - animatedItemWidth) : textX;
-            
-            NanoVGHelper.drawRoundRectBloom(
-                    alignRight.get() && showCategory.get() ?
-                            (itemX + (4 * scale) + (itemWidth - animatedItemWidth)) :
-                            (itemX + (showCategory.get() ? (ICON_BACKGROUND_WIDTH + CATEGORY_ICON_SPACING + 4) * scale : (4 * scale)) + (itemWidth - animatedItemWidth)),
-                    currentY - (3 * scale),
-                    (itemWidth - (showCategory.get() ? (ICON_BACKGROUND_WIDTH + CATEGORY_ICON_SPACING) * scale : 0) - (7 * scale)) * (float) animationValue,
-                    itemHeight + (3 * scale),
-                    getRadius() * scale,
-                    animatedBackgroundColor
-            );
-            
+
+            if (enableBloom.get()) {
+                NanoVGHelper.drawRoundRectBloom(
+                        alignRight.get() && showCategory.get() ?
+                                (itemX + (4 * scale) + (itemWidth - animatedItemWidth)) :
+                                (itemX + (showCategory.get() ? (ICON_BACKGROUND_WIDTH + CATEGORY_ICON_SPACING + 4) * scale : (4 * scale)) + (itemWidth - animatedItemWidth)),
+                        currentY - (3 * scale),
+                        (itemWidth - (showCategory.get() ? (ICON_BACKGROUND_WIDTH + CATEGORY_ICON_SPACING) * scale : 0) - (7 * scale)) * (float) animationValue,
+                        itemHeight + (3 * scale),
+                        getRadius() * scale,
+                        animatedBackgroundColor
+                );
+            } else {
+                NanoVGHelper.drawRoundRect(
+                        alignRight.get() && showCategory.get() ?
+                                (itemX + (4 * scale) + (itemWidth - animatedItemWidth)) :
+                                (itemX + (showCategory.get() ? (ICON_BACKGROUND_WIDTH + CATEGORY_ICON_SPACING + 4) * scale : (4 * scale)) + (itemWidth - animatedItemWidth)),
+                        currentY - (3 * scale),
+                        (itemWidth - (showCategory.get() ? (ICON_BACKGROUND_WIDTH + CATEGORY_ICON_SPACING) * scale : 0) - (7 * scale)) * (float) animationValue,
+                        itemHeight + (3 * scale),
+                        getRadius() * scale,
+                        animatedBackgroundColor
+                );
+            }
+
             if (showCategory.get()) {
                 float animatedIconBgX = alignRight.get() ?
                         x + (currentWidth * scale) - (PADDING_X * scale) - (ICON_BACKGROUND_WIDTH * scale) - (itemWidth - animatedItemWidth) :
                         iconBgX + (itemWidth - animatedItemWidth);
-                
-                NanoVGHelper.drawRoundRectBloom(
-                        animatedIconBgX,
-                        currentY - (3 * scale),
-                        ICON_BACKGROUND_WIDTH * scale,
-                        ICON_BACKGROUND_HEIGHT * scale,
-                        getRadius() * scale,
-                        animatedBackgroundColor
-                );
+
+                if (enableBloom.get()) {
+                    NanoVGHelper.drawRoundRectBloom(
+                            animatedIconBgX,
+                            currentY - (3 * scale),
+                            ICON_BACKGROUND_WIDTH * scale,
+                            ICON_BACKGROUND_HEIGHT * scale,
+                            getRadius() * scale,
+                            animatedBackgroundColor
+                    );
+                } else {
+                    NanoVGHelper.drawRoundRect(
+                            animatedIconBgX,
+                            currentY - (3 * scale),
+                            ICON_BACKGROUND_WIDTH * scale,
+                            ICON_BACKGROUND_HEIGHT * scale,
+                            getRadius() * scale,
+                            animatedBackgroundColor
+                    );
+                }
                 float iconY = currentY + ((ICON_BACKGROUND_HEIGHT * scale) - iconHeight) / 2;
                 iconX = animatedIconBgX + ((ICON_BACKGROUND_WIDTH * scale) - iconWidth) / 2;
                 int iconFont = FontLoader.icons(10);
                 NanoVGHelper.drawGlowingString(categoryIcon, iconX + (0.5f * scale), iconY + (5 * scale), iconFont, 10 * scale, Color.WHITE, 2.0f * scale);
             }
-            
+
             Color textColor = rainbowColor.get() ?
                     ClickGui.color(0) :
                     Color.WHITE;
@@ -486,7 +520,7 @@ public class ModuleListHud extends HudModule {
                     textColor.getBlue(),
                     (int) (textColor.getAlpha() * animationValue)
             );
-            
+
             NanoVGHelper.drawString(moduleName, animatedTextX, textY, font, 10 * scale, animatedTextColor);
             if (!suffix.isEmpty()) {
                 float suffixX = animatedTextX + moduleNameWidth + (2 * scale);
@@ -496,7 +530,7 @@ public class ModuleListHud extends HudModule {
                         SUFFIX_COLOR.getBlue(),
                         (int) (SUFFIX_COLOR.getAlpha() * animationValue)
                 );
-                NanoVGHelper.drawString(suffix, suffixX, textY, font, 10 * scale, animatedSuffixColor);
+                NanoVGHelper.drawString(formattedSuffix, suffixX, textY, font, 10 * scale, animatedSuffixColor);
             }
             currentY += ((10 + itemSpacing.get().floatValue()) * scale);
         }
@@ -546,11 +580,11 @@ public class ModuleListHud extends HudModule {
             if (particles.size() < particleCount.get()) {
                 if (showIcon.get() && iconImage != -1) {
                     float scale = hudScale.get().floatValue();
-                    float iconRenderSize = iconSize.get().floatValue() * scale;
+                    float iconRenderSize = 13.0f * scale;
                     float iconX = alignRight.get() ?
                             x + (currentWidth * scale) - iconRenderSize - (PADDING_X * scale) :
                             x + (PADDING_X * scale);
-                    float iconY = y + (PADDING_Y * scale);
+                    float iconY = y + (PADDING_Y * scale) - (2 * scale);
 
                     for (int i = particles.size(); i < particleCount.get(); i++) {
                         float angle = (float) (Math.random() * Math.PI * 2);
@@ -591,7 +625,59 @@ public class ModuleListHud extends HudModule {
     private String getDisplayText(Module module) {
         String name = module.getDisplayName();
         String suffix = module.getSuffix();
-        return name + (suffix.isEmpty() ? "" : " " + suffix);
+        if (suffix.isEmpty()) {
+            return name;
+        }
+        
+        String prefixSymbol = "";
+        String suffixSymbol = "";
+        
+        switch (suffixStyle.get()) {
+            case 1: // []
+                prefixSymbol = "[";
+                suffixSymbol = "]";
+                break;
+            case 2: // <>
+                prefixSymbol = "<";
+                suffixSymbol = ">";
+                break;
+            case 3: // ()
+                prefixSymbol = "(";
+                suffixSymbol = ")";
+                break;
+            default: // No symbols
+                return name + " " + suffix;
+        }
+        
+        return name + " " + prefixSymbol + suffix + suffixSymbol;
+    }
+    
+    private String getFormattedSuffix(String suffix) {
+        if (suffix.isEmpty()) {
+            return "";
+        }
+        
+        String prefixSymbol = "";
+        String suffixSymbol = "";
+        
+        switch (suffixStyle.get()) {
+            case 1: // []
+                prefixSymbol = "[";
+                suffixSymbol = "]";
+                break;
+            case 2: // <>
+                prefixSymbol = "<";
+                suffixSymbol = ">";
+                break;
+            case 3: // ()
+                prefixSymbol = "(";
+                suffixSymbol = ")";
+                break;
+            default: // No symbols
+                return suffix;
+        }
+        
+        return prefixSymbol + suffix + suffixSymbol;
     }
 
     private static float clamp(float v, float min, float max) {

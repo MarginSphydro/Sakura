@@ -1,96 +1,146 @@
 package dev.sakura.module.impl.player;
 
+import dev.sakura.events.client.TickEvent;
+import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
+import dev.sakura.module.impl.movement.ElytraFly;
+import dev.sakura.utils.player.MovementUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
+import meteordevelopment.orbit.EventHandler;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.screen.slot.SlotActionType;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
-import static net.minecraft.entity.EquipmentSlot.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AutoArmor extends Module {
+    public static AutoArmor INSTANCE;
 
-    private final MinecraftClient mc = MinecraftClient.getInstance();
+    private final BoolValue noMove = new BoolValue("NoMove", "移动时不换", false);
+    private final NumberValue<Integer> delay = new NumberValue<>("Delay", "延迟", 3, 0, 10, 1);
+    private final BoolValue autoElytra = new BoolValue("AutoElytra", "自动鞘翅", true);
+    private final BoolValue snowBug = new BoolValue("SnowBug", "雪球漏洞", true);
 
-    private final ArmorPiece[] armorPieces = new ArmorPiece[4];
-    private final ArmorPiece helmet = new ArmorPiece(HEAD);
-    private final ArmorPiece chestplate = new ArmorPiece(CHEST);
-    private final ArmorPiece leggings = new ArmorPiece(LEGS);
-    private final ArmorPiece boots = new ArmorPiece(FEET);
-
-    // 新增整理速度选项
-    private final NumberValue<Integer> delayTicksValue =
-            new NumberValue<>("delayTicks", "延迟", 8, 1, 20, 1); // 默认 8 ticks，可调 1~20
-
-    // 新增可选：是否在打开 GUI 时整理
-    private final BoolValue guiSort = new BoolValue("SortInGUI", "GUI整理", false);
+    private int tickDelay = 0;
 
     public AutoArmor() {
-        super("AutoArmor", "自动装甲", Category.Player);
-
-        armorPieces[0] = boots;
-        armorPieces[1] = leggings;
-        armorPieces[2] = chestplate;
-        armorPieces[3] = helmet;
-
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (isEnabled()) onTick();
-        });
+        super("AutoArmor", "自动穿甲", Category.Player);
+        INSTANCE = this;
     }
 
-    @Override
-    public void onEnable() {
-        for (ArmorPiece piece : armorPieces) piece.resetTimer();
-    }
+    @EventHandler
+    public void onTick(TickEvent.Pre event) {
+        if (mc.player == null || mc.world == null) return;
 
-    @Override
-    public void onDisable() {
-        for (ArmorPiece piece : armorPieces) piece.resetTimer();
-    }
+        if (mc.currentScreen != null 
+            && !(mc.currentScreen instanceof ChatScreen) 
+            && !(mc.currentScreen instanceof InventoryScreen) 
+            && !(mc.currentScreen instanceof ClickGuiScreen)) {
+            return;
+        }
 
-    private void onTick() {
-        if (mc.player == null) return;
+        if (mc.player.playerScreenHandler != mc.player.currentScreenHandler) return;
 
-        Screen currentScreen = mc.currentScreen;
+        if (MovementUtil.isMoving() && noMove.get()) return;
 
-        // 可选：是否允许在 GUI 打开时整理
-        if (!guiSort.get() && currentScreen != null) return;
-        if (mc.player.isCreative() && currentScreen != null) return;
-        // 每件盔甲减延迟
-        for (ArmorPiece piece : armorPieces) piece.tickTimer();
-        // 重置每件盔甲
-        for (ArmorPiece piece : armorPieces) piece.reset();
-        // 遍历玩家背包
-        for (int i = 0; i < mc.player.getInventory().size(); i++) {
-            ItemStack stack = mc.player.getInventory().getStack(i);
-            if (stack.isEmpty() || !isArmor(stack)) continue;
+        if (tickDelay > 0) {
+            tickDelay--;
+            return;
+        }
 
-            int slotId = getItemSlotId(stack);
-            switch (slotId) {
-                case 0 -> boots.add(stack, i);
-                case 1 -> leggings.add(stack, i);
-                case 2 -> chestplate.add(stack, i);
-                case 3 -> helmet.add(stack, i);
+        tickDelay = delay.get();
+
+        Map<EquipmentSlot, int[]> armorMap = new HashMap<>(4);
+        armorMap.put(EquipmentSlot.FEET, new int[]{36, getProtection(mc.player.getInventory().getStack(36)), -1, -1});
+        armorMap.put(EquipmentSlot.LEGS, new int[]{37, getProtection(mc.player.getInventory().getStack(37)), -1, -1});
+        armorMap.put(EquipmentSlot.CHEST, new int[]{38, getProtection(mc.player.getInventory().getStack(38)), -1, -1});
+        armorMap.put(EquipmentSlot.HEAD, new int[]{39, getProtection(mc.player.getInventory().getStack(39)), -1, -1});
+
+        for (int s = 0; s < 36; s++) {
+            ItemStack stack = mc.player.getInventory().getStack(s);
+            if (stack.isEmpty()) continue;
+            if (!isArmor(stack) && !stack.isOf(Items.ELYTRA)) continue;
+
+            int protection = getProtection(stack);
+            EquipmentSlot slot = getArmorSlot(stack);
+            if (slot == null) continue;
+
+            for (Map.Entry<EquipmentSlot, int[]> entry : armorMap.entrySet()) {
+                if (entry.getKey() == EquipmentSlot.FEET && snowBug.get() && mc.player.hurtTime > 1) {
+                    ItemStack feetStack = mc.player.getInventory().getStack(36);
+                    if (!feetStack.isEmpty() && feetStack.isOf(Items.LEATHER_BOOTS)) {
+                        continue;
+                    }
+                    if (stack.isOf(Items.LEATHER_BOOTS)) {
+                        entry.getValue()[2] = s;
+                        continue;
+                    }
+                }
+
+                if (autoElytra.get() && entry.getKey() == EquipmentSlot.CHEST 
+                    && ElytraFly.INSTANCE != null && ElytraFly.INSTANCE.isEnabled()) {
+                    
+                    ItemStack chestStack = mc.player.getInventory().getStack(38);
+                    if (!chestStack.isEmpty() && chestStack.isOf(Items.ELYTRA) && isElytraUsable(chestStack)) {
+                        continue;
+                    }
+                    if (entry.getValue()[2] != -1) {
+                        ItemStack foundStack = mc.player.getInventory().getStack(entry.getValue()[2]);
+                        if (!foundStack.isEmpty() && foundStack.isOf(Items.ELYTRA) && isElytraUsable(foundStack)) {
+                            continue;
+                        }
+                    }
+                    if (stack.isOf(Items.ELYTRA) && isElytraUsable(stack)) {
+                        entry.getValue()[2] = s;
+                        continue;
+                    }
+                }
+
+                if (protection > 0 && entry.getKey() == slot) {
+                    if (protection > entry.getValue()[1] && protection > entry.getValue()[3]) {
+                        entry.getValue()[2] = s;
+                        entry.getValue()[3] = protection;
+                    }
+                }
             }
         }
 
-        // 计算每件盔甲当前装备评分
-        for (ArmorPiece piece : armorPieces) piece.calculate();
+        for (Map.Entry<EquipmentSlot, int[]> entry : armorMap.entrySet()) {
+            int[] values = entry.getValue();
+            if (values[2] != -1) {
+                if (values[1] == -1 && values[2] < 9) {
+                    mc.interactionManager.clickSlot(
+                        mc.player.currentScreenHandler.syncId,
+                        36 + values[2], 1, SlotActionType.QUICK_MOVE, mc.player
+                    );
+                    syncInventory();
+                } else if (mc.player.playerScreenHandler == mc.player.currentScreenHandler) {
+                    int armorSlot = (values[0] - 34) + (39 - values[0]) * 2;
+                    int newArmorSlot = values[2] < 9 ? 36 + values[2] : values[2];
 
-        // 按评分排序（高分优先）
-        Arrays.sort(armorPieces, Comparator.comparingInt(ArmorPiece::getSortScore).reversed());
-
-        // 尝试装备
-        for (ArmorPiece piece : armorPieces) piece.apply();
+                    mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, newArmorSlot, 0, SlotActionType.PICKUP, mc.player);
+                    mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, armorSlot, 0, SlotActionType.PICKUP, mc.player);
+                    if (values[1] != -1) {
+                        mc.interactionManager.clickSlot(mc.player.currentScreenHandler.syncId, newArmorSlot, 0, SlotActionType.PICKUP, mc.player);
+                    }
+                    syncInventory();
+                }
+                return;
+            }
+        }
     }
 
     private boolean isArmor(ItemStack stack) {
@@ -98,82 +148,55 @@ public class AutoArmor extends Module {
                 || stack.isIn(ItemTags.CHEST_ARMOR) || stack.isIn(ItemTags.HEAD_ARMOR);
     }
 
-    private int getItemSlotId(ItemStack stack) {
-        if (stack.getItem() == Items.ELYTRA) return 2; // 胸甲
-        if (stack.isIn(ItemTags.FOOT_ARMOR)) return 0;
-        if (stack.isIn(ItemTags.LEG_ARMOR)) return 1;
-        if (stack.isIn(ItemTags.CHEST_ARMOR)) return 2;
-        if (stack.isIn(ItemTags.HEAD_ARMOR)) return 3;
-        return -1;
+    private EquipmentSlot getArmorSlot(ItemStack stack) {
+        if (stack.isOf(Items.ELYTRA)) return EquipmentSlot.CHEST;
+        if (stack.isIn(ItemTags.FOOT_ARMOR)) return EquipmentSlot.FEET;
+        if (stack.isIn(ItemTags.LEG_ARMOR)) return EquipmentSlot.LEGS;
+        if (stack.isIn(ItemTags.CHEST_ARMOR)) return EquipmentSlot.CHEST;
+        if (stack.isIn(ItemTags.HEAD_ARMOR)) return EquipmentSlot.HEAD;
+        return null;
     }
 
-    private class ArmorPiece {
-        private final EquipmentSlot slot;
-        private int bestSlot;
-        private int bestScore;
-        private int score;
-        private int durability;
+    private boolean isElytraUsable(ItemStack stack) {
+        if (!stack.isOf(Items.ELYTRA)) return false;
+        return stack.getDamage() < stack.getMaxDamage() - 1;
+    }
 
-        private int timer;
+    private int getProtection(ItemStack stack) {
+        if (stack.isEmpty()) return -1;
 
-        public ArmorPiece(EquipmentSlot slot) {
-            this.slot = slot;
+        if (stack.isOf(Items.ELYTRA)) {
+            if (!isElytraUsable(stack)) return 0;
+            return 1;
         }
 
-        public void reset() {
-            bestSlot = -1;
-            bestScore = -1;
-            score = -1;
-            durability = Integer.MAX_VALUE;
-        }
+        if (!isArmor(stack)) return 0;
 
-        public void resetTimer() {
-            timer = 0;
-        }
+        int prot = 0;
 
-        public void tickTimer() {
-            if (timer > 0) timer--;
-        }
-
-        public void add(ItemStack stack, int slot) {
-            int s = getScore(stack);
-            if (s > bestScore) {
-                bestScore = s;
-                bestSlot = slot;
+        AttributeModifiersComponent attrComp = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+        if (attrComp != null) {
+            for (var entry : attrComp.modifiers()) {
+                if (entry.attribute().value() == EntityAttributes.ARMOR.value()) {
+                    prot += (int) entry.modifier().value();
+                }
             }
         }
 
-        public void calculate() {
-            ItemStack equipped = mc.player.getEquippedStack(slot);
-            score = getScore(equipped);
-            if (!equipped.isEmpty()) {
-                durability = equipped.getMaxDamage() - equipped.getDamage();
+        if (stack.hasEnchantments() && mc.world != null) {
+            var registry = mc.world.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT);
+            var protectionEntry = registry.getOptional(Enchantments.PROTECTION);
+            if (protectionEntry.isPresent()) {
+                prot += EnchantmentHelper.getLevel(protectionEntry.get(), stack);
             }
         }
 
-        public int getSortScore() {
-            return bestScore;
-        }
+        return prot;
+    }
 
-        public void apply() {
-            if (timer > 0) return;
-            if (bestScore > score && bestSlot != -1) {
-                ItemStack fromStack = mc.player.getInventory().getStack(bestSlot);
-                ItemStack equipped = mc.player.getEquippedStack(slot);
-
-                mc.player.getInventory().setStack(bestSlot, equipped);
-                mc.player.equipStack(slot, fromStack);
-
-                timer = delayTicksValue.get(); // 使用可调延迟
-            }
-        }
-
-        private int getScore(ItemStack stack) {
-            if (stack.isEmpty()) return 0;
-            int s = 0;
-            if (stack.hasEnchantments()) s += 10;
-            s += stack.getMaxDamage() - stack.getDamage();
-            return s;
+    private void syncInventory() {
+        if (mc.player != null && mc.getNetworkHandler() != null) {
+            mc.player.getInventory().updateItems();
         }
     }
 }

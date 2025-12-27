@@ -55,11 +55,13 @@ public class ModuleManager {
 
             // Movement
             manager.tryLoad(() -> new AutoSprint());
+            manager.tryLoad(() -> new ElytraBoost());
             manager.tryLoad(() -> new Speed());
             manager.tryLoad(() -> new Step());
             manager.tryLoad(() -> new NoSlow());
             manager.tryLoad(() -> new HoleSnap());
             manager.tryLoad(() -> new Scaffold());
+            manager.tryLoad(() -> new ElytraFly());
 
 
             // Player
