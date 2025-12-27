@@ -5,6 +5,7 @@ import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.utils.player.FindItemResult;
 import dev.sakura.utils.player.InvUtil;
+import dev.sakura.utils.player.MovementUtil;
 import dev.sakura.utils.time.TimerUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
@@ -23,7 +24,6 @@ public class ElytraBoost extends Module {
 
     private final TimerUtil timer = new TimerUtil();
     private Vec3d velocity = Vec3d.ZERO;
-    private boolean wasOnGround;
 
     public ElytraBoost() {
         super("ElytraBoost", "护甲飞行", Category.Movement);
@@ -40,15 +40,8 @@ public class ElytraBoost extends Module {
         if (!(mc.player.currentScreenHandler instanceof PlayerScreenHandler)) return;
 
         if (onlyInAir.get() && mc.player.isOnGround()) {
-            wasOnGround = true;
             velocity = Vec3d.ZERO;
-            timer.setTime(0);
             return;
-        }
-
-        if (wasOnGround) {
-            timer.setTime(0);
-            wasOnGround = false;
         }
 
         FindItemResult elytra = InvUtil.find(Items.ELYTRA);
@@ -56,24 +49,32 @@ public class ElytraBoost extends Module {
 
         InvUtil.moveItem(elytra.slot(), 6);
         mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
+        mc.player.setFlag(7, true);
 
-        velocity = mc.options.forwardKey.isPressed() ? lerp(velocity, getTargetVelocity(), 0.4) : decay(velocity, 0.6);
+        boolean input = mc.player.input.movementForward != 0 || mc.player.input.movementSideways != 0 || mc.options.jumpKey.isPressed() || mc.options.sneakKey.isPressed();
+        velocity = input ? lerp(velocity, getTargetVelocity(), 0.4) : decay(velocity, 0.6);
         mc.player.setVelocity(velocity);
 
-        if (timer.delay(delay.get()) && useFirework()) timer.reset();
+        if (timer.delay(delay.get())) {
+            if (useFirework()) {
+                timer.reset();
+            }
+        }
 
         InvUtil.moveItem(elytra.slot(), 6);
     }
 
     private Vec3d getTargetVelocity() {
-        double yaw = Math.toRadians(mc.player.getYaw());
-        double pitch = Math.toRadians(mc.player.getPitch());
-        double cos = Math.cos(pitch);
-        return new Vec3d(
-                -MathHelper.sin((float) yaw) * cos * speed.get(),
-                -Math.sin(pitch) * speed.get(),
-                MathHelper.cos((float) yaw) * cos * speed.get()
-        );
+        double[] dir = MovementUtil.getMotion(speed.get());
+        double y = 0;
+        
+        if (mc.options.jumpKey.isPressed()) {
+            y = speed.get();
+        } else if (mc.options.sneakKey.isPressed()) {
+            y = -speed.get();
+        }
+        
+        return new Vec3d(dir[0], y, dir[1]);
     }
 
     private Vec3d lerp(Vec3d current, Vec3d target, double factor) {
@@ -89,8 +90,10 @@ public class ElytraBoost extends Module {
         FindItemResult firework = InvUtil.find(Items.FIREWORK_ROCKET);
         if (!firework.found()) return false;
         if (!InvUtil.invSwap(firework.slot())) return false;
+        
         mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
         mc.player.swingHand(Hand.MAIN_HAND);
+        
         InvUtil.invSwapBack();
         return true;
     }
