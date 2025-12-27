@@ -118,8 +118,13 @@ public class NotifyHud extends HudModule {
         long now = System.currentTimeMillis();
         packetTimestamps.addLast(now);
 
-        while (!packetTimestamps.isEmpty() && now - packetTimestamps.peekFirst() > 1000L) {
-            packetTimestamps.pollFirst();
+        while (!packetTimestamps.isEmpty()) {
+            Long firstTimestamp = packetTimestamps.peekFirst();
+            if (firstTimestamp == null || now - firstTimestamp > 1000L) {
+                packetTimestamps.pollFirst();
+            } else {
+                break;
+            }
         }
 
         int currentPackets = packetTimestamps.size();

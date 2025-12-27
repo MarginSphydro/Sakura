@@ -5,11 +5,14 @@ import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
+import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.NumberValue;
 
 public class HudEditor extends Module {
 
-    public final NumberValue<Double> globalCornerRadius = new NumberValue<>("GlobalCornerRadius", "全局圆角半径", 6.0, 0.0, 20.0, 1.0);
+    public final NumberValue<Double> globalCornerRadius = new NumberValue<>("GlobalCornerRadius", "聊天栏圆角半径", 6.0, 0.0, 20.0, 1.0);
+    public final BoolValue enableChatBloom = new BoolValue("EnableChatBloom", "聊天栏光晕", true);
+
 
     public HudEditor() {
         super("HudEditor", "自定义界面", Category.Client);
