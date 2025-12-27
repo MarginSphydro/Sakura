@@ -12,4 +12,3 @@ accessible method net/minecraft/client/world/ClientWorld getEntityLookup ()Lnet/
 accessible field net/minecraft/world/entity/SimpleEntityLookup cache Lnet/minecraft/world/entity/SectionedEntityCache;
 accessible field net/minecraft/world/entity/SectionedEntityCache trackedPositions Lit/unimi/dsi/fastutil/longs/LongSortedSet;
 accessible field net/minecraft/world/entity/SectionedEntityCache trackingSections Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;
-accessible method net/minecraft/client/render/GameRenderer getFov (Lnet/minecraft/client/render/Camera;FZ)F
