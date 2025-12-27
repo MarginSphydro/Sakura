@@ -50,6 +50,10 @@ public class ArmorFly extends Module {
         if (silentSwapEquipChestplate()) {
             finish = true;
         }
+        if (!mc.options.sneakKey.isPressed() && !(mc.options.forwardKey.isPressed() && motion.get()
+                && !mc.player.isOnGround())) {
+            mc.player.setVelocity(mc.player.getVelocity().multiply(0, 0, 0));
+        }
     }
 
     private boolean silentSwapEquipChestplate() {
