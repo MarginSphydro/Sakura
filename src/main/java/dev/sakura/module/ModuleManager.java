@@ -72,6 +72,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new PacketEat());
             manager.tryLoad(() -> new InventorySort());
             manager.tryLoad(() -> new AutoArmor());
+            manager.tryLoad(() -> new ArmorFly());
             manager.tryLoad(() -> new Blink());
 
             // Render
