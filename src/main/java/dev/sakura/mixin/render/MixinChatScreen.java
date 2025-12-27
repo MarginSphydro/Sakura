@@ -65,7 +65,15 @@ public class MixinChatScreen {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             Color backgroundColor = new Color(18, 18, 18, 70);
-            NanoVGHelper.drawRoundRectBloom(adjustedX1, animatedY1, width, height, radius, backgroundColor);
+            
+            dev.sakura.module.impl.client.HudEditor hudEditor = Sakura.MODULES.getModule(dev.sakura.module.impl.client.HudEditor.class);
+            boolean enableBloom = hudEditor != null ? hudEditor.enableChatBloom.get() : true;
+            
+            if (enableBloom) {
+                NanoVGHelper.drawRoundRectBloom(adjustedX1, animatedY1, width, height, radius, backgroundColor);
+            } else {
+                NanoVGHelper.drawRoundRect(adjustedX1, animatedY1, width, height, radius, backgroundColor);
+            }
         });
     }
 

@@ -62,7 +62,7 @@ public class Module {
 
     public void setSuffix(String tag) {
         if (tag != null && !tag.isEmpty()) {
-            this.suffix = " " + tag;
+            this.suffix = "" + tag;
         } else {
             this.suffix = "";
         }

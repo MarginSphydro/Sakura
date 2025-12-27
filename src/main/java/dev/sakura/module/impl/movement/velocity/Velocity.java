@@ -57,4 +57,9 @@ public class Velocity extends Module {
             case VelocityMode.HeypixelReduce -> VelocityHeypixelReduce.onPreTick(this);
         }
     }
+
+    @Override
+    public String getSuffix() {
+        return mode.get().name();
+    }
 }
