@@ -82,6 +82,9 @@ public class WebAura extends Module {
     }
 
     private void place(BlockPos pos) {
+        if (BlockUtil.getPlaceSide(pos) == null) {
+            return;
+        }
         if (BlockUtil.solid(pos)) {
             return;
         }
