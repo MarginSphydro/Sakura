@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 //                 \ \ `-. \_ __\ /__ _/ .-` / /
 //         ======`-.____`-.___\_____/___.-`____.-'======
 //                            `=---='
-//
+
 //         .............................................
 //                  佛祖保佑             永无BUG
 //          佛曰:
@@ -128,6 +128,7 @@ public class Sakura {
 
         // 初始化HudEditor
         HUDEDITOR = new HudEditorScreen();
+
 
         // 初始化Shaders
         Shader2DUtil.init();

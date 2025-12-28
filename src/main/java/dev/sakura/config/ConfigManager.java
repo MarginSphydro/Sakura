@@ -393,6 +393,8 @@ public class ConfigManager {
         } else if (value instanceof NumberValue<?> numberValue) {
             if (numberValue.get() instanceof Integer) {
                 return new JsonPrimitive(numberValue.get().intValue());
+            } else if (numberValue.get() instanceof Float) {
+                return new JsonPrimitive(numberValue.get().floatValue());
             } else {
                 return new JsonPrimitive(numberValue.get().doubleValue());
             }
@@ -429,6 +431,8 @@ public class ConfigManager {
             } else if (value instanceof NumberValue<?> numberValue && valueElement.isJsonPrimitive()) {
                 if (numberValue.get() instanceof Integer) {
                     ((NumberValue<Integer>) numberValue).set(valueElement.getAsInt());
+                } else if (numberValue.get() instanceof Float) {
+                    ((NumberValue<Float>) numberValue).set(valueElement.getAsFloat());
                 } else {
                     ((NumberValue<Double>) numberValue).set(valueElement.getAsDouble());
                 }

@@ -90,6 +90,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new TotemParticles());
             manager.tryLoad(() -> new Atmosphere());
             manager.tryLoad(() -> new AspectRatio());
+            manager.tryLoad(() -> new Crystal());
 
             // Client
             manager.tryLoad(() -> new ClickGui());
