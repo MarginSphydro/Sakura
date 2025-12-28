@@ -1,27 +1,33 @@
 package dev.sakura.module.impl.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import dev.sakura.Sakura;
 import dev.sakura.events.render.Render2DEvent;
 import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.utils.render.Shader2DUtil;
+import dev.sakura.shaders.satin.api.ManagedCoreShader;
+import dev.sakura.shaders.satin.api.ShaderEffectManager;
+import dev.sakura.shaders.satin.api.uniform.SamplerUniform;
+import dev.sakura.shaders.satin.api.uniform.Uniform1f;
+import dev.sakura.shaders.satin.api.uniform.Uniform2f;
+import dev.sakura.shaders.satin.api.uniform.Uniform4f;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.render.Camera;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.SimpleFramebuffer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import org.joml.Vector3f;
+import net.minecraft.util.Identifier;
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL30;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class Glow extends Module {
     public static Glow INSTANCE;
@@ -31,109 +37,169 @@ public class Glow extends Module {
     private final ColorValue color = new ColorValue("Color", "颜色", new Color(255, 180, 220, 180));
     private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", "模糊强度", 12.0, 4.0, 25.0, 1.0);
     private final NumberValue<Double> colorIntensity = new NumberValue<>("ColorIntensity", "颜色强度", 0.4, 0.0, 1.0, 0.05);
-    private final BoolValue nativeGlow = new BoolValue("NativeGlow", "原生发光", true);
+    private final BoolValue nativeGlow = new BoolValue("NativeGlow", "原生发光", false);
 
-    private final List<PlayerScreenData> playerScreenPositions = new ArrayList<>();
+    private Framebuffer beforeEntityBuffer;
+    private Framebuffer afterEntityBuffer;
+
+    private static ManagedCoreShader MASKED_BLUR;
+    private Uniform2f inputResolution;
+    private Uniform1f brightness;
+    private Uniform1f quality;
+    private Uniform4f color1Uniform;
+    private SamplerUniform inputSampler;
+    private SamplerUniform maskSampler;
+
+    private boolean shaderInitialized = false;
+    private boolean hasGlowTarget = false;
 
     public Glow() {
         super("Glow", "发光", Category.Render);
         INSTANCE = this;
     }
 
-    @EventHandler
-    public void onRender3D(Render3DEvent event) {
-        if (mc.player == null || mc.world == null) return;
+    @Override
+    protected void onEnable() {
+        initShader();
+    }
 
-        playerScreenPositions.clear();
+    @Override
+    protected void onDisable() {
+        cleanup();
+    }
 
+    private void initShader() {
+        if (shaderInitialized) return;
+        try {
+            MASKED_BLUR = ShaderEffectManager.getInstance().manageCoreShader(Identifier.of("sakura", "core/blur_masked"), VertexFormats.POSITION);
+            inputResolution = MASKED_BLUR.findUniform2f("InputResolution");
+            brightness = MASKED_BLUR.findUniform1f("Brightness");
+            quality = MASKED_BLUR.findUniform1f("Quality");
+            color1Uniform = MASKED_BLUR.findUniform4f("color1");
+            inputSampler = MASKED_BLUR.findSampler("InputSampler");
+            maskSampler = MASKED_BLUR.findSampler("MaskSampler");
+            shaderInitialized = true;
+        } catch (Exception e) {
+            Sakura.LOGGER.error("Failed to init glow shader", e);
+        }
+    }
+
+    private void ensureFramebuffers() {
+        int w = mc.getWindow().getFramebufferWidth();
+        int h = mc.getWindow().getFramebufferHeight();
+
+        if (beforeEntityBuffer == null) {
+            beforeEntityBuffer = new SimpleFramebuffer(w, h, false);
+        } else if (beforeEntityBuffer.textureWidth != w || beforeEntityBuffer.textureHeight != h) {
+            beforeEntityBuffer.resize(w, h);
+        }
+
+        if (afterEntityBuffer == null) {
+            afterEntityBuffer = new SimpleFramebuffer(w, h, false);
+        } else if (afterEntityBuffer.textureWidth != w || afterEntityBuffer.textureHeight != h) {
+            afterEntityBuffer.resize(w, h);
+        }
+    }
+
+    private void cleanup() {
+        if (beforeEntityBuffer != null) {
+            beforeEntityBuffer.delete();
+            beforeEntityBuffer = null;
+        }
+        if (afterEntityBuffer != null) {
+            afterEntityBuffer.delete();
+            afterEntityBuffer = null;
+        }
+    }
+
+    public void captureBeforeEntities() {
+        if (!isEnabled()) return;
+        hasGlowTarget = false;
         for (PlayerEntity player : mc.world.getPlayers()) {
-            if (!shouldGlow(player)) continue;
-
-            float tickDelta = event.getTickDelta();
-            double x = MathHelper.lerp(tickDelta, player.prevX, player.getX());
-            double y = MathHelper.lerp(tickDelta, player.prevY, player.getY());
-            double z = MathHelper.lerp(tickDelta, player.prevZ, player.getZ());
-
-            Box box = player.getBoundingBox();
-            double height = box.getLengthY();
-            double halfWidth = box.getLengthX() / 2;
-
-            Vec3d[] corners = new Vec3d[]{
-                    new Vec3d(x - halfWidth, y, z - halfWidth),
-                    new Vec3d(x + halfWidth, y, z - halfWidth),
-                    new Vec3d(x - halfWidth, y, z + halfWidth),
-                    new Vec3d(x + halfWidth, y, z + halfWidth),
-                    new Vec3d(x - halfWidth, y + height, z - halfWidth),
-                    new Vec3d(x + halfWidth, y + height, z - halfWidth),
-                    new Vec3d(x - halfWidth, y + height, z + halfWidth),
-                    new Vec3d(x + halfWidth, y + height, z + halfWidth),
-            };
-
-            float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE;
-            float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE;
-            boolean anyVisible = false;
-
-            for (Vec3d corner : corners) {
-                Vec3d screen = worldToScreen(corner);
-                if (screen != null && screen.z > 0 && screen.z < 1) {
-                    minX = Math.min(minX, (float) screen.x);
-                    maxX = Math.max(maxX, (float) screen.x);
-                    minY = Math.min(minY, (float) screen.y);
-                    maxY = Math.max(maxY, (float) screen.y);
-                    anyVisible = true;
-                }
-            }
-
-            if (anyVisible && minX < maxX && minY < maxY) {
-                float padding = 5;
-                playerScreenPositions.add(new PlayerScreenData(
-                        minX - padding,
-                        minY - padding,
-                        maxX - minX + padding * 2,
-                        maxY - minY + padding * 2,
-                        player
-                ));
+            if (shouldGlow(player)) {
+                hasGlowTarget = true;
+                break;
             }
         }
+        if (!hasGlowTarget) return;
+
+        ensureFramebuffers();
+        Framebuffer mainBuffer = mc.getFramebuffer();
+
+        GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, mainBuffer.fbo);
+        GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, beforeEntityBuffer.fbo);
+        GlStateManager._glBlitFrameBuffer(0, 0, mainBuffer.textureWidth, mainBuffer.textureHeight,
+                0, 0, beforeEntityBuffer.textureWidth, beforeEntityBuffer.textureHeight,
+                GL30.GL_COLOR_BUFFER_BIT, GL30.GL_NEAREST);
+        mainBuffer.beginWrite(false);
+    }
+
+    public void captureAfterEntities() {
+        if (!isEnabled() || !hasGlowTarget) return;
+
+        ensureFramebuffers();
+        Framebuffer mainBuffer = mc.getFramebuffer();
+
+        GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, mainBuffer.fbo);
+        GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, afterEntityBuffer.fbo);
+        GlStateManager._glBlitFrameBuffer(0, 0, mainBuffer.textureWidth, mainBuffer.textureHeight,
+                0, 0, afterEntityBuffer.textureWidth, afterEntityBuffer.textureHeight,
+                GL30.GL_COLOR_BUFFER_BIT, GL30.GL_NEAREST);
+        mainBuffer.beginWrite(false);
     }
 
     @EventHandler
     public void onRender2D(Render2DEvent event) {
         if (mc.player == null || mc.world == null) return;
-        if (playerScreenPositions.isEmpty()) return;
+        if (!hasGlowTarget || !shaderInitialized) return;
+        if (beforeEntityBuffer == null || afterEntityBuffer == null) return;
 
         MatrixStack matrices = event.getContext().getMatrices();
+        Framebuffer mainBuffer = mc.getFramebuffer();
 
-        for (PlayerScreenData data : playerScreenPositions) {
-            Color c = color.get();
-            float intensity = colorIntensity.get().floatValue();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableDepthTest();
+        RenderSystem.disableCull();
 
-            Color tintColor = new Color(
-                    c.getRed(),
-                    c.getGreen(),
-                    c.getBlue(),
-                    (int) (c.getAlpha() * intensity)
-            );
+        Color c = color.get();
+        float intensity = colorIntensity.get().floatValue();
 
-            Shader2DUtil.drawRoundedBlur(matrices,
-                    data.x, data.y, data.width, data.height,
-                    Math.min(data.width, data.height) * 0.15f,
-                    tintColor,
-                    blurStrength.get().floatValue(),
-                    0.9f);
-        }
+        inputResolution.set((float) mainBuffer.textureWidth, (float) mainBuffer.textureHeight);
+        brightness.set(0.9f);
+        quality.set(blurStrength.get().floatValue());
+        color1Uniform.set(c.getRed() / 255f * intensity, c.getGreen() / 255f * intensity, c.getBlue() / 255f * intensity, intensity);
+        inputSampler.set(afterEntityBuffer.getColorAttachment());
+        maskSampler.set(beforeEntityBuffer.getColorAttachment());
+
+        RenderSystem.setShader(MASKED_BLUR.getProgram());
+
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
+        BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+
+        int w = mc.getWindow().getScaledWidth();
+        int h = mc.getWindow().getScaledHeight();
+
+        buffer.vertex(matrix, 0, 0, 0);
+        buffer.vertex(matrix, 0, h, 0);
+        buffer.vertex(matrix, w, h, 0);
+        buffer.vertex(matrix, w, 0, 0);
+
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
+
+        RenderSystem.enableCull();
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableBlend();
     }
 
     public boolean shouldGlow(Entity entity) {
         if (!isEnabled()) return false;
-
         if (entity instanceof PlayerEntity) {
             if (entity == mc.player) {
                 return self.get();
             }
             return players.get();
         }
-
         return false;
     }
 
@@ -141,7 +207,6 @@ public class Glow extends Module {
         Color c = color.get();
         return (255 << 24) | (c.getRed() << 16) | (c.getGreen() << 8) | c.getBlue();
     }
-
 
     public boolean useNativeGlow() {
         return nativeGlow.get();
@@ -153,52 +218,5 @@ public class Glow extends Module {
 
     public float getColorIntensity() {
         return colorIntensity.get().floatValue();
-    }
-
-    private Vec3d worldToScreen(Vec3d pos) {
-        Camera camera = mc.gameRenderer.getCamera();
-        int width = mc.getWindow().getScaledWidth();
-        int height = mc.getWindow().getScaledHeight();
-
-        Vec3d camPos = camera.getPos();
-        Vector3f camLook = camera.getHorizontalPlane();
-        Vector3f camUp = camera.getVerticalPlane();
-        Vector3f camLeft = new Vector3f();
-        camLook.cross(camUp, camLeft);
-        camLeft.normalize();
-
-        float dx = (float) (pos.x - camPos.x);
-        float dy = (float) (pos.y - camPos.y);
-        float dz = (float) (pos.z - camPos.z);
-
-        Vector3f toPos = new Vector3f(dx, dy, dz);
-
-        float dotLook = toPos.dot(camLook);
-        if (dotLook <= 0.01f) return null;
-
-        float dotUp = toPos.dot(camUp);
-        float dotLeft = toPos.dot(camLeft);
-
-        float fov = mc.options.getFov().getValue().floatValue();
-        float aspectRatio = (float) width / height;
-        float tanHalfFov = (float) Math.tan(Math.toRadians(fov / 2.0));
-
-        float screenX = width / 2f + (dotLeft / dotLook) / (tanHalfFov * aspectRatio) * (width / 2f);
-        float screenY = height / 2f - (dotUp / dotLook) / tanHalfFov * (height / 2f);
-
-        return new Vec3d(screenX, screenY, 1.0 / dotLook);
-    }
-
-    private static class PlayerScreenData {
-        float x, y, width, height;
-        PlayerEntity player;
-
-        PlayerScreenData(float x, float y, float width, float height, PlayerEntity player) {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.player = player;
-        }
     }
 }

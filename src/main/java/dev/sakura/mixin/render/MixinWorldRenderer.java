@@ -3,6 +3,7 @@ package dev.sakura.mixin.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.sakura.Sakura;
 import dev.sakura.events.render.Render3DEvent;
+import dev.sakura.module.impl.render.Glow;
 import dev.sakura.module.impl.render.NoRender;
 import dev.sakura.utils.render.MSAAFramebuffer;
 import net.minecraft.client.render.*;
@@ -16,8 +17,25 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
+
 @Mixin(WorldRenderer.class)
 public class MixinWorldRenderer {
+
+    @Inject(method = "renderEntities", at = @At("HEAD"))
+    private void onBeforeEntities(MatrixStack matrices, VertexConsumerProvider.Immediate immediate, Camera camera, RenderTickCounter tickCounter, List<?> entities, CallbackInfo ci) {
+        if (Glow.INSTANCE != null && Glow.INSTANCE.isEnabled()) {
+            Glow.INSTANCE.captureBeforeEntities();
+        }
+    }
+
+    @Inject(method = "renderEntities", at = @At("RETURN"))
+    private void onAfterEntities(MatrixStack matrices, VertexConsumerProvider.Immediate immediate, Camera camera, RenderTickCounter tickCounter, List<?> entities, CallbackInfo ci) {
+        if (Glow.INSTANCE != null && Glow.INSTANCE.isEnabled()) {
+            Glow.INSTANCE.captureAfterEntities();
+        }
+    }
+
     @Inject(method = "render", at = @At(value = "RETURN"))
     private void hookRender(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
         MatrixStack matrixStack = new MatrixStack();
