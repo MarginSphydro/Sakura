@@ -2,8 +2,8 @@ package dev.sakura.module.impl.movement;
 
 import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.packet.PacketEvent;
-import dev.sakura.events.player.MoveEvent;
 import dev.sakura.events.player.MotionEvent;
+import dev.sakura.events.player.MoveEvent;
 import dev.sakura.events.player.TravelEvent;
 import dev.sakura.events.type.EventType;
 import dev.sakura.module.Category;

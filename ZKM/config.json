@@ -1,0 +1,63 @@
+{
+  "inputJar": "C:\\Users\\L3MonKe\\Desktop\\Sakura-1.0.jar",
+  "outputJar": "C:\\Users\\L3MonKe\\Desktop\\output.jar",
+  "libraries": [],
+  "transformers": {
+    "String Encryption": {
+      "Enabled": true,
+      "Class Exclusions": "",
+      "Method Exclusions": "",
+      "Field Exclusions": ""
+    },
+    "Number Encryption": {
+      "Enabled": true,
+      "Class Exclusions": "",
+      "Method Exclusions": "",
+      "Field Exclusions": ""
+    },
+    "Argument Hiding": {
+      "Enabled": true,
+      "Class Exclusions": "",
+      "Method Exclusions": "",
+      "Field Exclusions": "",
+      "Only Constants": false,
+      "Intensity": 25
+    },
+    "Method Renamer": {
+      "Enabled": true,
+      "Class Exclusions": "",
+      "Method Exclusions": "",
+      "Field Exclusions": "",
+      "RenameVirtualMethods": true,
+      "ProtectPublicMethods": false
+    },
+    "Field Renamer": {
+      "Enabled": true,
+      "Class Exclusions": "",
+      "Method Exclusions": "",
+      "Field Exclusions": "",
+      "ProtectPublicFields": false
+    },
+    "Class Renamer": {
+      "Enabled": true,
+      "Class Exclusions": "",
+      "Method Exclusions": "",
+      "Field Exclusions": "",
+      "Repackage": true,
+      "RepackageBase": "cn/paradisemc/obfuscated"
+    },
+    "Flow Obfuscation": {
+      "Enabled": true,
+      "Class Exclusions": "",
+      "Method Exclusions": "",
+      "Field Exclusions": "",
+      "Intensity": 75
+    },
+    "Virtualization": {
+      "Enabled": true,
+      "Class Exclusions": "",
+      "Method Exclusions": "",
+      "Field Exclusions": ""
+    }
+  }
+}

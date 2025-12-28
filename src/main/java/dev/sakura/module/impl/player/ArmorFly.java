@@ -25,12 +25,15 @@ public class ArmorFly extends Module {
     private final NumberValue<Integer> delay = new NumberValue<>("Delay", "延迟", 3, 0, 50, 1);
     //  ValueNumber fireworkDelay = new ValueNumber("FireworkDelay", "FireworkDelay", 50, 0, 500);
     public static ArmorFly INSTANCE;
+
     public ArmorFly() {
         super("ArmorFly", "甲飞", Category.Player);
         INSTANCE = this;
     }
+
     private final TimerUtil fireworkTimer = new TimerUtil();
     private boolean finish = false;
+
     @EventHandler
     public void onTick(TickEvent.Pre event) {
         if (mc.player == null || mc.world == null) return;
@@ -143,8 +146,9 @@ public class ArmorFly extends Module {
 
         return true;
     }
+
     private void useFirework(FindItemResult firework) {
-        if (!InvUtil.invSwap(firework.slot()));
+        if (!InvUtil.invSwap(firework.slot())) ;
         mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
         mc.player.swingHand(Hand.MAIN_HAND);
 

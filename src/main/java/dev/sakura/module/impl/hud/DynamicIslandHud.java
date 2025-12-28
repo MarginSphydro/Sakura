@@ -4,7 +4,6 @@ import dev.sakura.Sakura;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
 import dev.sakura.module.impl.client.ClickGui;
-import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
@@ -50,6 +49,7 @@ public class DynamicIslandHud extends HudModule {
         COLLAPSE_1,
         COLLAPSE_2
     }
+
     private final BoolValue enableBloom = new BoolValue("EnableBloom", "光晕", true);
     private final BoolValue blur = new BoolValue("Blur", "背景模糊", true);
     private final NumberValue<Double> blurStrength = new NumberValue<>("BlurStrength", "模糊强度", 10.0, 1.0, 20.0, 0.5, blur::get);
@@ -137,7 +137,7 @@ public class DynamicIslandHud extends HudModule {
     }
 
     public float getRadius() {
-            return radius.get().floatValue();
+        return radius.get().floatValue();
     }
 
     private void setPhase(Phase p, float prog, float w, float h, float blur) {

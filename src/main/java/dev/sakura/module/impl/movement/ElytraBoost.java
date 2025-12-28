@@ -14,7 +14,6 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class ElytraBoost extends Module {
@@ -67,13 +66,13 @@ public class ElytraBoost extends Module {
     private Vec3d getTargetVelocity() {
         double[] dir = MovementUtil.getMotion(speed.get());
         double y = 0;
-        
+
         if (mc.options.jumpKey.isPressed()) {
             y = speed.get();
         } else if (mc.options.sneakKey.isPressed()) {
             y = -speed.get();
         }
-        
+
         return new Vec3d(dir[0], y, dir[1]);
     }
 
@@ -90,10 +89,10 @@ public class ElytraBoost extends Module {
         FindItemResult firework = InvUtil.find(Items.FIREWORK_ROCKET);
         if (!firework.found()) return false;
         if (!InvUtil.invSwap(firework.slot())) return false;
-        
+
         mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
         mc.player.swingHand(Hand.MAIN_HAND);
-        
+
         InvUtil.invSwapBack();
         return true;
     }

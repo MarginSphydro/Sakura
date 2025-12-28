@@ -553,4 +553,24 @@ public class NanoVGHelper {
             nvgDeleteImage(vg, imageId);
         }
     }
+
+    public static void save() {
+        nvgSave(getContext());
+    }
+
+    public static void restore() {
+        nvgRestore(getContext());
+    }
+
+    public static void scissor(float x, float y, float w, float h) {
+        nvgScissor(getContext(), x, y, w, h);
+    }
+
+    public static void intersectScissor(float x, float y, float w, float h) {
+        nvgIntersectScissor(getContext(), x, y, w, h);
+    }
+
+    public static void resetScissor() {
+        nvgResetScissor(getContext());
+    }
 }

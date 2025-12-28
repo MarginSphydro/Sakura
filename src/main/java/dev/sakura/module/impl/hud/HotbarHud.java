@@ -145,7 +145,7 @@ public class HotbarHud extends HudModule {
     }
 
     public float getRadius() {
-            return radius.get().floatValue();
+        return radius.get().floatValue();
     }
 
     private void renderBloom(DrawContext context) {

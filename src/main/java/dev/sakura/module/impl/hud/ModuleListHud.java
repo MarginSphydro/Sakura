@@ -10,7 +10,6 @@ import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.utils.animations.Direction;
 import dev.sakura.utils.animations.impl.EaseInOutQuad;
 import dev.sakura.values.impl.BoolValue;
-import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.NumberValue;
 import net.minecraft.client.gui.DrawContext;
 import org.lwjgl.nanovg.NVGPaint;
@@ -34,7 +33,6 @@ public class ModuleListHud extends HudModule {
     private final NumberValue<Double> itemSpacing = new NumberValue<>("ItemSpacing", "项目间距", 7.0, 0.0, 10.0, 0.5);
     private final NumberValue<Double> hudScale = new NumberValue<>("HudScale", "HUD缩放", 1.1, 0.5, 2.0, 0.1);
     private final NumberValue<Integer> suffixStyle = new NumberValue<>("SuffixStyle", "后缀符号", 0, 0, 3, 1);
-
 
 
     private final List<ModuleEntry> moduleEntries = new ArrayList<>();
@@ -117,7 +115,7 @@ public class ModuleListHud extends HudModule {
         NanoVGRenderer.INSTANCE.draw(vg -> {
             float scaledWidth = currentWidth * hudScale.get().floatValue();
             float scaledHeight = currentHeight * hudScale.get().floatValue();
-            NanoVGHelper.drawRect(x, y-5, scaledWidth, scaledHeight+4,
+            NanoVGHelper.drawRect(x, y - 5, scaledWidth, scaledHeight + 4,
                     dragging ? new Color(ClickGui.color(0).getRed(), ClickGui.color(0).getGreen(), ClickGui.color(0).getBlue(), 80) : BACKGROUND_COLOR);
 
             renderContent();
@@ -125,7 +123,7 @@ public class ModuleListHud extends HudModule {
     }
 
     public float getRadius() {
-            return radius.get().floatValue();
+        return radius.get().floatValue();
     }
 
     @Override
@@ -349,20 +347,20 @@ public class ModuleListHud extends HudModule {
                     x + (currentWidth * scale) - iconRenderSize - (PADDING_X * scale) :
                     x + (PADDING_X * scale);
             float iconY = currentY - (2 * scale);
-            
+
             // 添加纯黑背景
             String sakuraText = "ModuleList";
             int font = FontLoader.bold(11);
             float textWidth = NanoVGHelper.getTextWidth(sakuraText, font, 11 * scale);
             float textHeight = NanoVGHelper.getFontHeight(font, 11 * scale);
-            float totalWidth = iconRenderSize + textWidth + (4 * scale)+4;
+            float totalWidth = iconRenderSize + textWidth + (4 * scale) + 4;
             float bgX = alignRight.get() ?
                     x + (currentWidth * scale) - totalWidth - (PADDING_X * scale) :
                     x + (PADDING_X * scale);
             float bgY = currentY - (2 * scale) - (1.5f * scale);
             float bgHeight = Math.max(iconRenderSize, textHeight) + (2 * scale);
-            
-            NanoVGHelper.drawRoundRect(bgX, bgY-1 - (1.5f * scale), totalWidth, bgHeight, getRadius(), new Color(0, 0, 0,180));
+
+            NanoVGHelper.drawRoundRect(bgX, bgY - 1 - (1.5f * scale), totalWidth, bgHeight, getRadius(), new Color(0, 0, 0, 180));
 
             float centerX = iconX + iconRenderSize / 2;
             float centerY = iconY + iconRenderSize / 2 - (3 * scale);
@@ -387,7 +385,7 @@ public class ModuleListHud extends HudModule {
                     iconX + iconRenderSize + (4 * scale);
             float textY = currentY + iconRenderSize / 2 + textHeight / 4;
 
-            NanoVGHelper.drawGlowingString(sakuraText, textX, textY-1 - (3 * scale), font, 11 * scale, Color.WHITE, 3.0f * scale);
+            NanoVGHelper.drawGlowingString(sakuraText, textX, textY - 1 - (3 * scale), font, 11 * scale, Color.WHITE, 3.0f * scale);
 
             currentY += iconRenderSize + (4 * scale) - (2 * scale);
         }
@@ -628,10 +626,10 @@ public class ModuleListHud extends HudModule {
         if (suffix.isEmpty()) {
             return name;
         }
-        
+
         String prefixSymbol = "";
         String suffixSymbol = "";
-        
+
         switch (suffixStyle.get()) {
             case 1: // []
                 prefixSymbol = "[";
@@ -648,18 +646,18 @@ public class ModuleListHud extends HudModule {
             default: // No symbols
                 return name + " " + suffix;
         }
-        
+
         return name + " " + prefixSymbol + suffix + suffixSymbol;
     }
-    
+
     private String getFormattedSuffix(String suffix) {
         if (suffix.isEmpty()) {
             return "";
         }
-        
+
         String prefixSymbol = "";
         String suffixSymbol = "";
-        
+
         switch (suffixStyle.get()) {
             case 1: // []
                 prefixSymbol = "[";
@@ -676,7 +674,7 @@ public class ModuleListHud extends HudModule {
             default: // No symbols
                 return suffix;
         }
-        
+
         return prefixSymbol + suffix + suffixSymbol;
     }
 

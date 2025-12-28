@@ -45,10 +45,10 @@ public class AutoArmor extends Module {
     public void onTick(TickEvent.Pre event) {
         if (mc.player == null || mc.world == null) return;
 
-        if (mc.currentScreen != null 
-            && !(mc.currentScreen instanceof ChatScreen) 
-            && !(mc.currentScreen instanceof InventoryScreen) 
-            && !(mc.currentScreen instanceof ClickGuiScreen)) {
+        if (mc.currentScreen != null
+                && !(mc.currentScreen instanceof ChatScreen)
+                && !(mc.currentScreen instanceof InventoryScreen)
+                && !(mc.currentScreen instanceof ClickGuiScreen)) {
             return;
         }
 
@@ -90,9 +90,9 @@ public class AutoArmor extends Module {
                     }
                 }
 
-                if (autoElytra.get() && entry.getKey() == EquipmentSlot.CHEST 
-                    && ElytraFly.INSTANCE != null && ElytraFly.INSTANCE.isEnabled()) {
-                    
+                if (autoElytra.get() && entry.getKey() == EquipmentSlot.CHEST
+                        && ElytraFly.INSTANCE != null && ElytraFly.INSTANCE.isEnabled()) {
+
                     ItemStack chestStack = mc.player.getInventory().getStack(38);
                     if (!chestStack.isEmpty() && chestStack.isOf(Items.ELYTRA) && isElytraUsable(chestStack)) {
                         continue;
@@ -123,8 +123,8 @@ public class AutoArmor extends Module {
             if (values[2] != -1) {
                 if (values[1] == -1 && values[2] < 9) {
                     mc.interactionManager.clickSlot(
-                        mc.player.currentScreenHandler.syncId,
-                        36 + values[2], 1, SlotActionType.QUICK_MOVE, mc.player
+                            mc.player.currentScreenHandler.syncId,
+                            36 + values[2], 1, SlotActionType.QUICK_MOVE, mc.player
                     );
                     syncInventory();
                 } else if (mc.player.playerScreenHandler == mc.player.currentScreenHandler) {

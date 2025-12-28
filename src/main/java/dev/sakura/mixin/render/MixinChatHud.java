@@ -58,10 +58,10 @@ public class MixinChatHud {
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
             Color backgroundColor = new Color(18, 18, 18, 70);
-            
+
             HudEditor hudEditor = Sakura.MODULES.getModule(HudEditor.class);
             boolean enableBloom = hudEditor != null ? hudEditor.enableChatBloom.get() : true;
-            
+
             if (enableBloom) {
                 NanoVGHelper.drawRoundRectBloom(currentX, currentY, finalWidth, finalHeight, radius, backgroundColor);
             } else {

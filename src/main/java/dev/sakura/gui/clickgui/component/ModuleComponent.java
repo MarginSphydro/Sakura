@@ -75,7 +75,7 @@ public class ModuleComponent implements IComponent {
         }
 
         if (hasVisibleSettings && openAnimation.getOutput() > 0) {
-            yOffset += (float) (4 * scale * openAnimation.getOutput());
+            yOffset += (float) (3 * scale * openAnimation.getOutput());
         }
 
         this.height = yOffset;
@@ -141,7 +141,7 @@ public class ModuleComponent implements IComponent {
         for (Component component : settings) {
             if (!component.isVisible()) continue;
             component.setX(x + 4 * scale);
-            component.setY((float) (y + 10 * scale + componentYOffset * openAnimation.getOutput()));
+            component.setY(y + 10 * scale + componentYOffset);
             component.setWidth(width - 8 * scale);
             if (openAnimation.getOutput() > .7f) {
                 component.render(guiGraphics, mouseX, mouseY, partialTicks);

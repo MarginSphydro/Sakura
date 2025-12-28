@@ -40,13 +40,16 @@ public class ColorValueComponent extends Component {
         float titleFontSize = baseFontSize * 0.75f;
         float fontHeight = NanoVGHelper.getFontHeight(FontLoader.regular(titleFontSize), titleFontSize);
 
-        float baseHeight = fontHeight + 2 * scale + 50 * scale + 3 * scale + 5 * scale;
+        float contentHeight = fontHeight + 2 * scale + 50 * scale + 3 * scale + 5 * scale;
         if (setting.allowAlpha()) {
-            baseHeight += 3 * scale + 5 * scale;
+            contentHeight += 3 * scale + 5 * scale;
         }
-        baseHeight += 3 * scale + 5 * scale + 8 * scale;
+        contentHeight += 2 * scale + 5 * scale + 6 * scale + 8 * scale + 8 * scale;
 
-        this.setHeight((float) (18 + (baseHeight * open.getOutput())));
+        float collapsedHeight = 14 * scale;
+        float totalExpandedHeight = contentHeight;
+
+        this.setHeight(collapsedHeight + (Math.max(0, totalExpandedHeight - collapsedHeight) * open.getOutput().floatValue()));
         final float[] hsb = new float[]{setting.getHue(), setting.getSaturation(), setting.getBrightness()};
         final float alpha = setting.getAlpha();
 
@@ -66,53 +69,58 @@ public class ColorValueComponent extends Component {
 
             NanoVGHelper.drawCircle(getX() + getWidth() - 5 * scale, getY() - 3 * scale, 4 * scale, setting.get());
 
-            if (open.getOutput() > 0.01) {
-                float sliderX = getX();
-                float sliderWidth = getWidth();
-                float gradientX = getX();
-                float gradientY = getY() + fontHeight + 2;
-                float gradientWidth = getWidth();
-                float gradientHeight = (float) (50 * open.getOutput());
+            if (opened || open.getOutput() > 0) {
+                NanoVGHelper.save();
+                NanoVGHelper.intersectScissor(getX(), getY(), getWidth(), getHeight());
 
-                NanoVGHelper.drawGradientRect3(getX(), gradientY,
-                        gradientWidth, gradientHeight, Color.BLACK, Color.WHITE, Color.BLACK, Color.getHSBColor(setting.getHue(), 1, 1));
+                float gradientX = getX() + 2 * scale;
+                float gradientY = getY() + fontHeight + 2 * scale;
+                float gradientWidth = getWidth() - 4 * scale;
+                float gradientHeight = 50 * scale;
 
-                for (int max = (int) gradientWidth, i = 0; i < max; i++) {
-                    NanoVGHelper.drawRect(getX() + i,
-                            gradientY + gradientHeight + 2,
-                            1, 5, Color.getHSBColor(i / (float) max, 1, 1));
+                NanoVGHelper.drawGradientRect3(gradientX, gradientY, gradientWidth, gradientHeight,
+                        Color.getHSBColor(0, 0, 0),
+                        Color.getHSBColor(0, 0, 1),
+                        Color.getHSBColor(0, 0, 0),
+                        Color.getHSBColor(hsb[0], 1, 1));
+
+                float sliderX = gradientX;
+                float sliderWidth = gradientWidth;
+
+                float hueSliderY = gradientY + gradientHeight + 3 * scale;
+                for (int i = 0; i < sliderWidth; i++) {
+                    float hue = i / sliderWidth;
+                    NanoVGHelper.drawRect(sliderX + i, hueSliderY, 1, 5 * scale, Color.getHSBColor(hue, 1, 1));
                 }
-
-                float hueSliderY = gradientY + gradientHeight + 2;
                 float hueHandleX = sliderX + (sliderWidth * hsb[0]);
                 hueHandleX = Math.max(sliderX + 1, Math.min(sliderX + sliderWidth - 1, hueHandleX));
-                NanoVGHelper.drawRect((int) hueHandleX, (int) hueSliderY - 1, 1, 7, new Color(255, 255, 255));
+                NanoVGHelper.drawRect(hueHandleX, hueSliderY - 1, 1, 7 * scale, new Color(255, 255, 255));
 
-                float nextY = hueSliderY + 5;
+                float nextY = hueSliderY + 5 * scale;
 
                 if (setting.allowAlpha()) {
-                    float alphaSliderY = nextY + 2;
-                    drawCheckerboard(getX(), alphaSliderY, sliderWidth, 5);
+                    float alphaSliderY = nextY + 3 * scale;
+                    drawCheckerboard(sliderX, alphaSliderY, sliderWidth, 5 * scale);
 
                     for (int max = (int) sliderWidth, i = 0; i < max; i++) {
                         float alphaValue = i / (float) max;
                         Color alphaColor = new Color(r, g, b, (int) (alphaValue * 255));
-                        NanoVGHelper.drawRect(getX() + i, alphaSliderY, 1, 5, alphaColor);
+                        NanoVGHelper.drawRect(getX() + 2 * scale + i, alphaSliderY, 1, 5 * scale, alphaColor);
                     }
 
                     float alphaHandleX = sliderX + (sliderWidth * alpha);
                     alphaHandleX = Math.max(sliderX + 1, Math.min(sliderX + sliderWidth - 1, alphaHandleX));
-                    NanoVGHelper.drawRect((int) alphaHandleX, (int) alphaSliderY - 1, 1, 7, new Color(255, 255, 255));
+                    NanoVGHelper.drawRect((int) alphaHandleX, (int) alphaSliderY - 1, 1, 7 * scale, new Color(255, 255, 255));
 
-                    nextY = alphaSliderY + 5;
+                    nextY = alphaSliderY + 5 * scale;
                 }
 
-                float rgbY = nextY + 2;
-                float rgbBarWidth = (sliderWidth - 4) / 3f;
+                float rgbY = nextY + 2 * scale;
+                float rgbBarWidth = (sliderWidth - 4 * scale) / 3f;
 
                 drawRgbBar(sliderX, rgbY, rgbBarWidth, r, new Color(255, 0, 0), new Color(50, 0, 0), "R", EditField.R);
-                drawRgbBar(sliderX + rgbBarWidth + 2, rgbY, rgbBarWidth, g, new Color(0, 255, 0), new Color(0, 50, 0), "G", EditField.G);
-                drawRgbBar(sliderX + (rgbBarWidth + 2) * 2, rgbY, rgbBarWidth, b, new Color(0, 0, 255), new Color(0, 0, 50), "B", EditField.B);
+                drawRgbBar(sliderX + rgbBarWidth + 2 * scale, rgbY, rgbBarWidth, g, new Color(0, 255, 0), new Color(0, 50, 0), "G", EditField.G);
+                drawRgbBar(sliderX + (rgbBarWidth + 2 * scale) * 2, rgbY, rgbBarWidth, b, new Color(0, 0, 255), new Color(0, 0, 50), "B", EditField.B);
 
                 float pickerY = (gradientY) + (gradientHeight * (1 - hsb[2]));
                 float pickerX = (gradientX) + (gradientWidth * hsb[1] - 1);
@@ -139,49 +147,51 @@ public class ColorValueComponent extends Component {
                     setColorRGB(newR, g, b);
                 }
                 if (pickingG) {
-                    int newG = (int) (255 * Math.max(0, Math.min(1, (mouseX - (sliderX + rgbBarWidth + 4)) / rgbBarWidth)));
+                    int newG = (int) (255 * Math.max(0, Math.min(1, (mouseX - (sliderX + rgbBarWidth + 4 * scale)) / rgbBarWidth)));
                     setColorRGB(r, newG, b);
                 }
                 if (pickingB) {
-                    int newB = (int) (255 * Math.max(0, Math.min(1, (mouseX - (sliderX + (rgbBarWidth + 4) * 2)) / rgbBarWidth)));
+                    int newB = (int) (255 * Math.max(0, Math.min(1, (mouseX - (sliderX + (rgbBarWidth + 4 * scale) * 2)) / rgbBarWidth)));
                     setColorRGB(r, g, newB);
                 }
 
                 NanoVGHelper.drawRect(pickerX, pickerY, 2, 2, new Color(255, 255, 255));
+
+                NanoVGHelper.restore();
             }
         });
-
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     private void drawRgbBar(float x, float y, float width, int value, Color highColor, Color lowColor, String label, EditField field) {
-        NanoVGHelper.drawRect(x, y, width, 5, lowColor);
+        NanoVGHelper.drawRect(x, y, width, 5 * scale, lowColor);
         float filledWidth = (value / 255f) * width;
-        NanoVGHelper.drawRect(x, y, filledWidth, 5, highColor);
+        NanoVGHelper.drawRect(x, y, filledWidth, 5 * scale, highColor);
 
         float handleX = x + filledWidth;
         handleX = Math.max(x + 1, Math.min(x + width - 1, handleX));
-        NanoVGHelper.drawRect(handleX - 0.5f, y - 1, 1, 7, Color.WHITE);
+        NanoVGHelper.drawRect(handleX - 0.5f * scale, y - 1 * scale, 1 * scale, 7 * scale, Color.WHITE);
 
-        float inputY = y + 6;
-        float inputHeight = 8;
+        float inputY = y + 6 * scale;
+        float inputHeight = 8 * scale;
 
         if (editField == field) {
-            NanoVGHelper.drawRoundRect(x, inputY, width, inputHeight, 1, new Color(60, 60, 80));
-            NanoVGHelper.drawRoundRectOutline(x, inputY, width, inputHeight, 1, 0.5f, new Color(100, 100, 150));
+            NanoVGHelper.drawRoundRect(x, inputY, width, inputHeight, 1 * scale, new Color(60, 60, 80));
+            NanoVGHelper.drawRoundRectOutline(x, inputY, width, inputHeight, 1 * scale, 0.5f * scale, new Color(100, 100, 150));
 
             String displayText = tempText;
-            NanoVGHelper.drawString(displayText, x + 2, inputY + 6, FontLoader.regular(5), 5, Color.WHITE);
+            float fontSize = 5 * scale;
+            NanoVGHelper.drawString(displayText, x + 2 * scale, inputY + 6 * scale, FontLoader.regular(fontSize), fontSize, Color.WHITE);
 
             if (cursorVisible) {
                 String beforeCursor = tempText.substring(0, Math.min(cursorPos, tempText.length()));
-                float cursorX = x + 2 + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.regular(5), 5);
-                NanoVGHelper.drawRect(cursorX, inputY + 1, 0.5f, inputHeight - 2, Color.WHITE);
+                float cursorX = x + 2 * scale + NanoVGHelper.getTextWidth(beforeCursor, FontLoader.regular(fontSize), fontSize);
+                NanoVGHelper.drawRect(cursorX, inputY + 1 * scale, 0.5f * scale, inputHeight - 2 * scale, Color.WHITE);
             }
         } else {
-            NanoVGHelper.drawRoundRect(x, inputY, width, inputHeight, 1, new Color(40, 40, 40));
+            NanoVGHelper.drawRoundRect(x, inputY, width, inputHeight, 1 * scale, new Color(40, 40, 40));
             String text = label + ": " + value;
-            NanoVGHelper.drawString(text, x + 2, inputY + 6, FontLoader.regular(5), 5, new Color(200, 200, 200));
+            float fontSize = 5 * scale;
+            NanoVGHelper.drawString(text, x + 2 * scale, inputY + 6 * scale, FontLoader.regular(fontSize), fontSize, new Color(200, 200, 200));
         }
     }
 
@@ -218,7 +228,7 @@ public class ColorValueComponent extends Component {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (isHovering(getX() + getWidth() - 9, getY() - 7, 8, 8, mouseX, mouseY)) {
+        if (isHovering(getX() + getWidth() - 9 * scale, getY() - 7 * scale, 8 * scale, 8 * scale, mouseX, mouseY)) {
             opened = !opened;
             if (!opened) {
                 editField = EditField.NONE;
@@ -226,52 +236,58 @@ public class ColorValueComponent extends Component {
         }
 
         if (opened && open.getOutput() > 0.5) {
-            float fontHeight = NanoVGHelper.getFontHeight(FontLoader.regular(8), 8);
-            float gradientY = getY() + fontHeight + 2;
-            float gradientHeight = (float) (50 * open.getOutput());
-            float sliderX = getX();
-            float sliderWidth = getWidth();
+            float baseFontSize = (float) ClickGui.getFontSize();
+            float titleFontSize = baseFontSize * 0.75f;
+            float fontHeight = NanoVGHelper.getFontHeight(FontLoader.regular(titleFontSize), titleFontSize);
 
-            if (isHovering(getX(), gradientY, sliderWidth, gradientHeight, mouseX, mouseY) && mouseButton == 0) {
+            float gradientX = getX() + 2 * scale;
+            float gradientY = getY() + fontHeight + 2 * scale;
+            float gradientWidth = getWidth() - 4 * scale;
+            float gradientHeight = 50 * scale;
+
+            if (isHovering(gradientX, gradientY, gradientWidth, gradientHeight, mouseX, mouseY) && mouseButton == 0) {
                 pickingOthers = true;
                 editField = EditField.NONE;
             }
 
-            float hueSliderY = gradientY + gradientHeight + 2;
-            if (isHovering(getX(), hueSliderY, sliderWidth, 5, mouseX, mouseY) && mouseButton == 0) {
+            float sliderX = gradientX;
+            float sliderWidth = gradientWidth;
+
+            float hueSliderY = gradientY + gradientHeight + 3 * scale;
+            if (isHovering(sliderX, hueSliderY, sliderWidth, 5 * scale, mouseX, mouseY) && mouseButton == 0) {
                 pickingHue = true;
                 editField = EditField.NONE;
             }
 
-            float nextY = hueSliderY + 5;
+            float nextY = hueSliderY + 5 * scale;
 
             if (setting.allowAlpha()) {
-                float alphaSliderY = nextY + 2;
-                if (isHovering(getX(), alphaSliderY, sliderWidth, 5, mouseX, mouseY) && mouseButton == 0) {
+                float alphaSliderY = nextY + 3 * scale;
+                if (isHovering(sliderX, alphaSliderY, sliderWidth, 5 * scale, mouseX, mouseY) && mouseButton == 0) {
                     pickingAlpha = true;
                     editField = EditField.NONE;
                 }
-                nextY = alphaSliderY + 5;
+                nextY = alphaSliderY + 5 * scale;
             }
 
-            float rgbY = nextY + 2;
-            float rgbBarWidth = (sliderWidth - 4) / 3f;
+            float rgbY = nextY + 2 * scale;
+            float rgbBarWidth = (sliderWidth - 4 * scale) / 3f;
 
-            if (isHovering(sliderX, rgbY, rgbBarWidth, 5, mouseX, mouseY) && mouseButton == 0) {
+            if (isHovering(sliderX, rgbY, rgbBarWidth, 5 * scale, mouseX, mouseY) && mouseButton == 0) {
                 pickingR = true;
                 editField = EditField.NONE;
             }
-            if (isHovering(sliderX + rgbBarWidth + 2, rgbY, rgbBarWidth, 5, mouseX, mouseY) && mouseButton == 0) {
+            if (isHovering(sliderX + rgbBarWidth + 2 * scale, rgbY, rgbBarWidth, 5 * scale, mouseX, mouseY) && mouseButton == 0) {
                 pickingG = true;
                 editField = EditField.NONE;
             }
-            if (isHovering(sliderX + (rgbBarWidth + 2) * 2, rgbY, rgbBarWidth, 5, mouseX, mouseY) && mouseButton == 0) {
+            if (isHovering(sliderX + (rgbBarWidth + 2 * scale) * 2, rgbY, rgbBarWidth, 5 * scale, mouseX, mouseY) && mouseButton == 0) {
                 pickingB = true;
                 editField = EditField.NONE;
             }
 
-            float inputY = rgbY + 6;
-            float inputHeight = 8;
+            float inputY = rgbY + 6 * scale;
+            float inputHeight = 8 * scale;
             Color currentColor = setting.get();
 
             if (mouseButton == 0) {
@@ -279,11 +295,11 @@ public class ColorValueComponent extends Component {
                     startEditing(EditField.R, currentColor.getRed());
                     return true;
                 }
-                if (isHovering(sliderX + rgbBarWidth + 2, inputY, rgbBarWidth, inputHeight, mouseX, mouseY)) {
+                if (isHovering(sliderX + rgbBarWidth + 2 * scale, inputY, rgbBarWidth, inputHeight, mouseX, mouseY)) {
                     startEditing(EditField.G, currentColor.getGreen());
                     return true;
                 }
-                if (isHovering(sliderX + (rgbBarWidth + 2) * 2, inputY, rgbBarWidth, inputHeight, mouseX, mouseY)) {
+                if (isHovering(sliderX + (rgbBarWidth + 2 * scale) * 2, inputY, rgbBarWidth, inputHeight, mouseX, mouseY)) {
                     startEditing(EditField.B, currentColor.getBlue());
                     return true;
                 }
