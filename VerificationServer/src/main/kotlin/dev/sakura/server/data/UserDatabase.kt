@@ -231,8 +231,9 @@ object UserDatabase {
         // 遍历所有等级限制，收集用户无权访问的类
         for ((requiredLevel, classes) in groupRestrictions.restrictions) {
             if (group < requiredLevel) {
-                // 将原始类名转换为混淆后的类名
-                restrictions.addAll(MappingsLoader.mapClassNames(classes))
+                // TODO:mapping转换
+                //restrictions.addAll(MappingsLoader.mapClassNames(classes))
+                restrictions.addAll(classes)
             }
         }
 

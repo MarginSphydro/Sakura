@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.sakura.Sakura;
 import dev.sakura.events.render.Render2DEvent;
-import dev.sakura.events.render.Render3DEvent;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.shaders.satin.api.ManagedCoreShader;
