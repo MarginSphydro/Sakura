@@ -7,7 +7,8 @@ public enum Category {
     Movement("C", "移动"),
     Player("B", "玩家"),
     Render("M", "渲染"),
-    Client("D", "客户端");
+    Client("D", "客户端"),
+    Extra("E", "额外功能");
 
     public final String icon;
     public final String cnName;
