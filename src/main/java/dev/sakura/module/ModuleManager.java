@@ -88,6 +88,8 @@ public class ModuleManager {
             manager.tryLoad(() -> new NameTags());
             manager.tryLoad(() -> new Glow());
             manager.tryLoad(() -> new TotemParticles());
+            manager.tryLoad(() -> new Atmosphere());
+            manager.tryLoad(() -> new AspectRatio());
 
             // Client
             manager.tryLoad(() -> new ClickGui());

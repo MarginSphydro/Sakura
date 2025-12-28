@@ -3,7 +3,6 @@
   "minVersion": "0.8",
   "package": "dev.sakura.mixin",
   "compatibilityLevel": "JAVA_21",
-  "plugin": "dev.sakura.SakuraMixinPlugin",
   "refmap": "Sakura-refmap.json",
   "injectors": {
     "defaultRequire": 1
@@ -55,6 +54,8 @@
     "render.MixinTitleScreen",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
+    "render.ClientWorldMixin",
+    "render.PropertiesMixin",
     "shader.MixinShaderProgram",
     "world.MixinFlowableFluid"
   ],
