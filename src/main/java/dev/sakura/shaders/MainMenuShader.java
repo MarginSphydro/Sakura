@@ -35,8 +35,10 @@ public class MainMenuShader {
     private int timeUniform;
     private int resolutionUniform;
     private int transitionUniform;
+    private int mouseUniform;
     private float accumulatedTime;
     private float transitionValue = 1.0f; // 1.0 = 正常显示
+    private float mouseOffsetX = 0f;
     private VertexBuffer vertexBuffer;
     private MainMenuShaderType currentShaderType;
     private boolean useAlternativeUniforms;
@@ -44,17 +46,6 @@ public class MainMenuShader {
     public MainMenuShader(MainMenuShaderType shaderType) {
         this.accumulatedTime = 0f;
         this.currentShaderType = shaderType;
-
-/*        if (shaderType == MainMenuShaderType.VIDEO) {
-            this.videoRenderer = new VideoBackgroundRenderer();
-        } else {
-            try {
-                this.programId = createShaderProgram(shaderType);
-                this.setupVertexBuffer();
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to load main menu shader: " + shaderType.getDisplayName(), e);
-            }
-        }*/
 
         try {
             this.programId = createShaderProgram(shaderType);
@@ -106,6 +97,7 @@ public class MainMenuShader {
         this.timeUniform = GL20.glGetUniformLocation(program, "time");
         this.resolutionUniform = GL20.glGetUniformLocation(program, "resolution");
         this.transitionUniform = GL20.glGetUniformLocation(program, "transition");
+        this.mouseUniform = GL20.glGetUniformLocation(program, "mouse");
         this.useAlternativeUniforms = false;
         GL20.glUseProgram(0);
 
@@ -142,17 +134,12 @@ public class MainMenuShader {
         float scaleFactor = (float) mc.getWindow().getScaleFactor();
         GL20.glUniform2f(this.resolutionUniform, width * scaleFactor, height * scaleFactor);
 
-        // Pass extra uniforms if needed, e.g. uSize for MAIN_MENU
         int uSizeUniform = GL20.glGetUniformLocation(this.programId, "uSize");
         if (uSizeUniform != -1) {
             GL20.glUniform2f(uSizeUniform, width * scaleFactor, height * scaleFactor);
         }
 
         int TimeUniform = GL20.glGetUniformLocation(this.programId, "Time");
-        if (TimeUniform != -1) {
-            // Use same accumulated time but for "Time" uniform
-            // Note: accumulatedTime is updated below
-        }
 
         if (useAlternativeUniforms) {
             accumulatedTime += (float) (0.55 * AnimationUtil.deltaTime());
@@ -171,6 +158,10 @@ public class MainMenuShader {
             GL20.glUniform1f(this.transitionUniform, transition);
         }
 
+        if (this.mouseUniform >= 0) {
+            GL20.glUniform2f(this.mouseUniform, mouseOffsetX, 0.5f); // y is dummy
+        }
+
         this.vertexBuffer.bind();
         this.vertexBuffer.draw();
         VertexBuffer.unbind();
@@ -186,6 +177,10 @@ public class MainMenuShader {
 
     public float getTransition() {
         return this.transitionValue;
+    }
+
+    public void setMouseOffset(float x) {
+        this.mouseOffsetX = x;
     }
 
     public void switchShaderType(MainMenuShaderType newType) {

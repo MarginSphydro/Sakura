@@ -10,7 +10,6 @@ import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
 import dev.sakura.values.impl.EnumValue;
 import dev.sakura.values.impl.NumberValue;
-import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
@@ -30,8 +29,8 @@ public class ClickGui extends Module {
     public static Value<Color> backgroundColor = new ColorValue("Background Color", "背景颜色", new Color(28, 28, 28));
     public static Value<Color> expandedBackgroundColor = new ColorValue("Expanded Background", "展开背景颜色", new Color(20, 20, 20));
     public static EnumValue<ColorMode> colorMode = new EnumValue<>("Color Mode", "颜色模式", ColorMode.Tenacity);
-    public static Value<Color> mainColor = new ColorValue("Main Color", "主色调", new Color(255, 183, 197), () -> !colorMode.is(ColorMode.Rainbow));
-    public static Value<Color> secondColor = new ColorValue("Second Color", "次色调", new Color(255, 133, 161), () -> colorMode.is(ColorMode.Tenacity) || colorMode.is(ColorMode.Double));
+    public static ColorValue mainColor = new ColorValue("Main Color", "主色调", new Color(255, 183, 197), () -> !colorMode.is(ColorMode.Rainbow));
+    public static ColorValue secondColor = new ColorValue("Second Color", "次色调", new Color(255, 133, 161), () -> colorMode.is(ColorMode.Tenacity) || colorMode.is(ColorMode.Double));
     public static final Value<Double> colorSpeed = new NumberValue<>("Color Speed", "颜色速度", 4.0, 1.0, 10.0, 0.5, () -> colorMode.is(ColorMode.Tenacity) || colorMode.is(ColorMode.Dynamic));
     public static final Value<Double> colorIndex = new NumberValue<>("Color Separation", "颜色间隔", 20.0, 1.0, 100.0, 1.0, () -> colorMode.is(ColorMode.Tenacity));
     public static final Value<Double> rainbowSpeed = new NumberValue<>("Rainbow Speed", "彩虹速度", 2000.0, 500.0, 5000.0, 100.0, () -> colorMode.is(ColorMode.Rainbow));
@@ -44,7 +43,6 @@ public class ClickGui extends Module {
 
     public ClickGui() {
         super("ClickGui", "点击GUI", Category.Client);
-        setKey(GLFW.GLFW_KEY_RIGHT_SHIFT);
     }
 
     @Override

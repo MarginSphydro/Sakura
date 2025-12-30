@@ -16,16 +16,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
 public class MixinGameRenderer {
-    @Shadow private float zoom;
-    @Shadow private float zoomX;
-    @Shadow private float viewDistance;
-    @Shadow private float zoomY;
+    @Shadow
+    private float zoom;
+    @Shadow
+    private float zoomX;
+    @Shadow
+    private float viewDistance;
+    @Shadow
+    private float zoomY;
+
     @Inject(method = "render", at = @At("TAIL"))
 
     private void postHudRenderHook(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci) {
         FrameRateCounter.INSTANCE.recordFrame();
     }
-    @Inject(method = "getBasicProjectionMatrix",at = @At("TAIL"), cancellable = true)
+
+    @Inject(method = "getBasicProjectionMatrix", at = @At("TAIL"), cancellable = true)
     public void getBasicProjectionMatrix(float fovDegrees, CallbackInfoReturnable<Matrix4f> info) {
         if (Sakura.MODULES.getModule(AspectRatio.class).isEnabled()) {
             MatrixStack matrixStack = new MatrixStack();
@@ -35,7 +41,7 @@ public class MixinGameRenderer {
                 matrixStack.scale(zoom, zoom, 1.0f);
             }
 
-            matrixStack.peek().getPositionMatrix().mul(new Matrix4f().setPerspective((float)(fovDegrees * 0.01745329238474369), Sakura.MODULES.getModule(AspectRatio.class).ratio.get().floatValue(), 0.05f, viewDistance * 4.0f));
+            matrixStack.peek().getPositionMatrix().mul(new Matrix4f().setPerspective((float) (fovDegrees * 0.01745329238474369), Sakura.MODULES.getModule(AspectRatio.class).ratio.get().floatValue(), 0.05f, viewDistance * 4.0f));
             info.setReturnValue(matrixStack.peek().getPositionMatrix());
         }
     }

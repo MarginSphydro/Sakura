@@ -258,7 +258,7 @@ public class ConfigManager {
                     .forEach(path -> {
                         String moduleName = path.getFileName().toString();
                         moduleName = moduleName.substring(0, moduleName.length() - 5);
-                        Module module = Sakura.MODULES.getModule(moduleName);
+                        Module module = Sakura.MODULES.getModuleByString(moduleName);
                         if (module != null) {
                             loadModule(module, path);
                         }

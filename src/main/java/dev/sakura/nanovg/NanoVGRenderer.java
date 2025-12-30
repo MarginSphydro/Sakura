@@ -70,6 +70,11 @@ public class NanoVGRenderer {
             initNanoVG();
         }
 
+        if (inFrame) {
+            drawingLogic.accept(vg);
+            return;
+        }
+
         States.INSTANCE.push();
 
         MinecraftClient mc = MinecraftClient.getInstance();

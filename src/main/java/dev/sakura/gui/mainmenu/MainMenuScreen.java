@@ -1,12 +1,13 @@
 package dev.sakura.gui.mainmenu;
 
+import dev.sakura.Sakura;
 import dev.sakura.gui.account.AccountSelectorScreen;
+import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;
 import dev.sakura.shaders.MainMenuShader;
 import dev.sakura.shaders.SplashShader;
-import dev.sakura.shaders.WindowResizeCallback;
 import dev.sakura.utils.render.Shader2DUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -14,7 +15,6 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.Window;
 import net.minecraft.text.Text;
 import org.lwjgl.nanovg.NanoVG;
 
@@ -38,7 +38,7 @@ public class MainMenuScreen extends Screen {
     private static final float MIN_SCALE = 0.8f;
 
     public MainMenuScreen() {
-        super(Text.of("SakuraMainMenuScreen"));
+        super(Text.of("MainMenuScreen"));
     }
 
     @Override
@@ -53,16 +53,18 @@ public class MainMenuScreen extends Screen {
 
     @Override
     protected void init() {
-        if (initTime == 0) initTime = System.currentTimeMillis();
+        ClickGui clickGui = Sakura.MODULES.getModule(ClickGui.class);
+        if (clickGui != null && clickGui.getKey() == -1) {
+            mc.setScreen(new WelcomeScreen());
+            return;
+        }
 
-        WindowResizeCallback.EVENT.register(this::onWindowResized);
+        if (initTime == 0) {
+            initTime = System.currentTimeMillis();
+        }
 
         updateLayout();
         loadIcon();
-    }
-
-    private void onWindowResized(net.minecraft.client.MinecraftClient client, Window window) {
-        updateLayout();
     }
 
     private void updateLayout() {
@@ -167,7 +169,6 @@ public class MainMenuScreen extends Screen {
             renderIcon(finalTransitionProgress);
             renderButtons(mouseX, mouseY, finalTransitionProgress);
 
-            // Render logged in user
             if (mc.getSession() != null) {
                 String loggedInText = "Logged in as: " + mc.getSession().getUsername();
                 NanoVGHelper.drawText(loggedInText, this.width - 5, 5, FontLoader.regular(18), 18,
@@ -318,82 +319,6 @@ public class MainMenuScreen extends Screen {
         if (iconImage != -1) {
             NanoVGHelper.deleteTexture(iconImage);
             iconImage = -1;
-        }
-    }
-
-    private static class MenuButton {
-        int x, y, width, height;
-        String text;
-        Runnable action;
-        boolean enabled;
-
-        private float hoverProgress = 0f;
-
-        MenuButton(int x, int y, int width, int height, String text, Runnable action) {
-            this(x, y, width, height, text, action, true);
-        }
-
-        MenuButton(int x, int y, int width, int height, String text, Runnable action, boolean enabled) {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.text = text;
-            this.action = action;
-            this.enabled = enabled;
-        }
-
-        boolean isHovered(int mouseX, int mouseY) {
-            return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
-        }
-
-        void onClick() {
-            if (enabled && action != null) {
-                action.run();
-            }
-        }
-
-        void render(boolean hovered, float alpha, float scale) {
-            if (alpha <= 0) return;
-
-            float targetHover = hovered && enabled ? 1.0f : 0.0f;
-            hoverProgress += (targetHover - hoverProgress) * 0.2f;
-
-            int baseAlpha = (int) (alpha * 255);
-            int bgAlpha = enabled ? (int) (baseAlpha * (0.4f + hoverProgress * 0.2f)) : (int) (baseAlpha * 0.2f);
-
-            Color bgColor = enabled ? new Color(255, 200, 220, bgAlpha) : new Color(128, 128, 128, bgAlpha);
-            NanoVGHelper.drawRoundRectScaled(x, y, width, height, 4, bgColor, scale);
-
-            int borderAlpha = (int) (baseAlpha * (0.5f + hoverProgress * 0.3f));
-            Color borderColor = enabled ? new Color(255, 150, 180, borderAlpha) : new Color(100, 100, 100, borderAlpha);
-            NanoVGHelper.drawRoundRectOutlineScaled(x, y, width, height, 4, 1, borderColor, scale);
-
-            float fontSize = Math.max(10f, Math.min(16f, height * 0.7f));
-            int font = FontLoader.regular((int) fontSize);
-            float textWidth = NanoVGHelper.getTextWidth(text, font, fontSize);
-            float textX = x + (width - textWidth) / 2f;
-            float textY = y + height / 2f + fontSize / 3;
-
-            int textAlpha = enabled ? baseAlpha : (int) (baseAlpha * 0.6f);
-            Color textColor = new Color(255, 255, 255, textAlpha);
-            NanoVGHelper.drawString(text, textX, textY, font, fontSize, textColor);
-        }
-    }
-
-    private static class ShaderButton extends MenuButton {
-        ShaderButton(int x, int y, int width, int height) {
-            super(x, y, width, height, "背景: " + MainMenuShader.getSharedInstance().getCurrentShaderType().getDisplayName(), null, true);
-        }
-
-        void nextShader() {
-            MainMenuShader.getSharedInstance().nextShader();
-            this.text = "背景: " + MainMenuShader.getSharedInstance().getCurrentShaderType().getDisplayName();
-        }
-
-        void previousShader() {
-            MainMenuShader.getSharedInstance().previousShader();
-            this.text = "背景: " + MainMenuShader.getSharedInstance().getCurrentShaderType().getDisplayName();
         }
     }
 }

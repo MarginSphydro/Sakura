@@ -1,14 +1,11 @@
 package dev.sakura.gui.Extra;
 
 import dev.sakura.Sakura;
-import dev.sakura.gui.Extra.component.SafeModuleComponent;
 import dev.sakura.gui.IComponent;
 import dev.sakura.gui.hud.component.HudModuleComponent;
 import dev.sakura.module.HudModule;
 import dev.sakura.module.Module;
-import dev.sakura.module.SafeModule;
 import dev.sakura.module.impl.client.ClickGui;
-import dev.sakura.module.impl.extra.Safe;
 import dev.sakura.nanovg.NanoVGRenderer;
 import dev.sakura.nanovg.font.FontLoader;
 import dev.sakura.nanovg.util.NanoVGHelper;

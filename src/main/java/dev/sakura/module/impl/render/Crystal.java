@@ -24,7 +24,7 @@ public class Crystal extends Module {
     public final BoolValue enableBreathing = new BoolValue("Breathing Effect", "呼吸效果", true);
     public final NumberValue<Float> breathingSpeed = new NumberValue<>("Breathing Speed", "呼吸速度", 1.0f, 0.1f, 5.0f, 0.1f);
     public final NumberValue<Float> breathingAmount = new NumberValue<>("Breathing Amount", "呼吸幅度", 0.2f, 0.0f, 1.0f, 0.05f);
-    
+
     public final BoolValue enableRotation = new BoolValue("Rotation Effect", "旋转效果", true);
     public final NumberValue<Float> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 1.0f, 0.1f, 10.0f, 0.1f);
 

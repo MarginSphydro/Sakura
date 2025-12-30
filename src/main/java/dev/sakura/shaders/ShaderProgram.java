@@ -214,6 +214,7 @@ public class ShaderProgram {
             uniform vec2 resolution;
             uniform float time;
             uniform float transition;
+            uniform vec2 mouse;
             
             out vec4 fragColor;
             
@@ -348,10 +349,12 @@ public class ShaderProgram {
                 float blur = abs(nominalUV.y - 0.5) * 1.4;
                 blur *= blur * 0.15;
             
-                vec4 layer1 = layer(uv, 0.015 + blur);
-                vec4 layer2 = layer(uv * 1.4 + vec2(124.5, 89.30), 0.05 + blur);
+                float parallax = mouse.x * 0.001;
+            
+                vec4 layer1 = layer(uv - vec2(parallax * 0.5, 0.0), 0.015 + blur);
+                vec4 layer2 = layer(uv * 1.4 + vec2(124.5, 89.30) - vec2(parallax * 1.0, 0.0), 0.05 + blur);
                 layer2.rgb *= mix(0.7, 0.95, screenY);
-                vec4 layer3 = layer(uv * 2.3 + vec2(463.5, -987.30), 0.08 + blur);
+                vec4 layer3 = layer(uv * 2.3 + vec2(463.5, -987.30) - vec2(parallax * 1.5, 0.0), 0.08 + blur);
                 layer3.rgb *= mix(0.55, 0.85, screenY);
             
                 vec3 sakuraCol = bgColor;
@@ -361,6 +364,7 @@ public class ShaderProgram {
                 sakuraCol += -0.15;
             
                 float finalMask = expandMask * alpha;
+            
                 col = mix(bgColor, sakuraCol, finalMask);
             
                 fragColor = vec4(col, 1.0);

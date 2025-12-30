@@ -50,12 +50,11 @@
     "render.MixinScreen",
     "render.MixinShaderLoader",
     "render.MixinSplashOverlay",
-    "render.MixinSplashTextResourceSupplier",
     "render.MixinTitleScreen",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
     "render.ClientWorldMixin",
-    "render.PropertiesMixin",
+    "render.MixinClientWorldProperties",
     "render.EndCrystalEntityRendererMixin",
     "shader.MixinShaderProgram",
     "world.MixinFlowableFluid"

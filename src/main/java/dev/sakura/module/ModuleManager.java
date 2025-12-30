@@ -140,7 +140,7 @@ public class ModuleManager {
         return Collections.unmodifiableCollection(modules.values());
     }
 
-    public Module getModule(String name) {
+    public Module getModuleByString(String name) {
         for (Module module : modules.values()) {
             if (module.getEnglishName().equalsIgnoreCase(name)) {
                 return module;

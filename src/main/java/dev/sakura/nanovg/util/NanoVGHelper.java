@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NVGPaint;
+import org.lwjgl.system.MemoryStack;
 
 import java.awt.*;
 
@@ -477,22 +478,60 @@ public class NanoVGHelper {
                 java.nio.IntBuffer h = stack.mallocInt(1);
                 java.nio.IntBuffer comp = stack.mallocInt(1);
 
-                java.nio.ByteBuffer decoded = org.lwjgl.stb.STBImage.stbi_load_from_memory(imageBuffer, w, h, comp, 4);
-                if (decoded != null) {
-                    int width = w.get(0);
-                    int height = h.get(0);
-
-                    long vg = getContext();
-                    int image = nvgCreateImageRGBA(vg, width, height, 0, decoded);
-
-                    org.lwjgl.stb.STBImage.stbi_image_free(decoded);
-                    return image;
-                }
+                // stbi_load_from_memory logic can be here, but simpler to use nvgCreateImageMem
+                return nvgCreateImageMem(getContext(), 0, imageBuffer);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return -1;
         }
-        return -1;
+    }
+
+    public static void drawCircleOutline(float x, float y, float radius, float strokeWidth, Color color) {
+        long vg = getContext();
+        nvgBeginPath(vg);
+        nvgCircle(vg, x, y, radius);
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            NVGColor nvgColor = NVGColor.malloc(stack);
+            nvgRGBA((byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getAlpha(), nvgColor);
+
+            nvgStrokeWidth(vg, strokeWidth);
+            nvgStrokeColor(vg, nvgColor);
+            nvgStroke(vg);
+        }
+    }
+
+    public static void save() {
+        nvgSave(getContext());
+    }
+
+    public static void restore() {
+        nvgRestore(getContext());
+    }
+
+    public static void translate(float x, float y) {
+        nvgTranslate(getContext(), x, y);
+    }
+
+    public static void translate(long vg, float x, float y) {
+        nvgTranslate(vg, x, y);
+    }
+
+    public static void scale(float x, float y) {
+        nvgScale(getContext(), x, y);
+    }
+
+    public static void scale(long vg, float x, float y) {
+        nvgScale(vg, x, y);
+    }
+
+    public static void rotate(long vg, float angle) {
+        nvgRotate(vg, angle);
+    }
+
+    public static void globalAlpha(long vg, float alpha) {
+        nvgGlobalAlpha(vg, alpha);
     }
 
     /**
@@ -510,13 +549,16 @@ public class NanoVGHelper {
 
         long vg = getContext();
 
-        NVGPaint paint = NVGPaint.create();
-        nvgImagePattern(vg, 0, 0, width, height, 0, imageId, alpha, paint);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            NVGPaint paint = NVGPaint.malloc(stack);
+            // Fix: Pattern origin should match rect origin for simple drawing
+            nvgImagePattern(vg, x, y, width, height, 0, imageId, alpha, paint);
 
-        nvgBeginPath(vg);
-        nvgRect(vg, x, y, width, height);
-        nvgFillPaint(vg, paint);
-        nvgFill(vg);
+            nvgBeginPath(vg);
+            nvgRect(vg, x, y, width, height);
+            nvgFillPaint(vg, paint);
+            nvgFill(vg);
+        }
     }
 
     public static void drawTexture(int imageId, float x, float y, float width, float height, float alpha,
@@ -536,13 +578,15 @@ public class NanoVGHelper {
         // 移回原点
         nvgTranslate(vg, -width / 2f, -height / 2f);
 
-        NVGPaint paint = NVGPaint.create();
-        nvgImagePattern(vg, 0, 0, width, height, 0, imageId, alpha, paint);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            NVGPaint paint = NVGPaint.malloc(stack);
+            nvgImagePattern(vg, 0, 0, width, height, 0, imageId, alpha, paint);
 
-        nvgBeginPath(vg);
-        nvgRect(vg, 0, 0, width, height);
-        nvgFillPaint(vg, paint);
-        nvgFill(vg);
+            nvgBeginPath(vg);
+            nvgRect(vg, 0, 0, width, height);
+            nvgFillPaint(vg, paint);
+            nvgFill(vg);
+        }
 
         nvgRestore(vg);
     }
@@ -552,14 +596,6 @@ public class NanoVGHelper {
             long vg = getContext();
             nvgDeleteImage(vg, imageId);
         }
-    }
-
-    public static void save() {
-        nvgSave(getContext());
-    }
-
-    public static void restore() {
-        nvgRestore(getContext());
     }
 
     public static void scissor(float x, float y, float w, float h) {
@@ -573,4 +609,5 @@ public class NanoVGHelper {
     public static void resetScissor() {
         nvgResetScissor(getContext());
     }
+
 }

@@ -1,6 +1,5 @@
 package dev.sakura.mixin.render;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.sakura.Sakura;
 import dev.sakura.module.impl.render.NoRender;

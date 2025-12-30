@@ -4,15 +4,15 @@ import dev.sakura.module.Category;
 import dev.sakura.module.Module;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.ColorValue;
+import dev.sakura.values.impl.NumberValue;
 
 import java.awt.*;
-
-import dev.sakura.values.impl.NumberValue;
 
 public class Atmosphere extends Module {
     public Atmosphere() {
         super("Atmosphere", "天空渲染", Category.Render);
     }
+
     public final BoolValue modifyTime = new BoolValue("Modify Time", "修改时间", false);
     public final BoolValue modifyFog = new BoolValue("Modify Fog", "修改天空", false);
     public final NumberValue<Integer> time = new NumberValue<>("Time", "时间", 12000, 0, 24000, 1000);

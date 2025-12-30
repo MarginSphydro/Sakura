@@ -99,7 +99,8 @@ public class NumberValueComponent extends Component {
 
                 float labelFontSize = baseFontSize * 0.5f;
                 NanoVGHelper.drawString(minStr, getX(), getY() + 18 * scale, FontLoader.regular(labelFontSize), labelFontSize, new Color(255, 255, 255, 255));
-                NanoVGHelper.drawCenteredString(currentStr, getX() + getWidth() / 2, getY() + 18 * scale + NanoVGHelper.getFontHeight(FontLoader.regular(labelFontSize), labelFontSize) / 2, FontLoader.regular(labelFontSize), labelFontSize, new Color(255, 255, 255, 255));
+                float currentTextWidth = NanoVGHelper.getTextWidth(currentStr, FontLoader.regular(labelFontSize), labelFontSize);
+                NanoVGHelper.drawString(currentStr, getX() + (getWidth() - currentTextWidth) / 2f, getY() + 18 * scale, FontLoader.regular(labelFontSize), labelFontSize, new Color(255, 255, 255, 255));
                 NanoVGHelper.drawString(maxStr, getX() + getWidth() - NanoVGHelper.getTextWidth(maxStr, FontLoader.regular(labelFontSize), labelFontSize), getY() + 18 * scale, FontLoader.regular(labelFontSize), labelFontSize, new Color(255, 255, 255, 255));
 
                 NanoVGHelper.drawRoundRect(getX(), getY() + 7 * scale, w, 4 * scale, 2 * scale, new Color(200, 200, 200, 255));

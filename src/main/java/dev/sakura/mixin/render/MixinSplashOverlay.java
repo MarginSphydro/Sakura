@@ -104,6 +104,9 @@ public class MixinSplashOverlay {
             }
 
             if (mainMenuScreen != null) {
+                if (mainMenuScreen.width != width || mainMenuScreen.height != height) {
+                    mainMenuScreen.init(this.client, width, height);
+                }
                 mainMenuScreen.render(context, 0, 0, delta);
             } else if (this.client.currentScreen != null) {
                 this.client.currentScreen.render(context, 0, 0, delta);

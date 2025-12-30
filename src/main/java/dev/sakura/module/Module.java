@@ -24,7 +24,7 @@ public class Module {
     private boolean state;
     private final Category category;
     private String suffix = "";
-    private int key;
+    private int key = -1;
     private BindMode bindMode = BindMode.Toggle;
     private final BoolValue hidden; // 控制模块是否在ModuleListHud中显示
     public final List<Value<?>> values = new ArrayList<>();

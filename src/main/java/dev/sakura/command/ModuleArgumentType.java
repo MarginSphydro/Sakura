@@ -26,7 +26,7 @@ public class ModuleArgumentType implements ArgumentType<Module> {
     @Override
     public Module parse(StringReader reader) throws CommandSyntaxException {
         String string = reader.readString();
-        Module module = Sakura.MODULES.getModule(string);
+        Module module = Sakura.MODULES.getModuleByString(string);
         if (module == null) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().createWithContext(reader, null);
         }
