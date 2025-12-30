@@ -40,7 +40,7 @@ public class Scaffold extends Module {
     private final BoolValue keepY = new BoolValue("Keep Y", "保持Y轴", true, telly::get);
     private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 10, 0, 10, 1);
     private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Rotation Back Speed", "回转速度", 10, 0, 10, 1, telly::get);
-    private final BoolValue moveFix = new BoolValue("Movement Fix", "移动修复", true);
+    private final BoolValue moveFix = new BoolValue("Movement Fix", "移动修复", false);
     private final BoolValue render = new BoolValue("Render", "渲染", true);
     private final BoolValue shrink = new BoolValue("Shrink", "收缩", true, render::get);
     private final ColorValue sideColor = new ColorValue("Side Color", "侧面颜色", new Color(255, 183, 197, 100), render::get);

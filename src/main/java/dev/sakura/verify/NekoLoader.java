@@ -71,9 +71,9 @@ public class NekoLoader {
             unsafeField.setAccessible(true);
             Unsafe unsafe = (Unsafe) unsafeField.get(null);
 
-            hookKnotClassDelegate(classLoader, unsafe);
+            hookKnotClassDelegate();
 
-            hookMixinBytecodeProvider(unsafe);
+            hookMixinBytecodeProvider();
 
             Field implLookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
             long offset = unsafe.staticFieldOffset(implLookupField);
@@ -164,7 +164,7 @@ public class NekoLoader {
         return cloudClasses.containsKey(className);
     }
 
-    private void hookKnotClassDelegate(ClassLoader classLoader, Unsafe unsafe) {
+    private void hookKnotClassDelegate() {
         try {
             for (Map.Entry<String, byte[]> entry : cloudClasses.entrySet()) {
                 AgentLoader.registerCloudClass(entry.getKey(), entry.getValue());
@@ -174,7 +174,7 @@ public class NekoLoader {
         }
     }
 
-    private void hookMixinBytecodeProvider(Unsafe unsafe) {
+    private void hookMixinBytecodeProvider() {
         try {
             Class<?> classInfoClass = Class.forName("org.spongepowered.asm.mixin.transformer.ClassInfo");
 

@@ -70,6 +70,9 @@ public class CrystalAura extends Module {
     private final NumberValue<Double> minDamage = new NumberValue<>("Min Damage", "最小伤害", 4.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
     private final NumberValue<Double> maxSelfDamage = new NumberValue<>("Max Self Damage", "最大自伤", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
     private final NumberValue<Double> forcePlaceHealth = new NumberValue<>("Force Place Health", "强放血量", 8.0, 0.0, 36.0, 0.1, () -> page.is(Page.General));
+    private final BoolValue extrapolation = new BoolValue("Extrapolation", "外推", true, () -> page.is(Page.Render));
+    private final NumberValue<Integer> extrapolationTicks = new NumberValue<>("Extra Ticks", "外推刻数", 0, 0, 20, 1, () -> page.is(Page.Render) && extrapolation.get());
+    private final NumberValue<Integer> smooth = new NumberValue<>("Smooth", "平滑度", 1, 1, 10, 1, () -> page.is(Page.Render) && extrapolation.get());
 
     private final BoolValue rotate = new BoolValue("Rotate", "旋转", true, () -> page.is(Page.Timing));
     private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 10, 0, 10, 1, () -> page.is(Page.Timing) && rotate.get());
@@ -93,13 +96,10 @@ public class CrystalAura extends Module {
     private final NumberValue<Double> animationSpeed = new NumberValue<>("Animation Speed", "动画速度", 5.0, 0.1, 20.0, 0.1, () -> page.is(Page.Render) && render.get());
     private final NumberValue<Double> animationExponent = new NumberValue<>("Animation Exp", "动画指数", 3.0, 0.1, 10.0, 0.1, () -> page.is(Page.Render) && render.get());
     private final BoolValue smoothBox = new BoolValue("Smooth Box", "平滑方块", false, () -> page.is(Page.Render) && render.get());
-    private final BoolValue breathing = new BoolValue("Breathing", "呼吸效果", true, () -> page.is(Page.Render) && render.get());
+    private final BoolValue breathing = new BoolValue("Breathing", "呼吸效果", false, () -> page.is(Page.Render) && render.get());
     private final ColorValue sideColor = new ColorValue("Side Color", "侧面颜色", new Color(255, 192, 203, 50), () -> page.is(Page.Render) && render.get());
     private final ColorValue lineColor = new ColorValue("Line Color", "线条颜色", new Color(255, 192, 203, 255), () -> page.is(Page.Render) && render.get());
-    private final BoolValue extrapolation = new BoolValue("Extrapolation", "外推", true, () -> page.is(Page.Render));
-    private final NumberValue<Integer> extrapolationTicks = new NumberValue<>("Extra Ticks", "外推刻数", 0, 0, 20, 1, () -> page.is(Page.Render) && extrapolation.get());
-    private final NumberValue<Integer> smooth = new NumberValue<>("Smooth", "平滑度", 1, 1, 10, 1, () -> page.is(Page.Render) && extrapolation.get());
-    private final BoolValue renderExtrapolation = new BoolValue("Render Extrapolation", "渲染预测", true, () -> page.is(Page.Render) && render.get());
+    private final BoolValue renderExtrapolation = new BoolValue("Render Extrapolation", "渲染预测", false, () -> page.is(Page.Render) && render.get());
     private final ColorValue extraSideColor = new ColorValue("Extra Side Color", "外推侧面颜色", new Color(135, 206, 235, 50), () -> page.is(Page.Render) && renderExtrapolation.get());
     private final ColorValue extraLineColor = new ColorValue("Extra Line Color", "外推线条颜色", new Color(135, 206, 235, 255), () -> page.is(Page.Render) && renderExtrapolation.get());
 

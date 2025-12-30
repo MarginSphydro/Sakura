@@ -4,13 +4,11 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 
 public class States {
-
     public static final States INSTANCE = new States();
 
-    private State state;
+    private final State state;
 
     private States() {
-        GLCapabilities caps = GL.getCapabilities();
         int glVersion = getGLVersion();
         state = new State(glVersion);
     }

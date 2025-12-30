@@ -69,8 +69,6 @@ dependencies {
     
     implementation(include("meteordevelopment:orbit:${property("orbit_version")}")!!)
 
-    implementation(include("org.bytedeco:javacv-platform:1.5.10")!!)
-
     // NanoVG 运行库
     implementation(include("org.lwjgl", "lwjgl-nanovg", "3.3.3"))
     implementation(include("org.lwjgl:lwjgl-nanovg::natives-windows")!!)
@@ -113,3 +111,10 @@ tasks.register("buildClientOnly") {
     }
     finalizedBy("build")
 }
+
+/*tasks.register<Copy>("copyLibs") {
+    from(configurations.runtimeClasspath)
+    from(configurations.compileClasspath)
+    into(layout.projectDirectory.dir("混淆/ZKM/libs"))
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}*/

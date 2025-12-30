@@ -25,7 +25,7 @@ public class AdvancedColorPicker {
     private float toggleAnim = 0f;
     private long lastFrameTime = 0;
 
-    private int x, y, width, height;
+    private final int x, y, width, height;
 
     private boolean draggingHue = false;
     private boolean draggingSV = false;

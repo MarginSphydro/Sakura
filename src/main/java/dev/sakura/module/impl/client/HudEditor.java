@@ -15,7 +15,7 @@ public class HudEditor extends Module {
 
 
     public HudEditor() {
-        super("HudEditor", "自定义界面", Category.Client);
+        super("HudEditor", "Hud编辑界面", Category.Client);
     }
 
     @Override

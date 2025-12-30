@@ -45,19 +45,19 @@ public class AgentLoader {
                     .type(ElementMatchers.named("net.fabricmc.loader.impl.launch.knot.KnotClassDelegate"))
                     .transform((builder, typeDescription, classLoader, module, protectionDomain) ->
                             builder
-                                    .visit(Advice.to(GetRawClassBytesAdvice.class)
+                                    .visit(Advice.to(GRCBAdvice.class)
                                             .on(ElementMatchers.named("getRawClassBytes")
                                                     .and(ElementMatchers.takesArguments(1))
                                                     .and(ElementMatchers.returns(byte[].class))))
-                                    .visit(Advice.to(GetRawClassBytesAdvice.class)
+                                    .visit(Advice.to(GRCBAdvice.class)
                                             .on(ElementMatchers.named("getRawClassByteArray")
                                                     .and(ElementMatchers.takesArguments(2))
                                                     .and(ElementMatchers.returns(byte[].class))))
-                                    .visit(Advice.to(GetRawClassBytesAdvice.class)
+                                    .visit(Advice.to(GRCBAdvice.class)
                                             .on(ElementMatchers.named("getPreMixinClassBytes")
                                                     .and(ElementMatchers.takesArguments(1))
                                                     .and(ElementMatchers.returns(byte[].class))))
-                                    .visit(Advice.to(GetRawClassBytesAdvice.class)
+                                    .visit(Advice.to(GRCBAdvice.class)
                                             .on(ElementMatchers.named("getPreMixinClassByteArray")
                                                     .and(ElementMatchers.takesArguments(2))
                                                     .and(ElementMatchers.returns(byte[].class)))))
@@ -68,20 +68,6 @@ public class AgentLoader {
         } catch (Exception e) {
             System.err.println("[AgentLoader] Failed to load agent: " + e.getMessage());
             e.printStackTrace();
-        }
-    }
-
-    public static class GetRawClassBytesAdvice {
-        @Advice.OnMethodExit
-        @SuppressWarnings("unchecked")
-        public static void onExit(@Advice.Argument(0) String name, @Advice.Return(readOnly = false) byte[] result) {
-            Map<String, byte[]> cloudClasses = (Map<String, byte[]>) System.getProperties().get("sakura.cloud.classes");
-            if (cloudClasses != null) {
-                byte[] cloudBytes = cloudClasses.get(name);
-                if (cloudBytes != null) {
-                    result = cloudBytes;
-                }
-            }
         }
     }
 }
