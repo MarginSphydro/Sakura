@@ -10,7 +10,6 @@ import dev.sakura.manager.impl.SoundManager;
 import dev.sakura.module.impl.client.ClickGui;
 import dev.sakura.module.impl.client.HudEditor;
 import dev.sakura.module.impl.combat.*;
-import dev.sakura.module.impl.extra.Safe;
 import dev.sakura.module.impl.hud.*;
 import dev.sakura.module.impl.movement.*;
 import dev.sakura.module.impl.movement.velocity.Velocity;
@@ -95,7 +94,6 @@ public class ModuleManager {
             // Client
             manager.tryLoad(() -> new ClickGui());
             manager.tryLoad(() -> new HudEditor());
-            manager.tryLoad(() -> new Safe());
 
             // HUD
             manager.tryLoad(() -> new FPSHud());
@@ -106,14 +104,8 @@ public class ModuleManager {
             manager.tryLoad(() -> new KeyStrokesHud());
             manager.tryLoad(() -> new NotifyHud());
             manager.tryLoad(() -> new HotbarHud());
-            manager.tryLoad(() -> new ModuleListHud()); // 新增的模块列表HUD
+            manager.tryLoad(() -> new ModuleListHud());
             manager.tryLoad(() -> new TargetHud());
-
-            //Extra
-            manager.tryLoad(() -> new Safe());
-
-            //Safe
-
         }
     }
 

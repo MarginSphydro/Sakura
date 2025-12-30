@@ -70,9 +70,13 @@ public class WelcomeScreen extends Screen {
             panel.setY(0);
             panel.setOpened(true);
 
-            if (category == Category.Combat && !panel.getModuleComponents().isEmpty()) {
-                ModuleComponent moduleComp = panel.getModuleComponents().getFirst();
-                moduleComp.setOpened(true);
+            // 预览展开脚手架，甲飞和水晶模型
+            for (ModuleComponent component : panel.getModuleComponents()) {
+                if (component.getModule().getEnglishName().equalsIgnoreCase("Scaffold") || component.getModule().getEnglishName().equalsIgnoreCase("ArmorFly") || component.getModule().getEnglishName().equalsIgnoreCase("Crystal")) {
+                    component.setOpened(true);
+                } else if (Math.random() > 0.9) {
+                    component.setPreviewEnabled(true);
+                }
             }
 
             previewPanels.add(panel);
@@ -115,6 +119,9 @@ public class WelcomeScreen extends Screen {
             btnLanguage.text = getLanguageText();
             btnPrev.text = TranslationManager.get("nav.prev");
             btnNext.text = currentStep == totalSteps - 1 ? TranslationManager.get("nav.finish") : TranslationManager.get("nav.next");
+            if (btnColorMode != null) {
+                btnColorMode.text = getColorModeText();
+            }
         });
 
         int pickerWidth = 230;
@@ -128,10 +135,10 @@ public class WelcomeScreen extends Screen {
         int pickerY = centerY - (totalGroupHeight / 2);
 
         if (mainColorPicker == null) {
-            mainColorPicker = new AdvancedColorPicker(TranslationManager.get("theme.main_color"), ClickGui.mainColor, pickerX, pickerY);
+            mainColorPicker = new AdvancedColorPicker("theme.main_color", ClickGui.mainColor, pickerX, pickerY);
             mainColorPicker.setSecondColor(ClickGui.secondColor);
         } else {
-            mainColorPicker = new AdvancedColorPicker(TranslationManager.get("theme.main_color"), ClickGui.mainColor, pickerX, pickerY);
+            mainColorPicker = new AdvancedColorPicker("theme.main_color", ClickGui.mainColor, pickerX, pickerY);
             mainColorPicker.setSecondColor(ClickGui.secondColor);
         }
 
@@ -157,7 +164,8 @@ public class WelcomeScreen extends Screen {
     }
 
     private String getColorModeText() {
-        return (ClickGui.language.get() == ClickGui.Language.English ? "Color Mode: " : "颜色模式: ") + ClickGui.colorMode.get().name();
+        String modeName = TranslationManager.get("colormode." + ClickGui.colorMode.get().name().toLowerCase());
+        return (ClickGui.language.get() == ClickGui.Language.English ? "Color Mode: " : "颜色模式: ") + modeName;
     }
 
     private void changeStep(int newStep) {
@@ -184,6 +192,9 @@ public class WelcomeScreen extends Screen {
         ClickGui clickGui = Sakura.MODULES.getModule(ClickGui.class);
         if (clickGui != null) {
             clickGui.setKey(GLFW.GLFW_KEY_RIGHT_SHIFT);
+            if (Math.random() > 0.5) {
+                ClickGui.colorMode.set(ClickGui.ColorMode.values()[(int) (Math.random() * ClickGui.ColorMode.values().length)]);
+            }
             Sakura.CONFIG.saveDefaultConfig();
         }
         exiting = true;
@@ -362,7 +373,7 @@ public class WelcomeScreen extends Screen {
                 float sTextWidth = NanoVGHelper.getTextWidth(settingsText, sFont, sFontSize);
                 NanoVGHelper.drawString(settingsText, (width - sTextWidth) / 2f, 50, sFont, sFontSize, Color.WHITE);
 
-                drawPreviewPanel(centerX + 180, centerY - 130);
+                drawPreviewPanel(centerX + 180, centerY - 160);
 
                 mainColorPicker.render(mouseX, mouseY);
 
@@ -458,7 +469,7 @@ public class WelcomeScreen extends Screen {
     private void drawPreviewPanel(float x, float y) {
         if (previewPanels.isEmpty()) return;
 
-        float scale = 0.65f;
+        float scale = 0.80f;
         float totalWidth = 0;
         for (CategoryPanel panel : previewPanels) {
             totalWidth += panel.getWidth() + 10;

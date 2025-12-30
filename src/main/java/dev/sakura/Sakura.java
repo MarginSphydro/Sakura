@@ -2,7 +2,6 @@ package dev.sakura;
 
 import dev.sakura.command.CommandManager;
 import dev.sakura.config.ConfigManager;
-import dev.sakura.gui.Extra.SafeScreen;
 import dev.sakura.gui.clickgui.ClickGuiScreen;
 import dev.sakura.gui.hud.HudEditorScreen;
 import dev.sakura.manager.Managers;
@@ -99,7 +98,6 @@ public class Sakura {
     public static CommandManager COMMAND;
     public static ClickGuiScreen CLICKGUI;
     public static HudEditorScreen HUDEDITOR;
-    public static SafeScreen SAFE;
 
     public static void init() {
         LOGGER.info("正在开始初始化!");

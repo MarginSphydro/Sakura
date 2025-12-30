@@ -40,6 +40,14 @@ public class TranslationManager {
         register("color.blue", "B", "蓝");
         register("color.alpha", "Alpha", "透明度");
         register("color.hex", "Hex", "十六进制");
+
+        register("colormode.fade", "Fade", "渐变");
+        register("colormode.rainbow", "Rainbow", "彩虹");
+        register("colormode.astolfo", "Astolfo", "阿斯托尔福");
+        register("colormode.dynamic", "Dynamic", "动态");
+        register("colormode.tenacity", "Tenacity", "Tenacity");
+        register("colormode.static", "Static", "静态");
+        register("colormode.double", "Double", "双色");
     }
 
     public static void register(String key, String en, String zh) {

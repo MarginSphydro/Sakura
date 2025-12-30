@@ -30,6 +30,7 @@ public class ModuleComponent implements IComponent {
     private final Module module;
     private boolean opened;
     private boolean listening = false;
+    private boolean previewEnabled = false;
     private final EaseInOutQuad openAnimation = new EaseInOutQuad(250, 1);
     private final EaseOutSine toggleAnimation = new EaseOutSine(300, 1);
     private final EaseOutSine hoverAnimation = new EaseOutSine(200, 1);
@@ -63,7 +64,7 @@ public class ModuleComponent implements IComponent {
         float scaledHeight = MODULE_HEIGHT * scale;
         float yOffset = scaledHeight;
         openAnimation.setDirection(opened ? Direction.FORWARDS : Direction.BACKWARDS);
-        toggleAnimation.setDirection(module.isEnabled() ? Direction.FORWARDS : Direction.BACKWARDS);
+        toggleAnimation.setDirection(module.isEnabled() || previewEnabled ? Direction.FORWARDS : Direction.BACKWARDS);
         hoverAnimation.setDirection(isHovered(mouseX, mouseY) ? Direction.FORWARDS : Direction.BACKWARDS);
 
         boolean hasVisibleSettings = false;
@@ -84,7 +85,7 @@ public class ModuleComponent implements IComponent {
         final float finalYOffset = yOffset;
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            if (module.isEnabled()) {
+            if (module.isEnabled() || previewEnabled) {
                 NanoVGHelper.drawGradientRRect2(x, y, width, scaledHeight, 0, ClickGui.color(0), ClickGui.color2(0));
             }
             NanoVGHelper.drawRect(x, y, width, scaledHeight, ColorUtil.applyOpacity(ClickGui.backgroundColor.get(), 0.4f));
@@ -301,6 +302,10 @@ public class ModuleComponent implements IComponent {
 
     public void setScale(float scale) {
         this.scale = scale;
+    }
+
+    public void setPreviewEnabled(boolean previewEnabled) {
+        this.previewEnabled = previewEnabled;
     }
 
     private String getKeyName(int keyCode) {
