@@ -20,7 +20,7 @@ import net.minecraft.client.gui.DrawContext;
 import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ExtraModuleComponent implements IComponent {
+public class SafeModuleComponent implements IComponent {
     private static final int MODULE_HEIGHT = 18;
 
     private float x, y, width, height = MODULE_HEIGHT;
@@ -33,7 +33,7 @@ public class ExtraModuleComponent implements IComponent {
     private final EaseOutSine hoverAnimation = new EaseOutSine(200, 1);
     private final CopyOnWriteArrayList<Component> settings = new CopyOnWriteArrayList<>();
 
-    public ExtraModuleComponent(HudModule hudModule) {
+    public SafeModuleComponent(HudModule hudModule) {
         this.hudModule = hudModule;
         openAnimation.setDirection(Direction.BACKWARDS);
         toggleAnimation.setDirection(Direction.BACKWARDS);
