@@ -76,6 +76,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new Blink());
 
             // Render
+            manager.tryLoad(() -> new TargetESP());
             manager.tryLoad(() -> new CameraClip());
             manager.tryLoad(() -> new Fullbright());
             manager.tryLoad(() -> new NoRender());

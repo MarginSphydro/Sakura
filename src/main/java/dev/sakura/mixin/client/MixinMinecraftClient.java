@@ -2,11 +2,13 @@ package dev.sakura.mixin.client;
 
 import dev.sakura.Sakura;
 import dev.sakura.events.client.TickEvent;
+import dev.sakura.events.entity.AttackEvent;
 import dev.sakura.events.input.HandleInputEvent;
 import dev.sakura.shaders.WindowResizeCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.Window;
+import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftClient.class)
 public class MixinMinecraftClient {
@@ -52,5 +55,13 @@ public class MixinMinecraftClient {
     @Inject(method = "onResolutionChanged", at = @At("TAIL"))
     private void captureResize(CallbackInfo ci) {
         WindowResizeCallback.EVENT.invoker().onResized((MinecraftClient) (Object) this, this.window);
+    }
+
+    @Inject(method = "doAttack", at = @At("HEAD"))
+    private void onAttack(CallbackInfoReturnable<Boolean> cir) {
+        if (player != null && ((MinecraftClient) (Object) this).crosshairTarget instanceof net.minecraft.util.hit.EntityHitResult entityHitResult) {
+            Entity entity = entityHitResult.getEntity();
+            Sakura.EVENT_BUS.post(new AttackEvent(entity));
+        }
     }
 }

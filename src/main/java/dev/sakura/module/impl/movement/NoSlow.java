@@ -5,57 +5,49 @@ import dev.sakura.events.client.TickEvent;
 import dev.sakura.events.packet.PacketEvent;
 import dev.sakura.events.player.SlowdownEvent;
 import dev.sakura.events.type.EventType;
-import dev.sakura.gui.clickgui.ClickGuiScreen;
-import dev.sakura.manager.impl.RotationManager;
 import dev.sakura.module.Category;
 import dev.sakura.module.Module;
-import dev.sakura.utils.player.MovementUtil;
 import dev.sakura.values.impl.BoolValue;
 import dev.sakura.values.impl.EnumValue;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.DeathScreen;
+import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.*;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.Hand;
+import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class NoSlow extends Module {
-    public final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Vanilla);
-    public final BoolValue invFix = new BoolValue("Rotate Fix", "旋转修复", false, () -> mode.get() == Mode.Meow);
-    public final BoolValue items = new BoolValue("Items", "物品", true);
-    public final BoolValue guiMove = new BoolValue("Inv Move", "背包移动", true);
-    public final BoolValue webs = new BoolValue("Webs", "蜘蛛网", true);
-    public final BoolValue crawling = new BoolValue("Crawling", "爬行", false);
-    public final BoolValue sneak = new BoolValue("Sneaking", "潜行", false);
+    public final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.GrimBlink);
+    public final BoolValue inventoryMove = new BoolValue("InventoryMove", "背包移动", true);
+    public final BoolValue arrowMove = new BoolValue("ArrowMove", "箭头移动", false);
+
+    private boolean blink;
+    private final Queue<Packet<?>> packets = new LinkedBlockingQueue<>();
 
     public NoSlow() {
         super("NoSlow", "无减速", Category.Movement);
     }
 
-    public boolean cancelDisabler = false;
-
-    private final Queue<Packet<?>> packets = new LinkedBlockingQueue<>();
-
-    public void release() {
-        if (mc.getNetworkHandler() == null) return;
-        for (Packet<?> p : packets) {
-            mc.getNetworkHandler().sendPacket(p);
-        }
-        packets.clear();
-    }
-
     @Override
     protected void onEnable() {
+        packets.clear();
         Sakura.EVENT_BUS.subscribe(this);
     }
 
     @Override
     protected void onDisable() {
+        blink = false;
+        blink();
         Sakura.EVENT_BUS.unsubscribe(this);
     }
 
@@ -65,49 +57,57 @@ public class NoSlow extends Module {
     }
 
     @EventHandler
-    public void onSlowdown(SlowdownEvent event) {
-        if (canNoSlow()) {
-            event.setSlowdown(false);
+    public void onTick(TickEvent.Pre event) {
+        if (mc.player == null || mc.world == null) return;
+
+        if (inventoryMove.get() && checkScreen()) {
+            final long handle = mc.getWindow().getHandle();
+            KeyBinding[] keys = new KeyBinding[]{mc.options.jumpKey, mc.options.forwardKey, mc.options.backKey, mc.options.rightKey, mc.options.leftKey};
+            for (KeyBinding binding : keys) {
+                binding.setPressed(InputUtil.isKeyPressed(handle, InputUtil.fromTranslationKey(binding.getBoundKeyTranslationKey()).getCode()));
+            }
+            if (arrowMove.get()) {
+                float yaw = mc.player.getYaw();
+                float pitch = mc.player.getPitch();
+                if (InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_UP)) {
+                    pitch -= 3.0f;
+                } else if (InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_DOWN)) {
+                    pitch += 3.0f;
+                } else if (InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_LEFT)) {
+                    yaw -= 3.0f;
+                } else if (InputUtil.isKeyPressed(handle, GLFW.GLFW_KEY_RIGHT)) {
+                    yaw += 3.0f;
+                }
+                mc.player.setYaw(yaw);
+                mc.player.setPitch(MathHelper.clamp(pitch, -90.0f, 90.0f));
+            }
         }
     }
 
     @EventHandler
-    private void onTick(TickEvent.Pre event) {
+    public void onSlowdown(SlowdownEvent event) {
         if (mc.player == null || mc.world == null) return;
 
-        if (!guiMove.get()) return;
+        boolean isBow = mc.player.getMainHandStack().getItem() instanceof BowItem || mc.player.getMainHandStack().getItem() instanceof CrossbowItem;
+        boolean slowTick = mc.player.getItemUseTimeLeft() % 3 == 0;
 
-        if (mc.currentScreen != null) {
-            if (canInvMove()) {
-                for (KeyBinding k : new KeyBinding[]{mc.options.forwardKey, mc.options.backKey, mc.options.leftKey, mc.options.rightKey, mc.options.jumpKey, mc.options.sprintKey}) {
-                    k.setPressed(InputUtil.isKeyPressed(mc.getWindow().getHandle(), InputUtil.fromTranslationKey(k.getBoundKeyTranslationKey()).getCode()));
-                }
-                if (InputUtil.isKeyPressed(mc.getWindow().getHandle(), 264)) { // Down
-                    mc.player.setPitch(mc.player.getPitch() + 5);
-                }
-                if (InputUtil.isKeyPressed(mc.getWindow().getHandle(), 265)) { // Up
-                    mc.player.setPitch(mc.player.getPitch() - 5);
-                }
-                if (InputUtil.isKeyPressed(mc.getWindow().getHandle(), 262)) { // Right
-                    mc.player.setYaw(mc.player.getYaw() + 5);
-                }
-                if (InputUtil.isKeyPressed(mc.getWindow().getHandle(), 263)) { // Left
-                    mc.player.setYaw(mc.player.getYaw() - 5);
-                }
-                if (mc.player.getPitch() > 90) {
-                    mc.player.setYaw(90);
-                }
-                if (mc.player.getPitch() < -90) {
-                    mc.player.setYaw(-90);
+        switch (mode.get()) {
+            case Normal -> event.setSlowdown(false);
+
+            case GrimTick -> {
+                if (!isBow) {
+                    if (slowTick) event.setSlowdown(false);
                 }
             }
-        }
 
-        // Grim logic from onPlayerTick
-        if (mode.get() == Mode.Grim) {
-            if (mc.player.isUsingItem() && !mc.player.hasVehicle() && !mc.player.isGliding() && !mc.player.isSneaking()) {
-                if (mc.player.getActiveHand() == Hand.MAIN_HAND) {
-                    mc.getNetworkHandler().sendPacket(new PlayerInteractItemC2SPacket(Hand.OFF_HAND, 0, RotationManager.getYaw(), RotationManager.getPitch()));
+            case GrimBlink -> {
+                if (!isBow) {
+                    if (mc.player.getItemUseTime() > 0 && mc.player.getItemUseTime() < 12) {
+                        if (slowTick) event.setSlowdown(false);
+                    } else if (mc.player.getItemUseTime() >= 12) {
+                        blink = true;
+                        event.setSlowdown(false);
+                    }
                 }
             }
         }
@@ -115,99 +115,53 @@ public class NoSlow extends Module {
 
     @EventHandler
     public void onPacket(PacketEvent event) {
-        if (mc.player == null || mc.world == null) return;
-        if (cancelDisabler) return;
+        if (mc.player == null || mc.getNetworkHandler() == null) return;
+        if (event.getType() != EventType.SEND) return;
 
         Packet<?> packet = event.getPacket();
 
-        if (event.getType() == EventType.SEND) {
-            switch (mode.get()) {
-                case Strict:
-                    if (items.get() && packet instanceof PlayerMoveC2SPacket movePacket) {
-                        if (mc.player.isUsingItem() && movePacket.changesPosition()) {
-                            mc.getNetworkHandler().sendPacket(new UpdateSelectedSlotC2SPacket(mc.player.getInventory().selectedSlot));
-                        }
-                    } else if (guiMove.get() && packet instanceof ClickSlotC2SPacket && MovementUtil.isMoving()) {
-                        doStrictPre();
+        if (mode.get() == Mode.GrimBlink) {
+            if (mc.player.getItemUseTime() > 0) {
+                if (blink) {
+                    if (packet instanceof PlayerMoveC2SPacket
+                            || packet instanceof UpdateSelectedSlotC2SPacket
+                            || packet instanceof HandSwingC2SPacket
+                            || packet instanceof PlayerInteractItemC2SPacket
+                            || packet instanceof CommonPongC2SPacket
+                            || packet instanceof ClientCommandC2SPacket
+                            || packet instanceof PlayerInteractBlockC2SPacket) {
+                        event.cancel();
+                        packets.add(packet);
                     }
-                    break;
-                case Meow:
-                    break;
-            }
-        } else if (event.getType() == EventType.SENT) { // Post
-            switch (mode.get()) {
-                case Strict:
-                    if (guiMove.get() && packet instanceof ClickSlotC2SPacket && MovementUtil.isMoving()) {
-                        doStrictPost();
-                    }
-                    break;
-                case Meow:
-                    if (guiMove.get() && invFix.get()) {
-                        if (packet instanceof ClickSlotC2SPacket clickPacket) {
-                            if (clickPacket.getSyncId() != 0) return;
-                            if (clickPacket.getActionType() != SlotActionType.PICKUP && clickPacket.getActionType() != SlotActionType.PICKUP_ALL && clickPacket.getActionType() != SlotActionType.QUICK_CRAFT) {
-                                mc.getNetworkHandler().sendPacket(new CloseHandledScreenC2SPacket(0));
-                            }
-                        }
-                    }
-                    break;
+                }
+            } else {
+                if (blink) {
+                    blink = false;
+                    blink();
+                }
             }
         }
     }
 
-    public boolean doStrictPre() {
-        if (mc.player.isSneaking())
-            mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
+    private void blink() {
+        if (mc.getNetworkHandler() == null) return;
 
-        if (mc.player.isSprinting())
-            mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.STOP_SPRINTING));
-
-
-        if (mc.player.isOnGround() && !mc.options.jumpKey.isPressed() && !mc.world.getBlockCollisions(mc.player, mc.player.getBoundingBox().offset(0.0, 0.0656, 0.0)).iterator().hasNext()) {
-            mc.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(mc.player.getX(), mc.player.getY() + 0.0656, mc.player.getZ(), false, mc.player.horizontalCollision));
-            return true;
+        try {
+            while (!packets.isEmpty()) {
+                Packet<?> p = packets.poll();
+                mc.getNetworkHandler().sendPacket(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return false;
     }
 
-    public void doStrictPost() {
-        if (mc.player.isSneaking())
-            mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
-
-        if (mc.player.isSprinting())
-            mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_SPRINTING));
-    }
-
-    public boolean canNoSlow() {
-        if (!isEnabled()) return false;
-
-        if (!items.get())
-            return false;
-
-        if (mode.get() == Mode.Grim)
-            if (mc.player.getActiveHand() == Hand.OFF_HAND)
-                return false;
-
-        if (mode.get() == Mode.Meow)
-            return mc.player.getItemUseTimeLeft() < 5 || ((mc.player.getItemUseTime() > 1) && mc.player.getItemUseTime() % 2 != 0);
-
-        return true;
-    }
-
-    public boolean canInvMove() {
-        if (mc.currentScreen instanceof HandledScreen<?>)
-            return true;
-
-        if (mc.currentScreen instanceof ClickGuiScreen)
-            return true;
-
-        return false;
+    public boolean checkScreen() {
+        return mc.currentScreen != null && !(mc.currentScreen instanceof ChatScreen
+                || mc.currentScreen instanceof SignEditScreen || mc.currentScreen instanceof DeathScreen);
     }
 
     public enum Mode {
-        Vanilla,
-        Grim,
-        Meow,
-        Strict
+        GrimBlink, GrimTick, Normal
     }
 }
