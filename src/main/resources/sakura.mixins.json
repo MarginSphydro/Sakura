@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.sakura.mixin",
+  "package": "dev.sakura.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "Sakura-refmap.json",
   "injectors": {
@@ -20,6 +20,10 @@
     "accessor.IMinecraftClient",
     "accessor.IParticle",
     "accessor.ISuggestionWindow",
+    "accessor.IEntityTrackingSection",
+    "accessor.IEntityVelocityUpdateS2CPacket",
+    "accessor.IExplosionS2CPacket",
+    "accessor.IPlayerMoveC2SPacket",
     "client.MixinChatInputSuggestor",
     "client.MixinGameOptions",
     "client.MixinMinecraftClient",
@@ -58,11 +62,5 @@
     "render.EndCrystalEntityRendererMixin",
     "shader.MixinShaderProgram",
     "world.MixinFlowableFluid"
-  ],
-  "mixins": [
-    "accessor.IEntityTrackingSection",
-    "accessor.IEntityVelocityUpdateS2CPacket",
-    "accessor.IExplosionS2CPacket",
-    "accessor.IPlayerMoveC2SPacket"
   ]
 }

@@ -1,0 +1,285 @@
+classpath   "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\accessors-smart-2.5.1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\annotations-25.0.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\asm-9.6.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\asm-9.9.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\asm-analysis-9.9.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\asm-commons-9.5.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\asm-commons-9.9.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\asm-tree-9.6.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\asm-tree-9.9.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\asm-util-9.9.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\authlib-4.0.43.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\authlib-6.0.57.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\baritone-1.2.14.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\blocklist-1.0.10.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\brigadier-1.1.8.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\brigadier-1.3.10.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\byte-buddy-1.14.18.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\byte-buddy-agent-1.14.18.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\commons-codec-1.17.1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\commons-compress-1.27.1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\commons-io-2.11.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\commons-io-2.17.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\commons-lang3-3.17.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\commons-logging-1.3.4.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\content-type-2.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\datafixerupper-6.0.8.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\datafixerupper-8.0.16.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\dev-launch-injector-0.2.1+build.8.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-api-0.119.4+1.21.4.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-api-base-0.4.54+b47eab6b04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-api-lookup-api-v1-1.6.86+b1caf1e904.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-biome-api-v1-15.0.6+b1c29d8e04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-block-api-v1-1.0.31+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-block-view-api-v2-1.0.20+9c49cc8c04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-blockrenderlayer-v1-2.0.8+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-client-gametest-api-v1-4.1.1+6816ccd404.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-client-tags-api-v1-1.1.29+20ea1e2304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-command-api-v1-1.2.62+f71b366f04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-command-api-v2-2.2.41+e496eb1504.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-commands-v0-0.2.79+df3654b304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-content-registries-v0-9.1.19+25d1a67604.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-convention-tags-v1-2.1.20+7f945d5b04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-convention-tags-v2-2.14.1+aebda09404.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-crash-report-info-v1-0.3.6+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-data-attachment-api-v1-1.6.2+e99da0f704.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-data-generation-api-v1-22.3.1+0f4e5f5504.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-dimensions-v1-4.0.10+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-entity-events-v1-2.0.15+62245bef04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-events-interaction-v0-4.0.4+a4eebcf004.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-game-rule-api-v1-1.0.63+7d48d43904.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-gametest-api-v1-2.0.26+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-item-api-v1-11.4.0+189dd6fe04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-item-group-api-v1-4.2.2+fcb9601404.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-key-binding-api-v1-1.0.57+7d48d43904.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-keybindings-v0-0.2.55+df3654b304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-lifecycle-events-v1-2.5.4+bf2a60eb04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-loader-0.14.21.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-loader-0.18.1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-loot-api-v2-3.0.38+3f89f5a504.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-loot-api-v3-1.0.26+203e6b2304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-message-api-v1-6.0.26+238a33c004.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-model-loading-api-v1-4.3.0+ae23723504.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-networking-api-v1-4.4.0+db5e668204.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-object-builder-api-v1-18.0.14+38b0d59804.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-particles-v1-4.0.14+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-recipe-api-v1-8.1.1+640e77ae04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-registry-sync-v0-6.1.11+4a9c1ece04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-renderer-api-v1-5.0.3+50f0feb204.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-renderer-indigo-2.0.3+50f0feb204.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-rendering-data-attachment-v1-0.3.58+73761d2e04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-rendering-fluids-v1-3.1.19+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-rendering-v1-10.2.1+0d31b09f04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-resource-conditions-api-v1-5.0.13+203e6b2304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-resource-loader-v0-3.1.1+360374ac04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-screen-api-v1-2.0.38+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-screen-handler-api-v1-1.3.118+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-sound-api-v1-1.0.32+7feeb73304.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-tag-api-v1-1.0.7+7d48d43904.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-transfer-api-v1-5.4.9+efa825c904.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fabric-transitive-access-wideners-v1-6.3.2+56e78b9b04.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\failureaccess-1.0.2.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fastutil-8.5.15.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\fastutil-8.5.9.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\gson-2.10.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\gson-2.11.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\guava-31.1-jre.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\guava-33.3.1-jre.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\httpclient-4.5.13.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\httpclient-4.5.14.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\httpcore-4.4.14.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\httpcore-4.4.16.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\icu4j-76.1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jackson-annotations-2.13.4.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jackson-core-2.13.4.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jackson-databind-2.13.4.2.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\java.base.jmod"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jcip-annotations-1.0-1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jline-reader-3.20.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jline-terminal-3.20.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jna-5.15.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jna-platform-5.15.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\joml-1.10.5.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\joml-1.10.8.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jopt-simple-5.0.4.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jorbis-0.0.17.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\json-smart-2.5.1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jtracy-1.0.29-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\jtracy-1.0.29.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lang-tag-1.7.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\log4j-api-2.19.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\log4j-api-2.24.1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\log4j-core-2.19.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\log4j-core-2.24.1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\log4j-slf4j2-impl-2.24.1.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\logging-1.5.10.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-3.3.3-natives-windows-arm64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-3.3.3-natives-windows-x86.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-3.3.3-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-3.3.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-freetype-3.3.3-natives-windows-arm64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-freetype-3.3.3-natives-windows-x86.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-freetype-3.3.3-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-freetype-3.3.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-glfw-3.3.3-natives-windows-arm64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-glfw-3.3.3-natives-windows-x86.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-glfw-3.3.3-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-glfw-3.3.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-jemalloc-3.3.3-natives-windows-arm64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-jemalloc-3.3.3-natives-windows-x86.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-jemalloc-3.3.3-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-jemalloc-3.3.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-nanovg-3.3.3-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-nanovg-3.3.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-openal-3.3.3-natives-windows-arm64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-openal-3.3.3-natives-windows-x86.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-openal-3.3.3-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-openal-3.3.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-opengl-3.3.3-natives-windows-arm64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-opengl-3.3.3-natives-windows-x86.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-opengl-3.3.3-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-opengl-3.3.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-stb-3.3.3-natives-windows-arm64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-stb-3.3.3-natives-windows-x86.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-stb-3.3.3-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-stb-3.3.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-tinyfd-3.3.3-natives-windows-arm64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-tinyfd-3.3.3-natives-windows-x86.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-tinyfd-3.3.3-natives-windows.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lwjgl-tinyfd-3.3.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\lz4-java-1.8.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\mappings.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\minecraft-merged-intermediary-1.21.4.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\mixinextras-fabric-0.5.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\msal4j-1.17.2.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-all-4.1.9.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-buffer-4.1.115.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-buffer-4.1.82.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-codec-4.1.115.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-codec-4.1.82.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-common-4.1.115.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-handler-4.1.115.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-resolver-4.1.115.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-transport-4.1.115.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-transport-classes-epoll-4.1.115.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-transport-native-epoll-4.1.115.Final-linux-aarch_64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-transport-native-epoll-4.1.115.Final-linux-x86_64.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\netty-transport-native-unix-common-4.1.115.Final.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\nimbus-jose-jwt-9.40.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\oauth2-oidc-sdk-11.18.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\orbit-0.2.3.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\oshi-core-6.6.5.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\patchy-2.2.10.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\slf4j-api-2.0.16.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\sponge-mixin-0.12.5+mixin.0.8.5.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\sponge-mixin-0.16.5+mixin.0.8.7.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\terminalconsoleappender-1.3.0.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\text2speech-1.17.9.jar"
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\libs\yarn-1.21.4+build.8-constants.jar";
+
+ignoreMissingReferences dev.sakura.**;
+
+open        openNestedArchives=false
+            "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\Sakura-1.0.jar";
+
+exclude     dev.sakura.^* and
+            dev.sakura.*.^* and
+            dev.sakura.*.*.^* and
+            dev.sakura.*.*.*.^* and
+            dev.sakura.*.*.*.*.^* and
+            dev.sakura.*.*.*.*.*.^* and
+            dev.sakura.*.*.*.*.*.*.^* and
+            dev.sakura.client.** and
+            dev.sakura.client.** * and
+            dev.sakura.client.** *(*) and
+            @org.spongepowered.asm.mixin.Mixin *.^* and
+            @org.spongepowered.asm.mixin.Mixin *.^*^ * and
+            @org.spongepowered.asm.mixin.Mixin *.^*^ *(*) and
+            agent.dev.sakura.loader.GRCBAdvice onExit(java.lang.String, byte[]) and
+            loader.dev.sakura.client.Loader onLoad(java.lang.String) and
+            dev.sakura.mixin.^* and
+            dev.sakura.mixin.^*^ * and
+            dev.sakura.mixin.^*^ *(*) and
+            dev.sakura.client.Sakura and
+            dev.sakura.client.Sakura * and
+            dev.sakura.client.Sakura *(*) and
+            dev.sakura.client.SakuraPreLaunch and
+            dev.sakura.client.SakuraPreLaunch * and
+            dev.sakura.client.SakuraPreLaunch *(*);
+
+obfuscateFlowExclude
+    @org.spongepowered.asm.mixin.Mixin *.* and
+    dev.sakura.client.** and
+    dev.sakura.loader.**;
+
+obfuscateReferencesExclude 
+    dev.sakura.^* and
+    dev.sakura.*.^* and
+    dev.sakura.*.*.^* and
+    dev.sakura.*.*.*.^* and
+    dev.sakura.*.*.*.*.^* and
+    dev.sakura.*.*.*.*.*.^* and
+    dev.sakura.*.*.*.*.*.*.^* and
+    dev.sakura.verify.** * and
+    dev.sakura.verify.** *(*) and
+    dev.sakura.mixin.^* * and
+    dev.sakura.mixin.^* *(*);
+
+stringEncryptionExclude
+    *.mixin*.* and
+    *.mixins*.* and
+    dev.sakura.client.** and
+    dev.sakura.loader.**;
+
+integerEncryptionExclude
+    dev.sakura.loader.** and
+    dev.sakura.client.** and
+    *.mixin*.* and
+    *.mixins*.*;
+
+longEncryptionExclude
+    dev.sakura.loader.** and
+    dev.sakura.client.** and
+    *.mixin*.* and
+    *.mixins*.*;
+
+fixedClasses
+    dev.sakura.loader.** and
+    dev.sakura.client.** and
+    dev.sakura.Sakura;
+
+methodParameterChangesExclude
+    @org.spongepowered.asm.mixin.Mixin *.* *(*) and
+    @net.minecraftforge.fml.common.Mod *.* *(*) and
+    *.* @*.EventHandler *(*) and
+    dev.sakura.mixin.** *(*) and
+    dev.sakura.module.** *(*) and
+    dev.sakura.verify.** *(*);
+
+methodParameterObfuscationExclude
+    @org.spongepowered.asm.mixin.Mixin *.* *(*) and
+    @net.minecraftforge.fml.common.Mod *.* *(*) and
+    *.* @*.EventHandler *(*) and
+    dev.sakura.mixin.** *(*) and
+    dev.sakura.module.** *(*) and
+    dev.sakura.verify.** *(*);
+
+obfuscate   changeLogFileIn=""
+            changeLogFileOut="ChangeLog.txt"
+            methodParameterChanges=none
+            obfuscateFlow=aggressive
+            exceptionObfuscation=none
+            encryptStringLiterals=enhanced
+            encryptIntegerConstants=aggressive
+            encryptLongConstants=normal
+            mixedCaseClassNames=ifInArchive
+            aggressiveMethodRenaming=false
+            randomize=true
+            localVariables=delete
+            lineNumbers=delete
+            obfuscateReferences=normal
+            autoReflectionHandling=normal
+            methodParameterChanges=none
+            obfuscateParameters=normal;
+
+saveAll     archiveCompression=all "C:\Users\L3MonKe\Desktop\Code\Sakura\混淆\ZKM\output.jar";
