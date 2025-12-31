@@ -43,6 +43,8 @@ public class ModuleManager {
     private static class ManualLoader {
         static void load(ModuleManager manager) {
             // Combat
+            manager.tryLoad(() -> new SelfTrap());
+            manager.tryLoad(() -> new AutoTrap());
             manager.tryLoad(() -> new AnchorAura());
             manager.tryLoad(() -> new AutoPot());
             manager.tryLoad(() -> new Velocity());
