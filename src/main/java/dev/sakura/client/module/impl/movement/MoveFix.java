@@ -2,6 +2,7 @@ package dev.sakura.client.module.impl.movement;
 
 import dev.sakura.client.Sakura;
 import dev.sakura.client.events.EventType;
+import dev.sakura.client.events.input.MoveInputEvent;
 import dev.sakura.client.events.player.JumpEvent;
 import dev.sakura.client.events.player.TravelEvent;
 import dev.sakura.client.events.player.UpdateVelocityEvent;
@@ -76,21 +77,21 @@ public class MoveFix extends Module {
         event.setVelocity(movementInputToVelocity(event.getMovementInput(), event.getSpeed(), fixRotation));
     }
 
-/*    @EventHandler(priority = -999)
-    public void onKeyInput(KeyboardInputEvent event) {
+    @EventHandler(priority = -999)
+    public void onMoveInput(MoveInputEvent event) {
         if (!grim.get()) return;
         if (Sakura.MODULES.getModule(HoleSnap.class).isEnabled()) return;
-        if (mc.player.isRiding() *//*TODO:|| Freecam.INSTANCE.isOn()*//*)
+        if (mc.player.isRiding() /*TODO:|| Freecam.INSTANCE.isOn()*/)
             return;
 
-        float mF = mc.player.input.movementForward;
-        float mS = mc.player.input.movementSideways;
+        float mF = event.getForward();
+        float mS = event.getStrafe();
         float delta = (mc.player.getYaw() - fixRotation) * MathHelper.RADIANS_PER_DEGREE;
         float cos = MathHelper.cos(delta);
         float sin = MathHelper.sin(delta);
-        mc.player.input.movementSideways = Math.round(mS * cos - mF * sin);
-        mc.player.input.movementForward = Math.round(mF * cos + mS * sin);
-    }*/
+        event.setStrafe(Math.round(mS * cos - mF * sin));
+        event.setForward(Math.round(mF * cos + mS * sin));
+    }
 
     private static Vec3d movementInputToVelocity(Vec3d movementInput, float speed, float yaw) {
         double d = movementInput.lengthSquared();
