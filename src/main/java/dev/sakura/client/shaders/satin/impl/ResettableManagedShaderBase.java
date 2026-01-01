@@ -17,7 +17,6 @@ public abstract class ResettableManagedShaderBase<S extends AutoCloseable> imple
     private final List<ManagedUniformBase> allUniforms = new ArrayList<>();
     private boolean errored;
     protected S shader;
-    protected boolean ownsShader = true;
 
     public ResettableManagedShaderBase(Identifier location) {
         this.location = location;
@@ -47,9 +46,6 @@ public abstract class ResettableManagedShaderBase<S extends AutoCloseable> imple
         if (this.isInitialized()) {
             try {
                 assert this.shader != null;
-                if (this.ownsShader) {
-                    this.shader.close();
-                }
                 this.shader = null;
             } catch (Exception e) {
                 throw new RuntimeException("Failed to release shader " + this.location, e);

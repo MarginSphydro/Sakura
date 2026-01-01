@@ -2,6 +2,7 @@ package dev.sakura.client.mixin.render;
 
 import dev.sakura.client.Sakura;
 import dev.sakura.client.module.impl.render.AspectRatio;
+import dev.sakura.client.module.impl.render.NoRender;
 import dev.sakura.client.utils.math.FrameRateCounter;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
@@ -26,9 +27,15 @@ public class MixinGameRenderer {
     private float zoomY;
 
     @Inject(method = "render", at = @At("TAIL"))
-
     private void postHudRenderHook(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci) {
         FrameRateCounter.INSTANCE.recordFrame();
+    }
+
+    @Inject(method = "tiltViewWhenHurt", at = @At("HEAD"), cancellable = true)
+    private void tiltViewWhenHurtHook(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
+        if (Sakura.MODULES.getModule(NoRender.class).getNoHurtCam()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "getBasicProjectionMatrix", at = @At("TAIL"), cancellable = true)

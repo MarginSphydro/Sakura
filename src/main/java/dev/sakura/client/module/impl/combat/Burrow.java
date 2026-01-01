@@ -139,7 +139,7 @@ public class Burrow extends Module {
             return;
         }
         if (antiLag.get()) {
-            if (!mc.world.getBlockState(EntityUtil.getPlayerPos(true).down()).blocksMovement()) return;
+            if (!mc.world.getBlockState(BlockPos.ofFloored(mc.player.getPos()).down()).blocksMovement()) return;
         }
         int oldSlot = mc.player.getInventory().selectedSlot;
         int block;
@@ -163,7 +163,7 @@ public class Burrow extends Module {
         BlockPos pos10 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() - 1, mc.player.getZ() + offset);
         BlockPos pos11 = BlockPos.ofFloored(mc.player.getX() + offset, mc.player.getY() - 1, mc.player.getZ() - offset);
         BlockPos pos12 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() - 1, mc.player.getZ() - offset);
-        BlockPos playerPos = EntityUtil.getPlayerPos(true);
+        BlockPos playerPos = BlockPos.ofFloored(mc.player.getPos());
         boolean headFillFlag = false;
         if (!canPlace(pos1) && !canPlace(pos2) && !canPlace(pos3) && !canPlace(pos4)) {
             boolean cantHeadFill = !this.headFill.get() || !canPlace(pos5) && !canPlace(pos6) && !canPlace(pos7) && !canPlace(pos8);
@@ -180,7 +180,7 @@ public class Burrow extends Module {
             }
         }
         boolean above = false;
-        BlockPos headPos = EntityUtil.getPlayerPos(true).up(2);
+        BlockPos headPos = BlockPos.ofFloored(mc.player.getPos()).up(2);
         boolean rotateFlag = this.rotate.get() == RotateMode.Normal;
         CombatUtil.attackCrystal(pos1, rotateFlag, false);
         CombatUtil.attackCrystal(pos2, rotateFlag, false);
@@ -245,7 +245,7 @@ public class Burrow extends Module {
         timer.reset();
         doSwap(block);
         if (this.rotate.get() == RotateMode.Bypass) {
-            Managers.ROTATION.setRotations(new Vector2f(RotationManager.getYaw(), 89.98f), 10f, MovementFix.NORMAL, RotationManager.Priority.Highest);
+            Managers.ROTATION.setRotations(new Vector2f(Managers.ROTATION.getYaw(), 89.98f), 10f, MovementFix.NORMAL, RotationManager.Priority.Highest);
         }
         placeBlock(playerPos, rotateFlag);
         placeBlock(pos1, rotateFlag);
@@ -357,7 +357,7 @@ public class Burrow extends Module {
         if (rotate.get() == RotateMode.None) {
             sendPositionPacket(offPos.getX() + 0.5, mc.player.getY() + 0.1, offPos.getZ() + 0.5, false);
         } else {
-            sendFullPacket(offPos.getX() + 0.5, mc.player.getY() + 0.1, offPos.getZ() + 0.5, RotationManager.getYaw(), 89.98f, false);
+            sendFullPacket(offPos.getX() + 0.5, mc.player.getY() + 0.1, offPos.getZ() + 0.5, Managers.ROTATION.getYaw(), 89.98f, false);
         }
     }
 
@@ -366,7 +366,7 @@ public class Burrow extends Module {
     }
 
     private boolean canPlace(BlockPos pos) {
-        if (noSelfPos.get() && pos.equals(EntityUtil.getPlayerPos(true))) {
+        if (noSelfPos.get() && pos.equals(BlockPos.ofFloored(mc.player.getPos()))) {
             return false;
         }
         if (!BlockUtil.airPlace() && BlockUtil.getPlaceSide(pos) == null) {

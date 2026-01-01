@@ -599,16 +599,26 @@ public class NanoVGHelper {
         }
     }
 
-    public static void scissor(float x, float y, float w, float h) {
-        nvgScissor(getContext(), x, y, w, h);
+    public static void drawLine(float x1, float y1, float x2, float y2, float width, Color color) {
+        long vg = getContext();
+        nvgBeginPath(vg);
+        nvgMoveTo(vg, x1, y1);
+        nvgLineTo(vg, x2, y2);
+        NVGColor nvgColor = nvgColor(color);
+        nvgStrokeColor(vg, nvgColor);
+        nvgStrokeWidth(vg, width);
+        nvgStroke(vg);
     }
 
-    public static void intersectScissor(float x, float y, float w, float h) {
-        nvgIntersectScissor(getContext(), x, y, w, h);
+    public static void scissor(float x, float y, float w, float h) {
+        nvgScissor(getContext(), x, y, w, h);
     }
 
     public static void resetScissor() {
         nvgResetScissor(getContext());
     }
 
+    public static void intersectScissor(float x, float y, float w, float h) {
+        nvgIntersectScissor(getContext(), x, y, w, h);
+    }
 }

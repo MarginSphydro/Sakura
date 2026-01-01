@@ -1,10 +1,10 @@
 package dev.sakura.client.module.impl.movement;
 
 import dev.sakura.client.Sakura;
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.client.TickEvent;
 import dev.sakura.client.events.packet.PacketEvent;
 import dev.sakura.client.events.player.SlowdownEvent;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.module.Category;
 import dev.sakura.client.module.Module;
 import dev.sakura.client.values.impl.BoolValue;

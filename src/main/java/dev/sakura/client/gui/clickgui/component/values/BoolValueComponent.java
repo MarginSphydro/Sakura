@@ -10,13 +10,10 @@ import dev.sakura.client.utils.animations.impl.SmoothStepAnimation;
 import dev.sakura.client.utils.render.RenderUtil;
 import dev.sakura.client.values.impl.BoolValue;
 import net.minecraft.client.gui.DrawContext;
+import org.lwjgl.nanovg.NanoVG;
 
 import java.awt.*;
 
-/**
- * @Author：Gu-Yuemang
- * @Date：2025/11/14 18:49
- */
 public class BoolValueComponent extends Component {
     private final BoolValue setting;
     private final SmoothStepAnimation toggleAnimation = new SmoothStepAnimation(175, 1);
@@ -33,8 +30,45 @@ public class BoolValueComponent extends Component {
         setHeight(scaledHeight);
         this.toggleAnimation.setDirection(setting.get() ? Direction.FORWARDS : Direction.BACKWARDS);
         NanoVGRenderer.INSTANCE.draw(vg -> {
-            NanoVGHelper.drawString(setting.getDisplayName(), getX(), getY(), FontLoader.regular(baseFontSize * 0.75f), baseFontSize * 0.75f, Color.WHITE);
+            float fontSize = baseFontSize * 0.75f;
+            int font = FontLoader.regular(fontSize);
+            String text = setting.getDisplayName();
+
             float toggleWidth = 15 * scale;
+            float padding = 5 * scale;
+            float availableWidth = getWidth() - toggleWidth - padding;
+            float textWidth = NanoVGHelper.getTextWidth(text, font, fontSize);
+
+            if (textWidth > availableWidth) {
+                float maxScroll = textWidth - availableWidth;
+                double scrollDuration = (maxScroll / (20 * scale)) * 1000.0;
+                double pauseDuration = 1000.0;
+                double cycleDuration = scrollDuration * 2 + pauseDuration * 2;
+
+                double timeInCycle = System.currentTimeMillis() % cycleDuration;
+
+                float scrollX;
+                if (timeInCycle < pauseDuration) {
+                    scrollX = 0;
+                } else if (timeInCycle < pauseDuration + scrollDuration) {
+                    scrollX = (float) ((timeInCycle - pauseDuration) / scrollDuration * maxScroll);
+                } else if (timeInCycle < pauseDuration * 2 + scrollDuration) {
+                    scrollX = maxScroll;
+                } else {
+                    scrollX = (float) (maxScroll - ((timeInCycle - (pauseDuration * 2 + scrollDuration)) / scrollDuration * maxScroll));
+                }
+
+                NanoVG.nvgSave(vg);
+                NanoVG.nvgIntersectScissor(vg, getX(), getY() - 10 * scale, availableWidth, 20 * scale);
+
+                NanoVG.nvgTranslate(vg, -scrollX, 0);
+                NanoVGHelper.drawString(text, getX(), getY(), font, fontSize, Color.WHITE);
+
+                NanoVG.nvgRestore(vg);
+            } else {
+                NanoVGHelper.drawString(text, getX(), getY(), font, fontSize, Color.WHITE);
+            }
+
             float toggleHeight = 8 * scale;
             float toggleRadius = 4 * scale;
             float circleRadius = 3 * scale;

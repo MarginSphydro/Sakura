@@ -6,6 +6,7 @@ import dev.sakura.client.values.impl.BoolValue;
 
 public class NoRender extends Module {
     // Overlay
+    public final BoolValue noHurtCam = new BoolValue("No Hurt Cam", "无伤害抖动", false);
     public final BoolValue noPortalOverlay = new BoolValue("No Portal Overlay", "无传送门效果", false);
     public final BoolValue noSpyglassOverlay = new BoolValue("No Spyglass Overlay", "无望远镜效果", false);
     public final BoolValue noNausea = new BoolValue("No Nausea", "无反胃效果", false);
@@ -34,6 +35,10 @@ public class NoRender extends Module {
 
     public NoRender() {
         super("NoRender", "不渲染", Category.Render);
+    }
+
+    public boolean getNoHurtCam() {
+        return isEnabled() && noHurtCam.get();
     }
 
     public boolean noPortalOverlay() {

@@ -1,10 +1,11 @@
 package dev.sakura.client.mixin.entity;
 
 import dev.sakura.client.Sakura;
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.entity.BlockPushEvent;
 import dev.sakura.client.events.player.MotionEvent;
 import dev.sakura.client.events.player.PlayerTickEvent;
-import dev.sakura.client.events.type.EventType;
+import dev.sakura.client.events.player.SlowdownEvent;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -73,5 +74,12 @@ public class MixinClientPlayerEntity {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tickHeadHook(CallbackInfo ci) {
         if (Sakura.EVENT_BUS.post(new PlayerTickEvent()).isCancelled()) ci.cancel();
+    }
+
+    @Redirect(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isUsingItem()Z"))
+    private boolean onSlowDown(ClientPlayerEntity instance) {
+        SlowdownEvent event = new SlowdownEvent(instance.isUsingItem());
+        Sakura.EVENT_BUS.post(event);
+        return event.isSlowdown();
     }
 }

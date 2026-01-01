@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.Window;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.hit.EntityHitResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,11 +27,6 @@ public class MixinMinecraftClient {
     @Shadow
     @Final
     private Window window;
-
-    @Inject(method = "run", at = @At("HEAD"))
-    private void onRun(CallbackInfo ci) {
-        Sakura.init();
-    }
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onPreTick(CallbackInfo info) {
@@ -59,7 +55,7 @@ public class MixinMinecraftClient {
 
     @Inject(method = "doAttack", at = @At("HEAD"))
     private void onAttack(CallbackInfoReturnable<Boolean> cir) {
-        if (player != null && ((MinecraftClient) (Object) this).crosshairTarget instanceof net.minecraft.util.hit.EntityHitResult entityHitResult) {
+        if (player != null && ((MinecraftClient) (Object) this).crosshairTarget instanceof EntityHitResult entityHitResult) {
             Entity entity = entityHitResult.getEntity();
             Sakura.EVENT_BUS.post(new AttackEvent(entity));
         }

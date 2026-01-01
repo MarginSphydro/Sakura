@@ -1,8 +1,8 @@
 package dev.sakura.client.module.impl.hud;
 
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.misc.WorldLoadEvent;
 import dev.sakura.client.events.packet.PacketEvent;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.module.HudModule;
 import dev.sakura.client.nanovg.NanoVGRenderer;
 import dev.sakura.client.nanovg.font.FontLoader;

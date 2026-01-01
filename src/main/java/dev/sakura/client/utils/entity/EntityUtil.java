@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongBidirectionalIterator;
 import it.unimi.dsi.fastutil.longs.LongSortedSet;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -15,12 +16,26 @@ import net.minecraft.world.entity.EntityTrackingSection;
 import net.minecraft.world.entity.SectionedEntityCache;
 import net.minecraft.world.entity.SimpleEntityLookup;
 
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 import static dev.sakura.client.Sakura.mc;
 
 public class EntityUtil {
+    public static PlayerEntity getClosestPlayer(double range) {
+        return mc.world.getPlayers().stream().filter(e -> !(e instanceof ClientPlayerEntity) && !e.isSpectator())
+                .filter(e -> mc.player.squaredDistanceTo(e) <= range * range)
+                //todo:.filter(e -> !Managers.SOCIAL.isFriend(e.getName().getString()))
+                .min(Comparator.comparingDouble(e -> mc.player.squaredDistanceTo(e))).orElse(null);
+    }
+
+    public static boolean isInsideBlock() {
+        if (mc.world.getBlockState(BlockPos.ofFloored(mc.player.getPos())).getBlock() == Blocks.ENDER_CHEST)
+            return true;
+        return mc.world.canCollide(mc.player, mc.player.getBoundingBox());
+    }
+
     public static boolean intersectsWithEntity(Box box, Predicate<Entity> predicate) {
         EntityLookup<Entity> entityLookup = mc.world.getEntityLookup();
 
@@ -68,18 +83,6 @@ public class EntityUtil {
         });
 
         return found.get();
-    }
-
-    public static BlockPos getPlayerPos(boolean floor) {
-        if (mc.player == null) return BlockPos.ORIGIN;
-        if (floor) {
-            return new BlockPos(
-                    (int) Math.floor(mc.player.getX()),
-                    (int) Math.floor(mc.player.getY()),
-                    (int) Math.floor(mc.player.getZ())
-            );
-        }
-        return mc.player.getBlockPos();
     }
 
     public static boolean isInWeb(PlayerEntity player) {

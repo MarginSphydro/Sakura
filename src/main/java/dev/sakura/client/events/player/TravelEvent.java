@@ -1,7 +1,7 @@
 package dev.sakura.client.events.player;
 
 import dev.sakura.client.events.Cancellable;
-import dev.sakura.client.events.type.EventType;
+import dev.sakura.client.events.EventType;
 import net.minecraft.util.math.Vec3d;
 
 public class TravelEvent extends Cancellable {

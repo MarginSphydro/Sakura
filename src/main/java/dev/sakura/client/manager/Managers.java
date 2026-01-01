@@ -5,6 +5,7 @@ import dev.sakura.client.manager.impl.*;
 public class Managers {
     private static boolean initialized;
 
+    public static SoundManager SOUND;
     public static AccountManager ACCOUNT;
     public static RenderManager RENDER;
     public static RotationManager ROTATION;
@@ -14,6 +15,7 @@ public class Managers {
     public static void init() {
         if (initialized) return;
 
+        SOUND = new SoundManager();
         ACCOUNT = new AccountManager();
         RENDER = new RenderManager();
         ROTATION = new RotationManager();

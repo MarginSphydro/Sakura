@@ -1,11 +1,12 @@
 package dev.sakura.client.module.impl.movement;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.sakura.client.Sakura;
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.client.TickEvent;
 import dev.sakura.client.events.packet.PacketEvent;
 import dev.sakura.client.events.player.MoveEvent;
 import dev.sakura.client.events.render.Render3DEvent;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.module.Category;
 import dev.sakura.client.module.Module;
 import dev.sakura.client.utils.color.ColorUtil;
@@ -216,5 +217,9 @@ public class HoleSnap extends Module {
         }
 
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+    }
+
+    public static boolean isActive() {
+        return Sakura.MODULES.getModule(HoleSnap.class).isEnabled();
     }
 }

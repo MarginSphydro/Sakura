@@ -2,11 +2,11 @@ package dev.sakura.client.nanovg;
 
 import dev.sakura.client.nanovg.util.state.States;
 import net.minecraft.client.MinecraftClient;
+import org.lwjgl.nanovg.NanoVGGL3;
 
 import java.util.function.Consumer;
 
 import static org.lwjgl.nanovg.NanoVG.*;
-import static org.lwjgl.nanovg.NanoVGGL3.*;
 
 /**
  * Sakura NanoVG渲染器
@@ -24,13 +24,10 @@ public class NanoVGRenderer {
     private boolean inFrame = false;
     private boolean scaled = false;
 
-    private NanoVGRenderer() {
-    }
-
     public void initNanoVG() {
         if (!initialized) {
-            // Remove NVG_STENCIL_STROKES as it can cause issues if the framebuffer doesn't have a stencil attachment
-            vg = nvgCreate(NVG_ANTIALIAS);
+            vg = NanoVGGL3.nvgCreate(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES);
+
             if (vg == 0L) {
                 throw new RuntimeException("无法初始化NanoVG");
             }
@@ -57,10 +54,6 @@ public class NanoVGRenderer {
         return MinecraftClient.getInstance().getWindow().getScaledHeight();
     }
 
-    /**
-     * 使用MC逻辑坐标绘制（自动缩放）
-     * 坐标系与mouseX, mouseY, scaledWidth, scaledHeight一致
-     */
     public void draw(Consumer<Long> drawingLogic) {
         draw(drawingLogic, true);
     }
@@ -75,20 +68,29 @@ public class NanoVGRenderer {
         States.INSTANCE.push();
 
         MinecraftClient mc = MinecraftClient.getInstance();
-        // 获取逻辑坐标的宽高（与鼠标坐标、Screen 尺寸一致）
-        int scaledWidth = mc.getWindow().getScaledWidth();
-        int scaledHeight = mc.getWindow().getScaledHeight();
-        // 获取像素比（Retina 为 2.0，普通屏为 1.0）
-        float pixelRatio = (float) mc.getWindow().getScaleFactor();
+        int width = mc.getWindow().getWidth();
+        int height = mc.getWindow().getHeight();
 
-        // 关键修正：传入逻辑宽高和像素比，NanoVG 内部会自动处理高分屏缩放
-        nvgBeginFrame(vg, scaledWidth, scaledHeight, pixelRatio);
+        nvgBeginFrame(vg, width, height, 1.0f);
+
         inFrame = true;
 
+        if (applyScale) {
+            float scale = getScaleFactor();
+            nvgSave(vg);
+            nvgScale(vg, scale, scale);
+            scaled = true;
+        } else {
+            scaled = false;
+        }
+
         try {
-            // 现在直接使用逻辑坐标绘图即可，无需额外 nvgScale
             drawingLogic.accept(vg);
         } finally {
+            if (applyScale) {
+                nvgRestore(vg);
+                scaled = false;
+            }
             nvgEndFrame(vg);
             inFrame = false;
             States.INSTANCE.pop();
@@ -159,12 +161,9 @@ public class NanoVGRenderer {
         return scaled;
     }
 
-    /**
-     * 清理资源
-     */
     public void cleanup() {
         if (initialized && vg != 0L) {
-            nvgDelete(vg);
+            NanoVGGL3.nvgDelete(vg);
             vg = 0L;
             initialized = false;
         }

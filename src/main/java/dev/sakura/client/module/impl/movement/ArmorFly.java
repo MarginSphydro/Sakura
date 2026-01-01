@@ -1,4 +1,4 @@
-package dev.sakura.client.module.impl.player;
+package dev.sakura.client.module.impl.movement;
 
 import dev.sakura.client.events.client.TickEvent;
 import dev.sakura.client.module.Category;
@@ -27,7 +27,7 @@ public class ArmorFly extends Module {
     public static ArmorFly INSTANCE;
 
     public ArmorFly() {
-        super("ArmorFly", "甲飞", Category.Player);
+        super("ArmorFly", "甲飞", Category.Movement);
         INSTANCE = this;
     }
 
