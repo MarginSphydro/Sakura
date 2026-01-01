@@ -40,6 +40,7 @@ public class WelcomeScreen extends Screen {
     private boolean transitioningStep = false;
     private long stepTransitionStart = 0;
     private int direction = 1; // 1: 下一个, -1: 上一个
+    private float contentScale = 1.0f;
 
     private int pi8Texture = -1;
     private boolean isImageLoading = false;
@@ -86,11 +87,21 @@ public class WelcomeScreen extends Screen {
         updateLayout();
     }
 
+    private float getLogicX(float physicalX) {
+        return (physicalX - width / 2.0f) / contentScale + width / 2.0f;
+    }
+
+    private float getLogicY(float physicalY) {
+        return (physicalY - height / 2.0f) / contentScale + height / 2.0f;
+    }
+
     private void updateLayout() {
+        this.contentScale = Math.min(1.0f, Math.min((float) width / 850f, (float) height / 550f));
+
         buttons.clear();
         int centerX = width / 2;
         int centerY = height / 2;
-        int bottomY = height - 50;
+        int bottomY = (int) getLogicY(height - 50);
         int buttonWidth = 100;
         int buttonHeight = 30;
         int spacing = 20;
@@ -246,7 +257,7 @@ public class WelcomeScreen extends Screen {
             Shader2DUtil.drawQuadBlur(context.getMatrices(), 0, 0, width, height, blurStrength, 1.0f);
         }
 
-        final float finalScale = scale;
+        final float finalScale = scale * contentScale;
         final float finalAlpha = alpha;
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
@@ -255,12 +266,15 @@ public class WelcomeScreen extends Screen {
             NanoVGHelper.translate(vg, -width / 2f, -height / 2f);
             NanoVGHelper.globalAlpha(vg, finalAlpha);
 
-            renderStep(vg, mouseX, mouseY);
+            double scaledMouseX = (mouseX - width / 2.0) / contentScale + width / 2.0;
+            double scaledMouseY = (mouseY - height / 2.0) / contentScale + height / 2.0;
+
+            renderStep(vg, (int) scaledMouseX, (int) scaledMouseY);
 
             for (MenuButton button : buttons) {
                 if (button == btnLanguage || button == btnColorMode) continue;
 
-                boolean hovered = button.isHovered(mouseX, mouseY);
+                boolean hovered = button.isHovered((int) scaledMouseX, (int) scaledMouseY);
                 button.render(hovered, 1.0f, hovered ? 1.05f : 1.0f);
             }
 
@@ -371,7 +385,7 @@ public class WelcomeScreen extends Screen {
                 float sFontSize = 24f;
                 int sFont = FontLoader.bold((int) sFontSize);
                 float sTextWidth = NanoVGHelper.getTextWidth(settingsText, sFont, sFontSize);
-                NanoVGHelper.drawString(settingsText, (width - sTextWidth) / 2f, 50, sFont, sFontSize, Color.WHITE);
+                NanoVGHelper.drawString(settingsText, (width - sTextWidth) / 2f, getLogicY(50), sFont, sFontSize, Color.WHITE);
 
                 drawPreviewPanel(centerX + 180, centerY - 160);
 
@@ -389,12 +403,12 @@ public class WelcomeScreen extends Screen {
                 String readText = "请必须完整阅读";
                 int rFont = FontLoader.bold(24);
                 float rWidth = NanoVGHelper.getTextWidth(readText, rFont, 24);
-                NanoVGHelper.drawString(readText, (width - rWidth) / 2f, 30, rFont, 24, new Color(255, 100, 100));
+                NanoVGHelper.drawString(readText, (width - rWidth) / 2f, getLogicY(30), rFont, 24, new Color(255, 100, 100));
 
                 float viewW = 380;
                 if (viewW > width * 0.9f) viewW = width * 0.9f;
-                float viewY = 60;
-                float viewH = height - 170;
+                float viewY = getLogicY(60);
+                float viewH = getLogicY(height - 110) - viewY;
                 float viewX = (width - viewW) / 2f;
 
                 float padding = 6;
@@ -490,7 +504,7 @@ public class WelcomeScreen extends Screen {
 
     private void renderProgressDots(long vg) {
         int centerX = width / 2;
-        int bottomY = height - 80;
+        int bottomY = (int) getLogicY(height - 80);
         int dotSpacing = 20;
         int startX = centerX - ((totalSteps - 1) * dotSpacing) / 2;
 
@@ -507,14 +521,17 @@ public class WelcomeScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        double scaledMouseX = getLogicX((float) mouseX);
+        double scaledMouseY = getLogicY((float) mouseY);
+
         if (currentStep == 1 && mainColorPicker != null) {
-            if (mainColorPicker.mouseClicked(mouseX, mouseY, button)) {
+            if (mainColorPicker.mouseClicked(scaledMouseX, scaledMouseY, button)) {
                 return true;
             }
         }
 
         for (MenuButton btn : buttons) {
-            if (btn.mouseClicked(mouseX, mouseY, button)) return true;
+            if (btn.mouseClicked(scaledMouseX, scaledMouseY, button)) return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -527,17 +544,8 @@ public class WelcomeScreen extends Screen {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    // ... Window Resize Handler ...
-    // Note: Mixin should call this. Ensure the method signature matches what the Mixin expects if it calls it via reflection or interface.
-    // Based on previous turn, MixinSplashOverlay calls updateLayout on resize? No, it calls onWindowResized.
-    // I need to make sure onWindowResized is public if accessed from outside package, or via interface.
-    // Assuming standard Minecraft Screen resize behavior which calls init().
-    // But user mentioned a specific issue with resize.
-    // I'll keep onWindowResized but ensure init() also handles it.
-
     @Override
     public void resize(net.minecraft.client.MinecraftClient client, int width, int height) {
         super.resize(client, width, height);
-        // init() is called by super.resize()
     }
 }

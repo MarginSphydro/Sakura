@@ -164,8 +164,8 @@ public class SelfTrap extends Module {
 
         BlockPos north = base.north();
         BlockPos south = base.south();
-        BlockPos east  = base.east();
-        BlockPos west  = base.west();
+        BlockPos east = base.east();
+        BlockPos west = base.west();
 
         addIfValid(north, positions);
         addIfValid(south, positions);
@@ -209,7 +209,8 @@ public class SelfTrap extends Module {
         if (!mc.world.getBlockState(pos).isReplaceable()) return 0;
         if (Math.sqrt(mc.player.squaredDistanceTo(pos.toCenterPos())) > range.get()) return 0;
 
-        if (EntityUtil.intersectsWithEntity(new Box(pos), entity -> !(entity instanceof ItemEntity) && !(entity instanceof EndCrystalEntity))) return 0;
+        if (EntityUtil.intersectsWithEntity(new Box(pos), entity -> !(entity instanceof ItemEntity) && !(entity instanceof EndCrystalEntity)))
+            return 0;
 
         PlaceData data = getPlaceData(pos);
         if (data == null) return 0;

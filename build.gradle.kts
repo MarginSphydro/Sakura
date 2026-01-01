@@ -101,6 +101,37 @@ tasks.named<RemapJarTask>("remapJar") {
     inputFile.set(tasks.named<ShadowJar>("shadowJar").get().archiveFile)
 }
 
+/*tasks.register<Jar>("buildCloudPayload") {
+    dependsOn("remapJar")
+    from(zipTree(tasks.named<RemapJarTask>("remapJar").get().archiveFile)) {
+        exclude("fabric.mod.json")
+    }
+
+    doFirst {
+        val mixinJsonFile = project.file("src/main/resources/sakura.mixins.json")
+        if (mixinJsonFile.exists()) {
+            val content = mixinJsonFile.readText()
+            val packageMatch = Regex("\"package\"\\s*:\\s*\"([^\"]+)\"").find(content)
+            val pkg = packageMatch?.groupValues?.get(1) ?: ""
+
+            val clientMatch = Regex("\"client\"\\s*:\\s*\\[(.*?)\\]", RegexOption.DOT_MATCHES_ALL).find(content)
+            val clientBlock = clientMatch?.groupValues?.get(1) ?: ""
+            
+            val mixins = Regex("\"([^\"]+)\"").findAll(clientBlock).map { it.groupValues[1] }.toList()
+            
+            val listFile = File(temporaryDir, "mixins.list")
+            listFile.parentFile.mkdirs()
+            listFile.writeText(mixins.joinToString("\n") { 
+                if (pkg.isNotEmpty()) "$pkg.$it" else it 
+            })
+            
+            from(listFile)
+        }
+    }
+    
+    archiveClassifier.set("payload")
+}*/
+
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }

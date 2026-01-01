@@ -4,12 +4,6 @@
   "package": "dev.sakura.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "Sakura-refmap.json",
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "overwrites": {
-    "requireAnnotations": true
-  },
   "client": [
     "MixinMain",
     "accessor.IAccessorBundlePacket",
@@ -62,5 +56,11 @@
     "render.EndCrystalEntityRendererMixin",
     "shader.MixinShaderProgram",
     "world.MixinFlowableFluid"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
 }
