@@ -18,7 +18,7 @@ public class SlowdownEvent {
         } else if (!(o instanceof SlowdownEvent other)) {
             return false;
         } else {
-            return !other.canEqual(this) ? false : this.isSlowdown() == other.isSlowdown();
+            return other.canEqual(this) && this.isSlowdown() == other.isSlowdown();
         }
     }
 

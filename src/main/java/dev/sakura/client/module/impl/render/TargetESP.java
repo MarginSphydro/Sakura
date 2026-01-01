@@ -42,7 +42,7 @@ public class TargetESP extends Module {
     private final TimerUtil timerUtil = new TimerUtil();
     private final Animation alphaAnim = new DecelerateAnimation(400, 1);
     private final long lastTime = System.currentTimeMillis();
-    private final Identifier rectangle = Identifier.of("sakura", "textures/particles/Target.png");
+    private final Identifier rectangle = Identifier.of("sakura", "textures/particles/target.png");
     private final Identifier quadstapple = Identifier.of("sakura", "textures/particles/quadstapple.png");
     private final Identifier trianglestapple = Identifier.of("sakura", "textures/particles/trianglestapple.png");
     private final Identifier trianglestipple = Identifier.of("sakura", "textures/particles/trianglestipple.png");
