@@ -55,6 +55,8 @@ public class BowBomb extends Module {
 
     @EventHandler
     public void onTick(TickEvent.Pre event) {
+        if (mc.player == null || mc.world == null) return;
+
         if (!mc.player.isUsingItem() || mc.player.getActiveItem().getItem() != Items.BOW) {
             activeTimer.reset();
             active = false;
