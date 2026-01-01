@@ -73,9 +73,6 @@ dependencies {
     val lwjglVersion = "3.3.3"
     implementation(include("org.lwjgl:lwjgl-nanovg:$lwjglVersion")!!)
 
-    // GLES 支持 (用于 Android/FCL 兼容性)
-    implementation(include("org.lwjgl:lwjgl-opengles:$lwjglVersion")!!)
-
     // 跨平台 Natives 支持
     val platforms = listOf(
         "natives-windows",

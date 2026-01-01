@@ -5,8 +5,8 @@ import dev.sakura.client.events.input.MouseButtonEvent;
 import dev.sakura.client.events.misc.KeyAction;
 import dev.sakura.client.events.misc.KeyEvent;
 import dev.sakura.client.events.render.Render2DEvent;
+import dev.sakura.client.manager.Managers;
 import dev.sakura.client.manager.impl.NotificationManager;
-import dev.sakura.client.manager.impl.SoundManager;
 import dev.sakura.client.module.impl.client.ClickGui;
 import dev.sakura.client.module.impl.client.HudEditor;
 import dev.sakura.client.module.impl.combat.*;
@@ -185,15 +185,11 @@ public class ModuleManager {
 
         if (!affectedModules.isEmpty()) {
             if (hasEnabling) {
-                SoundManager.playSound(SoundManager.ENABLE);
+                Managers.SOUND.playSound(Managers.SOUND.ENABLE);
             } else {
-                SoundManager.playSound(SoundManager.DISABLE);
+                Managers.SOUND.playSound(Managers.SOUND.DISABLE);
             }
         }
-    }
-
-    private void sendToggleNotification(Module module, boolean enabling) {
-        sendToggleNotification(module, enabling, "", true);
     }
 
     private void sendToggleNotification(Module module, boolean enabling, String suffix, boolean playSound) {
@@ -206,7 +202,7 @@ public class ModuleManager {
         }
         NotificationManager.send(module.hashCode(), "§7" + name + status + suffix, 3000L);
         if (playSound) {
-            SoundManager.playSound(enabling ? SoundManager.ENABLE : SoundManager.DISABLE);
+            Managers.SOUND.playSound(enabling ? Managers.SOUND.ENABLE : Managers.SOUND.DISABLE);
         }
     }
 

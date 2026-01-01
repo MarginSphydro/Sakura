@@ -9,6 +9,7 @@ import dev.sakura.client.module.ModuleManager;
 import dev.sakura.client.utils.render.Shader2DUtil;
 import meteordevelopment.orbit.EventBus;
 import meteordevelopment.orbit.IEventBus;
+import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,7 +83,7 @@ import java.util.concurrent.Executors;
  * 每晚灯火阑珊处，夜难寐，加班狂。
  */
 
-public class Sakura {
+public class Sakura implements ClientModInitializer {
     public static final String MOD_NAME = "Sakura";
     public static final String MOD_VER = BuildConfig.VERSION + "-" + BuildConfig.BUILD_IDENTIFIER;
 
@@ -99,7 +100,8 @@ public class Sakura {
     public static ClickGuiScreen CLICKGUI;
     public static HudEditorScreen HUDEDITOR;
 
-    public static void init() {
+    @Override
+    public void onInitializeClient() {
         LOGGER.info("正在开始初始化!");
 
         mc = MinecraftClient.getInstance();

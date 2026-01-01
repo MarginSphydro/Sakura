@@ -3,7 +3,6 @@ package dev.sakura.client.nanovg;
 import dev.sakura.client.nanovg.util.state.States;
 import net.minecraft.client.MinecraftClient;
 import org.lwjgl.nanovg.NanoVGGL3;
-import org.lwjgl.nanovg.NanoVGGLES2;
 
 import java.util.function.Consumer;
 
@@ -24,20 +23,10 @@ public class NanoVGRenderer {
     private boolean initialized = false;
     private boolean inFrame = false;
     private boolean scaled = false;
-    private boolean isAndroid = false;
 
     public void initNanoVG() {
         if (!initialized) {
-            String os = System.getProperty("os.name").toLowerCase();
-            boolean isDesktop = os.contains("win") || os.contains("mac");
-
-            if (isDesktop) {
-                vg = NanoVGGL3.nvgCreate(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES);
-                isAndroid = false;
-            } else {
-                vg = NanoVGGLES2.nvgCreate(NanoVGGLES2.NVG_ANTIALIAS);
-                isAndroid = true;
-            }
+            vg = NanoVGGL3.nvgCreate(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES);
 
             if (vg == 0L) {
                 throw new RuntimeException("无法初始化NanoVG");
@@ -174,11 +163,7 @@ public class NanoVGRenderer {
 
     public void cleanup() {
         if (initialized && vg != 0L) {
-            if (isAndroid) {
-                NanoVGGLES2.nvgDelete(vg);
-            } else {
-                NanoVGGL3.nvgDelete(vg);
-            }
+            NanoVGGL3.nvgDelete(vg);
             vg = 0L;
             initialized = false;
         }
