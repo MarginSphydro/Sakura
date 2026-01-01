@@ -8,8 +8,6 @@
   border-radius: 10px;
 ">
 
-# Sakura
-
 <div style="
   background-size: cover;
   background-attachment: fixed;
