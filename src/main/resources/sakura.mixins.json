@@ -9,14 +9,14 @@
     "accessor.IChatInputSuggestor",
     "accessor.IClientPlayerEntity",
     "accessor.IEntity",
-    "accessor.IHorseScreenHandler",
-    "accessor.IMinecraftClient",
-    "accessor.IParticle",
-    "accessor.ISuggestionWindow",
     "accessor.IEntityTrackingSection",
     "accessor.IEntityVelocityUpdateS2CPacket",
     "accessor.IExplosionS2CPacket",
+    "accessor.IHorseScreenHandler",
+    "accessor.IMinecraftClient",
+    "accessor.IParticle",
     "accessor.IPlayerMoveC2SPacket",
+    "accessor.ISuggestionWindow",
     "client.MixinChatInputSuggestor",
     "client.MixinGameOptions",
     "client.MixinMinecraftClient",
@@ -29,12 +29,15 @@
     "input.MixinMouse",
     "network.MixinClientConnection",
     "network.MixinClientPlayNetworkHandler",
+    "render.ClientWorldMixin",
+    "render.EndCrystalEntityRendererMixin",
     "render.MixinBackgroundRenderer",
     "render.MixinBlock",
     "render.MixinBossBarHud",
     "render.MixinCamera",
     "render.MixinChatHud",
     "render.MixinChatScreen",
+    "render.MixinClientWorldProperties",
     "render.MixinGameRenderer",
     "render.MixinHeldItemRenderer",
     "render.MixinInGameHud",
@@ -50,9 +53,6 @@
     "render.MixinTitleScreen",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
-    "render.ClientWorldMixin",
-    "render.MixinClientWorldProperties",
-    "render.EndCrystalEntityRendererMixin",
     "shader.MixinShaderProgram",
     "world.MixinFlowableFluid"
   ],
@@ -61,5 +61,8 @@
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "mixins": [
+    "entity.MixinFlowableFluid"
+  ]
 }

@@ -21,6 +21,11 @@ import java.util.function.Predicate;
 import static dev.sakura.client.Sakura.mc;
 
 public class EntityUtil {
+    public static boolean isInsideBlock() {
+        if (mc.world.getBlockState(BlockPos.ofFloored(mc.player.getPos())).getBlock() == Blocks.ENDER_CHEST) return true;
+        return mc.world.canCollide(mc.player, mc.player.getBoundingBox());
+    }
+
     public static boolean intersectsWithEntity(Box box, Predicate<Entity> predicate) {
         EntityLookup<Entity> entityLookup = mc.world.getEntityLookup();
 
@@ -68,18 +73,6 @@ public class EntityUtil {
         });
 
         return found.get();
-    }
-
-    public static BlockPos getPlayerPos(boolean floor) {
-        if (mc.player == null) return BlockPos.ORIGIN;
-        if (floor) {
-            return new BlockPos(
-                    (int) Math.floor(mc.player.getX()),
-                    (int) Math.floor(mc.player.getY()),
-                    (int) Math.floor(mc.player.getZ())
-            );
-        }
-        return mc.player.getBlockPos();
     }
 
     public static boolean isInWeb(PlayerEntity player) {

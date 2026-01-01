@@ -139,7 +139,7 @@ public class Burrow extends Module {
             return;
         }
         if (antiLag.get()) {
-            if (!mc.world.getBlockState(EntityUtil.getPlayerPos(true).down()).blocksMovement()) return;
+            if (!mc.world.getBlockState(BlockPos.ofFloored(mc.player.getPos()).down()).blocksMovement()) return;
         }
         int oldSlot = mc.player.getInventory().selectedSlot;
         int block;
@@ -163,7 +163,7 @@ public class Burrow extends Module {
         BlockPos pos10 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() - 1, mc.player.getZ() + offset);
         BlockPos pos11 = BlockPos.ofFloored(mc.player.getX() + offset, mc.player.getY() - 1, mc.player.getZ() - offset);
         BlockPos pos12 = BlockPos.ofFloored(mc.player.getX() - offset, mc.player.getY() - 1, mc.player.getZ() - offset);
-        BlockPos playerPos = EntityUtil.getPlayerPos(true);
+        BlockPos playerPos = BlockPos.ofFloored(mc.player.getPos());
         boolean headFillFlag = false;
         if (!canPlace(pos1) && !canPlace(pos2) && !canPlace(pos3) && !canPlace(pos4)) {
             boolean cantHeadFill = !this.headFill.get() || !canPlace(pos5) && !canPlace(pos6) && !canPlace(pos7) && !canPlace(pos8);
@@ -180,7 +180,7 @@ public class Burrow extends Module {
             }
         }
         boolean above = false;
-        BlockPos headPos = EntityUtil.getPlayerPos(true).up(2);
+        BlockPos headPos = BlockPos.ofFloored(mc.player.getPos()).up(2);
         boolean rotateFlag = this.rotate.get() == RotateMode.Normal;
         CombatUtil.attackCrystal(pos1, rotateFlag, false);
         CombatUtil.attackCrystal(pos2, rotateFlag, false);
@@ -366,7 +366,7 @@ public class Burrow extends Module {
     }
 
     private boolean canPlace(BlockPos pos) {
-        if (noSelfPos.get() && pos.equals(EntityUtil.getPlayerPos(true))) {
+        if (noSelfPos.get() && pos.equals(BlockPos.ofFloored(mc.player.getPos()))) {
             return false;
         }
         if (!BlockUtil.airPlace() && BlockUtil.getPlaceSide(pos) == null) {

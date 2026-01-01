@@ -12,7 +12,7 @@ import dev.sakura.client.module.impl.client.HudEditor;
 import dev.sakura.client.module.impl.combat.*;
 import dev.sakura.client.module.impl.hud.*;
 import dev.sakura.client.module.impl.movement.*;
-import dev.sakura.client.module.impl.movement.velocity.Velocity;
+import dev.sakura.client.module.impl.movement.Velocity;
 import dev.sakura.client.module.impl.player.*;
 import dev.sakura.client.module.impl.render.*;
 import dev.sakura.client.values.Value;
