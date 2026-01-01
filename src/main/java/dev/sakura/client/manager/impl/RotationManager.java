@@ -1,9 +1,9 @@
 package dev.sakura.client.manager.impl;
 
 import dev.sakura.client.Sakura;
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.input.MoveInputEvent;
 import dev.sakura.client.events.player.*;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.utils.player.MovementUtil;
 import dev.sakura.client.utils.rotation.MovementFix;
 import dev.sakura.client.utils.rotation.RaytraceUtil;
@@ -245,7 +245,7 @@ public class RotationManager {
     }
 
     @EventHandler
-    private void onJump(JumpEvent event) {
+    private void onJump(JumpRotationEvent event) {
         if (active && (correctMovement == MovementFix.NORMAL || correctMovement == MovementFix.TRADITIONAL || correctMovement == MovementFix.BACKWARDS_SPRINT) && rotations != null) {
             event.setYaw(rotations.x);
         }

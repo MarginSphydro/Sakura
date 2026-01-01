@@ -1,7 +1,7 @@
 package dev.sakura.client.events.packet;
 
 import dev.sakura.client.events.Cancellable;
-import dev.sakura.client.events.type.EventType;
+import dev.sakura.client.events.EventType;
 import net.minecraft.network.packet.Packet;
 
 public class PacketEvent extends Cancellable {

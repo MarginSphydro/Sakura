@@ -1,92 +1,118 @@
 package dev.sakura.client.module.impl.movement;
 
 import dev.sakura.client.events.client.TickEvent;
-import dev.sakura.client.events.packet.PacketEvent;
-import dev.sakura.client.events.type.EventType;
-import dev.sakura.client.mixin.accessor.IClientPlayerEntity;
+import dev.sakura.client.events.player.SprintEvent;
+import dev.sakura.client.manager.Managers;
 import dev.sakura.client.module.Category;
 import dev.sakura.client.module.Module;
-import dev.sakura.client.values.impl.BoolValue;
+import dev.sakura.client.utils.player.MovementUtil;
+import dev.sakura.client.utils.vector.Vector2f;
 import dev.sakura.client.values.impl.EnumValue;
+import dev.sakura.client.values.impl.NumberValue;
 import meteordevelopment.orbit.EventHandler;
-import meteordevelopment.orbit.EventPriority;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.util.math.MathHelper;
 
 public class AutoSprint extends Module {
-
-    public enum Mode {
-        Rage, Strict
-    }
-
     public AutoSprint() {
         super("AutoSprint", "自动疾跑", Category.Movement);
     }
 
-    public final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Strict);
-    public final BoolValue keepSprint = new BoolValue("Keep Sprint", "保持疾跑", false);
-    public final BoolValue unsprintOnHit = new BoolValue("Unsprint On Hit", "攻击时停止疾跑", false);
-    public final BoolValue unsprintInWater = new BoolValue("Unsprint In Water", "水中停止疾跑", true, () -> mode.is(Mode.Rage));
-    public final BoolValue permaSprint = new BoolValue("Sprint While Stationary", "静止时疾跑", true, () -> mode.is(Mode.Rage));
-
-    @EventHandler(priority = EventPriority.HIGH)
-    private void onTickMovement(TickEvent.Post event) {
-        if (mc.player == null || unsprintInWater.get() && mc.player.isTouchingWater()) return;
-        mc.player.setSprinting(shouldSprint());
+    public enum Mode {
+        PressKey,
+        Rage,
+        Grim,
+        Rotation
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    private void onPacketSend(PacketEvent event) {
-        if (event.getType() != EventType.SEND) return;
-        if (!unsprintOnHit.get()) return;
-        if (!(event.getPacket() instanceof PlayerInteractEntityC2SPacket packet) || packet.type.getType() != PlayerInteractEntityC2SPacket.InteractType.ATTACK)
-            return;
+    private final EnumValue<Mode> mode = new EnumValue<>("Mode", "模式", Mode.Rage);
+    private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 10, 0, 10, 1, () -> mode.is(Mode.Rotation));
 
-        mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.STOP_SPRINTING));
-        mc.player.setSprinting(false);
+    @Override
+    public String getSuffix() {
+        return mode.get().name();
     }
 
     @EventHandler
-    private void onPacketSent(PacketEvent event) {
-        if (event.getType() != EventType.SENT) return;
+    public void onTick(TickEvent.Pre event) {
+        if (mc.world == null || mc.player == null) return;
 
-        if (!unsprintOnHit.get() || !keepSprint.get()) return;
-        if (!(event.getPacket() instanceof PlayerInteractEntityC2SPacket packet)
-                || packet.type.getType() != PlayerInteractEntityC2SPacket.InteractType.ATTACK) return;
-
-        if (!shouldSprint() || mc.player.isSprinting()) return;
-
-        mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_SPRINTING));
-        mc.player.setSprinting(true);
-    }
-
-    public boolean shouldSprint() {
-        //if (mc.currentScreen != null && !Modules.get().get(GUIMove.class).sprint.get()) return false;
-
-        float movement = mode.is(Mode.Strict)
-                ? (Math.abs(mc.player.forwardSpeed) + Math.abs(mc.player.sidewaysSpeed))
-                : mc.player.forwardSpeed;
-
-        if (movement <= (mc.player.isSubmergedInWater() ? 1.0E-5F : 0.8)) {
-            if (mode.is(Mode.Strict) || !permaSprint.get()) return false;
+        if (mode.get() == Mode.PressKey) {
+            mc.options.sprintKey.setPressed(true);
+        } else {
+            mc.player.setSprinting(shouldSprint());
         }
 
-        boolean strictSprint = !(mc.player.isTouchingWater() && !mc.player.isSubmergedInWater())
-                && ((IClientPlayerEntity) mc.player).invokeCanSprint()
-                && (!mc.player.horizontalCollision || mc.player.collidedSoftly);
-
-        return isEnabled() && (mode.is(Mode.Rage) || strictSprint);
+        if ((mc.player.getHungerManager().getFoodLevel() > 6 || mc.player.isCreative())
+                && MovementUtil.isMoving()
+                //&& !mc.player.isFallFlying()
+                && !mc.player.isSneaking()
+                && !mc.player.isRiding()
+                && !mc.player.isTouchingWater()
+                && !mc.player.isInLava()
+                && !mc.player.isHoldingOntoLadder()
+                && !mc.player.hasStatusEffect(StatusEffects.BLINDNESS)) {
+            if (mode.is(Mode.Rotation)) {
+                Managers.ROTATION.setRotations(new Vector2f(getSprintYaw(mc.player.getYaw()), Managers.ROTATION.getPitch()), rotationSpeed.get());
+            }
+        }
     }
 
-    public boolean rageSprint() {
-        return isEnabled() && mode.is(Mode.Rage);
+    @EventHandler
+    public void onSprint(SprintEvent event) {
+        event.cancel();
+        event.setSprint(shouldSprint());
     }
 
-    public boolean unsprintInWater() {
-        return isEnabled() && unsprintInWater.get();
+    private boolean shouldSprint() {
+        if ((mc.player.getHungerManager().getFoodLevel() > 6 || mc.player.isCreative())
+                && MovementUtil.isMoving()
+                && !mc.player.isSneaking()
+                && !mc.player.isRiding()
+                && !mc.player.isHoldingOntoLadder()
+                && !mc.player.hasStatusEffect(StatusEffects.BLINDNESS)) {
+            switch (mode.get()) {
+                case Grim -> {
+                    if (MoveFix.isActive()) {
+                        return mc.player.input.movementForward == 1;
+                    } else {
+                        return HoleSnap.isActive() || mc.options.forwardKey.isPressed() && MathHelper.angleBetween(mc.player.getYaw(), Managers.ROTATION.getYaw()) < 40;
+                    }
+                }
+                case Rotation -> {
+                    if (MoveFix.isActive()) {
+                        return mc.player.input.movementForward == 1;
+                    } else {
+                        return HoleSnap.isActive() || MathHelper.angleBetween(getSprintYaw(mc.player.getYaw()), Managers.ROTATION.getYaw()) < 40;
+                    }
+                }
+                case Rage -> {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    public boolean stopSprinting() {
-        return !isEnabled() || !keepSprint.get();
+    public float getSprintYaw(float yaw) {
+        if (mc.options.forwardKey.isPressed() && !mc.options.backKey.isPressed()) {
+            if (mc.options.leftKey.isPressed() && !mc.options.rightKey.isPressed()) {
+                yaw -= 45f;
+            } else if (mc.options.rightKey.isPressed() && !mc.options.leftKey.isPressed()) {
+                yaw += 45f;
+            }
+        } else if (mc.options.backKey.isPressed() && !mc.options.forwardKey.isPressed()) {
+            yaw += 180f;
+            if (mc.options.leftKey.isPressed() && !mc.options.rightKey.isPressed()) {
+                yaw += 45f;
+            } else if (mc.options.rightKey.isPressed() && !mc.options.leftKey.isPressed()) {
+                yaw -= 45f;
+            }
+        } else if (mc.options.leftKey.isPressed() && !mc.options.rightKey.isPressed()) {
+            yaw -= 90f;
+        } else if (mc.options.rightKey.isPressed() && !mc.options.leftKey.isPressed()) {
+            yaw += 90f;
+        }
+        return MathHelper.wrapDegrees(yaw);
     }
 }

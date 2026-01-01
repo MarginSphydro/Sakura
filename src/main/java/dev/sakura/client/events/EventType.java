@@ -1,9 +1,9 @@
-package dev.sakura.client.events.type;
+package dev.sakura.client.events;
 
 public enum EventType {
     PRE,
     POST,
     SEND,
     RECEIVE,
-    SENT,
+    SENT
 }

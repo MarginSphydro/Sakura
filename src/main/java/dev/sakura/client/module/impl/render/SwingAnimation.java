@@ -1,6 +1,7 @@
 package dev.sakura.client.module.impl.render;
 
 import dev.sakura.client.Sakura;
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.entity.LimbAnimationEvent;
 import dev.sakura.client.events.entity.SwingSpeedEvent;
 import dev.sakura.client.events.entity.UpdateServerPositionEvent;
@@ -8,7 +9,6 @@ import dev.sakura.client.events.packet.PacketEvent;
 import dev.sakura.client.events.render.item.EatTransformationEvent;
 import dev.sakura.client.events.render.item.RenderSwingAnimationEvent;
 import dev.sakura.client.events.render.item.UpdateHeldItemsEvent;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.mixin.accessor.IAccessorBundlePacket;
 import dev.sakura.client.module.Category;
 import dev.sakura.client.module.Module;

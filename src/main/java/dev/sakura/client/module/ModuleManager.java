@@ -45,10 +45,11 @@ public class ModuleManager {
         add(new WebAura());
 
         // Movement
+        add(new ArmorFly());
         add(new AutoSprint());
-        add(new ElytraBoost());
         add(new ElytraFly());
         add(new HoleSnap());
+        add(new MoveFix());
         add(new NoFall());
         add(new NoSlow());
         add(new Phase());
@@ -58,7 +59,6 @@ public class ModuleManager {
 
         // Player
         add(new AntiHunger());
-        add(new ArmorFly());
         add(new AutoArmor());
         add(new AutoPearl());
         add(new Blink());

@@ -1,11 +1,11 @@
 package dev.sakura.client.module.impl.movement;
 
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.client.TickEvent;
 import dev.sakura.client.events.entity.BlockPushEvent;
 import dev.sakura.client.events.entity.EntityPushEvent;
 import dev.sakura.client.events.entity.EntityVelocityUpdateEvent;
 import dev.sakura.client.events.packet.PacketEvent;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.mixin.accessor.IEntityVelocityUpdateS2CPacket;
 import dev.sakura.client.mixin.accessor.IExplosionS2CPacket;
 import dev.sakura.client.module.Category;

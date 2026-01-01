@@ -2,9 +2,9 @@ package dev.sakura.client.module.impl.player;
 
 import com.mojang.authlib.GameProfile;
 import dev.sakura.client.Sakura;
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.packet.PacketEvent;
 import dev.sakura.client.events.player.MotionEvent;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.module.Category;
 import dev.sakura.client.module.Module;
 import dev.sakura.client.values.impl.BoolValue;

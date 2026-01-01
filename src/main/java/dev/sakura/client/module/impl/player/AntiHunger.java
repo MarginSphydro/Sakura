@@ -1,8 +1,8 @@
 package dev.sakura.client.module.impl.player;
 
 import dev.sakura.client.Sakura;
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.packet.PacketEvent;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.mixin.accessor.IPlayerMoveC2SPacket;
 import dev.sakura.client.module.Category;
 import dev.sakura.client.module.Module;

@@ -1,16 +1,25 @@
 package dev.sakura.client.mixin.entity;
 
 import dev.sakura.client.Sakura;
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.entity.SwingSpeedEvent;
 import dev.sakura.client.events.entity.UpdateServerPositionEvent;
 import dev.sakura.client.events.player.JumpEvent;
+import dev.sakura.client.events.player.JumpRotationEvent;
+import dev.sakura.client.events.player.SprintEvent;
 import dev.sakura.client.events.player.TravelEvent;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.module.impl.movement.ElytraFly;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.*;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,10 +30,45 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import static dev.sakura.client.Sakura.mc;
 
 @Mixin(LivingEntity.class)
-public abstract class MixinLivingEntity {
+public abstract class MixinLivingEntity extends Entity {
+    public MixinLivingEntity(EntityType<?> type, World world) {
+        super(type, world);
+    }
+
+    @Final
+    @Shadow
+    private static EntityAttributeModifier SPRINTING_SPEED_BOOST;
+
+    @Shadow
+    public EntityAttributeInstance getAttributeInstance(RegistryEntry<EntityAttribute> attribute) {
+        return this.getAttributes().getCustomInstance(attribute);
+    }
+
+    @Shadow
+    public AttributeContainer getAttributes() {
+        return null;
+    }
 
     @Unique
     private boolean previousElytra = false;
+
+    @Inject(method = "setSprinting", at = @At("HEAD"), cancellable = true)
+    public void setSprintingHook(boolean sprinting, CallbackInfo ci) {
+        if ((Object) this == MinecraftClient.getInstance().player) {
+            SprintEvent event = new SprintEvent();
+            Sakura.EVENT_BUS.post(event);
+            if (event.isCancelled()) {
+                ci.cancel();
+                sprinting = event.isSprint();
+                super.setSprinting(sprinting);
+                EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+                entityAttributeInstance.removeModifier(SPRINTING_SPEED_BOOST.id());
+                if (sprinting) {
+                    entityAttributeInstance.addTemporaryModifier(SPRINTING_SPEED_BOOST);
+                }
+            }
+        }
+    }
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void onTravelPre(Vec3d movementInput, CallbackInfo ci) {
@@ -57,12 +101,22 @@ public abstract class MixinLivingEntity {
 
     @Redirect(method = "jump", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getYaw()F"))
     private float redirectGetYawInJump(LivingEntity instance) {
-        if ((Object) instance == mc.player) {
-            JumpEvent event = new JumpEvent(instance.getYaw());
+        if (instance == mc.player) {
+            JumpRotationEvent event = new JumpRotationEvent(instance.getYaw());
             Sakura.EVENT_BUS.post(event);
             return event.getYaw();
         }
         return instance.getYaw();
+    }
+
+    @Inject(method = "jump", at = @At("HEAD"))
+    private void onJumpPre(CallbackInfo ci) {
+        Sakura.EVENT_BUS.post(new JumpEvent(EventType.PRE));
+    }
+
+    @Inject(method = "jump", at = @At("RETURN"))
+    private void onJumpPost(CallbackInfo ci) {
+        Sakura.EVENT_BUS.post(new JumpEvent(EventType.POST));
     }
 
     @Inject(method = "getHandSwingDuration", at = @At("HEAD"), cancellable = true)

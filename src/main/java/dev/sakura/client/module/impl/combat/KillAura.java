@@ -1,11 +1,11 @@
 package dev.sakura.client.module.impl.combat;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.sakura.client.events.EventType;
 import dev.sakura.client.events.client.TickEvent;
 import dev.sakura.client.events.packet.PacketEvent;
 import dev.sakura.client.events.player.MotionEvent;
 import dev.sakura.client.events.render.Render3DEvent;
-import dev.sakura.client.events.type.EventType;
 import dev.sakura.client.manager.Managers;
 import dev.sakura.client.manager.impl.RotationManager;
 import dev.sakura.client.module.Category;
