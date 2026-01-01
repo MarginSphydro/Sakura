@@ -55,8 +55,7 @@
     "render.MixinWindow",
     "render.MixinWorldRenderer",
     "shader.MixinShaderProgram",
-    "player.MixinClientPlayerInteractionManager",
-    "world.MixinFlowableFluid"
+    "player.MixinClientPlayerInteractionManager"
   ],
   "injectors": {
     "defaultRequire": 1

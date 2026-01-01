@@ -1,13 +1,19 @@
 package dev.sakura.client.module.impl.player.mine;
 
+import dev.sakura.client.Sakura;
 import dev.sakura.client.events.client.TickEvent;
 import dev.sakura.client.events.player.BlockEvent;
 import dev.sakura.client.events.render.Render3DEvent;
+import dev.sakura.client.manager.Managers;
+import dev.sakura.client.manager.impl.RotationManager;
 import dev.sakura.client.module.Category;
 import dev.sakura.client.module.Module;
 import dev.sakura.client.utils.client.ChatUtil;
 import dev.sakura.client.utils.player.InvUtil;
 import dev.sakura.client.utils.render.Render3DUtil;
+import dev.sakura.client.utils.rotation.MovementFix;
+import dev.sakura.client.utils.rotation.RotationUtil;
+import dev.sakura.client.utils.time.TimerUtil;
 import dev.sakura.client.values.impl.BoolValue;
 import dev.sakura.client.values.impl.ColorValue;
 import dev.sakura.client.values.impl.EnumValue;
@@ -24,51 +30,51 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 
 import java.awt.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PacketMine extends Module {
     private final BoolValue autoConfig = new BoolValue("Auto", "自动", false);
-    private final BoolValue avoidSelfConfig = new BoolValue("AvoidSelf", "避开自身", false, autoConfig::get);
-    private final BoolValue strictDirectionConfig = new BoolValue("StrictDirection", "严格方向", false, autoConfig::get);
-    private final BoolValue eatingPause = new BoolValue("EatingPause", "吃东西时暂停", false, autoConfig::get);
+    private final BoolValue avoidSelfConfig = new BoolValue("Avoid Self", "避开自身", false, autoConfig::get);
     private final NumberValue<Double> enemyRangeConfig = new NumberValue<>("EnemyRange", "敌人范围", 5.0, 1.0, 10.0, 0.1, autoConfig::get);
-    private final BoolValue antiCrawlConfig = new BoolValue("AntiCrawl", "反爬行", false);
-    private final BoolValue headConfig = new BoolValue("TargetBody", "目标身体", false, autoConfig::get);
-    private final BoolValue aboveHeadConfig = new BoolValue("TargetHead", "目标头部", false, autoConfig::get);
-    private final BoolValue doubleBreakConfig = new BoolValue("DoubleBreak", "双重破坏", false);
-    private final NumberValue<Integer> mineTicksConfig = new NumberValue<>("MiningTicks", "挖掘刻数", 20, 5, 60, 1, doubleBreakConfig::get);
+    private final BoolValue antiCrawlConfig = new BoolValue("Anti Crawl", "反爬行", false);
+    private final BoolValue headConfig = new BoolValue("Target Body", "目标身体", false, autoConfig::get);
+    private final BoolValue aboveHeadConfig = new BoolValue("Target Head", "目标头部", false, autoConfig::get);
+    private final BoolValue strictDirectionConfig = new BoolValue("Strict Direction", "严格方向", false);
     private final EnumValue<RemineMode> remineConfig = new EnumValue<>("Remine", "重挖", RemineMode.Normal);
-    private final BoolValue packetInstantConfig = new BoolValue("Fast", "快速", false, () -> remineConfig.is(RemineMode.Instant));
+    private final BoolValue eatingPause = new BoolValue("Eating Pause", "吃东西时暂停", false);
+    private final BoolValue doubleBreakConfig = new BoolValue("Double Break", "双重破坏", false);
+    private final NumberValue<Integer> mineTicksConfig = new NumberValue<>("Mining Ticks", "挖掘刻数", 20, 5, 60, 1, doubleBreakConfig::get);
     private final NumberValue<Double> rangeConfig = new NumberValue<>("Range", "范围", 4.0, 0.1, 6.0, 0.1);
-    private final NumberValue<Double> speedConfig = new NumberValue<>("Speed", "速度", 1.0, 0.1, 1.0, 0.1);
-    private final EnumValue<Swap> swapConfig = new EnumValue<>("AutoSwap", "自动切换", Swap.Silent);
-    private final BoolValue swapBeforeConfig = new BoolValue("SwapBefore", "挖前切换", false, () -> !swapConfig.is(Swap.Off));
-    private final BoolValue rotateConfig = new BoolValue("Rotate", "旋转", true);
-    private final BoolValue switchResetConfig = new BoolValue("SwitchReset", "切换重置", false);
+    private final EnumValue<Swap> swapConfig = new EnumValue<>("Auto Swap", "自动切换", Swap.Silent);
+    private final BoolValue rotateConfig = new BoolValue("Rotate", "转头", true);
+    private final NumberValue<Integer> rotationBackSpeed = new NumberValue<>("Back Speed", "回转速度", 10, 0, 10, 1, () -> rotateConfig.get());
+    private final BoolValue reTry = new BoolValue("reTry", "重试", false);
     private final BoolValue grimConfig = new BoolValue("Grim", "Grim", false);
     private final BoolValue grimNewConfig = new BoolValue("GrimV3", "GrimV3", false, grimConfig::get);
-    private final ColorValue sideColor = new ColorValue("MineSide", "挖掘面颜色", new Color(255, 0, 0, 31));
-    private final ColorValue lineColor = new ColorValue("MineLine", "挖掘线颜色", new Color(255, 0, 0, 233));
-    private final ColorValue doneSideColor = new ColorValue("DoneSide", "完成面颜色", new Color(0, 255, 0, 23));
-    private final ColorValue doneLineColor = new ColorValue("DoneLine", "完成线颜色", new Color(0, 255, 0, 233));
-    private final NumberValue<Integer> fadeTimeConfig = new NumberValue<>("Fade-Time", "淡出时间", 250, 0, 1000, 1, () -> false);
-    private final BoolValue smoothColorConfig = new BoolValue("SmoothColor", "平滑颜色", false, () -> false);
+    private final ColorValue fullColor = new ColorValue("Mine Full", "挖掘填充颜色", new Color(255, 0, 0, 31));
+    private final ColorValue lineColor = new ColorValue("Mine Line", "挖掘边框颜色", new Color(255, 0, 0, 233));
+    private final ColorValue doneFullColor = new ColorValue("Done Full", "完成面颜色", new Color(0, 255, 0, 23));
+    private final ColorValue doneLineColor = new ColorValue("Done Line", "完成线颜色", new Color(0, 255, 0, 233));
     private final BoolValue debugConfig = new BoolValue("Debug", "调试", false);
-    private final ColorValue packetSide = new ColorValue("PacketSide", "发包面颜色", new Color(0, 0, 255, 31), debugConfig::get);
-    private final ColorValue packetLine = new ColorValue("PacketLine", "发包线颜色", new Color(0, 0, 255, 233), debugConfig::get);
-    private final ColorValue instantSide = new ColorValue("InstantSide", "瞬挖面颜色", new Color(255, 0, 255, 31), debugConfig::get);
-    private final ColorValue instantLine = new ColorValue("InstantLine", "瞬挖线颜色", new Color(255, 0, 255, 233), debugConfig::get);
-    private final BoolValue debugTicksConfig = new BoolValue("Debug-Ticks", "调试刻数", false, debugConfig::get);
     private BlockData blockData = null;
+
+    private TimerUtil resetTime = new TimerUtil();
 
     public PacketMine() {
         super("PacketMine", "发包挖掘", Category.Player);
+    }
+
+    public static int lerp(int start, int end, double pct) {
+        // 限制百分比在 0.0 到 1.0 之间，防止越界
+        pct = Math.max(0.0f, Math.min(1.0f, pct));
+
+        // 使用 Math.round 确保四舍五入到最近的整数，避免始终向下取整导致的抖动
+        return Math.toIntExact(Math.round(start + (end - start) * pct));
     }
 
     // 获取点击方块事件
@@ -89,13 +95,16 @@ public class PacketMine extends Module {
     @EventHandler
     public void onTick(TickEvent.Post event) {
         if (blockData == null) return;
-        if (mc.player.squaredDistanceTo(blockData.getCurrentPos().toCenterPos()) > (rangeConfig.get() + 4) * (rangeConfig.get() + 4)) {
+        if (mc.player.squaredDistanceTo(blockData.getCurrentPos().toCenterPos()) > Math.pow(rangeConfig.get() + 4, 2)) {
             if (debugConfig.get()) ChatUtil.sendMessage("[PacketMine] set blockData = null.");
             blockData = null;
             return;
         }
         if (eatingCheck()) return;
-        if (mc.world.isAir(blockData.getCurrentPos())) return;
+        if (mc.world.isAir(blockData.getCurrentPos())) {
+            resetTime.reset();
+            return;
+        }
         if (System.currentTimeMillis() - blockData.getStartTime() > calcBreakTime(blockData.getCurrentPos(), swapConfig.get() == Swap.SilentAlt)) {
             if (debugConfig.get()) ChatUtil.sendMessage("[PacketMine] PASS.");
             Integer slot = InvUtil.findFastestTool(mc.world.getBlockState(blockData.getCurrentPos()), swapConfig.get() == Swap.SilentAlt).slot();
@@ -112,6 +121,9 @@ public class PacketMine extends Module {
                 case Off:
                     break;
             }
+            if (rotateConfig.get()) {
+                Managers.ROTATION.setRotations(RotationUtil.calculate(blockData.getCurrentPos()), rotationBackSpeed.get(), MovementFix.NORMAL, RotationManager.Priority.Medium);
+            }
             stopMiningInternal(blockData);
             switch (swapConfig.get()) {
                 case Silent:
@@ -123,23 +135,38 @@ public class PacketMine extends Module {
                 default:
                     break;
             }
-            if (remineConfig.get() == RemineMode.Normal)
+
+            if (remineConfig.get() == RemineMode.Normal){
+                if (resetTime.passedMS(calcBreakTime(blockData.getCurrentPos(), swapConfig.get() == Swap.SilentAlt) + 5000L) && reTry.get()) {
+                    hookPos(blockData.getCurrentPos(),true);
+                }
                 blockData = new BlockData(blockData.getCurrentPos(), blockData.getDirection(), System.currentTimeMillis());
+            }
+            if (remineConfig.get() == RemineMode.OFF)
+                blockData = null;
         }
     }
 
     @EventHandler
     private void onRender3D(Render3DEvent event) {
         if (blockData == null) return;
+        double progress = (System.currentTimeMillis() - blockData.getStartTime()) / calcBreakTime(blockData.getCurrentPos(), swapConfig.get() == Swap.SilentAlt);
         Box box = new Box(blockData.getCurrentPos());
-        Render3DUtil.drawFilledBox(event.getMatrices(), box, sideColor.get());
-        Render3DUtil.drawBoxOutline(event.getMatrices(), box, lineColor.get().getRGB(), 1f);
+        Color lerpedFullColor = new Color(lerp(fullColor.get().getRed(), doneFullColor.get().getRed(), progress),
+                lerp(fullColor.get().getGreen(), doneFullColor.get().getGreen(), progress),
+                lerp(fullColor.get().getBlue(), doneFullColor.get().getBlue(), progress),
+                lerp(fullColor.get().getAlpha(), doneFullColor.get().getAlpha(), progress));
+        Color lerpedLineColor = new Color(lerp(lineColor.get().getRed(), doneLineColor.get().getRed(), progress),
+                lerp(lineColor.get().getGreen(), doneLineColor.get().getGreen(), progress),
+                lerp(lineColor.get().getBlue(), doneLineColor.get().getBlue(), progress),
+                lerp(lineColor.get().getAlpha(), doneLineColor.get().getAlpha(), progress));
+        Render3DUtil.drawFilledBox(event.getMatrices(), box, lerpedFullColor);
+        Render3DUtil.drawBoxOutline(event.getMatrices(), box, lerpedLineColor.getRGB(), 1f);
         Vec3d center = new Vec3d(
                 box.minX + (box.maxX - box.minX) * 0.5,
                 box.minY + (box.maxY - box.minY) * 0.5,
                 box.minZ + (box.maxZ - box.minZ) * 0.5
         );
-        double progress = (System.currentTimeMillis() - blockData.getStartTime()) / calcBreakTime(blockData.getCurrentPos(), swapConfig.get() == Swap.SilentAlt);
         Render3DUtil.drawText((progress > 1) ? "Completed" : String.format("%.1f", progress * 100.0) + "%", center, 0, 0, 0, Color.WHITE);
     }
 
@@ -224,9 +251,100 @@ public class PacketMine extends Module {
         return mc.player.isUsingItem() && mc.player.getMainHandStack().contains(DataComponentTypes.FOOD);
     }
 
+    public void hookPos(BlockPos blockPos, boolean reset) {
+        if (eatingCheck()) return;
+
+        if (reset) {
+            this.blockData = null;
+        }
+
+        mc.world.getBlockState(blockPos).onBlockBreakStart(mc.world, blockPos, mc.player);
+
+        Vec3d eyePos = mc.player.getEyePos();
+        double dx = eyePos.x - (blockPos.getX() + 0.5);
+        double dy = eyePos.y - (blockPos.getY() + 0.5);
+        double dz = eyePos.z - (blockPos.getZ() + 0.5);
+
+        Direction side = getInteractDirection(blockPos, strictDirectionConfig.get());
+        if (side == null) {
+            side = Direction.getFacing((float) dx, (float) dy, (float) dz);
+        }
+
+        Sakura.EVENT_BUS.post(new BlockEvent(blockPos, side));
+    }
+
+    public Direction getInteractDirection(final BlockPos blockPos, final boolean strictDirection) {
+        Direction direction = getInteractDirectionInternal(blockPos, strictDirection);
+        return direction == null ? Direction.UP : direction;
+    }
+
+    public Direction getInteractDirectionInternal(final BlockPos blockPos, final boolean strictDirection) {
+        Set<Direction> validDirections = getPlaceDirectionsNCP(mc.player.getEyePos(), blockPos.toCenterPos());
+        Direction interactDirection = null;
+        for (final Direction direction : Direction.values()) {
+            final BlockState state = mc.world.getBlockState(blockPos.offset(direction));
+            if (state.isAir() || !state.getFluidState().isEmpty()) {
+                continue;
+            }
+
+            if (state.getBlock() == Blocks.ANVIL || state.getBlock() == Blocks.CHIPPED_ANVIL
+                    || state.getBlock() == Blocks.DAMAGED_ANVIL) {
+                continue;
+            }
+
+            if (strictDirection && !validDirections.contains(direction.getOpposite())) {
+                continue;
+            }
+            interactDirection = direction;
+            break;
+        }
+        if (interactDirection == null) {
+            return null;
+        }
+        return interactDirection.getOpposite();
+    }
+
+    public Set<Direction> getPlaceDirectionsNCP(Vec3d eyePos, Vec3d blockPos) {
+        return getPlaceDirectionsNCP(eyePos.x, eyePos.y, eyePos.z, blockPos.x, blockPos.y, blockPos.z);
+    }
+
+    public Set<Direction> getPlaceDirectionsNCP(final double x, final double y, final double z,
+                                                final double dx, final double dy, final double dz) {
+        final double xdiff = x - dx;
+        final double ydiff = y - dy;
+        final double zdiff = z - dz;
+        final Set<Direction> dirs = new HashSet<>(6);
+        if (ydiff > 0.5) {
+            dirs.add(Direction.UP);
+        } else if (ydiff < -0.5) {
+            dirs.add(Direction.DOWN);
+        } else {
+            dirs.add(Direction.UP);
+            dirs.add(Direction.DOWN);
+        }
+        if (xdiff > 0.5) {
+            dirs.add(Direction.EAST);
+        } else if (xdiff < -0.5) {
+            dirs.add(Direction.WEST);
+        } else {
+            dirs.add(Direction.EAST);
+            dirs.add(Direction.WEST);
+        }
+        if (zdiff > 0.5) {
+            dirs.add(Direction.SOUTH);
+        } else if (zdiff < -0.5) {
+            dirs.add(Direction.NORTH);
+        } else {
+            dirs.add(Direction.SOUTH);
+            dirs.add(Direction.NORTH);
+        }
+        return dirs;
+    }
+
     public enum RemineMode {
+        Normal,
         Instant,
-        Normal
+        OFF
     }
 
     public enum Swap {
