@@ -80,9 +80,7 @@ dependencies {
     val platforms = listOf(
         "natives-windows",
         "natives-macos",
-        "natives-macos-arm64",
-        /*"natives-linux",
-        "natives-linux-arm64"*/
+        "natives-macos-arm64"
     )
 
     platforms.forEach { platform ->
