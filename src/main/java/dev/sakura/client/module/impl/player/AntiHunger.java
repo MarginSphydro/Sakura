@@ -14,8 +14,7 @@ import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 public class AntiHunger extends Module {
-    public AntiHunger()
-    {
+    public AntiHunger() {
         super("AntiHunger", "反饥饿", Category.Player);
     }
 

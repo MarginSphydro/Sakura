@@ -2,11 +2,12 @@ package dev.sakura.client.nanovg;
 
 import dev.sakura.client.nanovg.util.state.States;
 import net.minecraft.client.MinecraftClient;
+import org.lwjgl.nanovg.NanoVGGL3;
+import org.lwjgl.nanovg.NanoVGGLES2;
 
 import java.util.function.Consumer;
 
 import static org.lwjgl.nanovg.NanoVG.*;
-import static org.lwjgl.nanovg.NanoVGGL3.*;
 
 /**
  * Sakura NanoVG渲染器
@@ -23,14 +24,21 @@ public class NanoVGRenderer {
     private boolean initialized = false;
     private boolean inFrame = false;
     private boolean scaled = false;
-
-    private NanoVGRenderer() {
-    }
+    private boolean isAndroid = false;
 
     public void initNanoVG() {
         if (!initialized) {
-            // Remove NVG_STENCIL_STROKES as it can cause issues if the framebuffer doesn't have a stencil attachment
-            vg = nvgCreate(NVG_ANTIALIAS);
+            String os = System.getProperty("os.name").toLowerCase();
+            boolean isDesktop = os.contains("win") || os.contains("mac");
+
+            if (isDesktop) {
+                vg = NanoVGGL3.nvgCreate(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES);
+                isAndroid = false;
+            } else {
+                vg = NanoVGGLES2.nvgCreate(NanoVGGLES2.NVG_ANTIALIAS);
+                isAndroid = true;
+            }
+
             if (vg == 0L) {
                 throw new RuntimeException("无法初始化NanoVG");
             }
@@ -57,10 +65,6 @@ public class NanoVGRenderer {
         return MinecraftClient.getInstance().getWindow().getScaledHeight();
     }
 
-    /**
-     * 使用MC逻辑坐标绘制（自动缩放）
-     * 坐标系与mouseX, mouseY, scaledWidth, scaledHeight一致
-     */
     public void draw(Consumer<Long> drawingLogic) {
         draw(drawingLogic, true);
     }
@@ -168,12 +172,13 @@ public class NanoVGRenderer {
         return scaled;
     }
 
-    /**
-     * 清理资源
-     */
     public void cleanup() {
         if (initialized && vg != 0L) {
-            nvgDelete(vg);
+            if (isAndroid) {
+                NanoVGGLES2.nvgDelete(vg);
+            } else {
+                NanoVGGL3.nvgDelete(vg);
+            }
             vg = 0L;
             initialized = false;
         }

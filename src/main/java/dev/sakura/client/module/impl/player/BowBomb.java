@@ -84,11 +84,13 @@ public class BowBomb extends Module {
     }
 
     public static boolean send = false;
+
     @EventHandler
     protected void onPacketSend(PacketEvent event) {
         if (event.getType() != EventType.SEND) return;
 
-        if (mc.player == null || mc.world == null || !delayTimer.passedSecond(delay.get()) || !activeTimer.passedSecond(activeTime.get()) || !active) return;
+        if (mc.player == null || mc.world == null || !delayTimer.passedSecond(delay.get()) || !activeTimer.passedSecond(activeTime.get()) || !active)
+            return;
         if (event.getPacket() instanceof PlayerActionC2SPacket packet && packet.getAction() == PlayerActionC2SPacket.Action.RELEASE_USE_ITEM) {
             send = true;
             if (message.get()) ChatUtil.addChatMessage("§rBomb");

@@ -1,7 +1,6 @@
 package dev.sakura.client.utils.client;
 
 import dev.sakura.client.Sakura;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.text.Text;
 

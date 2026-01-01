@@ -23,6 +23,7 @@
     "entity.MixinClientPlayerEntity",
     "entity.MixinEntity",
     "entity.MixinLimbAnimator",
+    "entity.MixinFlowableFluid",
     "entity.MixinLivingEntity",
     "input.MixinKeyboard",
     "input.MixinKeyboardInput",
@@ -53,8 +54,7 @@
     "render.MixinTitleScreen",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
-    "shader.MixinShaderProgram",
-    "world.MixinFlowableFluid"
+    "shader.MixinShaderProgram"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -63,6 +63,5 @@
     "requireAnnotations": true
   },
   "mixins": [
-    "entity.MixinFlowableFluid"
   ]
 }

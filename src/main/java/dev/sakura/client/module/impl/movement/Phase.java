@@ -49,10 +49,10 @@ public class Phase extends Module {
 
     private final BoolValue attack = new BoolValue("Break", "破坏", true, () -> mode.is(Mode.Pearl));
     private final BoolValue scaffolding = new BoolValue("Scaffolding", "脚手架", true, () -> mode.is(Mode.Pearl) && attack.get());
-    private final BoolValue itemFrame = new BoolValue("ItemFrame", "物品展示框", true, () -> mode.is(Mode.Pearl) && attack.get());
+    private final BoolValue itemFrame = new BoolValue("Item Frame", "物品展示框", true, () -> mode.is(Mode.Pearl) && attack.get());
     private final BoolValue painting = new BoolValue("Painting", "画", true, () -> mode.is(Mode.Pearl) && attack.get());
 
-    private final BoolValue inventory = new BoolValue("InventorySwap", "背包切换", true, () -> mode.is(Mode.Pearl));
+    private final BoolValue inventory = new BoolValue("Inv Swap", "背包切换", true, () -> mode.is(Mode.Pearl));
 
     private final BoolValue yawStep = new BoolValue("Yaw Step", "偏航步进", true, () -> mode.is(Mode.Pearl));
     private final NumberValue<Integer> rotationSpeed = new NumberValue<>("Rotation Speed", "旋转速度", 10, 0, 10, 1, () -> mode.is(Mode.Pearl) && yawStep.get());
@@ -64,8 +64,8 @@ public class Phase extends Module {
     private final NumberValue<Double> rotationDelay = new NumberValue<>("RotationDelay", "旋转延迟", 100.0, 0.0, 500.0, 1.0, () -> mode.is(Mode.Clip) && bypass.get());
     private final BoolValue obsidian = new BoolValue("Obsidian", "黑曜石", false, () -> mode.is(Mode.Clip) && bypass.get());
     private final BoolValue clipMode = new BoolValue("Move", "移动", true, () -> mode.is(Mode.Clip) && bypass.get());
-    private final BoolValue clipIn = new BoolValue("MoveIn", "移入", true, () -> mode.is(Mode.Clip) && bypass.get() && clipMode.get());
-    private final BoolValue invalid = new BoolValue("InvalidPacket", "无效数据包", true, () -> mode.is(Mode.Clip) && bypass.get());
+    private final BoolValue clipIn = new BoolValue("Move In", "移入", true, () -> mode.is(Mode.Clip) && bypass.get() && clipMode.get());
+    private final BoolValue invalid = new BoolValue("Invalid Packet", "无效数据包", true, () -> mode.is(Mode.Clip) && bypass.get());
 
     private final BoolValue swingHand = new BoolValue("Swing Hand", "挥手", true);
 
@@ -192,7 +192,7 @@ public class Phase extends Module {
             return;
         }
 
-        if (mode.is(Mode.Clip)   && bypass.get() && clipMode.get()) {
+        if (mode.is(Mode.Clip) && bypass.get() && clipMode.get()) {
             cancel = false;
             if (clipIn.get()) {
                 Direction f = mc.player.getHorizontalFacing();

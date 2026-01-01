@@ -78,6 +78,7 @@ public class Velocity extends Module {
             timer.reset();
         }
     }
+
     @EventHandler
     public void onVelocity(EntityVelocityUpdateEvent event) {
         if (mc.player == null || mc.world == null) return;
@@ -94,11 +95,13 @@ public class Velocity extends Module {
             flag = true;
         }
     }
+
     @EventHandler
     public void onReceivePacket(PacketEvent event) {
         if (mc.player == null || mc.world == null || event.getType() != EventType.RECEIVE) return;
 
-        if ((mc.player.isTouchingWater() || mc.player.isSubmergedInWater() || mc.player.isInLava()) && pauseInLiquid.get()) return;
+        if ((mc.player.isTouchingWater() || mc.player.isSubmergedInWater() || mc.player.isInLava()) && pauseInLiquid.get())
+            return;
 
         if (fishBob.get()) {
             if (event.getPacket() instanceof EntityStatusS2CPacket packet && packet.getStatus() == 31 && packet.getEntity(mc.world) instanceof FishingBobberEntity fishHook) {
@@ -155,7 +158,8 @@ public class Velocity extends Module {
     public void onTick(TickEvent.Pre event) {
         if (mc.player == null || mc.world == null) return;
 
-        if ((mc.player.isTouchingWater() || mc.player.isSubmergedInWater() || mc.player.isInLava()) && pauseInLiquid.get()) return;
+        if ((mc.player.isTouchingWater() || mc.player.isSubmergedInWater() || mc.player.isInLava()) && pauseInLiquid.get())
+            return;
 
         if (flag) {
             if (timer.passedMS(100) && (flagInWall.get() || !EntityUtil.isInsideBlock())) {

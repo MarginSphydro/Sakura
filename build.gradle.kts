@@ -1,8 +1,8 @@
-import java.text.SimpleDateFormat
-import java.util.Date
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.fabricmc.loom.task.RemapJarTask
+import java.text.SimpleDateFormat
+import java.util.*
 
 plugins {
     id("fabric-loom") version "1.9-SNAPSHOT"
@@ -66,41 +66,30 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:${property("loader_version")}")
     "modImplementation"("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
     "modImplementation"("com.github.cabaletta:baritone:${property("baritone_api_version")}")
-    
+
     implementation(include("meteordevelopment:orbit:${property("orbit_version")}")!!)
-    //TODO MAC OS SUPPORT
-    //定义 LWJGL Native 平台检测
-    val lwjglNatives = run {
-        val os = System.getProperty("os.name").lowercase()
-        val arch = System.getProperty("os.arch").lowercase()
-        when {
-            os.contains("win") -> "natives-windows"
-            os.contains("mac") || os.contains("darwin") -> {
-                if (arch.contains("aarch64") || arch.contains("arm64")) "natives-macos-arm64"
-                else "natives-macos"
-            }
-            os.contains("linux") -> {
-                if (arch.contains("aarch64") || arch.contains("arm")) "natives-linux-arm64"
-                else "natives-linux"
-            }
-            else -> "natives-windows"
-        }
-    }
 
     // NanoVG 运行库
     val lwjglVersion = "3.3.3"
     implementation(include("org.lwjgl:lwjgl-nanovg:$lwjglVersion")!!)
 
-    // 关键修复：根据当前系统动态引入 natives
-    // runtimeOnly 保证运行时可用，include 保证打包进 Jar
-    runtimeOnly(include("org.lwjgl:lwjgl-nanovg:$lwjglVersion:$lwjglNatives")!!)
+    // GLES 支持 (用于 Android/FCL 兼容性)
+    implementation(include("org.lwjgl:lwjgl-opengles:$lwjglVersion")!!)
 
-    // 建议同时包含 lwjgl 核心的 natives 以防万一
-    runtimeOnly(include("org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives")!!)
+    // 跨平台 Natives 支持
+    val platforms = listOf(
+        "natives-windows",
+        "natives-macos",
+        "natives-macos-arm64",
+        /*"natives-linux",
+        "natives-linux-arm64"*/
+    )
 
-    // Java Agent
-    implementation(include("net.bytebuddy:byte-buddy:1.14.18")!!)
-    implementation(include("net.bytebuddy:byte-buddy-agent:1.14.18")!!)
+    platforms.forEach { platform ->
+        runtimeOnly(include("org.lwjgl:lwjgl:$lwjglVersion:$platform")!!)
+        runtimeOnly(include("org.lwjgl:lwjgl-nanovg:$lwjglVersion:$platform")!!)
+        runtimeOnly(include("org.lwjgl:lwjgl-opengles:$lwjglVersion:$platform")!!)
+    }
 }
 
 tasks.processResources {
@@ -126,51 +115,13 @@ tasks.named<RemapJarTask>("remapJar") {
     inputFile.set(tasks.named<ShadowJar>("shadowJar").get().archiveFile)
 }
 
-/*tasks.register<Jar>("buildCloudPayload") {
-    dependsOn("remapJar")
-    from(zipTree(tasks.named<RemapJarTask>("remapJar").get().archiveFile)) {
-        exclude("fabric.mod.json")
-    }
-
-    doFirst {
-        val mixinJsonFile = project.file("src/main/resources/sakura.mixins.json")
-        if (mixinJsonFile.exists()) {
-            val content = mixinJsonFile.readText()
-            val packageMatch = Regex("\"package\"\\s*:\\s*\"([^\"]+)\"").find(content)
-            val pkg = packageMatch?.groupValues?.get(1) ?: ""
-
-            val clientMatch = Regex("\"client\"\\s*:\\s*\\[(.*?)\\]", RegexOption.DOT_MATCHES_ALL).find(content)
-            val clientBlock = clientMatch?.groupValues?.get(1) ?: ""
-            
-            val mixins = Regex("\"([^\"]+)\"").findAll(clientBlock).map { it.groupValues[1] }.toList()
-            
-            val listFile = File(temporaryDir, "mixins.list")
-            listFile.parentFile.mkdirs()
-            listFile.writeText(mixins.joinToString("\n") { 
-                if (pkg.isNotEmpty()) "$pkg.$it" else it 
-            })
-            
-            from(listFile)
-        }
-    }
-    
-    archiveClassifier.set("payload")
-}*/
-
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 tasks.register("buildClientOnly") {
     doFirst {
-         tasks.findByName("remapLoader")?.enabled = false
+        tasks.findByName("remapLoader")?.enabled = false
     }
     finalizedBy("build")
 }
-
-/*tasks.register<Copy>("copyLibs") {
-    from(configurations.runtimeClasspath)
-    from(configurations.compileClasspath)
-    into(layout.projectDirectory.dir("混淆/ZKM/libs"))
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}*/
