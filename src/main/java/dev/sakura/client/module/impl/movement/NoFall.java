@@ -26,7 +26,8 @@ public class NoFall extends Module {
 
     @EventHandler
     public void onTick(TickEvent.Pre event) {
-        if (!isFalling()) return;
+        if (mc.player == null || !isFalling()) return;
+
         if (mode.is(Mode.Grim)) {
             mc.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.Full(mc.player.getX(), mc.player.getY() + 0.000000001, mc.player.getZ(), mc.player.getYaw(), mc.player.getPitch(), false, mc.player.horizontalCollision));
             mc.player.onLanding();
@@ -35,10 +36,8 @@ public class NoFall extends Module {
 
     @EventHandler
     public void onPacketSend(PacketEvent event) {
-        if (mc.world == null || mc.player == null) {
-            return;
-        }
         if (event.getType() != EventType.SEND) return;
+
         for (ItemStack is : mc.player.getArmorItems()) {
             if (is.getItem() == Items.ELYTRA) {
                 return;
