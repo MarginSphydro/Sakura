@@ -14,6 +14,7 @@ import dev.sakura.client.module.impl.hud.*;
 import dev.sakura.client.module.impl.movement.*;
 import dev.sakura.client.module.impl.movement.velocity.Velocity;
 import dev.sakura.client.module.impl.player.*;
+import dev.sakura.client.module.impl.player.mine.PacketMine;
 import dev.sakura.client.module.impl.render.*;
 import dev.sakura.client.values.Value;
 import meteordevelopment.orbit.EventHandler;
@@ -76,6 +77,7 @@ public class ModuleManager {
             manager.tryLoad(() -> new AutoArmor());
             manager.tryLoad(() -> new ArmorFly());
             manager.tryLoad(() -> new Blink());
+            manager.tryLoad(() -> new PacketMine());
 
             // Render
             manager.tryLoad(() -> new TargetESP());
