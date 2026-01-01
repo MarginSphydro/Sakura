@@ -68,10 +68,35 @@ dependencies {
     "modImplementation"("com.github.cabaletta:baritone:${property("baritone_api_version")}")
     
     implementation(include("meteordevelopment:orbit:${property("orbit_version")}")!!)
+    //TODO MAC OS SUPPORT
+    //定义 LWJGL Native 平台检测
+    val lwjglNatives = run {
+        val os = System.getProperty("os.name").lowercase()
+        val arch = System.getProperty("os.arch").lowercase()
+        when {
+            os.contains("win") -> "natives-windows"
+            os.contains("mac") || os.contains("darwin") -> {
+                if (arch.contains("aarch64") || arch.contains("arm64")) "natives-macos-arm64"
+                else "natives-macos"
+            }
+            os.contains("linux") -> {
+                if (arch.contains("aarch64") || arch.contains("arm")) "natives-linux-arm64"
+                else "natives-linux"
+            }
+            else -> "natives-windows"
+        }
+    }
 
     // NanoVG 运行库
-    implementation(include("org.lwjgl", "lwjgl-nanovg", "3.3.3"))
-    implementation(include("org.lwjgl:lwjgl-nanovg::natives-windows")!!)
+    val lwjglVersion = "3.3.3"
+    implementation(include("org.lwjgl:lwjgl-nanovg:$lwjglVersion")!!)
+
+    // 关键修复：根据当前系统动态引入 natives
+    // runtimeOnly 保证运行时可用，include 保证打包进 Jar
+    runtimeOnly(include("org.lwjgl:lwjgl-nanovg:$lwjglVersion:$lwjglNatives")!!)
+
+    // 建议同时包含 lwjgl 核心的 natives 以防万一
+    runtimeOnly(include("org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives")!!)
 
     // Java Agent
     implementation(include("net.bytebuddy:byte-buddy:1.14.18")!!)

@@ -66,10 +66,7 @@ public class NanoVGRenderer {
     }
 
     public void draw(Consumer<Long> drawingLogic, boolean applyScale) {
-        if (!initialized) {
-            initNanoVG();
-        }
-
+        if (!initialized) initNanoVG();
         if (inFrame) {
             drawingLogic.accept(vg);
             return;
@@ -78,28 +75,20 @@ public class NanoVGRenderer {
         States.INSTANCE.push();
 
         MinecraftClient mc = MinecraftClient.getInstance();
-        int width = mc.getWindow().getWidth();
-        int height = mc.getWindow().getHeight();
+        // 获取逻辑坐标的宽高（与鼠标坐标、Screen 尺寸一致）
+        int scaledWidth = mc.getWindow().getScaledWidth();
+        int scaledHeight = mc.getWindow().getScaledHeight();
+        // 获取像素比（Retina 为 2.0，普通屏为 1.0）
+        float pixelRatio = (float) mc.getWindow().getScaleFactor();
 
-        nvgBeginFrame(vg, width, height, 1.0f);
+        // 关键修正：传入逻辑宽高和像素比，NanoVG 内部会自动处理高分屏缩放
+        nvgBeginFrame(vg, scaledWidth, scaledHeight, pixelRatio);
         inFrame = true;
 
-        if (applyScale) {
-            float scale = getScaleFactor();
-            nvgSave(vg);
-            nvgScale(vg, scale, scale);
-            scaled = true;
-        } else {
-            scaled = false;
-        }
-
         try {
+            // 现在直接使用逻辑坐标绘图即可，无需额外 nvgScale
             drawingLogic.accept(vg);
         } finally {
-            if (applyScale) {
-                nvgRestore(vg);
-                scaled = false;
-            }
             nvgEndFrame(vg);
             inFrame = false;
             States.INSTANCE.pop();
