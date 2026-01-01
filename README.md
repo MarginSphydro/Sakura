@@ -8,6 +8,8 @@
   border-radius: 10px;
 ">
 
+[![Build](https://github.com/L3MonKe/Sakura/actions/workflows/build.yml/badge.svg)](https://github.com/L3MonKe/Sakura/actions/workflows/build.yml)
+
 <div style="
   background-size: cover;
   background-attachment: fixed;
