@@ -12,10 +12,14 @@ import dev.sakura.client.nanovg.util.NanoVGHelper;
 import dev.sakura.client.shaders.MainMenuShader;
 import dev.sakura.client.utils.TranslationManager;
 import dev.sakura.client.utils.render.Shader2DUtil;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.nanovg.NVGPaint;
+import org.lwjgl.nanovg.NanoVG;
+import org.lwjgl.system.MemoryStack;
 
 import java.awt.*;
 import java.io.InputStream;
@@ -23,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static dev.sakura.client.Sakura.mc;
 import static org.lwjgl.nanovg.NanoVG.nvgCreateImageMem;
 
 public class WelcomeScreen extends Screen {
@@ -87,24 +92,28 @@ public class WelcomeScreen extends Screen {
         updateLayout();
     }
 
-    private float getLogicX(float physicalX) {
-        return (physicalX - width / 2.0f) / contentScale + width / 2.0f;
-    }
-
-    private float getLogicY(float physicalY) {
-        return (physicalY - height / 2.0f) / contentScale + height / 2.0f;
-    }
-
     private void updateLayout() {
-        this.contentScale = Math.min(1.0f, Math.min((float) width / 850f, (float) height / 550f));
+        double scaleFactor = mc.getWindow().getScaleFactor();
+        double rawWidth = width * scaleFactor;
+        double rawHeight = height * scaleFactor;
+
+        double simulatedScaleFactor = 2.0;
+        double simulatedWidth = rawWidth / simulatedScaleFactor;
+        double simulatedHeight = rawHeight / simulatedScaleFactor;
+
+        float targetContentScale = Math.min(1.0f, Math.min((float) simulatedWidth / 850f, (float) simulatedHeight / 550f));
+
+        this.contentScale = targetContentScale * (float) (simulatedScaleFactor / scaleFactor);
 
         buttons.clear();
         int centerX = width / 2;
         int centerY = height / 2;
-        int bottomY = (int) getLogicY(height - 50);
-        int buttonWidth = 100;
-        int buttonHeight = 30;
-        int spacing = 20;
+
+        float scale = contentScale;
+        int bottomY = (int) (height - 50 * scale);
+        int buttonWidth = (int) (100 * scale);
+        int buttonHeight = (int) (30 * scale);
+        int spacing = (int) (20 * scale);
 
         btnPrev = new MenuButton(centerX - buttonWidth - spacing / 2, bottomY, buttonWidth, buttonHeight, TranslationManager.get("nav.prev"), () -> {
             if (currentStep > 0 && !transitioningStep) {
@@ -120,7 +129,8 @@ public class WelcomeScreen extends Screen {
             }
         });
 
-        btnLanguage = new MenuButton(centerX - 100, centerY, 200, 30, getLanguageText(), () -> {
+        int langBtnWidth = (int) (200 * scale);
+        btnLanguage = new MenuButton(centerX - langBtnWidth / 2, centerY, langBtnWidth, buttonHeight, getLanguageText(), () -> {
             if (ClickGui.language.get() == ClickGui.Language.English) {
                 ClickGui.language.set(ClickGui.Language.Chinese);
             } else {
@@ -136,14 +146,10 @@ public class WelcomeScreen extends Screen {
         });
 
         int pickerWidth = 230;
-
         int pickerHeight = new AdvancedColorPicker("", ClickGui.mainColor, 0, 0).getHeight();
-        int colorButtonHeight = 35;
-        int colorSpacing = 20;
-        int totalGroupHeight = pickerHeight + colorSpacing + colorButtonHeight;
 
-        int pickerX = centerX - 250 - (pickerWidth / 2);
-        int pickerY = centerY - (totalGroupHeight / 2);
+        int pickerX = -180 - pickerWidth;
+        int pickerY = -((pickerHeight + 20 + 35) / 2);
 
         if (mainColorPicker == null) {
             mainColorPicker = new AdvancedColorPicker("theme.main_color", ClickGui.mainColor, pickerX, pickerY);
@@ -153,7 +159,12 @@ public class WelcomeScreen extends Screen {
             mainColorPicker.setSecondColor(ClickGui.secondColor);
         }
 
-        btnColorMode = new MenuButton(pickerX, pickerY + pickerHeight + colorSpacing, pickerWidth, colorButtonHeight, getColorModeText(), () -> {
+        int modeBtnWidth = (int) (pickerWidth * scale);
+        int modeBtnHeight = (int) (35 * scale);
+        int modeBtnY = (int) (centerY + (pickerY + pickerHeight + 20) * scale);
+        int modeBtnX = (int) (centerX + pickerX * scale);
+
+        btnColorMode = new MenuButton(modeBtnX, modeBtnY, modeBtnWidth, modeBtnHeight, getColorModeText(), () -> {
             ClickGui.ColorMode[] modes = ClickGui.ColorMode.values();
             int index = ClickGui.colorMode.get().ordinal();
             int nextIndex = (index + 1) % modes.length;
@@ -257,7 +268,7 @@ public class WelcomeScreen extends Screen {
             Shader2DUtil.drawQuadBlur(context.getMatrices(), 0, 0, width, height, blurStrength, 1.0f);
         }
 
-        final float finalScale = scale * contentScale;
+        final float finalScale = scale;
         final float finalAlpha = alpha;
 
         NanoVGRenderer.INSTANCE.draw(vg -> {
@@ -266,16 +277,13 @@ public class WelcomeScreen extends Screen {
             NanoVGHelper.translate(vg, -width / 2f, -height / 2f);
             NanoVGHelper.globalAlpha(vg, finalAlpha);
 
-            double scaledMouseX = (mouseX - width / 2.0) / contentScale + width / 2.0;
-            double scaledMouseY = (mouseY - height / 2.0) / contentScale + height / 2.0;
-
-            renderStep(vg, (int) scaledMouseX, (int) scaledMouseY);
+            renderStep(vg, mouseX, mouseY);
 
             for (MenuButton button : buttons) {
                 if (button == btnLanguage || button == btnColorMode) continue;
 
-                boolean hovered = button.isHovered((int) scaledMouseX, (int) scaledMouseY);
-                button.render(hovered, 1.0f, hovered ? 1.05f : 1.0f);
+                boolean hovered = button.isHovered(mouseX, mouseY);
+                button.render(hovered, 1.0f, hovered ? 1.1f : 1.0f);
             }
 
             renderProgressDots(vg);
@@ -363,37 +371,46 @@ public class WelcomeScreen extends Screen {
         switch (currentStep) {
             case 0:
                 String title = TranslationManager.get("welcome.title");
-                float fontSize = 40f;
+                float fontSize = 40f * contentScale;
                 int font = FontLoader.bold((int) fontSize);
                 float textWidth = NanoVGHelper.getTextWidth(title, font, fontSize);
 
-                NanoVGHelper.drawString(title, (width - textWidth) / 2f + 2, centerY - 100 + 2, font, fontSize, new Color(0, 0, 0, 100));
-                NanoVGHelper.drawString(title, (width - textWidth) / 2f, centerY - 100, font, fontSize, Color.WHITE);
+                NanoVGHelper.drawString(title, (width - textWidth) / 2f + 2, centerY - 100 * contentScale + 2, font, fontSize, new Color(0, 0, 0, 100));
+                NanoVGHelper.drawString(title, (width - textWidth) / 2f, centerY - 100 * contentScale, font, fontSize, Color.WHITE);
 
                 String sub = TranslationManager.get("welcome.subtitle");
-                float subSize = 20f;
+                float subSize = 20f * contentScale;
                 int subFont = FontLoader.regular((int) subSize);
                 float subWidth = NanoVGHelper.getTextWidth(sub, subFont, subSize);
-                NanoVGHelper.drawString(sub, (width - subWidth) / 2f, centerY - 60, subFont, subSize, new Color(220, 220, 220));
+                NanoVGHelper.drawString(sub, (width - subWidth) / 2f, centerY - 60 * contentScale, subFont, subSize, new Color(220, 220, 220));
 
                 boolean hovered = btnLanguage.isHovered(mouseX, mouseY);
-                btnLanguage.render(hovered, 1.0f, hovered ? 1.05f : 1.0f);
+                btnLanguage.render(hovered, 1.0f, hovered ? 1.1f : 1.0f);
                 break;
 
             case 1:
                 String settingsText = TranslationManager.get("wizard.step.theme");
-                float sFontSize = 24f;
+                float sFontSize = 24f * contentScale;
                 int sFont = FontLoader.bold((int) sFontSize);
                 float sTextWidth = NanoVGHelper.getTextWidth(settingsText, sFont, sFontSize);
-                NanoVGHelper.drawString(settingsText, (width - sTextWidth) / 2f, getLogicY(50), sFont, sFontSize, Color.WHITE);
+                NanoVGHelper.drawString(settingsText, (width - sTextWidth) / 2f, 50 * contentScale, sFont, sFontSize, Color.WHITE);
 
-                drawPreviewPanel(centerX + 180, centerY - 160);
+                NanoVGHelper.save();
+                NanoVGHelper.translate(width / 2f, height / 2f);
+                NanoVGHelper.scale(contentScale, contentScale);
 
-                mainColorPicker.render(mouseX, mouseY);
+                drawPreviewPanel(180, -160);
+
+                double localMouseX = (mouseX - width / 2.0) / contentScale;
+                double localMouseY = (mouseY - height / 2.0) / contentScale;
+
+                mainColorPicker.render((int) localMouseX, (int) localMouseY);
+
+                NanoVGHelper.restore();
 
                 if (btnColorMode != null) {
                     boolean modeHovered = btnColorMode.isHovered(mouseX, mouseY);
-                    btnColorMode.render(modeHovered, 1.0f, modeHovered ? 1.05f : 1.0f);
+                    btnColorMode.render(modeHovered, 1.0f, modeHovered ? 1.1f : 1.0f);
                 }
                 break;
 
@@ -401,17 +418,19 @@ public class WelcomeScreen extends Screen {
                 loadPi8Image();
 
                 String readText = "请必须完整阅读";
-                int rFont = FontLoader.bold(24);
-                float rWidth = NanoVGHelper.getTextWidth(readText, rFont, 24);
-                NanoVGHelper.drawString(readText, (width - rWidth) / 2f, getLogicY(30), rFont, 24, new Color(255, 100, 100));
+                int rFont = FontLoader.bold((int) (24 * contentScale));
+                float rWidth = NanoVGHelper.getTextWidth(readText, rFont, 24 * contentScale);
+                NanoVGHelper.drawString(readText, (width - rWidth) / 2f, 30 * contentScale, rFont, 24 * contentScale, new Color(255, 100, 100));
 
-                float viewW = 380;
+                float viewW = 380 * contentScale;
+
                 if (viewW > width * 0.9f) viewW = width * 0.9f;
-                float viewY = getLogicY(60);
-                float viewH = getLogicY(height - 110) - viewY;
+
+                float viewY = 60 * contentScale;
+                float viewH = height - 170 * contentScale;
                 float viewX = (width - viewW) / 2f;
 
-                float padding = 6;
+                float padding = 6 * contentScale;
                 float contentX = viewX + padding;
                 float contentY = viewY + padding;
                 float contentW = viewW - padding * 2;
@@ -440,9 +459,32 @@ public class WelcomeScreen extends Screen {
                         targetImageScrollY += (maxScroll - targetImageScrollY) * 0.2f;
                     }
 
-                    NanoVGHelper.scissor(contentX, contentY, contentW, contentH);
-                    NanoVGHelper.drawTexture(pi8Texture, contentX, contentY - imageScrollY, imgW, imgH, 1.0f);
-                    NanoVGHelper.resetScissor();
+                    NanoVGHelper.save();
+                    NanoVGHelper.translate(vg, contentX, contentY - imageScrollY);
+
+                    try (MemoryStack stack = MemoryStack.stackPush()) {
+                        NVGPaint paint = NVGPaint.malloc(stack);
+                        NanoVG.nvgImagePattern(vg, 0, 0, imgW, imgH, 0, pi8Texture, 1.0f, paint);
+                    }
+
+                    NanoVGHelper.restore();
+                    NanoVGHelper.save();
+
+                    try (MemoryStack stack = MemoryStack.stackPush()) {
+                        NVGPaint paint = NVGPaint.malloc(stack);
+
+                        NanoVG.nvgImagePattern(vg, contentX, contentY - imageScrollY, imgW, imgH, 0, pi8Texture, 1.0f, paint);
+
+                        NanoVG.nvgBeginPath(vg);
+
+                        NanoVG.nvgRoundedRect(vg, contentX, contentY, contentW, contentH, 12);
+
+                        NanoVG.nvgFillPaint(vg, paint);
+
+                        NanoVG.nvgFill(vg);
+                    }
+
+                    NanoVGHelper.restore();
 
                     if (maxScroll > 0) {
                         float barH = Math.max(20, (contentH / imgH) * contentH);
@@ -464,16 +506,16 @@ public class WelcomeScreen extends Screen {
 
             case 3:
                 String finishText = TranslationManager.get("ready.title");
-                float fFontSize = 24f;
+                float fFontSize = 24f * contentScale;
                 int fFont = FontLoader.bold((int) fFontSize);
                 float fTextWidth = NanoVGHelper.getTextWidth(finishText, fFont, fFontSize);
-                NanoVGHelper.drawString(finishText, (width - fTextWidth) / 2f, centerY - 20, fFont, fFontSize, Color.WHITE);
+                NanoVGHelper.drawString(finishText, (width - fTextWidth) / 2f, centerY - 20 * contentScale, fFont, fFontSize, Color.WHITE);
 
                 String infoText = TranslationManager.get("ready.info");
-                float iFontSize = 16f;
+                float iFontSize = 16f * contentScale;
                 int iFont = FontLoader.regular((int) iFontSize);
                 float iTextWidth = NanoVGHelper.getTextWidth(infoText, iFont, iFontSize);
-                NanoVGHelper.drawString(infoText, (width - iTextWidth) / 2f, centerY + 10, iFont, iFontSize, new Color(200, 200, 200));
+                NanoVGHelper.drawString(infoText, (width - iTextWidth) / 2f, centerY + 10 * contentScale, iFont, iFontSize, new Color(200, 200, 200));
                 break;
         }
 
@@ -504,34 +546,38 @@ public class WelcomeScreen extends Screen {
 
     private void renderProgressDots(long vg) {
         int centerX = width / 2;
-        int bottomY = (int) getLogicY(height - 80);
-        int dotSpacing = 20;
+        int bottomY = (int) (height - 80 * contentScale);
+        int dotSpacing = (int) (20 * contentScale);
         int startX = centerX - ((totalSteps - 1) * dotSpacing) / 2;
 
         for (int i = 0; i < totalSteps; i++) {
             float x = startX + i * dotSpacing;
             boolean active = i == currentStep;
 
-            Color color = active ? new Color(255, 183, 197) : new Color(150, 150, 150, 100);
-            float radius = active ? 4 : 3;
+            float radius = active ? 4 * contentScale : 3 * contentScale;
 
-            NanoVGHelper.drawCircle(x, bottomY, radius, color);
+            if (active) {
+                NanoVGHelper.drawCircle(x, bottomY, radius, new Color(255, 100, 100));
+                NanoVGHelper.drawCircleOutline(x, bottomY, radius + 2 * contentScale, 1.0f, new Color(255, 100, 100, 100));
+            } else {
+                NanoVGHelper.drawCircle(x, bottomY, radius, new Color(200, 200, 200, 150));
+            }
         }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        double scaledMouseX = getLogicX((float) mouseX);
-        double scaledMouseY = getLogicY((float) mouseY);
-
         if (currentStep == 1 && mainColorPicker != null) {
-            if (mainColorPicker.mouseClicked(scaledMouseX, scaledMouseY, button)) {
+            double localMouseX = (mouseX - width / 2.0) / contentScale;
+            double localMouseY = (mouseY - height / 2.0) / contentScale;
+
+            if (mainColorPicker.mouseClicked(localMouseX, localMouseY, button)) {
                 return true;
             }
         }
 
         for (MenuButton btn : buttons) {
-            if (btn.mouseClicked(scaledMouseX, scaledMouseY, button)) return true;
+            if (btn.mouseClicked(mouseX, mouseY, button)) return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -545,7 +591,7 @@ public class WelcomeScreen extends Screen {
     }
 
     @Override
-    public void resize(net.minecraft.client.MinecraftClient client, int width, int height) {
+    public void resize(MinecraftClient client, int width, int height) {
         super.resize(client, width, height);
     }
 }

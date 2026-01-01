@@ -207,14 +207,17 @@ public class AdvancedColorPicker {
         nvgClosePath(vg);
         nvgScissor(vg, x, y, w, h);
 
-        int segments = 12;
-        float segW = w / segments;
+        int segments = 64;
         for (int i = 0; i < segments; i++) {
             float h1 = (float) i / segments;
             float h2 = (float) (i + 1) / segments;
             Color c1 = Color.getHSBColor(h1, 1f, 1f);
             Color c2 = Color.getHSBColor(h2, 1f, 1f);
-            drawGradientRect(x + i * segW, y, segW, h, c1, c2, true);
+
+            float x1 = x + (i * w) / segments;
+            float x2 = x + ((i + 1) * w) / segments;
+
+            drawGradientRect(x1, y, x2 - x1 + 1, h, c1, c2, true);
         }
 
         nvgResetScissor(vg);

@@ -159,7 +159,7 @@ public class MainMenuShader {
         }
 
         if (this.mouseUniform >= 0) {
-            GL20.glUniform2f(this.mouseUniform, mouseOffsetX, 0.5f); // y is dummy
+            GL20.glUniform2f(this.mouseUniform, mouseOffsetX, 0.5f);
         }
 
         this.vertexBuffer.bind();

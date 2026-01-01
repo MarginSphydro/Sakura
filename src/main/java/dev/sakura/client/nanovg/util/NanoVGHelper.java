@@ -9,6 +9,9 @@ import org.lwjgl.nanovg.NVGPaint;
 import org.lwjgl.system.MemoryStack;
 
 import java.awt.*;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 
@@ -463,26 +466,24 @@ public class NanoVGHelper {
      */
     public static int loadTexture(String path) {
         try {
-            java.io.InputStream is = NanoVGHelper.class.getResourceAsStream(path);
+            InputStream is = NanoVGHelper.class.getResourceAsStream(path);
             if (is == null) return -1;
 
             byte[] bytes = is.readAllBytes();
             is.close();
 
-            java.nio.ByteBuffer imageBuffer = java.nio.ByteBuffer.allocateDirect(bytes.length);
+            ByteBuffer imageBuffer = ByteBuffer.allocateDirect(bytes.length);
             imageBuffer.put(bytes);
             imageBuffer.flip();
 
-            try (org.lwjgl.system.MemoryStack stack = org.lwjgl.system.MemoryStack.stackPush()) {
-                java.nio.IntBuffer w = stack.mallocInt(1);
-                java.nio.IntBuffer h = stack.mallocInt(1);
-                java.nio.IntBuffer comp = stack.mallocInt(1);
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                IntBuffer w = stack.mallocInt(1);
+                IntBuffer h = stack.mallocInt(1);
+                IntBuffer comp = stack.mallocInt(1);
 
-                // stbi_load_from_memory logic can be here, but simpler to use nvgCreateImageMem
                 return nvgCreateImageMem(getContext(), 0, imageBuffer);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return -1;
         }
     }

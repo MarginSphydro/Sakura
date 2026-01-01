@@ -65,9 +65,17 @@ public class MenuButton {
         Color borderColor = new Color(255, 255, 255, borderAlphaVal);
         NanoVGHelper.drawRoundRectOutlineScaled(x, y, width, height, 4, 1, borderColor, scale);
 
-        float fontSize = Math.max(10f, Math.min(16f, height * 0.7f));
+        float fontSize = Math.max(10f, Math.min(15f, height * 0.7f)) * scale;
         int font = FontLoader.regular((int) fontSize);
+
+        float availableWidth = width - 10 * scale;
         float textWidth = NanoVGHelper.getTextWidth(text, font, fontSize);
+
+        if (textWidth > availableWidth) {
+            fontSize = fontSize * (availableWidth / textWidth);
+            textWidth = NanoVGHelper.getTextWidth(text, font, fontSize);
+        }
+
         float textX = x + (width - textWidth) / 2f;
         float textY = y + height / 2f + fontSize / 3;
 
