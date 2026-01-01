@@ -5,14 +5,13 @@ import dev.sakura.client.events.input.MouseButtonEvent;
 import dev.sakura.client.events.misc.KeyAction;
 import dev.sakura.client.events.misc.KeyEvent;
 import dev.sakura.client.events.render.Render2DEvent;
+import dev.sakura.client.manager.Managers;
 import dev.sakura.client.manager.impl.NotificationManager;
-import dev.sakura.client.manager.impl.SoundManager;
 import dev.sakura.client.module.impl.client.ClickGui;
 import dev.sakura.client.module.impl.client.HudEditor;
 import dev.sakura.client.module.impl.combat.*;
 import dev.sakura.client.module.impl.hud.*;
 import dev.sakura.client.module.impl.movement.*;
-import dev.sakura.client.module.impl.movement.velocity.Velocity;
 import dev.sakura.client.module.impl.player.*;
 import dev.sakura.client.module.impl.player.mine.PacketMine;
 import dev.sakura.client.module.impl.render.*;
@@ -22,7 +21,6 @@ import meteordevelopment.orbit.EventPriority;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static dev.sakura.client.Sakura.mc;
@@ -34,94 +32,81 @@ public class ModuleManager {
         modules = new LinkedHashMap<>();
         Sakura.EVENT_BUS.subscribe(this);
 
-        try {
-            ManualLoader.load(this);
-        } catch (Throwable ignored) {
-        }
+        // Combat
+        add(new AnchorAura());
+        add(new AutoPot());
+        add(new AutoTotem());
+        add(new AutoTrap());
+        add(new Burrow());
+        add(new CrystalAura());
+        add(new KillAura());
+        add(new SelfTrap());
+        add(new Surround());
+        add(new Velocity());
+        add(new WebAura());
+
+        // Movement
+        add(new ArmorFly());
+        add(new AutoSprint());
+        add(new ElytraFly());
+        add(new HoleSnap());
+        add(new MoveFix());
+        add(new NoFall());
+        add(new NoSlow());
+        add(new Phase());
+        add(new Scaffold());
+        add(new Speed());
+        add(new Step());
+
+        // Player
+        add(new AntiHunger());
+        add(new AutoArmor());
+        add(new AutoPearl());
+        add(new Blink());
+        add(new BowBomb());
+        add(new FakePlayer());
+        add(new InventorySort());
+        add(new NoRotate());
+        add(new PacketEat());
+        add(new PacketMine());
+        add(new Replenish());
+        add(new TimerModule());
+
+        // Render
+        add(new AspectRatio());
+        add(new Atmosphere());
+        add(new CameraClip());
+        add(new Crystal());
+        add(new Fullbright());
+        add(new Glow());
+        add(new Hat());
+        add(new JumpCircles());
+        add(new NameTags());
+        add(new NoRender());
+        add(new SwingAnimation());
+        add(new TargetESP());
+        add(new TotemParticles());
+        add(new ViewModel());
+        add(new XRay());
+
+        // Client
+        add(new ClickGui());
+        add(new HudEditor());
+
+        // HUD
+        add(new DynamicIslandHud());
+        add(new FPSHud());
+        add(new HotbarHud());
+        add(new KeyStrokesHud());
+        add(new ModuleListHud());
+        add(new MSHud());
+        add(new NotificationHud());
+        add(new NotifyHud());
+        add(new TargetHud());
+        add(new WatermarkHud());
     }
 
-    @SuppressWarnings("Convert2MethodRef")
-    private static class ManualLoader {
-        static void load(ModuleManager manager) {
-            // Combat
-            manager.tryLoad(() -> new SelfTrap());
-            manager.tryLoad(() -> new AutoTrap());
-            manager.tryLoad(() -> new AnchorAura());
-            manager.tryLoad(() -> new AutoPot());
-            manager.tryLoad(() -> new Velocity());
-            manager.tryLoad(() -> new AutoTotem());
-            manager.tryLoad(() -> new CrystalAura());
-            manager.tryLoad(() -> new Burrow());
-            manager.tryLoad(() -> new KillAura());
-            manager.tryLoad(() -> new Surround());
-            manager.tryLoad(() -> new WebAura());
-
-            // Movement
-            manager.tryLoad(() -> new AutoSprint());
-            manager.tryLoad(() -> new ElytraBoost());
-            manager.tryLoad(() -> new Speed());
-            manager.tryLoad(() -> new Step());
-            manager.tryLoad(() -> new NoSlow());
-            manager.tryLoad(() -> new HoleSnap());
-            manager.tryLoad(() -> new Scaffold());
-            manager.tryLoad(() -> new ElytraFly());
-
-
-            // Player
-            manager.tryLoad(() -> new NoRotate());
-            manager.tryLoad(() -> new FakePlayer());
-            manager.tryLoad(() -> new AutoPearl());
-            manager.tryLoad(() -> new TimerModule());
-            manager.tryLoad(() -> new PacketEat());
-            manager.tryLoad(() -> new InventorySort());
-            manager.tryLoad(() -> new AutoArmor());
-            manager.tryLoad(() -> new ArmorFly());
-            manager.tryLoad(() -> new Blink());
-            manager.tryLoad(() -> new PacketMine());
-
-            // Render
-            manager.tryLoad(() -> new TargetESP());
-            manager.tryLoad(() -> new CameraClip());
-            manager.tryLoad(() -> new Fullbright());
-            manager.tryLoad(() -> new NoRender());
-            manager.tryLoad(() -> new SwingAnimation());
-            manager.tryLoad(() -> new ViewModel());
-            manager.tryLoad(() -> new Hat());
-            manager.tryLoad(() -> new JumpCircles());
-            manager.tryLoad(() -> new XRay());
-            manager.tryLoad(() -> new NameTags());
-            manager.tryLoad(() -> new Glow());
-            manager.tryLoad(() -> new TotemParticles());
-            manager.tryLoad(() -> new Atmosphere());
-            manager.tryLoad(() -> new AspectRatio());
-            manager.tryLoad(() -> new Crystal());
-
-            // Client
-            manager.tryLoad(() -> new ClickGui());
-            manager.tryLoad(() -> new HudEditor());
-
-            // HUD
-            manager.tryLoad(() -> new FPSHud());
-            manager.tryLoad(() -> new NotificationHud());
-            manager.tryLoad(() -> new WatermarkHud());
-            manager.tryLoad(() -> new MSHud());
-            manager.tryLoad(() -> new DynamicIslandHud());
-            manager.tryLoad(() -> new KeyStrokesHud());
-            manager.tryLoad(() -> new NotifyHud());
-            manager.tryLoad(() -> new HotbarHud());
-            manager.tryLoad(() -> new ModuleListHud());
-            manager.tryLoad(() -> new TargetHud());
-        }
-    }
-
-    private void tryLoad(Supplier<Module> supplier) {
-        try {
-            addModule(supplier.get());
-        } catch (NoClassDefFoundError | Exception ignored) {
-        }
-    }
-
-    private void addModule(Module module) {
+    private void add(Module module) {
         for (final Field field : module.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
@@ -201,15 +186,11 @@ public class ModuleManager {
 
         if (!affectedModules.isEmpty()) {
             if (hasEnabling) {
-                SoundManager.playSound(SoundManager.ENABLE);
+                Managers.SOUND.playSound(Managers.SOUND.ENABLE);
             } else {
-                SoundManager.playSound(SoundManager.DISABLE);
+                Managers.SOUND.playSound(Managers.SOUND.DISABLE);
             }
         }
-    }
-
-    private void sendToggleNotification(Module module, boolean enabling) {
-        sendToggleNotification(module, enabling, "", true);
     }
 
     private void sendToggleNotification(Module module, boolean enabling, String suffix, boolean playSound) {
@@ -222,7 +203,7 @@ public class ModuleManager {
         }
         NotificationManager.send(module.hashCode(), "§7" + name + status + suffix, 3000L);
         if (playSound) {
-            SoundManager.playSound(enabling ? SoundManager.ENABLE : SoundManager.DISABLE);
+            Managers.SOUND.playSound(enabling ? Managers.SOUND.ENABLE : Managers.SOUND.DISABLE);
         }
     }
 
