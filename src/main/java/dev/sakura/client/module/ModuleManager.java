@@ -13,6 +13,7 @@ import dev.sakura.client.module.impl.combat.*;
 import dev.sakura.client.module.impl.hud.*;
 import dev.sakura.client.module.impl.movement.*;
 import dev.sakura.client.module.impl.player.*;
+import dev.sakura.client.module.impl.player.mine.PacketMine;
 import dev.sakura.client.module.impl.render.*;
 import dev.sakura.client.values.Value;
 import meteordevelopment.orbit.EventHandler;
@@ -67,7 +68,7 @@ public class ModuleManager {
         add(new InventorySort());
         add(new NoRotate());
         add(new PacketEat());
-        //add(new PacketMine());
+        add(new PacketMine());
         add(new Replenish());
         add(new TimerModule());
 

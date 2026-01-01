@@ -8,7 +8,8 @@
   border-radius: 10px;
 ">
 
-# Sakura
+[![Snapshot](https://github.com/L3MonKe/Sakura/actions/workflows/build_and_save.yml/badge.svg)](https://github.com/L3MonKe/Sakura/actions/workflows/build_and_save.yml)
+[![Dev Build](https://github.com/L3MonKe/Sakura/actions/workflows/build.yml/badge.svg)](https://github.com/L3MonKe/Sakura/actions/workflows/build.yml)
 
 <div style="
   background-size: cover;

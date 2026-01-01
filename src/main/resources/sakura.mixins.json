@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "dev.sakura.client.mixin",
   "compatibilityLevel": "JAVA_21",
+  "refmap": "Sakura-refmap.json",
   "client": [
     "MixinMain",
     "accessor.IAccessorBundlePacket",
@@ -23,7 +24,6 @@
     "entity.MixinClientPlayerEntity",
     "entity.MixinEntity",
     "entity.MixinLimbAnimator",
-    "entity.MixinFlowableFluid",
     "entity.MixinLivingEntity",
     "input.MixinKeyboard",
     "input.MixinKeyboardInput",
@@ -54,14 +54,13 @@
     "render.MixinTitleScreen",
     "render.MixinWindow",
     "render.MixinWorldRenderer",
-    "shader.MixinShaderProgram"
+    "shader.MixinShaderProgram",
+    "player.MixinClientPlayerInteractionManager"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "overwrites": {
     "requireAnnotations": true
-  },
-  "mixins": [
-  ]
+  }
 }

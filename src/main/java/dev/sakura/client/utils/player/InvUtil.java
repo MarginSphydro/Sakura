@@ -130,11 +130,11 @@ public class InvUtil {
         return new FindItemResult(slot, count);
     }
 
-    public static FindItemResult findFastestTool(BlockState state) {
+    public static FindItemResult findFastestTool(BlockState state,Boolean inv) {
         float bestScore = 1;
         int slot = -1;
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < (inv ? mc.player.getInventory().size() : 9); i++) {
             ItemStack stack = mc.player.getInventory().getStack(i);
             if (!stack.isSuitableFor(state)) continue;
 
