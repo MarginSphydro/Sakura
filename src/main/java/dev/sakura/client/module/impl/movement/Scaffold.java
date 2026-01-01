@@ -131,7 +131,7 @@ public class Scaffold extends Module {
     }
 
     public void place() {
-        boolean hasRotated = RaytraceUtil.overBlock(RotationManager.getRotation(), blockCache.facing, blockCache.position, false);
+        boolean hasRotated = RaytraceUtil.overBlock(Managers.ROTATION.getRotation(), blockCache.facing, blockCache.position, false);
         FindItemResult item = InvUtil.findInHotbar(itemStack -> validItem(itemStack, blockCache.position));
 
         if (hasRotated) {

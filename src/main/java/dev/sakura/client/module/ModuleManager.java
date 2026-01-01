@@ -21,7 +21,6 @@ import meteordevelopment.orbit.EventPriority;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static dev.sakura.client.Sakura.mc;
@@ -33,94 +32,81 @@ public class ModuleManager {
         modules = new LinkedHashMap<>();
         Sakura.EVENT_BUS.subscribe(this);
 
-        try {
-            ManualLoader.load(this);
-        } catch (Throwable ignored) {
-        }
+        // Combat
+        add(new AnchorAura());
+        add(new AutoPot());
+        add(new AutoTotem());
+        add(new AutoTrap());
+        add(new Burrow());
+        add(new CrystalAura());
+        add(new KillAura());
+        add(new SelfTrap());
+        add(new Surround());
+        add(new Velocity());
+        add(new WebAura());
+
+        // Movement
+        add(new AutoSprint());
+        add(new ElytraBoost());
+        add(new ElytraFly());
+        add(new HoleSnap());
+        add(new NoFall());
+        add(new NoSlow());
+        add(new Phase());
+        add(new Scaffold());
+        add(new Speed());
+        add(new Step());
+
+        // Player
+        add(new AntiHunger());
+        add(new ArmorFly());
+        add(new AutoArmor());
+        add(new AutoPearl());
+        add(new Blink());
+        add(new BowBomb());
+        add(new FakePlayer());
+        add(new InventorySort());
+        add(new NoRotate());
+        add(new PacketEat());
+        add(new PacketMine());
+        add(new Replenish());
+        add(new TimerModule());
+
+        // Render
+        add(new AspectRatio());
+        add(new Atmosphere());
+        add(new CameraClip());
+        add(new Crystal());
+        add(new Fullbright());
+        add(new Glow());
+        add(new Hat());
+        add(new JumpCircles());
+        add(new NameTags());
+        add(new NoRender());
+        add(new SwingAnimation());
+        add(new TargetESP());
+        add(new TotemParticles());
+        add(new ViewModel());
+        add(new XRay());
+
+        // Client
+        add(new ClickGui());
+        add(new HudEditor());
+
+        // HUD
+        add(new DynamicIslandHud());
+        add(new FPSHud());
+        add(new HotbarHud());
+        add(new KeyStrokesHud());
+        add(new ModuleListHud());
+        add(new MSHud());
+        add(new NotificationHud());
+        add(new NotifyHud());
+        add(new TargetHud());
+        add(new WatermarkHud());
     }
 
-    @SuppressWarnings("Convert2MethodRef")
-    private static class ManualLoader {
-        static void load(ModuleManager manager) {
-            // Combat
-            manager.tryLoad(() -> new SelfTrap());
-            manager.tryLoad(() -> new AutoTrap());
-            manager.tryLoad(() -> new AnchorAura());
-            manager.tryLoad(() -> new AutoPot());
-            manager.tryLoad(() -> new Velocity());
-            manager.tryLoad(() -> new AutoTotem());
-            manager.tryLoad(() -> new CrystalAura());
-            manager.tryLoad(() -> new Burrow());
-            manager.tryLoad(() -> new KillAura());
-            manager.tryLoad(() -> new Surround());
-            manager.tryLoad(() -> new WebAura());
-
-            // Movement
-            manager.tryLoad(() -> new AutoSprint());
-            manager.tryLoad(() -> new ElytraBoost());
-            manager.tryLoad(() -> new Speed());
-            manager.tryLoad(() -> new Step());
-            manager.tryLoad(() -> new NoSlow());
-            manager.tryLoad(() -> new HoleSnap());
-            manager.tryLoad(() -> new NoFall());
-            manager.tryLoad(() -> new Scaffold());
-            manager.tryLoad(() -> new ElytraFly());
-
-
-            // Player
-            manager.tryLoad(() -> new NoRotate());
-            manager.tryLoad(() -> new FakePlayer());
-            manager.tryLoad(() -> new AutoPearl());
-            manager.tryLoad(() -> new TimerModule());
-            manager.tryLoad(() -> new PacketEat());
-            manager.tryLoad(() -> new InventorySort());
-            manager.tryLoad(() -> new AutoArmor());
-            manager.tryLoad(() -> new ArmorFly());
-            manager.tryLoad(() -> new Blink());
-
-            // Render
-            manager.tryLoad(() -> new TargetESP());
-            manager.tryLoad(() -> new CameraClip());
-            manager.tryLoad(() -> new Fullbright());
-            manager.tryLoad(() -> new NoRender());
-            manager.tryLoad(() -> new SwingAnimation());
-            manager.tryLoad(() -> new ViewModel());
-            manager.tryLoad(() -> new Hat());
-            manager.tryLoad(() -> new JumpCircles());
-            manager.tryLoad(() -> new XRay());
-            manager.tryLoad(() -> new NameTags());
-            manager.tryLoad(() -> new Glow());
-            manager.tryLoad(() -> new TotemParticles());
-            manager.tryLoad(() -> new Atmosphere());
-            manager.tryLoad(() -> new AspectRatio());
-            manager.tryLoad(() -> new Crystal());
-
-            // Client
-            manager.tryLoad(() -> new ClickGui());
-            manager.tryLoad(() -> new HudEditor());
-
-            // HUD
-            manager.tryLoad(() -> new FPSHud());
-            manager.tryLoad(() -> new NotificationHud());
-            manager.tryLoad(() -> new WatermarkHud());
-            manager.tryLoad(() -> new MSHud());
-            manager.tryLoad(() -> new DynamicIslandHud());
-            manager.tryLoad(() -> new KeyStrokesHud());
-            manager.tryLoad(() -> new NotifyHud());
-            manager.tryLoad(() -> new HotbarHud());
-            manager.tryLoad(() -> new ModuleListHud());
-            manager.tryLoad(() -> new TargetHud());
-        }
-    }
-
-    private void tryLoad(Supplier<Module> supplier) {
-        try {
-            addModule(supplier.get());
-        } catch (NoClassDefFoundError | Exception ignored) {
-        }
-    }
-
-    private void addModule(Module module) {
+    private void add(Module module) {
         for (final Field field : module.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);

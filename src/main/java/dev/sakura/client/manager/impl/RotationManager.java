@@ -58,9 +58,10 @@ public class RotationManager {
         }
     }
 
-    /*
-     * This method must be called on Pre Update Event to work correctly
-     */
+    public void setRotations(final Vector2f rotations, final double rotationSpeed) {
+        setRotations(rotations, rotationSpeed, MovementFix.OFF, null, Priority.Lowest);
+    }
+
     public void setRotations(final Vector2f rotations, final double rotationSpeed, final MovementFix correctMovement) {
         setRotations(rotations, rotationSpeed, correctMovement, null, Priority.Lowest);
     }
@@ -85,6 +86,15 @@ public class RotationManager {
         active = true;
 
         smooth();
+    }
+
+    public boolean inFov(Vec3d directionVec, double fov) {
+        float[] angle = getRotation(new Vec3d(mc.player.getX(), mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose()), mc.player.getZ()), directionVec);
+        return inFov(angle[0], angle[1], fov);
+    }
+
+    public boolean inFov(float yaw, float pitch, double fov) {
+        return MathHelper.angleBetween(yaw, rotations.x) + Math.abs(pitch - rotations.y) <= fov;
     }
 
     private void smooth() {
@@ -145,35 +155,49 @@ public class RotationManager {
         smoothed = true;
     }
 
-    public static boolean isSmoothed() {
+    public boolean isSmoothed() {
         return smoothed;
     }
 
-    public static void setSmoothed(boolean smoothed) {
+    public void setSmoothed(boolean smoothed) {
         RotationManager.smoothed = smoothed;
     }
 
-    public static boolean isActive() {
+    public boolean isActive() {
         return active;
     }
 
-    public static void setActive(boolean active) {
+    public void setActive(boolean active) {
         RotationManager.active = active;
     }
 
-    public static float getYaw() {
+    public float getYaw() {
         if (active) return rotations.x;
         else return mc.player.getYaw();
     }
 
-    public static float getPitch() {
+    public float getPitch() {
         if (active) return rotations.y;
         else return mc.player.getPitch();
     }
 
-    public static Vector2f getRotation() {
+    public Vector2f getRotation() {
         if (active) return rotations;
         else return new Vector2f(mc.player.getYaw(), mc.player.getPitch());
+    }
+
+    public float[] getRotation(Vec3d vec) {
+        return getRotation(mc.player.getEyePos(), vec);
+    }
+
+    public float[] getRotation(Vec3d eyesPos, Vec3d vec) {
+        double diffX = vec.x - eyesPos.x;
+        double diffY = vec.y - eyesPos.y;
+        double diffZ = vec.z - eyesPos.z;
+        double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+        float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0f;
+        float pitch = (float) (-Math.toDegrees(Math.atan2(diffY, diffXZ)));
+        return new float[]{MathHelper.wrapDegrees(yaw), MathHelper.wrapDegrees(pitch)};
     }
 
     @EventHandler
@@ -185,9 +209,6 @@ public class RotationManager {
         if (active) {
             smooth();
         }
-
-//        mc.player.getYaw() = rotations.x;
-//        mc.player.getPitch() = rotations.y;
 
         if (correctMovement == MovementFix.BACKWARDS_SPRINT && active) {
             if (Math.abs(rotations.x % 360 - Math.toDegrees(MovementUtil.getDirection()) % 360) > 45) {

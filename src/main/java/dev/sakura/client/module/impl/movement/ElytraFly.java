@@ -124,7 +124,7 @@ public class ElytraFly extends Module {
             return;
         }
 
-        if (firework.get() && fireworkTimer.hasReached(delay.get()) && MovementUtil.isMoving() && !mc.player.isUsingItem() && mc.player.isGliding()) {
+        if (firework.get() && fireworkTimer.passedMS(delay.get()) && MovementUtil.isMoving() && !mc.player.isUsingItem() && mc.player.isGliding()) {
             useFirework();
             fireworkTimer.reset();
         }
@@ -132,7 +132,7 @@ public class ElytraFly extends Module {
         if (!mc.player.isGliding()) {
             fireworkTimer.setTime(99999999);
             if (!mc.player.isOnGround() && instantFly.get() && mc.player.getVelocity().getY() < 0D) {
-                if (!instantFlyTimer.hasReached((long) (1000 * timeout.get()))) return;
+                if (!instantFlyTimer.passedMS((long) (1000 * timeout.get()))) return;
                 instantFlyTimer.reset();
                 mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
                 strictTimer.reset();

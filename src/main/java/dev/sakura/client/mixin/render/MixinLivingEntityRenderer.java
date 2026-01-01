@@ -1,6 +1,7 @@
 package dev.sakura.client.mixin.render;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import dev.sakura.client.manager.Managers;
 import dev.sakura.client.manager.impl.RotationManager;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -20,7 +21,7 @@ public abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extend
             return original;
         }
 
-        if (RotationManager.isActive()) {
+        if (Managers.ROTATION.isActive()) {
             return MathHelper.lerp(tickDelta, RotationManager.getPrevRenderYawOffset(), RotationManager.getRenderYawOffset());
         }
 
@@ -33,7 +34,7 @@ public abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extend
             return original;
         }
 
-        if (RotationManager.isActive()) {
+        if (Managers.ROTATION.isActive()) {
             return MathHelper.lerpAngleDegrees(tickDelta, RotationManager.getPrevRotationYawHead(), RotationManager.getRotationYawHead());
         }
 
@@ -46,7 +47,7 @@ public abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extend
             return original;
         }
 
-        if (RotationManager.isActive()) {
+        if (Managers.ROTATION.isActive()) {
             return MathHelper.lerp(tickDelta, RotationManager.getPrevRenderPitch(), RotationManager.getRenderPitch());
         }
 

@@ -7,15 +7,11 @@ import net.minecraft.text.Text;
 
 import static dev.sakura.client.Sakura.mc;
 
-/**
- * @Author：Gu-Yuemang
- * @Date：2025/11/14 08:54
- */
 public class ChatUtil {
     private static final String PREFIX = "§7[§5" + Sakura.MOD_NAME + "§7] ";
 
     public static void component(Text component) {
-        ChatHud chat = MinecraftClient.getInstance().inGameHud.getChatHud();
+        ChatHud chat = mc.inGameHud.getChatHud();
         chat.addMessage(component);
     }
 

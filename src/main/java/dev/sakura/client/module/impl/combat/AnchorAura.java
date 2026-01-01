@@ -102,7 +102,7 @@ public class AnchorAura extends Module {
     }
 
     private void update() {
-        if (calcTimer.hasReached(updateDelay.get())) {
+        if (calcTimer.passedMS(updateDelay.get())) {
             double placeDamage = minDamage.get();
             double breakDamage = breakMin.get();
             boolean anchorFound = false;
@@ -186,7 +186,7 @@ public class AnchorAura extends Module {
     }
 
     private void place(BlockPos pos, int slot) {
-        if (placeTimer.hasReached(placeDelay.get())) {
+        if (placeTimer.passedMS(placeDelay.get())) {
             Direction side = BlockUtil.getPlaceSide(pos);
             if (side == null) return;
             boolean switched = false;

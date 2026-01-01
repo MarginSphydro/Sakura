@@ -267,7 +267,7 @@ public class KillAura extends Module {
             Vector2f desired = RotationUtil.calculate(attackVec);
 
             if (yawStep.get()) {
-                float currentYaw = RotationManager.getYaw();
+                float currentYaw = Managers.ROTATION.getYaw();
                 float diff = MathHelper.wrapDegrees(desired.x - currentYaw);
                 float limit = yawStepLimit.get();
                 if (Math.abs(diff) > limit) {
@@ -282,7 +282,7 @@ public class KillAura extends Module {
             }
 
             double walls = wallRange.get();
-            boolean isFacing = RaytraceUtil.facingEnemy(mc.player, target, RotationManager.getRotation(), range.get(), walls);
+            boolean isFacing = RaytraceUtil.facingEnemy(mc.player, target, Managers.ROTATION.getRotation(), range.get(), walls);
             if (!isFacing && RotationManager.lastServerRotations != null) {
                 isFacing = RaytraceUtil.facingEnemy(mc.player, target, RotationManager.lastServerRotations, range.get(), walls);
             }
@@ -338,7 +338,7 @@ public class KillAura extends Module {
 
 
         double walls = wallRange.get();
-        Vector2f rayRot = RotationManager.lastServerRotations != null ? RotationManager.lastServerRotations : RotationManager.getRotation();
+        Vector2f rayRot = RotationManager.lastServerRotations != null ? RotationManager.lastServerRotations : Managers.ROTATION.getRotation();
 
         if (strictHit.get() && !target.getBoundingBox().contains(eyePos)) {
             EntityHitResult hit = RaytraceUtil.rayTraceEntity(range.get(), rayRot, e -> isValidTarget(eyePos, e, true));
@@ -349,7 +349,7 @@ public class KillAura extends Module {
         Vec3d attackVec = getAttackVec(target);
         boolean isFacing = RaytraceUtil.facingEnemy(mc.player, target, rayRot, range.get(), walls);
         if (!isFacing) {
-            isFacing = RaytraceUtil.facingEnemy(mc.player, target, RotationManager.getRotation(), range.get(), walls);
+            isFacing = RaytraceUtil.facingEnemy(mc.player, target, Managers.ROTATION.getRotation(), range.get(), walls);
         }
         if (!isFacing && !target.getBoundingBox().contains(eyePos)) return;
 

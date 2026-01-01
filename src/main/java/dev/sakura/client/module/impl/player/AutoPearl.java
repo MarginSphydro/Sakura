@@ -57,7 +57,7 @@ public class AutoPearl extends Module {
 
         if (!rotation.get()) return;
 
-        if (inFov(mc.player.getYaw(), mc.player.getPitch(), fov.get())) {
+        if (Managers.ROTATION.inFov(mc.player.getYaw(), mc.player.getPitch(), fov.get())) {
             throwing = true;
             int pearl;
 
@@ -115,22 +115,5 @@ public class AutoPearl extends Module {
         }
 
         throwing = false;
-    }
-
-    private boolean inFov(float targetYaw, float targetPitch, double fov) {
-        float currentYaw = RotationManager.getYaw();
-        float currentPitch = RotationManager.getPitch();
-
-        float yawDiff = Math.abs(wrapDegrees(targetYaw - currentYaw));
-        float pitchDiff = Math.abs(targetPitch - currentPitch);
-
-        return yawDiff <= fov && pitchDiff <= fov;
-    }
-
-    private float wrapDegrees(float degrees) {
-        float wrapped = degrees % 360.0f;
-        if (wrapped >= 180.0f) wrapped -= 360.0f;
-        if (wrapped < -180.0f) wrapped += 360.0f;
-        return wrapped;
     }
 }

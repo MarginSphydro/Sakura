@@ -7,11 +7,15 @@ public class TimerUtil {
         return System.nanoTime() / 1000000L;
     }
 
-    public boolean delay(float ticks) {
+    public boolean delay(double ticks) {
         return getCurrentMS() - lastMS >= ticks * 50;
     }
 
-    public boolean hasReached(double milliseconds) {
+    public boolean passedSecond(double ticks) {
+        return getCurrentMS() - lastMS >= ticks * 1000;
+    }
+
+    public boolean passedMS(double milliseconds) {
         if (milliseconds == 0) {
             return true;
         }

@@ -245,7 +245,7 @@ public class Burrow extends Module {
         timer.reset();
         doSwap(block);
         if (this.rotate.get() == RotateMode.Bypass) {
-            Managers.ROTATION.setRotations(new Vector2f(RotationManager.getYaw(), 89.98f), 10f, MovementFix.NORMAL, RotationManager.Priority.Highest);
+            Managers.ROTATION.setRotations(new Vector2f(Managers.ROTATION.getYaw(), 89.98f), 10f, MovementFix.NORMAL, RotationManager.Priority.Highest);
         }
         placeBlock(playerPos, rotateFlag);
         placeBlock(pos1, rotateFlag);
@@ -357,7 +357,7 @@ public class Burrow extends Module {
         if (rotate.get() == RotateMode.None) {
             sendPositionPacket(offPos.getX() + 0.5, mc.player.getY() + 0.1, offPos.getZ() + 0.5, false);
         } else {
-            sendFullPacket(offPos.getX() + 0.5, mc.player.getY() + 0.1, offPos.getZ() + 0.5, RotationManager.getYaw(), 89.98f, false);
+            sendFullPacket(offPos.getX() + 0.5, mc.player.getY() + 0.1, offPos.getZ() + 0.5, Managers.ROTATION.getYaw(), 89.98f, false);
         }
     }
 

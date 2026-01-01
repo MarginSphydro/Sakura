@@ -89,7 +89,7 @@ public class TargetESP extends Module {
             timerUtil.reset();
         }
 
-        if (timerUtil.hasReached(100)) {
+        if (timerUtil.passedMS(100)) {
             alphaAnim.setDirection(Direction.BACKWARDS);
             if (alphaAnim.isDone())
                 target = null;
