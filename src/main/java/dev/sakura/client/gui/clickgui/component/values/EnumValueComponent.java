@@ -2,7 +2,6 @@ package dev.sakura.client.gui.clickgui.component.values;
 
 import dev.sakura.client.gui.Component;
 import dev.sakura.client.module.impl.client.ClickGui;
-import dev.sakura.client.nanovg.NanoVGRenderer;
 import dev.sakura.client.nanovg.font.FontLoader;
 import dev.sakura.client.nanovg.util.NanoVGHelper;
 import dev.sakura.client.utils.animations.Animation;
@@ -50,7 +49,7 @@ public class EnumValueComponent extends Component {
 
         expandAnimation.setDirection(expanded ? Direction.FORWARDS : Direction.BACKWARDS);
         arrowAnimation.setDirection(expanded ? Direction.FORWARDS : Direction.BACKWARDS);
-        
+
         String[] modes = setting.getModeNames();
         float maxExpandedHeight = (modes.length * OPTION_HEIGHT + EXPAND_BOTTOM_OFFSET) * scale;
         float currentExpandHeight = (float) (maxExpandedHeight * expandAnimation.getOutput());
@@ -62,10 +61,8 @@ public class EnumValueComponent extends Component {
         INSTANCE.draw(vg -> {
             NanoVGHelper.drawString(setting.getDisplayName(), x, labelY, fontTitle, titleFontSize, new Color(240, 240, 240));
 
-            // Background
             NanoVGHelper.drawRoundRect(x, boxY, width, totalBoxHeight, ROUNDING * scale, new Color(35, 35, 39));
-            
-            // Outline
+
             NanoVGHelper.drawRoundRectOutline(x, boxY, width, totalBoxHeight, ROUNDING * scale, 1.0f, new Color(60, 60, 65));
 
             float headerCenterY = boxY + (BOX_HEIGHT * scale) / 2;
@@ -74,7 +71,7 @@ public class EnumValueComponent extends Component {
             NanoVGHelper.drawString(currentMode, x + 6 * scale, headerCenterY + 2, fontText, textFontSize, new Color(200, 200, 200));
 
             float arrowX = x + width - 8 * scale;
-            
+
             NanoVGHelper.save();
             NanoVGHelper.translate(arrowX, headerCenterY);
             NanoVGHelper.rotate(vg, (float) (Math.toRadians(90) * arrowAnimation.getOutput()));
@@ -87,7 +84,7 @@ public class EnumValueComponent extends Component {
             NanoVG.nvgStrokeWidth(vg, 1.5f);
             NanoVG.nvgLineCap(vg, NanoVG.NVG_ROUND);
             NanoVG.nvgStroke(vg);
-            
+
             NanoVGHelper.restore();
 
             if (expandAnimation.getOutput() > 0.01) {
@@ -95,11 +92,10 @@ public class EnumValueComponent extends Component {
                 float separatorY = boxY + BOX_HEIGHT * scale;
                 NanoVGHelper.scissor(x, separatorY, width, currentExpandHeight);
 
-                // Separator line
-                NanoVGHelper.drawLine(x + 2 * scale, separatorY, x + width - 2 * scale, separatorY, 1.0f, new Color(60, 60, 65, (int)(255 * expandAnimation.getOutput())));
+                NanoVGHelper.drawLine(x + 2 * scale, separatorY, x + width - 2 * scale, separatorY, 1.0f, new Color(60, 60, 65, (int) (255 * expandAnimation.getOutput())));
 
                 float startY = separatorY;
-                
+
                 for (int i = 0; i < modes.length; i++) {
                     String modeName = modes[i];
                     float modeY = startY + (i * OPTION_HEIGHT * scale);
@@ -109,11 +105,11 @@ public class EnumValueComponent extends Component {
                     if (isSelected) {
                         Color themeColor = ClickGui.color(1);
                         Color activeBg = new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 40); // Low opacity background
-                        
+
                         NanoVGHelper.drawRect(x + 1, modeY, width - 2, OPTION_HEIGHT * scale, activeBg);
 
                         NanoVGHelper.drawRect(x + 2 * scale, modeY + 2 * scale, 2 * scale, (OPTION_HEIGHT - 4) * scale, themeColor);
-                        
+
                     } else if (isHovered) {
                         NanoVGHelper.drawRect(x + 1, modeY, width - 2, OPTION_HEIGHT * scale, new Color(255, 255, 255, 15));
                     }
@@ -122,18 +118,18 @@ public class EnumValueComponent extends Component {
                     float textY = modeY + (OPTION_HEIGHT * scale) / 2 + 2;
                     NanoVGHelper.drawString(modeName, x + 10 * scale, textY, fontText, textFontSize, textColor);
                 }
-                
+
                 NanoVGHelper.restore();
             }
         });
-        
+
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (!isVisible()) return false;
-        
+
         float x = getX();
         float y = getY();
         float width = getWidth();
@@ -149,7 +145,7 @@ public class EnumValueComponent extends Component {
         if (expanded && expandAnimation.getOutput() > 0.9) {
             float startY = boxY + BOX_HEIGHT * scale;
             String[] modes = setting.getModeNames();
-            
+
             for (int i = 0; i < modes.length; i++) {
                 float modeY = startY + (i * OPTION_HEIGHT * scale);
                 if (RenderUtil.isHovering(x, modeY, width, OPTION_HEIGHT * scale, mouseX, mouseY)) {
@@ -161,7 +157,7 @@ public class EnumValueComponent extends Component {
                 }
             }
         }
-        
+
         return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
