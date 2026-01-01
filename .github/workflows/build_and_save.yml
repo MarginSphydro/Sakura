@@ -21,6 +21,9 @@ jobs:
           distribution: 'corretto'
           java-version: '21'
 
+      - name: Permission setup
+        run: chmod +x ./gradlew
+
       - name: build
         run: ./gradlew build
 
