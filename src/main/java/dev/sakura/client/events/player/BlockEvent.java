@@ -6,6 +6,7 @@ import net.minecraft.util.math.Direction;
 public class BlockEvent {
     private BlockPos blockPos;
     private Direction direction;
+
     public BlockEvent(BlockPos blockPos, Direction direction) {
         this.blockPos = blockPos;
         this.direction = direction;

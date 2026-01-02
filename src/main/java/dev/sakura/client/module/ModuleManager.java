@@ -7,6 +7,8 @@ import dev.sakura.client.events.misc.KeyEvent;
 import dev.sakura.client.events.render.Render2DEvent;
 import dev.sakura.client.manager.Managers;
 import dev.sakura.client.manager.impl.NotificationManager;
+import dev.sakura.client.module.impl.client.Capes;
+import dev.sakura.client.module.impl.client.Chat;
 import dev.sakura.client.module.impl.client.ClickGui;
 import dev.sakura.client.module.impl.client.HudEditor;
 import dev.sakura.client.module.impl.combat.*;
@@ -90,6 +92,8 @@ public class ModuleManager {
         add(new XRay());
 
         // Client
+        add(new Capes());
+        add(new Chat());
         add(new ClickGui());
         add(new HudEditor());
 

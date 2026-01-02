@@ -5,9 +5,12 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.sakura.client.Sakura;
 import dev.sakura.client.command.impl.*;
 import dev.sakura.client.events.client.ChatMessageEvent;
+import dev.sakura.client.events.client.GameJoinEvent;
 import dev.sakura.client.events.client.SuggestChatEvent;
 import dev.sakura.client.events.misc.KeyAction;
 import dev.sakura.client.events.misc.KeyEvent;
+import dev.sakura.client.module.impl.client.Chat;
+import dev.sakura.lemonchat.client.ChatClient;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -41,6 +44,7 @@ public class CommandManager {
         register(
                 new BindCommand(),
                 new HelpCommand(),
+                new IRCCommand(),
                 new PrefixCommand(),
                 new ResetCommand(),
                 new SaveCommand(),
@@ -51,6 +55,36 @@ public class CommandManager {
             for (LiteralArgumentBuilder<CommandSource> builder : command.getCommandBuilders()) {
                 command.buildCommand(builder);
                 dispatcher.register(builder);
+            }
+        }
+    }
+
+    @EventHandler
+    private void onJoin(GameJoinEvent event) {
+        if (ChatClient.get().session != null) {
+            if (!ChatClient.get().session.isConnected()) {
+                try {
+                    ChatClient.get().connect();
+                } catch (InterruptedException ignored) {
+                }
+            }
+
+            String srv = (mc.isInSingleplayer() ? "local" : mc.getNetworkHandler().getServerInfo().address);
+            ChatClient.get().session.login(mc.getSession().getUsername(), srv);
+        }
+    }
+
+    @EventHandler
+    private void onSendMessage(ChatMessageEvent.Client event) {
+        String msg = event.getMessage();
+        Chat chat = Sakura.MODULES.getModule(Chat.class);
+
+        if (chat.enable.get()) {
+            String prefix = chat.prefix.get();
+
+            if (msg.startsWith(prefix)) {
+                event.cancel();
+                ChatClient.get().chat(msg.substring(prefix.length()));
             }
         }
     }

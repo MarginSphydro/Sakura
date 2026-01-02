@@ -130,7 +130,7 @@ public class InvUtil {
         return new FindItemResult(slot, count);
     }
 
-    public static FindItemResult findFastestTool(BlockState state,Boolean inv) {
+    public static FindItemResult findFastestTool(BlockState state, Boolean inv) {
         float bestScore = 1;
         int slot = -1;
 

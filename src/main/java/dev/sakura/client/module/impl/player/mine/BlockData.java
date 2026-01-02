@@ -7,7 +7,8 @@ public class BlockData {
     private BlockPos currentPos;
     private Direction direction;
     private Long startTime;
-    public BlockData(BlockPos currentPos, Direction direction,Long startTime) {
+
+    public BlockData(BlockPos currentPos, Direction direction, Long startTime) {
         this.currentPos = currentPos;
         this.direction = direction;
         this.startTime = startTime;

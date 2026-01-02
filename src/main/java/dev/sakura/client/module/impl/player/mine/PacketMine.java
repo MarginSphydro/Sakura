@@ -94,6 +94,7 @@ public class PacketMine extends Module {
 
     @EventHandler
     public void onTick(TickEvent.Post event) {
+        if (mc.player == null || mc.world == null) return; // fuck kong zhi zhen
         if (blockData == null) return;
         if (mc.player.squaredDistanceTo(blockData.getCurrentPos().toCenterPos()) > Math.pow(rangeConfig.get() + 4, 2)) {
             if (debugConfig.get()) ChatUtil.sendMessage("[PacketMine] set blockData = null.");
@@ -136,9 +137,9 @@ public class PacketMine extends Module {
                     break;
             }
 
-            if (remineConfig.get() == RemineMode.Normal){
+            if (remineConfig.get() == RemineMode.Normal) {
                 if (resetTime.passedMS(calcBreakTime(blockData.getCurrentPos(), swapConfig.get() == Swap.SilentAlt) + 5000L) && reTry.get()) {
-                    hookPos(blockData.getCurrentPos(),true);
+                    hookPos(blockData.getCurrentPos(), true);
                 }
                 blockData = new BlockData(blockData.getCurrentPos(), blockData.getDirection(), System.currentTimeMillis());
             }
