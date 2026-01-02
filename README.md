@@ -164,18 +164,17 @@ Sakura是一个Minecraft Hacked客户端，允许开发者对游戏源代码进�
 - **HeypixelAntiCheat-Team  { [Lastest GrimAC Provider](https://github.com) }**
 
 ### 特别感谢
-**MinecraftForge**团队 ❤ 是他们让这个客户端成为可能
+**MinecraftFabric**团队 ❤ 是他们让这个客户端成为可能
 
 ## 环境介绍
 ### 开发环境要求
 - IntelliJ IDEA
-- 对应版本的JDK (JDK 16/17)
+- 对应版本的JDK (JDK 21)
 - Gradle构建系统
 
 ## 开发日志
 ### 重要贡献
 - 更新事件
 - 更新指令系统
-- 集成OptiFine[具体内容移步([OptiFine](./README_OPTIFINE.md))]
 
 </div>
