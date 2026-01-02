@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SamplerAccess {
 
-    boolean hasSampler(String name);
+    boolean sakura$hasSampler(String name);
 
     void sakura$addSamplerTexture(String name, int textureId);
 

@@ -41,6 +41,7 @@ configure<LoomGradleExtensionAPI> {
 sourceSets["main"].java.srcDirs("build/gen/buildconfig/src/main")
 
 repositories {
+    //mavenLocal()
     maven {
         name = "AliyunPublic"
         url = uri("https://maven.aliyun.com/repository/public")
@@ -50,7 +51,7 @@ repositories {
         url = uri("https://maven.aliyun.com/repository/google")
     }
     mavenCentral()
-    maven("https://jitpack.io")
+    maven { url = uri("https://jitpack.io") }
     maven("https://impactdevelopment.github.io/maven/")
     maven("https://maven.fabricmc.net/")
     maven("https://raw.githubusercontent.com/cabaletta/baritone/master/maven/")
@@ -70,7 +71,7 @@ dependencies {
     implementation(include("meteordevelopment:orbit:${property("orbit_version")}")!!)
 
     // NanoVG 运行库
-    val lwjglVersion = "3.3.3"
+    val lwjglVersion = property("nanovg_version")
     implementation(include("org.lwjgl:lwjgl-nanovg:$lwjglVersion")!!)
 
     // 跨平台 Natives 支持

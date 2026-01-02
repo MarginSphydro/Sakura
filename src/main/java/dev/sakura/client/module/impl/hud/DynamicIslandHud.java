@@ -82,8 +82,8 @@ public class DynamicIslandHud extends HudModule {
         NanoVGRenderer.INSTANCE.withRawCoords(() -> {
             renderBlur(currentContext);
             renderSideBlurs(currentContext, 1f);
-            NanoVGRenderer.INSTANCE.draw(vg -> renderContent(), true);
         });
+        renderContent();
     }
 
     private void update() {

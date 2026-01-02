@@ -50,7 +50,7 @@ public abstract class ManagedSamplerUniformBase extends ManagedUniformBase imple
     }
 
     private boolean findUniformTarget1(SamplerAccess access) {
-        if (access.hasSampler(this.name)) {
+        if (access.sakura$hasSampler(this.name)) {
             this.targets = new SamplerAccess[]{access};
             this.locations = new int[]{getSamplerLoc(access)};
             this.syncCurrentValues();
